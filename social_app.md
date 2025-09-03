@@ -5855,4 +5855,278 @@ import PasswordResetConfirm from "./pages/PasswordResetConfirm";
 
 Would you like me to now move into **smaller UX features (Dark Mode + Message Pinning)**, or polish **Security & Permissions (file access, rate limiting, CSRF)** first?
 
+Great 🚀 — let’s move into **smaller but nice UX features** that will make **Jeco Chat** feel more polished for your users.
+
+We’ll start with two easy wins:
+
+1. 🌙 **Dark Mode toggle**
+2. 📌 **Pinning important messages in a chat**
+
+---
+
+# 🌙 Step 28 — Dark Mode Toggle
+
+We’ll add a **dark/light theme switcher** so users can personalize their chat experience.
+
+---
+
+## ✅ 28.1 Add Tailwind Dark Mode Support
+
+In `tailwind.config.js`:
+
+```js
+module.exports = {
+  darkMode: "class", // Enable dark mode via "class"
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+---
+
+## ✅ 28.2 Add a Theme Context
+
+Create `src/context/ThemeContext.js`:
+
+```jsx
+import { createContext, useState, useEffect } from "react";
+
+export const ThemeContext = createContext();
+
+export function ThemeProvider({ children }) {
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
+  return (
+    <ThemeContext.Provider value={{ darkMode, setDarkMode }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+```
+
+---
+
+## ✅ 28.3 Wrap App with ThemeProvider
+
+`src/index.js`:
+
+```jsx
+import { ThemeProvider } from "./context/ThemeContext";
+
+root.render(
+  <ThemeProvider>
+    <App />
+  </ThemeProvider>
+);
+```
+
+---
+
+## ✅ 28.4 Add Toggle Button
+
+In `src/components/Navbar.js`:
+
+```jsx
+import { useContext } from "react";
+import { ThemeContext } from "../context/ThemeContext";
+
+function Navbar() {
+  const { darkMode, setDarkMode } = useContext(ThemeContext);
+
+  return (
+    <nav className="p-4 flex justify-between bg-gray-200 dark:bg-gray-900 dark:text-white">
+      <h1 className="text-xl font-bold">Jeco Chat</h1>
+      <button
+        className="px-3 py-1 rounded bg-blue-500 text-white"
+        onClick={() => setDarkMode(!darkMode)}
+      >
+        {darkMode ? "☀️ Light" : "🌙 Dark"}
+      </button>
+    </nav>
+  );
+}
+
+export default Navbar;
+```
+
+---
+
+## ✅ 28.5 Add Dark Mode Styles
+
+Example in `src/components/ChatWindow.js`:
+
+```jsx
+<div className="p-4 bg-white dark:bg-gray-800 dark:text-gray-200">
+  <h2 className="font-bold">Chat</h2>
+  ...
+</div>
+```
+
+---
+
+# 📌 Step 29 — Pin Messages
+
+Users often want to **pin important messages** so they can easily find them later.
+
+---
+
+## ✅ 29.1 Extend Message Model
+
+`backend/chat/models.py`:
+
+```python
+class Message(models.Model):
+    ...
+    is_pinned = models.BooleanField(default=False)
+```
+
+Run migration:
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+---
+
+## ✅ 29.2 Update Serializer
+
+`backend/chat/serializers.py`:
+
+```python
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ["id", "chat", "sender", "content", "timestamp", "is_pinned"]
+```
+
+---
+
+## ✅ 29.3 Create Pin/Unpin API
+
+`backend/chat/views.py`:
+
+```python
+from rest_framework.decorators import action
+from rest_framework import viewsets
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+    @action(detail=True, methods=["post"])
+    def toggle_pin(self, request, pk=None):
+        message = self.get_object()
+        message.is_pinned = not message.is_pinned
+        message.save()
+        return Response({"id": message.id, "is_pinned": message.is_pinned})
+```
+
+---
+
+## ✅ 29.4 Add Route
+
+`backend/chat/urls.py`:
+
+```python
+from rest_framework.routers import DefaultRouter
+from .views import MessageViewSet
+
+router = DefaultRouter()
+router.register(r"messages", MessageViewSet, basename="message")
+
+urlpatterns += router.urls
+```
+
+---
+
+## ✅ 29.5 Frontend UI
+
+In `src/components/Message.js`:
+
+```jsx
+import { useState } from "react";
+
+function Message({ message }) {
+  const [isPinned, setIsPinned] = useState(message.is_pinned);
+
+  const togglePin = async () => {
+    const res = await fetch(
+      `http://127.0.0.1:8000/api/chat/messages/${message.id}/toggle_pin/`,
+      { method: "POST" }
+    );
+    const data = await res.json();
+    setIsPinned(data.is_pinned);
+  };
+
+  return (
+    <div className="flex justify-between p-2 border-b dark:border-gray-600">
+      <span>{message.content}</span>
+      <button
+        onClick={togglePin}
+        className={`ml-2 text-sm ${isPinned ? "text-yellow-500" : "text-gray-400"}`}
+      >
+        {isPinned ? "📌" : "Pin"}
+      </button>
+    </div>
+  );
+}
+
+export default Message;
+```
+
+---
+
+## ✅ 29.6 Show Pinned Messages at Top
+
+In `src/components/ChatWindow.js`:
+
+```jsx
+const pinned = messages.filter((m) => m.is_pinned);
+const others = messages.filter((m) => !m.is_pinned);
+
+return (
+  <div>
+    {pinned.length > 0 && (
+      <div className="mb-2 p-2 bg-yellow-100 dark:bg-yellow-800">
+        <h4 className="font-bold">📌 Pinned</h4>
+        {pinned.map((msg) => (
+          <Message key={msg.id} message={msg} />
+        ))}
+      </div>
+    )}
+    {others.map((msg) => (
+      <Message key={msg.id} message={msg} />
+    ))}
+  </div>
+);
+```
+
+---
+
+# 🎉 Result
+
+* 🌙 **Dark Mode toggle** → users can switch between light & dark themes.
+* 📌 **Pin messages** → users can mark important messages and see them at the top.
+
+---
+
+👉 Next small UX features we could add:
+
+* ✅ **Message Reactions (👍 ❤️ 😂)**
+* ✅ **Typing Indicator (“User is typing…”)**
+* ✅ **Read Receipts (✓✓ seen)**
+
+Do you want me to continue with **Message Reactions** first, or jump into **Typing Indicator**?
 
