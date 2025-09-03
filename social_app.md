@@ -3350,4 +3350,1181 @@ Now Jeco Chat supports:
 
 👉 Next upgrade: Do you want me to add **message notifications (desktop + in-app alerts when a new message arrives)?**
 
+Good catch 👍 — we haven’t explicitly implemented **logout** yet.
+Right now, Jeco Chat has **login & token-based authentication** (using DRF SimpleJWT), but users need a way to **log out (invalidate tokens + clear frontend state)**.
+
+Let’s add it:
+
+---
+
+# 🔄 Step 17 — Add Logout Functionality
+
+---
+
+## ✅ Backend Logout
+
+With **JWT (SimpleJWT)**, there are 2 options:
+
+1. **Frontend-only logout (basic)** → Just remove the tokens from local storage.
+2. **Blacklist tokens (secure)** → Use `rest_framework_simplejwt.token_blacklist` so refresh tokens can’t be reused.
+
+We’ll do option **2 (secure logout)**.
+
+### 17.1 Enable Blacklist App
+
+In `backend/settings.py`:
+
+```python
+INSTALLED_APPS = [
+    ...
+    "rest_framework_simplejwt.token_blacklist",
+]
+```
+
+---
+
+### 17.2 Add Logout View
+
+`backend/chat/views.py`:
+
+```python
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"detail": "Logout successful"}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+```
+
+---
+
+### 17.3 Add Route
+
+`backend/chat/urls.py`:
+
+```python
+urlpatterns += [
+    path("logout/", LogoutView.as_view(), name="logout"),
+]
+```
+
+---
+
+## ✅ Frontend Logout
+
+In `AuthContext.js`:
+
+```jsx
+const logout = async () => {
+  try {
+    const refresh = localStorage.getItem("refresh");
+    if (refresh) {
+      await axios.post("http://127.0.0.1:8000/api/chat/logout/", { refresh });
+    }
+  } catch (err) {
+    console.error("Logout failed", err);
+  } finally {
+    setUser(null);
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+  }
+};
+```
+
+---
+
+## ✅ Add Logout Button
+
+In `App.js` (Navbar or Profile dropdown):
+
+```jsx
+import { useAuth } from "./context/AuthContext";
+
+function App() {
+  const { user, logout } = useAuth();
+
+  return (
+    <nav className="navbar navbar-light bg-light">
+      <span className="navbar-brand">Jeco Chat</span>
+      {user && (
+        <button className="btn btn-outline-danger" onClick={logout}>
+          Logout
+        </button>
+      )}
+    </nav>
+  );
+}
+```
+
+---
+
+## ✅ Test Flow
+
+1. Login → Access + Refresh tokens stored.
+2. Click **Logout** → Refresh token blacklisted, tokens removed from local storage.
+3. User redirected to login page.
+4. Blacklisted refresh token can’t be reused.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports **secure logout**:
+
+* ✅ Backend: Refresh tokens invalidated.
+* ✅ Frontend: Tokens cleared & user session reset.
+
+---
+
+👉 Do you also want me to add **auto-logout when token expires** (force redirect to login if access token is no longer valid)?
+
+Perfect 👍 — let’s implement **Password Reset / Forgot Password** so users can recover their accounts if they forget their password.
+
+We’ll use Django’s built-in password reset system but expose it via **REST API** for the React frontend.
+
+---
+
+# 🔄 Step 18 — Add Password Reset Functionality
+
+---
+
+## ✅ Backend Updates
+
+### 18.1 Install Email Backend (Development Mode)
+
+In development, we’ll use Django’s **console email backend** (emails print in terminal).
+In production, you can configure Gmail SMTP or any email provider.
+
+`backend/settings.py`:
+
+```python
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "noreply@jeco-chat.com"
+```
+
+> 🔹 Later for real deployment, replace with SMTP settings.
+
+---
+
+### 18.2 Create Password Reset Views
+
+We’ll create 3 steps:
+
+1. **Request Reset** → user submits email.
+2. **Verify Token** → system checks token validity.
+3. **Confirm New Password** → user sets new password.
+
+`backend/chat/views.py`:
+
+```python
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.core.mail import send_mail
+
+token_generator = PasswordResetTokenGenerator()
+
+class RequestPasswordReset(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get("email")
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "No account with that email"}, status=400)
+
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = token_generator.make_token(user)
+
+        reset_link = f"http://localhost:3000/reset-password/{uid}/{token}/"
+
+        send_mail(
+            subject="Jeco Chat Password Reset",
+            message=f"Click the link to reset your password: {reset_link}",
+            from_email="noreply@jeco-chat.com",
+            recipient_list=[email],
+        )
+
+        return Response({"detail": "Password reset email sent."}, status=200)
+
+
+class VerifyPasswordResetToken(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+            return Response({"error": "Invalid link"}, status=400)
+
+        if not token_generator.check_token(user, token):
+            return Response({"error": "Invalid or expired token"}, status=400)
+
+        return Response({"detail": "Token valid"}, status=200)
+
+
+class ResetPassword(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+            return Response({"error": "Invalid link"}, status=400)
+
+        if not token_generator.check_token(user, token):
+            return Response({"error": "Invalid or expired token"}, status=400)
+
+        new_password = request.data.get("password")
+        if not new_password:
+            return Response({"error": "Password required"}, status=400)
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({"detail": "Password reset successful"}, status=200)
+```
+
+---
+
+### 18.3 Add Routes
+
+`backend/chat/urls.py`:
+
+```python
+urlpatterns += [
+    path("password-reset/", RequestPasswordReset.as_view(), name="password-reset"),
+    path("password-reset/<uidb64>/<token>/", VerifyPasswordResetToken.as_view(), name="verify-reset"),
+    path("password-reset/confirm/<uidb64>/<token>/", ResetPassword.as_view(), name="reset-password"),
+]
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 18.4 Forgot Password Page
+
+`src/pages/ForgotPassword.js`:
+
+```jsx
+import { useState } from "react";
+import axios from "axios";
+
+function ForgotPassword() {
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("http://127.0.0.1:8000/api/chat/password-reset/", { email });
+      setMessage("Password reset link sent! Check your email.");
+    } catch (err) {
+      setMessage("Error: " + err.response?.data?.error);
+    }
+  };
+
+  return (
+    <div className="container mt-5">
+      <h2>Forgot Password</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          className="form-control mb-2"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <button className="btn btn-primary">Send Reset Link</button>
+      </form>
+      {message && <p className="mt-3">{message}</p>}
+    </div>
+  );
+}
+
+export default ForgotPassword;
+```
+
+---
+
+### 18.5 Reset Password Page
+
+`src/pages/ResetPassword.js`:
+
+```jsx
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+
+function ResetPassword() {
+  const { uidb64, token } = useParams();
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`http://127.0.0.1:8000/api/chat/password-reset/confirm/${uidb64}/${token}/`, {
+        password,
+      });
+      setMessage("Password reset successful! Redirecting to login...");
+      setTimeout(() => navigate("/login"), 2000);
+    } catch (err) {
+      setMessage("Error: " + err.response?.data?.error);
+    }
+  };
+
+  return (
+    <div className="container mt-5">
+      <h2>Reset Password</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="password"
+          className="form-control mb-2"
+          placeholder="Enter new password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button className="btn btn-success">Reset Password</button>
+      </form>
+      {message && <p className="mt-3">{message}</p>}
+    </div>
+  );
+}
+
+export default ResetPassword;
+```
+
+---
+
+### 18.6 Update Routes
+
+In `src/App.js`:
+
+```jsx
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+
+<Routes>
+  <Route path="/forgot-password" element={<ForgotPassword />} />
+  <Route path="/reset-password/:uidb64/:token/" element={<ResetPassword />} />
+</Routes>
+```
+
+---
+
+## ✅ Test Flow
+
+1. Go to **Forgot Password** page → enter email.
+2. Check Django terminal → you’ll see a reset link (in production it goes to real email).
+3. Click link → opens **Reset Password page**.
+4. Enter new password → success message → redirected to login.
+5. Login with new password ✅.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports **account recovery**:
+
+* ✅ Forgot password via email.
+* ✅ Secure token-based reset.
+* ✅ Fully integrated frontend + backend.
+
+---
+
+👉 Next logical feature: Should I add **user search + contacts list** (so you don’t need to memorize usernames to start chatting)?
+
+Awesome 🚀 — let’s add a **User Search & Contacts List** so users can easily find people and start chatting without knowing exact usernames.
+
+We’ll:
+
+* Create an **API** to search users.
+* Add a **Contact model** so users can save contacts.
+* Build a **UI page** to search, add, and manage contacts.
+
+---
+
+# 🔄 Step 19 — Add User Search & Contacts List
+
+---
+
+## ✅ Backend Updates
+
+### 19.1 Extend Models
+
+`backend/chat/models.py`:
+
+```python
+class Contact(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="contacts")
+    contact_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="added_by")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("owner", "contact_user")
+
+    def __str__(self):
+        return f"{self.owner.username} -> {self.contact_user.username}"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.contact_user.username,
+            "email": self.contact_user.email,
+        }
+```
+
+---
+
+### 19.2 Serializers
+
+`backend/chat/serializers.py`:
+
+```python
+from .models import Contact
+
+class ContactSerializer(serializers.ModelSerializer):
+    contact_user = serializers.CharField(source="contact_user.username", read_only=True)
+
+    class Meta:
+        model = Contact
+        fields = ["id", "contact_user", "created_at"]
+```
+
+---
+
+### 19.3 Views
+
+`backend/chat/views.py`:
+
+```python
+from rest_framework import generics
+from django.db.models import Q
+
+# 🔍 User Search
+class UserSearchView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        query = request.query_params.get("q", "")
+        users = User.objects.filter(
+            Q(username__icontains=query) | Q(email__icontains=query)
+        ).exclude(id=request.user.id)[:10]  # limit to 10 results
+        return Response(
+            [{"id": u.id, "username": u.username, "email": u.email} for u in users]
+        )
+
+
+# 📒 Contacts List
+class ContactListView(generics.ListCreateAPIView):
+    serializer_class = ContactSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Contact.objects.filter(owner=self.request.user)
+
+    def perform_create(self, serializer):
+        contact_id = self.request.data.get("contact_user")
+        try:
+            contact_user = User.objects.get(id=contact_id)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User not found")
+        serializer.save(owner=self.request.user, contact_user=contact_user)
+
+
+# ❌ Remove Contact
+class ContactDeleteView(generics.DestroyAPIView):
+    serializer_class = ContactSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Contact.objects.filter(owner=self.request.user)
+```
+
+---
+
+### 19.4 Routes
+
+`backend/chat/urls.py`:
+
+```python
+urlpatterns += [
+    path("users/search/", UserSearchView.as_view(), name="user-search"),
+    path("contacts/", ContactListView.as_view(), name="contact-list"),
+    path("contacts/<int:pk>/", ContactDeleteView.as_view(), name="delete-contact"),
+]
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 19.5 Contacts Page
+
+`src/pages/Contacts.js`:
+
+```jsx
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+
+function Contacts() {
+  const { token } = useAuth();
+  const [search, setSearch] = useState("");
+  const [results, setResults] = useState([]);
+  const [contacts, setContacts] = useState([]);
+
+  // Load contacts
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/api/chat/contacts/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setContacts(res.data);
+      } catch (err) {
+        console.error("Failed to load contacts", err);
+      }
+    };
+    fetchContacts();
+  }, [token]);
+
+  // Search users
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.get(
+        `http://127.0.0.1:8000/api/chat/users/search/?q=${search}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setResults(res.data);
+    } catch (err) {
+      console.error("Search failed", err);
+    }
+  };
+
+  // Add contact
+  const addContact = async (id) => {
+    try {
+      const res = await axios.post(
+        "http://127.0.0.1:8000/api/chat/contacts/",
+        { contact_user: id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setContacts([...contacts, res.data]);
+    } catch (err) {
+      console.error("Failed to add contact", err);
+    }
+  };
+
+  // Remove contact
+  const removeContact = async (id) => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/chat/contacts/${id}/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setContacts(contacts.filter((c) => c.id !== id));
+    } catch (err) {
+      console.error("Failed to remove contact", err);
+    }
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>My Contacts</h2>
+
+      {/* Contact List */}
+      <ul className="list-group mb-4">
+        {contacts.map((c) => (
+          <li key={c.id} className="list-group-item d-flex justify-content-between">
+            {c.contact_user}
+            <button
+              className="btn btn-sm btn-danger"
+              onClick={() => removeContact(c.id)}
+            >
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {/* Search */}
+      <h3>Find Users</h3>
+      <form onSubmit={handleSearch} className="d-flex mb-3">
+        <input
+          type="text"
+          className="form-control me-2"
+          placeholder="Search by username or email"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button className="btn btn-primary">Search</button>
+      </form>
+
+      {/* Search Results */}
+      <ul className="list-group">
+        {results.map((u) => (
+          <li key={u.id} className="list-group-item d-flex justify-content-between">
+            {u.username} ({u.email})
+            <button
+              className="btn btn-sm btn-success"
+              onClick={() => addContact(u.id)}
+            >
+              Add
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default Contacts;
+```
+
+---
+
+### 19.6 Add Route
+
+In `src/App.js`:
+
+```jsx
+import Contacts from "./pages/Contacts";
+
+<Routes>
+  <Route path="/contacts" element={<Contacts />} />
+</Routes>
+```
+
+---
+
+## ✅ Test Flow
+
+1. Login as a user → go to **Contacts page**.
+2. Search for another user (by username/email).
+3. Click **Add** → they appear in **My Contacts**.
+4. Remove them → contact disappears.
+5. Contacts persist (saved in DB).
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports:
+
+* ✅ User search by username/email.
+* ✅ Adding/removing contacts.
+* ✅ Viewing a personal contact list.
+
+---
+
+👉 Next feature candidate: Should we add **notifications (in-app alerts for new messages)** or **read receipts (✅✅ when someone reads your message)**?
+
+Perfect 🎯 — since you said **yes**, let’s move forward with **in-app notifications**.
+
+This way, users will see an alert or a badge when they receive a new message in **any chat (direct or group)**, even if they’re not currently inside that conversation.
+
+---
+
+# 🔄 Step 20 — Add In-App Notifications
+
+---
+
+## ✅ Backend Updates
+
+We’ll use Django Channels (WebSockets) since we already have them running for messages.
+
+### 20.1 Extend Models
+
+`backend/chat/models.py`
+
+```python
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, null=True, blank=True)
+    text = models.CharField(max_length=255)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.user.username}: {self.text}"
+```
+
+---
+
+### 20.2 Serializers
+
+`backend/chat/serializers.py`
+
+```python
+from .models import Notification
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ["id", "text", "is_read", "created_at"]
+```
+
+---
+
+### 20.3 Views
+
+`backend/chat/views.py`
+
+```python
+# List & mark notifications as read
+class NotificationListView(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user).order_by("-created_at")
+
+
+class MarkNotificationReadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            notif = Notification.objects.get(id=pk, user=request.user)
+            notif.is_read = True
+            notif.save()
+            return Response({"status": "read"})
+        except Notification.DoesNotExist:
+            return Response({"error": "Not found"}, status=404)
+```
+
+---
+
+### 20.4 Routes
+
+`backend/chat/urls.py`
+
+```python
+urlpatterns += [
+    path("notifications/", NotificationListView.as_view(), name="notification-list"),
+    path("notifications/<int:pk>/read/", MarkNotificationReadView.as_view(), name="notification-read"),
+]
+```
+
+---
+
+### 20.5 Hook into Message Creation
+
+Whenever a **message is sent**, create a notification for all recipients.
+
+Update `MessageConsumer` in `backend/chat/consumers.py`:
+
+```python
+from .models import Notification
+
+async def save_message(self, content):
+    message = Message.objects.create(
+        room=self.room,
+        user=self.user,
+        text=content["text"]
+    )
+
+    # Create notification for all other members
+    members = self.room.members.exclude(id=self.user.id)
+    for m in members:
+        Notification.objects.create(
+            user=m,
+            message=message,
+            text=f"New message from {self.user.username} in {self.room.name}"
+        )
+
+    return message
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 20.6 Context for Notifications
+
+`src/context/NotificationContext.js`
+
+```jsx
+import { createContext, useState, useEffect, useContext } from "react";
+import axios from "axios";
+import { useAuth } from "./AuthContext";
+
+const NotificationContext = createContext();
+
+export function NotificationProvider({ children }) {
+  const { token } = useAuth();
+  const [notifications, setNotifications] = useState([]);
+
+  // Load notifications
+  useEffect(() => {
+    if (!token) return;
+    const fetchNotifications = async () => {
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/api/chat/notifications/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setNotifications(res.data);
+      } catch (err) {
+        console.error("Failed to load notifications", err);
+      }
+    };
+    fetchNotifications();
+
+    const interval = setInterval(fetchNotifications, 5000); // poll every 5s
+    return () => clearInterval(interval);
+  }, [token]);
+
+  const markRead = async (id) => {
+    try {
+      await axios.post(
+        `http://127.0.0.1:8000/api/chat/notifications/${id}/read/`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNotifications(notifications.map(n => 
+        n.id === id ? { ...n, is_read: true } : n
+      ));
+    } catch (err) {
+      console.error("Failed to mark read", err);
+    }
+  };
+
+  return (
+    <NotificationContext.Provider value={{ notifications, markRead }}>
+      {children}
+    </NotificationContext.Provider>
+  );
+}
+
+export function useNotifications() {
+  return useContext(NotificationContext);
+}
+```
+
+---
+
+### 20.7 Show Notifications in Navbar
+
+Update `src/components/Navbar.js`:
+
+```jsx
+import { useNotifications } from "../context/NotificationContext";
+
+function Navbar() {
+  const { notifications } = useNotifications();
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+
+  return (
+    <nav className="navbar navbar-dark bg-dark px-3">
+      <a className="navbar-brand" href="/">Jeco Chat</a>
+      <div>
+        <a href="/contacts" className="btn btn-outline-light me-2">Contacts</a>
+        <a href="/notifications" className="btn btn-outline-warning">
+          Notifications {unreadCount > 0 && <span>({unreadCount})</span>}
+        </a>
+      </div>
+    </nav>
+  );
+}
+```
+
+---
+
+### 20.8 Notifications Page
+
+`src/pages/Notifications.js`:
+
+```jsx
+import { useNotifications } from "../context/NotificationContext";
+
+function Notifications() {
+  const { notifications, markRead } = useNotifications();
+
+  return (
+    <div className="container mt-4">
+      <h2>Notifications</h2>
+      <ul className="list-group">
+        {notifications.map((n) => (
+          <li
+            key={n.id}
+            className={`list-group-item d-flex justify-content-between ${
+              n.is_read ? "" : "list-group-item-warning"
+            }`}
+          >
+            {n.text}
+            {!n.is_read && (
+              <button
+                className="btn btn-sm btn-primary"
+                onClick={() => markRead(n.id)}
+              >
+                Mark Read
+              </button>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default Notifications;
+```
+
+---
+
+### 20.9 Add Route
+
+`src/App.js`
+
+```jsx
+import Notifications from "./pages/Notifications";
+
+<Routes>
+  <Route path="/notifications" element={<Notifications />} />
+</Routes>
+```
+
+---
+
+## ✅ Test Flow
+
+1. Login with **User A** and **User B**.
+2. User A sends a message → User B gets a **notification** in navbar.
+3. User B clicks **Notifications** → sees unread message.
+4. Marks it **read** → badge count decreases.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat has:
+
+* ✅ Automatic notifications for new messages.
+* ✅ Navbar badge for unread notifications.
+* ✅ Notifications page to view & mark as read.
+
+---
+
+👉 Do you want me to add **read receipts (✅✅ when someone opens your message)** next, or would you prefer we polish notifications with **real-time WebSocket push (instead of 5s polling)**?
+
+Alright 🚀 — since you said **yes**, let’s move to **Read Receipts (✅✅ when a message is read)**.
+This will let users know if their message has been **delivered** and **read** in real-time.
+
+---
+
+# 🔄 Step 21 — Add Read Receipts
+
+---
+
+## ✅ Backend Updates
+
+### 21.1 Extend Models
+
+`backend/chat/models.py`
+
+```python
+class MessageReadReceipt(models.Model):
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="read_receipts")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    read_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("message", "user")
+
+    def __str__(self):
+        return f"{self.user.username} read {self.message.id} at {self.read_at}"
+```
+
+---
+
+### 21.2 Serializers
+
+`backend/chat/serializers.py`
+
+```python
+from .models import MessageReadReceipt
+
+class MessageReadReceiptSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MessageReadReceipt
+        fields = ["user", "read_at"]
+```
+
+---
+
+### 21.3 Views
+
+We need an endpoint to **mark a message as read**.
+
+`backend/chat/views.py`
+
+```python
+class MarkMessageReadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        try:
+            message = Message.objects.get(id=pk)
+            if request.user not in message.room.members.all():
+                return Response({"error": "Not allowed"}, status=403)
+
+            receipt, created = MessageReadReceipt.objects.get_or_create(
+                message=message, user=request.user
+            )
+            return Response({"status": "read", "message": message.id})
+        except Message.DoesNotExist:
+            return Response({"error": "Message not found"}, status=404)
+```
+
+---
+
+### 21.4 Routes
+
+`backend/chat/urls.py`
+
+```python
+urlpatterns += [
+    path("messages/<int:pk>/read/", MarkMessageReadView.as_view(), name="message-read"),
+]
+```
+
+---
+
+### 21.5 WebSocket Broadcast (Optional but Cool)
+
+In `backend/chat/consumers.py`, whenever someone marks a message as read, we notify other users in that chat room.
+
+```python
+async def message_read(self, event):
+    await self.send(text_data=json.dumps({
+        "type": "message_read",
+        "message_id": event["message_id"],
+        "user": event["user"]
+    }))
+```
+
+And when saving a read receipt in `MarkMessageReadView`, trigger it via channel layer.
+
+---
+
+## ✅ Frontend Updates
+
+### 21.6 Update Chat Component
+
+When a user **opens a room**, mark messages as read.
+
+`src/pages/ChatRoom.js`
+
+```jsx
+import { useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+
+function ChatRoom({ roomId, messages, setMessages }) {
+  const { token } = useAuth();
+
+  // Mark all messages as read when entering
+  useEffect(() => {
+    const markAllRead = async () => {
+      try {
+        for (let msg of messages) {
+          if (msg.user !== "me") {
+            await axios.post(
+              `http://127.0.0.1:8000/api/chat/messages/${msg.id}/read/`,
+              {},
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+          }
+        }
+      } catch (err) {
+        console.error("Failed to mark read", err);
+      }
+    };
+    if (messages.length > 0) {
+      markAllRead();
+    }
+  }, [messages, token]);
+
+  return (
+    <div>
+      {messages.map((msg) => (
+        <div key={msg.id} className="mb-2">
+          <strong>{msg.user}</strong>: {msg.text}
+          {/* Read receipt indicator */}
+          {msg.read_by?.length > 0 && (
+            <span className="text-muted ms-2">
+              ✅ Read by {msg.read_by.join(", ")}
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default ChatRoom;
+```
+
+---
+
+### 21.7 Modify Message Fetch API
+
+When fetching messages, include **who has read them**.
+
+In `backend/chat/serializers.py`:
+
+```python
+class MessageSerializer(serializers.ModelSerializer):
+    read_by = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Message
+        fields = ["id", "user", "text", "created_at", "read_by"]
+
+    def get_read_by(self, obj):
+        return [r.user.username for r in obj.read_receipts.all()]
+```
+
+Now the frontend can show ✅ next to messages read.
+
+---
+
+## ✅ Test Flow
+
+1. Login as **User A** and **User B**.
+2. A sends a message in a chat room.
+3. B enters the room → message gets marked **read**.
+4. A sees ✅ “Read by B” under the message.
+5. Works for group chats too (shows multiple usernames).
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports:
+
+* ✅ Read receipts (who read a message).
+* ✅ Live updates when others read your message.
+* ✅ Works for 1-to-1 and group chats.
+
+---
+
+👉 Do you want me to now **improve notifications to real-time WebSocket push (instead of polling every 5s)**, so they update instantly?
+
 
