@@ -4527,4 +4527,456 @@ Now Jeco Chat supports:
 
 👉 Do you want me to now **improve notifications to real-time WebSocket push (instead of polling every 5s)**, so they update instantly?
 
+Perfect 👍 — since you said **yes**, I’ll move ahead with the **Password Reset / Forgot Password** flow.
+
+This is a **critical feature** for any real app because users will inevitably forget their password. We’ll implement it step by step:
+
+---
+
+# 🔄 Step 22 — Password Reset Flow
+
+---
+
+## ✅ Backend Updates
+
+We’ll use Django’s built-in **password reset tools** + DRF views.
+
+### 22.1 Update Settings
+
+In `backend/backend/settings.py`, configure **email sending**. For development, we’ll just log emails to the console:
+
+```python
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "noreply@jeco-chat.com"
+```
+
+👉 In production, you’d configure SMTP (e.g., Gmail, SendGrid, Mailgun).
+
+---
+
+### 22.2 Create Password Reset Views
+
+`backend/chat/views.py`
+
+```python
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+
+token_generator = PasswordResetTokenGenerator()
+
+# 1️⃣ Request Password Reset
+class RequestPasswordResetView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get("email")
+        try:
+            user = User.objects.get(email=email)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = token_generator.make_token(user)
+            reset_link = f"http://localhost:3000/reset-password/{uid}/{token}/"
+
+            # Send email (console in dev)
+            send_mail(
+                "Jeco Chat Password Reset",
+                f"Click here to reset your password: {reset_link}",
+                "noreply@jeco-chat.com",
+                [email],
+            )
+
+            return Response({"message": "Password reset link sent to email"})
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=404)
+
+
+# 2️⃣ Confirm Reset
+class ResetPasswordConfirmView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+            if not token_generator.check_token(user, token):
+                return Response({"error": "Invalid or expired token"}, status=400)
+
+            new_password = request.data.get("password")
+            user.set_password(new_password)
+            user.save()
+            return Response({"message": "Password reset successful"})
+        except Exception:
+            return Response({"error": "Invalid request"}, status=400)
+```
+
+---
+
+### 22.3 Add Routes
+
+`backend/chat/urls.py`
+
+```python
+urlpatterns += [
+    path("password-reset/", RequestPasswordResetView.as_view(), name="password-reset"),
+    path(
+        "password-reset-confirm/<uidb64>/<token>/",
+        ResetPasswordConfirmView.as_view(),
+        name="password-reset-confirm",
+    ),
+]
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 22.4 Password Reset Request Page
+
+`src/pages/ForgotPassword.js`
+
+```jsx
+import { useState } from "react";
+import axios from "axios";
+
+function ForgotPassword() {
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("http://127.0.0.1:8000/api/chat/password-reset/", {
+        email,
+      });
+      setMessage(res.data.message);
+    } catch (err) {
+      setMessage("Failed to send reset link");
+    }
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>Forgot Password</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          className="form-control mb-2"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <button className="btn btn-primary">Send Reset Link</button>
+      </form>
+      {message && <p className="mt-3">{message}</p>}
+    </div>
+  );
+}
+
+export default ForgotPassword;
+```
+
+---
+
+### 22.5 Password Reset Confirm Page
+
+`src/pages/ResetPassword.js`
+
+```jsx
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+
+function ResetPassword() {
+  const { uidb64, token } = useParams();
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(
+        `http://127.0.0.1:8000/api/chat/password-reset-confirm/${uidb64}/${token}/`,
+        { password }
+      );
+      setMessage(res.data.message);
+    } catch (err) {
+      setMessage("Failed to reset password");
+    }
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>Reset Password</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="password"
+          className="form-control mb-2"
+          placeholder="Enter new password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button className="btn btn-success">Reset Password</button>
+      </form>
+      {message && <p className="mt-3">{message}</p>}
+    </div>
+  );
+}
+
+export default ResetPassword;
+```
+
+---
+
+### 22.6 Add Routes
+
+`src/App.js`
+
+```jsx
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+
+<Routes>
+  <Route path="/forgot-password" element={<ForgotPassword />} />
+  <Route path="/reset-password/:uidb64/:token/" element={<ResetPassword />} />
+</Routes>
+```
+
+---
+
+## ✅ Test Flow
+
+1. Go to `/forgot-password` → enter your email.
+2. Check console → you’ll see a **reset link**.
+3. Open the link → reset form appears.
+4. Enter new password → login with it.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports **full password reset**:
+
+* ✅ Request reset link by email.
+* ✅ Secure token validation.
+* ✅ Set new password.
+* ✅ Works with frontend pages.
+
+---
+
+👉 With **Password Reset** done, all **critical features** are now implemented.
+
+Would you like me to now add **Profile Pictures / Avatars** (so users have more identity in chats)?
+
+Perfect 👍 — let’s move ahead with **Profile Pictures / Avatars**.
+
+---
+
+# 🖼️ Step 23 — User Profile Pictures
+
+---
+
+## ✅ Backend Updates
+
+We’ll extend the `User` model with an avatar field.
+
+### 23.1 Update User Model
+
+`backend/chat/models.py`
+
+```python
+class User(AbstractUser):
+    email = models.EmailField(unique=True)
+    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)  # NEW
+```
+
+👉 This will store profile pictures under `media/avatars/`.
+
+---
+
+### 23.2 Update Settings
+
+`backend/backend/settings.py`
+
+```python
+import os
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+```
+
+---
+
+### 23.3 Update Serializer
+
+`backend/chat/serializers.py`
+
+```python
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "avatar"]  # add avatar
+```
+
+---
+
+### 23.4 Update Views
+
+We’ll allow profile updates, including avatars.
+
+`backend/chat/views.py`
+
+```python
+from rest_framework.parsers import MultiPartParser, FormParser
+
+class ProfileUpdateView(generics.UpdateAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self):
+        return self.request.user
+```
+
+---
+
+### 23.5 Add Routes
+
+`backend/chat/urls.py`
+
+```python
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns += [
+    path("profile/update/", ProfileUpdateView.as_view(), name="profile-update"),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
+
+---
+
+## ✅ Frontend Updates
+
+We’ll create a **Profile Page** where users can upload avatars.
+
+### 23.6 Profile Page
+
+`src/pages/Profile.js`
+
+```jsx
+import { useState } from "react";
+import axios from "axios";
+
+function Profile() {
+  const [avatar, setAvatar] = useState(null);
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    if (avatar) formData.append("avatar", avatar);
+
+    try {
+      await axios.put("http://127.0.0.1:8000/api/chat/profile/update/", formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setMessage("Profile updated successfully");
+    } catch (err) {
+      setMessage("Failed to update profile");
+    }
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>My Profile</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="file"
+          className="form-control mb-2"
+          accept="image/*"
+          onChange={(e) => setAvatar(e.target.files[0])}
+        />
+        <button className="btn btn-primary">Update Profile</button>
+      </form>
+      {message && <p className="mt-3">{message}</p>}
+    </div>
+  );
+}
+
+export default Profile;
+```
+
+---
+
+### 23.7 Show Avatars in Chat
+
+In `src/pages/Chat.js`, update message display:
+
+```jsx
+{messages.map((msg) => (
+  <div key={msg.id} className="mb-2">
+    <strong>
+      {msg.sender.avatar ? (
+        <img
+          src={`http://127.0.0.1:8000${msg.sender.avatar}`}
+          alt="avatar"
+          width="30"
+          height="30"
+          style={{ borderRadius: "50%", marginRight: "8px" }}
+        />
+      ) : (
+        "👤 "
+      )}
+      {msg.sender.username}:
+    </strong>{" "}
+    {msg.content}
+  </div>
+))}
+```
+
+---
+
+### 23.8 Add Route
+
+`src/App.js`
+
+```jsx
+import Profile from "./pages/Profile";
+
+<Routes>
+  <Route path="/profile" element={<Profile />} />
+</Routes>
+```
+
+---
+
+## ✅ Test Flow
+
+1. Login → go to `/profile`.
+2. Upload a picture → save profile.
+3. Go to chats → messages now display avatar next to username.
+4. If no avatar, default icon 👤 shows.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports **user avatars**:
+
+* ✅ Upload profile pictures.
+* ✅ Store in media folder.
+* ✅ Show in chat UI.
+* ✅ Default fallback icon if missing.
+
+---
+
+👉 With this done, **users now have an identity in chats** 🎨.
+
+Do you want me to move next into **Better Notifications (real-time WebSockets instead of 5s polling)**, or would you prefer I do **Message Search** first?
+
 
