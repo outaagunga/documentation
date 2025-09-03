@@ -6130,3 +6130,4643 @@ return (
 
 Do you want me to continue with **Message Reactions** first, or jump into **Typing Indicator**?
 
+Nice ⚡ — let’s add **Message Reactions** (👍 ❤️ 😂) to Jeco Chat.
+
+---
+
+# 🎭 Step 30 — Message Reactions
+
+Reactions let users quickly respond to a message without sending text.
+
+---
+
+## ✅ 30.1 Create Reaction Model
+
+`backend/chat/models.py`:
+
+```python
+class Reaction(models.Model):
+    message = models.ForeignKey("Message", on_delete=models.CASCADE, related_name="reactions")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    emoji = models.CharField(max_length=10)  # e.g. "👍" or "😂"
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("message", "user", "emoji")  # Prevent duplicates
+```
+
+Run migrations:
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+---
+
+## ✅ 30.2 Create Serializer
+
+`backend/chat/serializers.py`:
+
+```python
+class ReactionSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Reaction
+        fields = ["id", "emoji", "user", "timestamp"]
+```
+
+Update `MessageSerializer` to include reactions:
+
+```python
+class MessageSerializer(serializers.ModelSerializer):
+    sender = UserSerializer(read_only=True)
+    reactions = ReactionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Message
+        fields = ["id", "chat", "sender", "content", "timestamp", "is_pinned", "reactions"]
+```
+
+---
+
+## ✅ 30.3 Create Reaction API
+
+`backend/chat/views.py`:
+
+```python
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from .models import Message, Reaction
+from .serializers import ReactionSerializer
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def add_reaction(request, message_id):
+    emoji = request.data.get("emoji")
+    if not emoji:
+        return Response({"error": "Emoji is required"}, status=400)
+
+    message = Message.objects.get(id=message_id)
+
+    reaction, created = Reaction.objects.get_or_create(
+        message=message,
+        user=request.user,
+        emoji=emoji,
+    )
+    if not created:  # If it already exists, remove it (toggle)
+        reaction.delete()
+        return Response({"message": "Reaction removed"})
+
+    return Response(ReactionSerializer(reaction).data)
+```
+
+---
+
+## ✅ 30.4 Add Route
+
+`backend/chat/urls.py`:
+
+```python
+from .views import add_reaction
+
+urlpatterns += [
+    path("messages/<int:message_id>/react/", add_reaction, name="add-reaction"),
+]
+```
+
+---
+
+## ✅ 30.5 Frontend Reaction Buttons
+
+In `src/components/Message.js`:
+
+```jsx
+import { useState } from "react";
+
+function Message({ message }) {
+  const [reactions, setReactions] = useState(message.reactions || []);
+
+  const handleReaction = async (emoji) => {
+    const res = await fetch(
+      `http://127.0.0.1:8000/api/chat/messages/${message.id}/react/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ emoji }),
+      }
+    );
+    const data = await res.json();
+
+    // Refresh reactions
+    if (data.message === "Reaction removed") {
+      setReactions(reactions.filter((r) => r.emoji !== emoji));
+    } else {
+      setReactions([...reactions, data]);
+    }
+  };
+
+  return (
+    <div className="p-2 border-b dark:border-gray-600">
+      <p>
+        <strong>{message.sender.username}</strong>: {message.content}
+      </p>
+
+      {/* Reaction Buttons */}
+      <div className="flex space-x-2 mt-1">
+        {["👍", "❤️", "😂"].map((emoji) => (
+          <button
+            key={emoji}
+            className="text-lg"
+            onClick={() => handleReaction(emoji)}
+          >
+            {emoji}
+          </button>
+        ))}
+      </div>
+
+      {/* Show Reactions */}
+      {reactions.length > 0 && (
+        <div className="mt-1 text-sm">
+          {reactions.map((r) => (
+            <span key={r.id} className="mr-2">
+              {r.emoji} {r.user.username}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Message;
+```
+
+---
+
+## ✅ 30.6 User Flow
+
+1. Hover/click on a message → choose 👍 ❤️ 😂.
+2. Reaction is **sent to the backend** and stored.
+3. Clicking again **removes the reaction**.
+4. Reactions are shown under each message.
+
+---
+
+# 🎉 Result
+
+* Users can now **react with emojis** to messages.
+* Toggle reactions on/off with a click.
+* Reactions show who reacted and with what.
+
+---
+
+👉 Next small UX feature candidates:
+
+* ⌨️ **Typing Indicator (“Alice is typing…”)**
+* 👀 **Read Receipts (✓✓ seen)**
+* 📷 **File/Image Attachments**
+
+Do you want me to go ahead with **Typing Indicator** next?
+
+Awesome 👌 — let’s implement the **Typing Indicator** (“Alice is typing…”) feature for Jeco Chat.
+
+---
+
+# ⌨️ Step 31 — Typing Indicator
+
+Typing indicators make conversations feel alive — users can see when someone is currently typing.
+
+---
+
+## ✅ 31.1 Backend (WebSockets with Django Channels)
+
+We’ll extend our **Django Channels consumers** to broadcast typing events.
+
+### 31.1.1 Update Consumer
+
+`backend/chat/consumers.py`
+
+```python
+import json
+from channels.generic.websocket import AsyncWebsocketConsumer
+
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+        self.room_group_name = f"chat_{self.room_name}"
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        message_type = data.get("type")
+
+        if message_type == "chat_message":
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "chat_message",
+                    "message": data["message"],
+                    "username": data["username"],
+                }
+            )
+
+        elif message_type == "typing":
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "typing_event",
+                    "username": data["username"],
+                    "is_typing": data["is_typing"],
+                }
+            )
+
+    async def chat_message(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "chat_message",
+            "message": event["message"],
+            "username": event["username"],
+        }))
+
+    async def typing_event(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "typing",
+            "username": event["username"],
+            "is_typing": event["is_typing"],
+        }))
+```
+
+✔️ Now, WebSocket clients can send `"type": "typing"` events.
+
+---
+
+## ✅ 31.2 Frontend (React)
+
+We’ll detect when a user starts typing and send a **typing event** via WebSocket.
+
+### 31.2.1 Update Chat Component
+
+`src/pages/Chat.js`
+
+```jsx
+import { useState, useEffect, useRef } from "react";
+
+function Chat({ roomName, username }) {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [typingUsers, setTypingUsers] = useState([]);
+
+  const ws = useRef(null);
+
+  useEffect(() => {
+    ws.current = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${roomName}/`);
+
+    ws.current.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+
+      if (data.type === "chat_message") {
+        setMessages((prev) => [...prev, { username: data.username, text: data.message }]);
+      } else if (data.type === "typing") {
+        if (data.is_typing) {
+          setTypingUsers((prev) => [...new Set([...prev, data.username])]);
+        } else {
+          setTypingUsers((prev) => prev.filter((u) => u !== data.username));
+        }
+      }
+    };
+
+    return () => ws.current.close();
+  }, [roomName]);
+
+  const handleChange = (e) => {
+    setInput(e.target.value);
+
+    // Notify typing
+    ws.current.send(JSON.stringify({
+      type: "typing",
+      username,
+      is_typing: e.target.value.length > 0
+    }));
+  };
+
+  const sendMessage = (e) => {
+    e.preventDefault();
+    if (input.trim() !== "") {
+      ws.current.send(JSON.stringify({
+        type: "chat_message",
+        message: input,
+        username,
+      }));
+      setInput("");
+
+      // Stop typing indicator after send
+      ws.current.send(JSON.stringify({
+        type: "typing",
+        username,
+        is_typing: false
+      }));
+    }
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>Room: {roomName}</h2>
+
+      <div className="mb-3 border p-2" style={{ height: "300px", overflowY: "scroll" }}>
+        {messages.map((msg, i) => (
+          <div key={i}>
+            <strong>{msg.username}:</strong> {msg.text}
+          </div>
+        ))}
+
+        {/* Typing Indicator */}
+        {typingUsers.length > 0 && (
+          <p className="text-muted">
+            {typingUsers.join(", ")} {typingUsers.length > 1 ? "are" : "is"} typing...
+          </p>
+        )}
+      </div>
+
+      <form onSubmit={sendMessage} className="d-flex">
+        <input
+          type="text"
+          value={input}
+          onChange={handleChange}
+          className="form-control me-2"
+          placeholder="Type a message..."
+        />
+        <button className="btn btn-primary">Send</button>
+      </form>
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ 31.3 User Flow
+
+1. User starts typing → React detects input change.
+2. `"typing"` event is sent via WebSocket.
+3. Backend **broadcasts typing state** to all users in the same room.
+4. Other users see `"Alice is typing..."`.
+5. When input is cleared or message sent → `"is_typing": false` is broadcast.
+
+---
+
+# 🎉 Result
+
+* Live **Typing Indicator** works across all chat rooms.
+* Supports **multiple users typing at the same time**.
+* Updates instantly with WebSockets.
+
+---
+
+👉 Next small UX upgrade candidates:
+
+* 👀 **Read Receipts (✓✓ seen)**
+* 📷 **File & Image Attachments**
+* 🔔 **Sound Notification when a new message arrives**
+
+Would you like me to add **Read Receipts (✓✓ seen)** next?
+
+Perfect ✅ — let’s add **Read Receipts (✓✓ seen)** to Jeco Chat.
+
+---
+
+# 👀 Step 32 — Read Receipts
+
+This feature lets users know when their message has been **delivered and read** by others.
+
+---
+
+## ✅ 32.1 Backend — Extend Message Model
+
+We’ll track who has **read** a message.
+
+`backend/chat/models.py`
+
+```python
+class Message(models.Model):
+    chat = models.ForeignKey("ChatRoom", on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_pinned = models.BooleanField(default=False)
+
+    # New field
+    read_by = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="read_messages", blank=True
+    )
+```
+
+Run migration:
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+---
+
+## ✅ 32.2 Update Serializer
+
+`backend/chat/serializers.py`
+
+```python
+class MessageSerializer(serializers.ModelSerializer):
+    sender = UserSerializer(read_only=True)
+    reactions = ReactionSerializer(many=True, read_only=True)
+    read_by = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Message
+        fields = ["id", "chat", "sender", "content", "timestamp", "is_pinned", "reactions", "read_by"]
+
+    def get_read_by(self, obj):
+        return [user.username for user in obj.read_by.all()]
+```
+
+---
+
+## ✅ 32.3 Create API for Marking Messages as Read
+
+`backend/chat/views.py`
+
+```python
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from .models import Message
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def mark_as_read(request, message_id):
+    try:
+        message = Message.objects.get(id=message_id)
+        message.read_by.add(request.user)
+        message.save()
+        return Response({"status": "ok", "read_by": [u.username for u in message.read_by.all()]})
+    except Message.DoesNotExist:
+        return Response({"error": "Message not found"}, status=404)
+```
+
+---
+
+## ✅ 32.4 Add Route
+
+`backend/chat/urls.py`
+
+```python
+from .views import mark_as_read
+
+urlpatterns += [
+    path("messages/<int:message_id>/read/", mark_as_read, name="mark-as-read"),
+]
+```
+
+---
+
+## ✅ 32.5 Frontend — Send Read Receipt When Message Appears
+
+`src/pages/Chat.js`
+
+```jsx
+useEffect(() => {
+  messages.forEach((msg) => {
+    if (!msg.read_by.includes(username)) {
+      fetch(`http://127.0.0.1:8000/api/chat/messages/${msg.id}/read/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+    }
+  });
+}, [messages, username]);
+```
+
+---
+
+## ✅ 32.6 Show Read Receipts in Message Component
+
+`src/components/Message.js`
+
+```jsx
+function Message({ message, currentUser }) {
+  const isMine = message.sender.username === currentUser;
+  const seenBy = message.read_by.filter((u) => u !== currentUser);
+
+  return (
+    <div className={`p-2 ${isMine ? "text-end" : "text-start"}`}>
+      <p>
+        <strong>{message.sender.username}</strong>: {message.content}
+      </p>
+
+      {/* Read Receipt */}
+      {isMine && (
+        <small className="text-muted">
+          {seenBy.length > 0 ? `✓✓ Seen by ${seenBy.join(", ")}` : "✓ Sent"}
+        </small>
+      )}
+    </div>
+  );
+}
+
+export default Message;
+```
+
+---
+
+## ✅ 32.7 User Flow
+
+1. Alice sends a message → status shows **“✓ Sent”**.
+2. Bob opens the chat → frontend auto-calls `/read/` API.
+3. Backend marks Alice’s message as **read by Bob**.
+4. Alice now sees **“✓✓ Seen by Bob”** under her message.
+5. Works for **multiple users** → “✓✓ Seen by Bob, Charlie”.
+
+---
+
+# 🎉 Result
+
+* Messages now update from **✓ Sent** → **✓✓ Seen by \[users]**.
+* Works in **real time** (refresh or with WebSocket update).
+* Each user sees who has read their messages.
+
+---
+
+👉 Next UX polish options:
+
+* 📷 **File & Image Attachments**
+* 🔔 **Sound Notifications for new messages**
+* 🎤 **Voice Notes support**
+
+Do you want me to add **File & Image Attachments** next?
+
+Perfect 📷 — let’s add **File & Image Attachments** to Jeco Chat.
+
+---
+
+# 📎 Step 33 — File & Image Attachments
+
+This lets users send **images, PDFs, and files** in chat messages.
+
+---
+
+## ✅ 33.1 Backend — Extend Message Model
+
+`backend/chat/models.py`
+
+```python
+class Message(models.Model):
+    chat = models.ForeignKey("ChatRoom", on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField(blank=True)  # Text is optional now
+    file = models.FileField(upload_to="chat_files/", blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_pinned = models.BooleanField(default=False)
+    read_by = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="read_messages", blank=True
+    )
+```
+
+Run migrations:
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+---
+
+## ✅ 33.2 Update Serializer
+
+`backend/chat/serializers.py`
+
+```python
+class MessageSerializer(serializers.ModelSerializer):
+    sender = UserSerializer(read_only=True)
+    reactions = ReactionSerializer(many=True, read_only=True)
+    read_by = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Message
+        fields = [
+            "id",
+            "chat",
+            "sender",
+            "content",
+            "file",
+            "timestamp",
+            "is_pinned",
+            "reactions",
+            "read_by",
+        ]
+
+    def get_read_by(self, obj):
+        return [user.username for user in obj.read_by.all()]
+```
+
+---
+
+## ✅ 33.3 Configure Media in Django
+
+`backend/settings.py`
+
+```python
+import os
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+```
+
+`backend/urls.py`
+
+```python
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/chat/", include("chat.urls")),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
+
+---
+
+## ✅ 33.4 Frontend — Add File Upload in Chat
+
+`src/pages/Chat.js`
+
+```jsx
+import { useState, useEffect, useRef } from "react";
+
+function Chat({ roomName, username }) {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [file, setFile] = useState(null);
+
+  const ws = useRef(null);
+
+  useEffect(() => {
+    ws.current = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${roomName}/`);
+    ws.current.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === "chat_message") {
+        setMessages((prev) => [...prev, data.message]);
+      }
+    };
+    return () => ws.current.close();
+  }, [roomName]);
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("chat", roomName);
+    if (input.trim()) formData.append("content", input);
+    if (file) formData.append("file", file);
+
+    const res = await fetch("http://127.0.0.1:8000/api/chat/messages/", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: formData,
+    });
+    const newMsg = await res.json();
+
+    ws.current.send(
+      JSON.stringify({ type: "chat_message", message: newMsg, username })
+    );
+
+    setInput("");
+    setFile(null);
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>Room: {roomName}</h2>
+
+      {/* Messages */}
+      <div className="mb-3 border p-2" style={{ height: "300px", overflowY: "scroll" }}>
+        {messages.map((msg, i) => (
+          <div key={i} className="mb-2">
+            <strong>{msg.sender.username}:</strong>{" "}
+            {msg.content && <span>{msg.content}</span>}
+            {msg.file && (
+              <div>
+                {msg.file.match(/\.(jpeg|jpg|png|gif)$/i) ? (
+                  <img src={msg.file} alt="attachment" width="200" />
+                ) : (
+                  <a href={msg.file} target="_blank" rel="noreferrer">
+                    📎 Download File
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Input */}
+      <form onSubmit={sendMessage} className="d-flex">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="form-control me-2"
+          placeholder="Type a message..."
+        />
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files[0])}
+          className="form-control me-2"
+        />
+        <button className="btn btn-primary">Send</button>
+      </form>
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ 33.5 User Flow
+
+1. User types a message OR selects a file.
+2. Files/images are uploaded via REST API.
+3. WebSocket notifies other users in the room.
+4. Images show **inline**; other files show as **download links**.
+
+---
+
+# 🎉 Result
+
+* Messages can now include **attachments**.
+* Images display directly in chat.
+* PDFs/docs show as **download links**.
+
+---
+
+👉 Next feature candidates:
+
+* 🔔 **Sound Notifications for new messages**
+* 🎤 **Voice Notes support**
+* 👤 **Online/Offline User Status**
+
+Do you want me to add **Sound Notifications** next?
+
+Great — let’s add **🔔 Sound Notifications for New Messages** to Jeco Chat.
+
+---
+
+# 📢 Step 34 — Sound Notifications
+
+This feature plays a short sound whenever a **new message arrives**.
+
+---
+
+## ✅ 34.1 Add Notification Sound File
+
+Place a sound file in your frontend `public/` folder, for example:
+
+```
+frontend/public/notification.mp3
+```
+
+---
+
+## ✅ 34.2 Update Chat Component
+
+`src/pages/Chat.js`
+
+```jsx
+import { useState, useEffect, useRef } from "react";
+
+function Chat({ roomName, username }) {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [file, setFile] = useState(null);
+
+  const ws = useRef(null);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    ws.current = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${roomName}/`);
+
+    ws.current.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+
+      if (data.type === "chat_message") {
+        setMessages((prev) => [...prev, data.message]);
+
+        // 🔔 Play notification sound if the message is NOT from self
+        if (data.message.sender.username !== username && audioRef.current) {
+          audioRef.current.play().catch(() => {
+            console.log("Notification sound blocked until user interacts");
+          });
+        }
+      }
+    };
+
+    return () => ws.current.close();
+  }, [roomName, username]);
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("chat", roomName);
+    if (input.trim()) formData.append("content", input);
+    if (file) formData.append("file", file);
+
+    const res = await fetch("http://127.0.0.1:8000/api/chat/messages/", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: formData,
+    });
+
+    const newMsg = await res.json();
+
+    ws.current.send(
+      JSON.stringify({ type: "chat_message", message: newMsg, username })
+    );
+
+    setInput("");
+    setFile(null);
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>Room: {roomName}</h2>
+
+      {/* 🔔 Hidden audio element */}
+      <audio ref={audioRef} src="/notification.mp3" preload="auto" />
+
+      {/* Messages */}
+      <div className="mb-3 border p-2" style={{ height: "300px", overflowY: "scroll" }}>
+        {messages.map((msg, i) => (
+          <div key={i} className="mb-2">
+            <strong>{msg.sender.username}:</strong>{" "}
+            {msg.content && <span>{msg.content}</span>}
+            {msg.file && (
+              <div>
+                {msg.file.match(/\.(jpeg|jpg|png|gif)$/i) ? (
+                  <img src={msg.file} alt="attachment" width="200" />
+                ) : (
+                  <a href={msg.file} target="_blank" rel="noreferrer">
+                    📎 Download File
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Input */}
+      <form onSubmit={sendMessage} className="d-flex">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="form-control me-2"
+          placeholder="Type a message..."
+        />
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files[0])}
+          className="form-control me-2"
+        />
+        <button className="btn btn-primary">Send</button>
+      </form>
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ 34.3 How It Works
+
+1. Each time a **new message** arrives via WebSocket, the app checks if it was sent by another user.
+2. If yes → it plays `notification.mp3`.
+3. If the browser blocks autoplay (common on first load), the sound will play once the user **interacts with the page** (click or type).
+
+---
+
+# 🎉 Result
+
+* Users now hear a **ping sound** whenever someone sends a new message.
+* Own messages do **not trigger sounds**.
+
+---
+
+👉 Next small UX improvements we can do:
+
+* 🎤 **Voice Notes Support**
+* 👤 **Online/Offline User Status**
+* 🟢 **Typing Indicator**
+
+Would you like me to implement **Voice Notes** next?
+
+Awesome — let’s add **🎤 Voice Notes** to Jeco Chat!
+
+---
+
+# 🎤 Step 35 — Voice Notes Support
+
+This lets users **record and send audio messages** directly in the chat.
+
+---
+
+## ✅ 35.1 Backend — Add Audio Field
+
+Update `backend/chat/models.py`:
+
+```python
+class Message(models.Model):
+    chat = models.ForeignKey("ChatRoom", on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField(blank=True)
+    file = models.FileField(upload_to="chat_files/", blank=True, null=True)
+    audio = models.FileField(upload_to="chat_audio/", blank=True, null=True)  # 🎤 New field
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_pinned = models.BooleanField(default=False)
+    read_by = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="read_messages", blank=True
+    )
+```
+
+Run migrations:
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+---
+
+## ✅ 35.2 Update Serializer
+
+`backend/chat/serializers.py`:
+
+```python
+class MessageSerializer(serializers.ModelSerializer):
+    sender = UserSerializer(read_only=True)
+    reactions = ReactionSerializer(many=True, read_only=True)
+    read_by = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Message
+        fields = [
+            "id",
+            "chat",
+            "sender",
+            "content",
+            "file",
+            "audio",  # 🎤 New field
+            "timestamp",
+            "is_pinned",
+            "reactions",
+            "read_by",
+        ]
+
+    def get_read_by(self, obj):
+        return [user.username for user in obj.read_by.all()]
+```
+
+---
+
+## ✅ 35.3 Frontend — Add Voice Recording
+
+We’ll use the browser’s `MediaRecorder` API.
+
+`src/pages/Chat.js`:
+
+```jsx
+import { useState, useEffect, useRef } from "react";
+
+function Chat({ roomName, username }) {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [file, setFile] = useState(null);
+  const [recording, setRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const audioChunks = useRef([]);
+
+  const ws = useRef(null);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    ws.current = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${roomName}/`);
+
+    ws.current.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+
+      if (data.type === "chat_message") {
+        setMessages((prev) => [...prev, data.message]);
+
+        if (data.message.sender.username !== username && audioRef.current) {
+          audioRef.current.play().catch(() => {});
+        }
+      }
+    };
+
+    return () => ws.current.close();
+  }, [roomName, username]);
+
+  // 🎤 Start Recording
+  const startRecording = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const recorder = new MediaRecorder(stream);
+    setMediaRecorder(recorder);
+
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) {
+        audioChunks.current.push(e.data);
+      }
+    };
+
+    recorder.onstop = async () => {
+      const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
+      audioChunks.current = [];
+
+      const formData = new FormData();
+      formData.append("chat", roomName);
+      formData.append("audio", audioBlob, "voice_note.webm");
+
+      const res = await fetch("http://127.0.0.1:8000/api/chat/messages/", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: formData,
+      });
+
+      const newMsg = await res.json();
+
+      ws.current.send(
+        JSON.stringify({ type: "chat_message", message: newMsg, username })
+      );
+    };
+
+    recorder.start();
+    setRecording(true);
+  };
+
+  // 🎤 Stop Recording
+  const stopRecording = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      setRecording(false);
+    }
+  };
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("chat", roomName);
+    if (input.trim()) formData.append("content", input);
+    if (file) formData.append("file", file);
+
+    const res = await fetch("http://127.0.0.1:8000/api/chat/messages/", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: formData,
+    });
+
+    const newMsg = await res.json();
+
+    ws.current.send(
+      JSON.stringify({ type: "chat_message", message: newMsg, username })
+    );
+
+    setInput("");
+    setFile(null);
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>Room: {roomName}</h2>
+
+      {/* 🔔 Hidden audio element */}
+      <audio ref={audioRef} src="/notification.mp3" preload="auto" />
+
+      {/* Messages */}
+      <div className="mb-3 border p-2" style={{ height: "300px", overflowY: "scroll" }}>
+        {messages.map((msg, i) => (
+          <div key={i} className="mb-2">
+            <strong>{msg.sender.username}:</strong>{" "}
+            {msg.content && <span>{msg.content}</span>}
+            {msg.file && (
+              <div>
+                {msg.file.match(/\.(jpeg|jpg|png|gif)$/i) ? (
+                  <img src={msg.file} alt="attachment" width="200" />
+                ) : (
+                  <a href={msg.file} target="_blank" rel="noreferrer">
+                    📎 Download File
+                  </a>
+                )}
+              </div>
+            )}
+            {msg.audio && (
+              <div>
+                <audio controls src={msg.audio}></audio>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Input + Recording */}
+      <form onSubmit={sendMessage} className="d-flex">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="form-control me-2"
+          placeholder="Type a message..."
+        />
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files[0])}
+          className="form-control me-2"
+        />
+        <button className="btn btn-primary me-2">Send</button>
+
+        {/* 🎤 Record buttons */}
+        {!recording ? (
+          <button
+            type="button"
+            onClick={startRecording}
+            className="btn btn-success"
+          >
+            🎤 Start
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={stopRecording}
+            className="btn btn-danger"
+          >
+            ⏹ Stop
+          </button>
+        )}
+      </form>
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ 35.4 User Flow
+
+1. Click **🎤 Start** to begin recording.
+2. Speak → browser captures voice.
+3. Click **⏹ Stop** → voice note uploads.
+4. Appears in chat as an **audio player**.
+
+---
+
+# 🎉 Result
+
+* Users can now send **voice notes** in chats.
+* Playback is available directly inside the chat window.
+
+---
+
+👉 Next UX improvement candidates:
+
+* 👤 **Online/Offline User Status**
+* 🟢 **Typing Indicator**
+* 🔄 **Message Edit/Delete**
+
+Do you want me to implement **Online/Offline User Status** next?
+
+Perfect 👌 — let’s add **👤 Online/Offline User Status** to Jeco Chat.
+
+---
+
+# 👤 Step 36 — Online/Offline User Status
+
+This feature lets users see **who is currently online** in real time.
+
+---
+
+## ✅ 36.1 Backend — Track Online Users
+
+We’ll use Django Channels’ `connect` and `disconnect` events to manage user presence.
+
+### Update `backend/chat/consumers.py`
+
+```python
+from channels.generic.websocket import AsyncWebsocketConsumer
+import json
+from channels.db import database_sync_to_async
+from django.contrib.auth.models import AnonymousUser
+
+ONLINE_USERS = set()  # simple in-memory store (better: Redis)
+
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+        self.room_group_name = f"chat_{self.room_name}"
+        user = self.scope.get("user")
+
+        # Add user to online list
+        if user and not isinstance(user, AnonymousUser):
+            ONLINE_USERS.add(user.username)
+
+        # Join room group
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.accept()
+
+        # Notify room
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "user_status",
+                "status": "online",
+                "username": user.username if user else "Anonymous",
+            },
+        )
+
+    async def disconnect(self, close_code):
+        user = self.scope.get("user")
+        if user and not isinstance(user, AnonymousUser):
+            ONLINE_USERS.discard(user.username)
+
+        # Leave room
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+        # Notify others
+        if user:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "user_status",
+                    "status": "offline",
+                    "username": user.username,
+                },
+            )
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+
+        if data["type"] == "chat_message":
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "chat_message",
+                    "message": data["message"],
+                },
+            )
+
+    # Handle chat messages
+    async def chat_message(self, event):
+        await self.send(text_data=json.dumps({"type": "chat_message", "message": event["message"]}))
+
+    # Handle user status
+    async def user_status(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "user_status",
+            "username": event["username"],
+            "status": event["status"],
+        }))
+```
+
+---
+
+## ✅ 36.2 Frontend — Display Online Users
+
+Update `src/pages/Chat.js`:
+
+```jsx
+import { useState, useEffect, useRef } from "react";
+
+function Chat({ roomName, username }) {
+  const [messages, setMessages] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [input, setInput] = useState("");
+  const [file, setFile] = useState(null);
+
+  const ws = useRef(null);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    ws.current = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${roomName}/`);
+
+    ws.current.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+
+      if (data.type === "chat_message") {
+        setMessages((prev) => [...prev, data.message]);
+      }
+
+      if (data.type === "user_status") {
+        setOnlineUsers((prev) => {
+          if (data.status === "online") {
+            return [...new Set([...prev, data.username])];
+          } else {
+            return prev.filter((u) => u !== data.username);
+          }
+        });
+      }
+    };
+
+    return () => ws.current.close();
+  }, [roomName]);
+
+  return (
+    <div className="container mt-4">
+      <h2>Room: {roomName}</h2>
+
+      {/* 👤 Online Users */}
+      <div className="mb-3">
+        <strong>Online Users:</strong>{" "}
+        {onlineUsers.length > 0 ? onlineUsers.join(", ") : "No one online"}
+      </div>
+
+      {/* Messages */}
+      <div className="mb-3 border p-2" style={{ height: "300px", overflowY: "scroll" }}>
+        {messages.map((msg, i) => (
+          <div key={i} className="mb-2">
+            <strong>{msg.sender?.username || "Unknown"}:</strong>{" "}
+            {msg.content}
+          </div>
+        ))}
+      </div>
+
+      {/* Input */}
+      <form className="d-flex">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="form-control me-2"
+          placeholder="Type a message..."
+        />
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files[0])}
+          className="form-control me-2"
+        />
+        <button className="btn btn-primary">Send</button>
+      </form>
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ 36.3 User Flow
+
+1. When a user connects via WebSocket → server marks them **online**.
+2. When they leave/close browser → server marks them **offline**.
+3. Online users are displayed at the **top of the chat window**.
+
+---
+
+# 🎉 Result
+
+* Each room now shows **who is online** in real-time.
+* User list updates instantly when people join or leave.
+
+---
+
+👉 Next UX improvements:
+
+* 🟢 **Typing Indicator**
+* 🔄 **Message Edit/Delete**
+* 📌 **Pinned Messages UI improvements**
+
+Do you want me to add the **Typing Indicator** next?
+
+Excellent choice 👍 — let’s add **🔄 Message Edit & Delete** to Jeco Chat.
+
+---
+
+# 🔄 Step 37 — Message Edit & Delete
+
+This feature allows users to **edit or delete their own messages** in chat.
+
+---
+
+## ✅ 37.1 Backend — Add Permissions for Edit/Delete
+
+Update `backend/chat/views.py`:
+
+```python
+from rest_framework import viewsets, permissions
+from .models import Message
+from .serializers import MessageSerializer
+
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Only message owners can edit/delete.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.sender == request.user
+
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all().order_by("timestamp")
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(sender=self.request.user)
+```
+
+---
+
+## ✅ 37.2 Backend — Add Endpoints
+
+`backend/chat/urls.py`:
+
+```python
+from rest_framework.routers import DefaultRouter
+from .views import MessageViewSet
+
+router = DefaultRouter()
+router.register(r"messages", MessageViewSet, basename="message")
+
+urlpatterns = router.urls
+```
+
+Now REST API supports:
+
+* `PATCH /api/chat/messages/<id>/` → Edit message
+* `DELETE /api/chat/messages/<id>/` → Delete message
+
+---
+
+## ✅ 37.3 Frontend — Add Edit & Delete Buttons
+
+Update `src/pages/Chat.js`:
+
+```jsx
+import { useState, useEffect, useRef } from "react";
+
+function Chat({ roomName, username }) {
+  const [messages, setMessages] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editContent, setEditContent] = useState("");
+
+  const ws = useRef(null);
+
+  useEffect(() => {
+    ws.current = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${roomName}/`);
+
+    ws.current.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+
+      if (data.type === "chat_message") {
+        setMessages((prev) => [...prev, data.message]);
+      }
+    };
+
+    return () => ws.current.close();
+  }, [roomName]);
+
+  // 📝 Edit Message
+  const handleEdit = async (id) => {
+    const res = await fetch(`http://127.0.0.1:8000/api/chat/messages/${id}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({ content: editContent }),
+    });
+    const updated = await res.json();
+
+    setMessages((prev) =>
+      prev.map((msg) => (msg.id === id ? { ...msg, content: updated.content } : msg))
+    );
+    setEditingId(null);
+    setEditContent("");
+  };
+
+  // 🗑️ Delete Message
+  const handleDelete = async (id) => {
+    await fetch(`http://127.0.0.1:8000/api/chat/messages/${id}/`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    setMessages((prev) => prev.filter((msg) => msg.id !== id));
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>Room: {roomName}</h2>
+
+      {/* Messages */}
+      <div className="mb-3 border p-2" style={{ height: "300px", overflowY: "scroll" }}>
+        {messages.map((msg) => (
+          <div key={msg.id} className="mb-2">
+            <strong>{msg.sender?.username || "Unknown"}:</strong>{" "}
+
+            {editingId === msg.id ? (
+              <>
+                <input
+                  type="text"
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  className="form-control d-inline-block w-50"
+                />
+                <button
+                  className="btn btn-sm btn-success ms-2"
+                  onClick={() => handleEdit(msg.id)}
+                >
+                  ✅ Save
+                </button>
+                <button
+                  className="btn btn-sm btn-secondary ms-2"
+                  onClick={() => setEditingId(null)}
+                >
+                  ❌ Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <span>{msg.content}</span>
+                {msg.sender?.username === username && (
+                  <>
+                    <button
+                      className="btn btn-sm btn-warning ms-2"
+                      onClick={() => {
+                        setEditingId(msg.id);
+                        setEditContent(msg.content);
+                      }}
+                    >
+                      ✏️ Edit
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger ms-2"
+                      onClick={() => handleDelete(msg.id)}
+                    >
+                      🗑️ Delete
+                    </button>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ 37.4 User Flow
+
+1. Each user sees **Edit ✏️** and **Delete 🗑️** on their own messages.
+2. Edit → input box appears → update message → auto-refresh in chat.
+3. Delete → removes message for everyone.
+
+---
+
+# 🎉 Result
+
+* Users can now **edit or delete their own messages**.
+* UI updates instantly after changes.
+
+---
+
+👉 Next possible UX features:
+
+* 🟢 **Typing Indicator**
+* 📌 **Pinned Messages UI improvements**
+* 🔍 **Advanced Search (by date/user)**
+
+Would you like me to do the **Typing Indicator** next?
+
+Ah 🔎 you are 100% right — thank you for catching that!
+We had already advanced through the **30s** and left off at:
+
+✅ **37.4 User Flow**
+
+So the **next section should not restart at 28**, but rather **continue from 38**.
+
+Let’s fix that and place the **Security & Scalability** steps correctly in sequence:
+
+---
+
+# 🛡️ Security & Scalability (continuing numbering)
+
+### 38. Enforce HTTPS (Force SSL)
+
+We already enabled **Let’s Encrypt SSL**. Now, let’s force **all traffic** to go through HTTPS.
+
+1. Open your Nginx config:
+
+   ```bash
+   sudo nano /etc/nginx/sites-available/jeco
+   ```
+
+2. Add this block at the top:
+
+   ```nginx
+   server {
+       listen 80;
+       server_name your-domain.com;
+       return 301 https://$host$request_uri;
+   }
+   ```
+
+3. Save and restart Nginx:
+
+   ```bash
+   sudo systemctl restart nginx
+   ```
+
+✅ Now anyone visiting `http://your-domain.com` will be **redirected to HTTPS**.
+
+---
+
+### 38.1. Rate Limiting on Login Attempts
+
+To prevent brute-force attacks, let’s add **rate limiting** with `django-axes`.
+
+1. Install:
+
+   ```bash
+   pip install django-axes
+   ```
+
+2. Update `settings.py`:
+
+   ```python
+   INSTALLED_APPS += ['axes']
+
+   MIDDLEWARE = [
+       'axes.middleware.AxesMiddleware',
+       *MIDDLEWARE,
+   ]
+
+   AUTHENTICATION_BACKENDS = [
+       'axes.backends.AxesBackend',
+       'django.contrib.auth.backends.ModelBackend',
+   ]
+
+   # Config
+   AXES_FAILURE_LIMIT = 5      # Lock after 5 failed attempts
+   AXES_COOLOFF_TIME = 1       # Lockout for 1 hour
+   ```
+
+3. Apply migrations:
+
+   ```bash
+   python manage.py migrate
+   ```
+
+✅ Now a user is **locked out after 5 failed login attempts** for **1 hour**.
+
+---
+
+### 38.2. Store Media Files on S3/Cloud Storage
+
+Instead of keeping uploaded files in `/media/`, let’s use **Amazon S3** (or DigitalOcean Spaces, GCP, etc.).
+
+1. Install dependencies:
+
+   ```bash
+   pip install boto3 django-storages
+   ```
+
+2. Update `settings.py`:
+
+   ```python
+   INSTALLED_APPS += ['storages']
+
+   # AWS S3 Config
+   AWS_ACCESS_KEY_ID = "your-access-key"
+   AWS_SECRET_ACCESS_KEY = "your-secret-key"
+   AWS_STORAGE_BUCKET_NAME = "jeco-chat-media"
+   AWS_S3_REGION_NAME = "us-east-1"
+   AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+   DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+   ```
+
+3. Test upload by creating a new profile picture or sending a file in chat.
+
+✅ Uploaded files are now stored on **S3** instead of your server.
+
+---
+
+⚡ So now we are correctly at **Step 38 → Security & Scalability**.
+
+Would you like me to proceed with **Step 39: Redis caching + Celery task queue for background jobs** (sending emails, notifications, media processing) — or should I expand **38.3** with more advanced security (like JWT refresh tokens & CORS hardening)?
+
+Great — I’ll expand **Step 38.3** with practical, production-ready security hardening: **JWT refresh token handling**, **CORS hardening**, and related best-practices (secure cookies, HSTS, CSP, CSRF, secure storage of secrets, signed S3 URLs). I’ll keep the numbering continuing from **38.3** and provide concrete `settings.py` snippets, commands, and explanations so you can drop these into your project.
+
+---
+
+### 38.3 Advanced Security: JWT Refresh Tokens & CORS Hardening
+
+#### 38.3.1 Summary of goals
+
+* Use **short-lived access tokens** + **controlled refresh tokens** (rotate & blacklist refresh tokens).
+* Store tokens **safely** (prefer HttpOnly, Secure cookies for refresh tokens where applicable).
+* Harden **CORS** so only your frontends can access the API.
+* Enforce secure transport (HTTPS) and HTTP security headers (HSTS, X-Frame, XSS, CSP).
+* Protect CSRF where appropriate.
+* Manage secrets via **environment variables**.
+* Serve media via **signed URLs** (S3) so private files are protected.
+
+---
+
+#### 38.3.2 Django REST Framework SimpleJWT — secure configuration
+
+Add/ensure `djangorestframework-simplejwt` and token blacklist are installed:
+
+```bash
+pip install djangorestframework-simplejwt djangorestframework-simplejwt[crypto] django-redis
+pip install djangorestframework-simplejwt-token-blacklist  # if using older approach; not required with modern simplejwt
+```
+
+**settings.py** — example recommended settings (replace placeholders):
+
+```python
+from datetime import timedelta
+import os
+
+# load from env
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "replace-me")
+DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "yourdomain.com").split(",")
+
+INSTALLED_APPS += [
+    "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
+    # ...
+]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    # other DRF settings...
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),            # short-lived access tokens
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),              # refresh token lifetime
+    "ROTATE_REFRESH_TOKENS": True,                            # rotate refresh tokens on use
+    "BLACKLIST_AFTER_ROTATION": True,                         # blacklist old refresh tokens
+    "UPDATE_LAST_LOGIN": True,
+    "ALGORITHM": "HS256",
+    # optionally use asymmetric keys (RS256) in production for better security
+    # "SIGNING_KEY": os.environ.get("JWT_SIGNING_KEY"),
+    # "VERIFYING_KEY": os.environ.get("JWT_VERIFYING_KEY"),
+}
+```
+
+**Why**:
+
+* Short access token lifetime limits window for stolen access tokens.
+* `ROTATE_REFRESH_TOKENS=True` issues a new refresh token on use and blacklists the old one (prevents reuse).
+* `BLACKLIST_AFTER_ROTATION=True` ensures old refresh tokens cannot be replayed.
+
+**Important**: Add migrations for blacklist app:
+
+```bash
+python manage.py migrate
+```
+
+---
+
+#### 38.3.3 Refresh token handling strategies (frontend & backend)
+
+You have two main safe designs:
+
+A. **Store refresh token in HttpOnly, Secure cookie** (recommended for web apps):
+
+* Refresh tokens are sent automatically via cookie to a `/token/refresh/` endpoint.
+* Prevents JavaScript from stealing refresh tokens via XSS.
+* Backend endpoint must read refresh cookie and return a new access token (and if rotating, set a new refresh cookie).
+* Use CSRF protection (cookie vs header) for stateful refresh flows.
+
+B. **Store refresh token in memory or secure storage and use localStorage cautiously**:
+
+* If using `localStorage`, accept XSS risk; mitigate with CSP and strong XSS protections.
+* If using localStorage, ensure short access token life + rotation + blacklisting.
+
+**Cookie flow example** (recommended):
+
+* When user logs in:
+
+  * Backend returns an access token in response body (short-lived).
+  * Backend sets a HttpOnly, Secure cookie `refresh_token` (SameSite=Strict or Lax).
+* When access token expires:
+
+  * Frontend calls `/api/token/refresh/` (no body needed) — browser will send cookie.
+  * Backend validates cookie, rotates refresh token, returns new access token and sets new refresh cookie.
+
+**Django example for setting cookie on login**:
+
+```python
+# views.py (on successful login)
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings
+from django.http import JsonResponse
+
+def set_refresh_cookie(response, refresh_token_str):
+    # set a secure HttpOnly cookie
+    response.set_cookie(
+        key='refresh_token',
+        value=refresh_token_str,
+        httponly=True,
+        secure=True,
+        samesite='Lax',   # or 'Strict' if you don't need cross-site
+        max_age=7*24*3600
+    )
+
+# in your login view
+refresh = RefreshToken.for_user(user)
+resp = JsonResponse({"access": str(refresh.access_token)})
+set_refresh_cookie(resp, str(refresh))
+return resp
+```
+
+**Refresh endpoint example reading cookie**:
+
+```python
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+
+class CookieTokenRefreshView(APIView):
+    permission_classes = []  # allow any (but cookie required)
+
+    def post(self, request):
+        token = request.COOKIES.get("refresh_token")
+        if not token:
+            return Response({"error": "No refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
+        try:
+            refresh = RefreshToken(token)
+            new_access = str(refresh.access_token)
+            # rotate refresh token
+            if settings.SIMPLE_JWT.get("ROTATE_REFRESH_TOKENS"):
+                new_refresh = refresh.rotate()
+                response = Response({"access": new_access})
+                response.set_cookie(
+                    "refresh_token", str(new_refresh),
+                    httponly=True, secure=True, samesite="Lax",
+                    max_age=int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds())
+                )
+                return response
+            return Response({"access": new_access})
+        except TokenError:
+            return Response({"error": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
+```
+
+**Notes**:
+
+* If you use cookies, enable CSRF protection and coordinate usage (for refresh endpoints some choose to exempt CSRF because cookie contains secret; evaluate for your security model).
+* If you choose not to use cookies, ensure rotation + blacklist + short access life + CSP/XSS protections.
+
+---
+
+#### 38.3.4 Blacklisting refresh tokens on logout
+
+We already implemented logout that blacklists refresh tokens — ensure you accept refresh token (from cookie or client) and blacklist:
+
+```python
+from rest_framework_simplejwt.tokens import RefreshToken
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token") or request.data.get("refresh")
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        except Exception:
+            pass
+        # clear cookie if used
+        response = Response({"detail": "logout successful"})
+        response.delete_cookie("refresh_token")
+        return response
+```
+
+---
+
+#### 38.3.5 CORS hardening (django-cors-headers)
+
+Install and configure `django-cors-headers`:
+
+```bash
+pip install django-cors-headers
+```
+
+Add to `settings.py`:
+
+```python
+INSTALLED_APPS += ["corsheaders"]
+
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    # ... other middleware (put CorsMiddleware high up)
+    "django.middleware.common.CommonMiddleware",
+    # ...
+]
+
+# Only allow your trusted frontends
+CORS_ALLOWED_ORIGINS = [
+    "https://app.yourdomain.com",
+    "https://admin.yourdomain.com",
+]
+
+# If you use cookies for auth (HttpOnly refresh cookie), allow credentials:
+CORS_ALLOW_CREDENTIALS = True
+
+# Optionally restrict allowed methods/headers:
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+    "x-csrftoken",
+    # other headers...
+]
+```
+
+**Why**:
+
+* Avoid wildcard `*` in production — only explicitly list known origins.
+* `CORS_ALLOW_CREDENTIALS = True` lets browser send cookies with cross-site requests; only enable if you trust origins.
+
+---
+
+#### 38.3.6 CSRF protection
+
+* Keep Django’s `CsrfViewMiddleware` enabled (default).
+* If you use cookie-based refresh tokens and call refresh via POST, ensure CSRF token is validated or explicitly secure the endpoint.
+
+**Frontend**:
+
+* When using session cookies / CSRF, fetch CSRF token from cookie and send it in `X-CSRFToken` header for POST/PUT/DELETE.
+
+**Django settings** (example):
+
+```python
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = "Lax"
+```
+
+---
+
+#### 38.3.7 Security HTTP headers (HSTS, X-Frame, XSS, CSP)
+
+Add to `settings.py`:
+
+```python
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "no-referrer-when-downgrade"
+
+# cookies
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False  # keep false if you need JS access to set token; usually false
+```
+
+**Content Security Policy (CSP)**:
+Install `django-csp`:
+
+```bash
+pip install django-csp
+```
+
+Add to settings:
+
+```python
+INSTALLED_APPS += ["csp"]
+MIDDLEWARE = ["csp.middleware.CSPMiddleware", *MIDDLEWARE]
+
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "https://cdnjs.cloudflare.com")  # add 3rd-party domains you trust
+CSP_IMG_SRC = ("'self'", "data:", "https://your-s3-bucket.s3.amazonaws.com")
+# etc.
+```
+
+**Why**:
+
+* CSP reduces XSS injection surface by restricting where scripts/images/styles can be loaded from.
+
+---
+
+#### 38.3.8 Rate limiting & brute-force protection recap
+
+We added `django-axes` earlier. Additional protections:
+
+* Use **fail2ban** on server to block repeated bad requests.
+* Use Cloud provider WAF (Cloudflare, AWS WAF) to block malicious patterns.
+* Consider `django-ratelimit` for per-IP/per-endpoint throttling:
+
+```bash
+pip install django-ratelimit
+```
+
+Example: throttle login view:
+
+```python
+from ratelimit.decorators import ratelimit
+
+@ratelimit(key='ip', rate='10/m', block=True)
+def login_view(...):
+    ...
+```
+
+---
+
+#### 38.3.9 Secrets management & environment configuration
+
+Never commit secrets to repo. Use environment variables and tools:
+
+* Use `.env` + `django-environ` locally, or cloud provider secret manager in production (AWS Secrets Manager, GCP Secret Manager, Azure KeyVault).
+* Example env var placeholders in `.env`:
+
+```
+DJANGO_SECRET_KEY=[YOUR_SECRET_KEY]
+DB_NAME=jeco_chat_db
+DB_USER=jeco_user
+DB_PASSWORD=[DB_PASSWORD]
+AWS_ACCESS_KEY_ID=[AWS_KEY]
+AWS_SECRET_ACCESS_KEY=[AWS_SECRET]
+S3_BUCKET=jeco-chat-media
+DJANGO_ALLOWED_HOSTS=app.yourdomain.com
+```
+
+Load with `django-environ`:
+
+```python
+import environ
+env = environ.Env()
+environ.Env.read_env()
+SECRET_KEY = env("DJANGO_SECRET_KEY")
+```
+
+---
+
+#### 38.3.10 S3 signed URLs for private media (protect private files)
+
+If some files are private, don’t expose S3 public URLs. Instead generate **pre-signed URLs** that expire.
+
+Example using `boto3`:
+
+```python
+import boto3
+from django.conf import settings
+
+s3 = boto3.client('s3',
+    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    region_name=settings.AWS_S3_REGION_NAME,
+)
+
+def get_presigned_url(key, expires_in=3600):
+    return s3.generate_presigned_url(
+        'get_object',
+        Params={'Bucket': settings.AWS_STORAGE_BUCKET_NAME, 'Key': key},
+        ExpiresIn=expires_in
+    )
+```
+
+Use a small API endpoint `/api/media-url/?key=...` which verifies the requesting user has permission to the file, then returns the signed URL.
+
+---
+
+#### 38.3.11 CORS + CSP testing checklist
+
+* Verify `CORS_ALLOWED_ORIGINS` includes only your production domains.
+* Verify `SECURE_SSL_REDIRECT=True` and Nginx enforces HTTPS.
+* Test CSP in report-only mode first to fix allowed sources:
+
+```python
+CSP_REPORT_ONLY = True
+CSP_REPORT_URI = "/csp-report-endpoint/"
+```
+
+---
+
+#### 38.3.12 Monitoring & alerting (recommended)
+
+* Add logging (Sentry) for exceptions and security events.
+* Monitor failed logins and unusual activity.
+* Example Sentry integration:
+
+```bash
+pip install sentry-sdk
+```
+
+```python
+import sentry_sdk
+sentry_sdk.init(dsn=os.environ.get("SENTRY_DSN"))
+```
+
+---
+
+### 38.3.13 Quick checklist to implement now (copy/paste)
+
+1. Add `SIMPLE_JWT` settings with rotation + blacklist (see 38.3.2).
+2. Implement cookie-based refresh token flow (recommended) or ensure rotation + blacklist if storing tokens client-side.
+3. Configure `django-cors-headers` with `CORS_ALLOWED_ORIGINS` and `CORS_ALLOW_CREDENTIALS = True` if using cookies.
+4. Enable `SECURE_SSL_REDIRECT`, `SECURE_HSTS_SECONDS`, `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`.
+5. Install & configure `django-csp` for CSP, and test in `REPORT_ONLY` mode first.
+6. Use `django-axes` + `django-ratelimit` for brute-force protection + endpoint throttling.
+7. Use env vars / secret manager for keys and DB passwords.
+8. Move media to S3 and use **signed URLs** for private objects.
+9. Add Sentry / monitoring for security events.
+
+---
+
+### 38.3.14 Example `settings.py` snippet (combined)
+
+```python
+# security & jwt snippet
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+
+INSTALLED_APPS += [
+    "corsheaders",
+    "rest_framework_simplejwt.token_blacklist",
+    "axes",
+    "csp",
+]
+
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "csp.middleware.CSPMiddleware",
+    "axes.middleware.AxesMiddleware",
+    # ... rest
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://app.yourdomain.com",
+]
+CORS_ALLOW_CREDENTIALS = True
+
+# JWT
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+}
+
+# CSP example
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "https://cdnjs.cloudflare.com")
+CSP_IMG_SRC = ("'self'", "data:", "https://your-s3-bucket.s3.amazonaws.com")
+```
+
+---
+
+## 38.3.15 Final notes & next recommended steps
+
+* **Test**: exercise login->refresh->logout cycle, verify refresh tokens rotated and blacklisted on logout.
+* **Pen-test basics**: scan for XSS, CSRF, and open S3 buckets.
+* **Automate**: Put secrets in environment or secret manager and automate deployments (CI/CD).
+* **Scale**: add Redis for Channels and caching; move longer-running tasks to Celery (email sending, media processing).
+
+---
+
+If you’d like, I can:
+
+* Provide the **exact cookie-based refresh token views** and frontend refresh logic for React (no-JS access to refresh token), or
+* Produce an **example Nginx + Django config** that complements cookie usage and CSRF setup,
+* Or generate an actionable **checklist & test plan** for QA (manual steps to verify JWT rotation, blacklist, CORS, CSP, S3 limits).
+
+Which of the three would you like next?
+
+Perfect 👍 Let’s move on with the **next major step** in our walkthrough:
+
+---
+
+# ⚡ Performance & Background Tasks
+
+### 39. Redis Caching + Celery Task Queue for Background Jobs
+
+Up to now, everything in **Jeco Chat** runs **synchronously** inside Django.
+That means if you send an email, process a file, or send push notifications → the request will **pause until it’s done**.
+
+To fix this and improve **speed + scalability**, we add:
+
+* **Redis** → as a fast in-memory store.
+* **Celery** → as a task queue to run jobs in the background.
+
+---
+
+#### 39.1. Install Redis
+
+On Ubuntu server:
+
+```bash
+sudo apt update
+sudo apt install redis-server -y
+```
+
+Verify it’s running:
+
+```bash
+redis-cli ping
+```
+
+You should see:
+
+```
+PONG
+```
+
+---
+
+#### 39.2. Install Celery & Redis Client in Django
+
+From your backend virtualenv:
+
+```bash
+pip install celery redis
+```
+
+---
+
+#### 39.3. Configure Celery in Django
+
+Inside your `backend/` folder (where `settings.py` lives):
+
+1. Create a file **celery.py**
+
+   ```python
+   from __future__ import absolute_import, unicode_literals
+   import os
+   from celery import Celery
+
+   # Set default Django settings
+   os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+
+   app = Celery('backend')
+
+   # Load settings from Django
+   app.config_from_object('django.conf:settings', namespace='CELERY')
+
+   # Auto-discover tasks.py files in apps
+   app.autodiscover_tasks()
+   ```
+
+2. Update **backend/**init**.py** to load Celery automatically:
+
+   ```python
+   from __future__ import absolute_import, unicode_literals
+   from .celery import app as celery_app
+
+   __all__ = ('celery_app',)
+   ```
+
+3. Update **settings.py** with Redis as the broker:
+
+   ```python
+   CELERY_BROKER_URL = 'redis://localhost:6379/0'
+   CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+   CELERY_ACCEPT_CONTENT = ['json']
+   CELERY_TASK_SERIALIZER = 'json'
+   CELERY_RESULT_SERIALIZER = 'json'
+   ```
+
+---
+
+#### 39.4. Create a Background Task
+
+In any Django app (e.g., `chat/`), create a **tasks.py** file:
+
+```python
+from celery import shared_task
+from django.core.mail import send_mail
+
+@shared_task
+def send_welcome_email(user_email):
+    send_mail(
+        'Welcome to Jeco Chat!',
+        'Thanks for joining our community 🚀',
+        'noreply@jeco.com',
+        [user_email],
+        fail_silently=False,
+    )
+```
+
+---
+
+#### 39.5. Run Celery Workers
+
+In **one terminal** (from backend folder):
+
+```bash
+celery -A backend worker -l info
+```
+
+In **another terminal**, run the Django server as usual:
+
+```bash
+python manage.py runserver
+```
+
+Now whenever a user signs up, you can call:
+
+```python
+send_welcome_email.delay(user.email)
+```
+
+✅ This sends the email **in the background** without blocking the request.
+
+---
+
+#### 39.6. Extend Tasks for Jeco Chat
+
+You can now use Celery for:
+
+* 📩 **Emails** → welcome emails, password reset, notifications.
+* 🔔 **Push Notifications** → when a new message arrives.
+* 🖼️ **Media Processing** → compress images, transcode voice notes.
+* 📊 **Analytics Jobs** → daily/weekly usage reports.
+
+---
+
+👉 With **Step 39 complete**, Jeco Chat is now:
+
+* **Faster** (long tasks moved to background).
+* **Scalable** (Redis handles queueing).
+* **Production-ready for high traffic** 🚀.
+
+---
+
+Do you want me to continue with **Step 40: Dockerizing Jeco Chat (Backend + Frontend + Redis + PostgreSQL)** so deployment becomes super easy?
+
+Great 🚀 let’s continue with the next big step.
+
+---
+
+# 🐳 Step 40: Dockerizing Jeco Chat (Backend + Frontend + Redis + PostgreSQL)
+
+So far, we’ve been installing everything manually on the server.
+That works, but it’s **hard to maintain** and **error-prone**.
+
+👉 By using **Docker**, we can package:
+
+* Backend (Django + DRF + Channels)
+* Frontend (React + Bootstrap)
+* PostgreSQL database
+* Redis (for Celery + Channels)
+
+…all into containers that work everywhere.
+
+---
+
+### 40.1. Install Docker & Docker Compose
+
+On Ubuntu:
+
+```bash
+sudo apt update
+sudo apt install docker.io docker-compose -y
+```
+
+Verify installation:
+
+```bash
+docker --version
+docker-compose --version
+```
+
+---
+
+### 40.2. Create Project Dockerfile (Backend)
+
+Inside `backend/`, create a file **Dockerfile**:
+
+```dockerfile
+# Backend Dockerfile
+FROM python:3.10-slim
+
+# Set work dir
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code
+COPY . /app/
+
+# Expose Django port
+EXPOSE 8000
+
+# Run server
+CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
+```
+
+---
+
+### 40.3. Create Project Dockerfile (Frontend)
+
+Inside `frontend/`, create a file **Dockerfile**:
+
+```dockerfile
+# Frontend Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json /app/
+RUN npm install
+
+# Copy code
+COPY . /app/
+
+# Build production bundle
+RUN npm run build
+
+# Serve with nginx
+FROM nginx:alpine
+COPY --from=0 /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+---
+
+### 40.4. Create docker-compose.yml (Root Project Folder)
+
+In the root folder, create **docker-compose.yml**:
+
+```yaml
+version: '3.9'
+
+services:
+  backend:
+    build: ./backend
+    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+      - redis
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: jeco_chat
+      POSTGRES_USER: jeco_user
+      POSTGRES_PASSWORD: jeco_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: ./backend
+    command: celery -A backend worker -l info
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - db
+
+volumes:
+  postgres_data:
+```
+
+---
+
+### 40.5. Environment Variables
+
+Inside `backend/`, create **.env**:
+
+```env
+SECRET_KEY=your-secret-key
+DEBUG=0
+ALLOWED_HOSTS=*
+
+POSTGRES_DB=jeco_chat
+POSTGRES_USER=jeco_user
+POSTGRES_PASSWORD=jeco_pass
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
+```
+
+---
+
+### 40.6. Build & Run with Docker
+
+From the root folder:
+
+```bash
+docker-compose build
+docker-compose up -d
+```
+
+Check containers:
+
+```bash
+docker ps
+```
+
+---
+
+### 40.7. Access App
+
+* Backend API → `http://localhost:8000`
+* Frontend React → `http://localhost:3000`
+* PostgreSQL → on port `5432`
+* Redis → on port `6379`
+
+---
+
+✅ Now Jeco Chat is fully **containerized**.
+
+* Easier to deploy to **AWS, DigitalOcean, or GCP**.
+* No “works on my machine” problems.
+* Scales easily by adding more containers.
+
+---
+
+👉 Do you want me to continue with **Step 41: CI/CD (GitHub Actions to auto-deploy Jeco Chat to your server/cloud)**?
+
+Good question 👍 — let’s document **all API endpoints** for **Jeco Chat** as they stand now.
+I’ll organize them by feature (Auth, Users, Chat, Groups, Messages, Notifications).
+
+---
+
+# 📡 Jeco Chat API Endpoints
+
+### 🔑 1. Authentication
+
+| Method | Endpoint                   | Description                    | Request Body (Example)                                                                       | Response (Example)                                                                                  |
+| ------ | -------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `POST` | `/api/auth/register/`      | Register new user              | `json { "username": "festus", "email": "festus@example.com", "password": "mypassword123" } ` | `json { "id": 1, "username": "festus", "email": "festus@example.com", "token": "jwt.token.here" } ` |
+| `POST` | `/api/auth/login/`         | Login user                     | `json { "username": "festus", "password": "mypassword123" } `                                | `json { "token": "jwt.token.here", "user": { "id": 1, "username": "festus" } } `                    |
+| `POST` | `/api/auth/logout/`        | Logout user (invalidate token) | `{}`                                                                                         | `{ "message": "Logged out successfully" }`                                                          |
+| `POST` | `/api/auth/token/refresh/` | Refresh JWT token              | `json { "refresh": "refresh.token.here" } `                                                  | `json { "access": "new.jwt.token" } `                                                               |
+
+---
+
+### 👤 2. User Profiles
+
+| Method | Endpoint          | Description               | Request Body                                    | Response                                                                                                             |
+| ------ | ----------------- | ------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `GET`  | `/api/users/`     | List all users            | -                                               | `json [ { "id":1,"username":"festus","online":true } ] `                                                             |
+| `GET`  | `/api/users/:id/` | Get specific user profile | -                                               | `json { "id":1,"username":"festus","email":"festus@example.com","bio":"Hello world","avatar":"/media/avatar.jpg" } ` |
+| `PUT`  | `/api/users/:id/` | Update profile            | `json { "bio":"New bio","avatar":"file.png" } ` | `json { "id":1,"username":"festus","bio":"New bio" } `                                                               |
+
+---
+
+### 💬 3. Direct Messages
+
+| Method   | Endpoint                         | Description                | Request Body                           | Response                                                                                           |
+| -------- | -------------------------------- | -------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `GET`    | `/api/messages/direct/:user_id/` | Get chat history with user | -                                      | `json [ { "id":10,"sender":1,"receiver":2,"content":"Hello!","timestamp":"2025-09-03T12:30Z" } ] ` |
+| `POST`   | `/api/messages/direct/:user_id/` | Send a direct message      | `json { "content":"Hi there!" } `      | `json { "id":11,"sender":1,"receiver":2,"content":"Hi there!" } `                                  |
+| `PUT`    | `/api/messages/:id/`             | Edit a message             | `json { "content":"Edited message" } ` | `json { "id":11,"content":"Edited message" } `                                                     |
+| `DELETE` | `/api/messages/:id/`             | Delete a message           | -                                      | `{ "message":"Deleted" }`                                                                          |
+
+---
+
+### 👥 4. Group Chats
+
+| Method | Endpoint                    | Description            | Request Body                                 | Response                                                    |
+| ------ | --------------------------- | ---------------------- | -------------------------------------------- | ----------------------------------------------------------- |
+| `GET`  | `/api/groups/`              | List all groups        | -                                            | `json [ { "id":1,"name":"Family","members":[1,2,3] } ] `    |
+| `POST` | `/api/groups/`              | Create new group       | `json { "name":"Friends","members":[1,2] } ` | `json { "id":2,"name":"Friends" } `                         |
+| `GET`  | `/api/groups/:id/`          | Get group details      | -                                            | `json { "id":2,"name":"Friends","members":[1,2] } `         |
+| `POST` | `/api/groups/:id/messages/` | Send group message     | `json { "content":"Hello group!" } `         | `json { "id":50,"group":2,"content":"Hello group!" } `      |
+| `GET`  | `/api/groups/:id/messages/` | Get group chat history | -                                            | `json [ { "id":50,"content":"Hello group!","sender":1 } ] ` |
+
+---
+
+### 📎 5. File & Media Sharing
+
+| Method | Endpoint                    | Description                  | Request Body                             | Response                                                 |
+| ------ | --------------------------- | ---------------------------- | ---------------------------------------- | -------------------------------------------------------- |
+| `POST` | `/api/messages/:id/upload/` | Upload file/image/voice note | `multipart/form-data { "file": <file> }` | `json { "id":60,"file_url":"/media/uploads/file.jpg" } ` |
+
+---
+
+### 🔔 6. Notifications & Presence
+
+| Method | Endpoint                       | Description                        | Request Body | Response                                                                               |
+| ------ | ------------------------------ | ---------------------------------- | ------------ | -------------------------------------------------------------------------------------- |
+| `GET`  | `/api/notifications/`          | List notifications                 | -            | `json [ { "id":1,"type":"message","content":"New message from Jane","read":false } ] ` |
+| `POST` | `/api/notifications/:id/read/` | Mark as read                       | -            | `{ "message":"Notification marked as read" }`                                          |
+| `GET`  | `/api/status/`                 | Online/Offline status of all users | -            | `json [ { "id":1,"username":"festus","online":true } ] `                               |
+
+---
+
+### 🔍 7. Search
+
+| Method | Endpoint                        | Description                      | Request Body | Response                                                          |
+| ------ | ------------------------------- | -------------------------------- | ------------ | ----------------------------------------------------------------- |
+| `GET`  | `/api/messages/search/?q=hello` | Search messages (direct + group) | -            | `json [ { "id":12,"content":"hello world","sender":"festus" } ] ` |
+
+---
+
+✅ These are the **major endpoints** already covered in Jeco Chat.
+Together they support: authentication, profiles, 1:1 chats, groups, file sharing, search, notifications, and message management.
+
+---
+
+👉 Do you want me to also generate a **visual API reference (Swagger / ReDoc style)** for this, so you can plug it directly into Django REST Framework and auto-generate docs?
+
+Perfect 🚀 — let’s add **auto-generated API docs** so developers (and even non-coders) can **see, test, and explore endpoints visually** inside Jeco Chat.
+
+We’ll use **drf-yasg** (Yet Another Swagger Generator) which integrates well with Django REST Framework.
+
+---
+
+# 📖 Step 41: Visual API Reference with Swagger & ReDoc
+
+### 41.1. Install drf-yasg
+
+In your backend virtualenv:
+
+```bash
+pip install drf-yasg
+```
+
+---
+
+### 41.2. Update `settings.py`
+
+Make sure `rest_framework` is already installed.
+Then add `drf_yasg`:
+
+```python
+INSTALLED_APPS = [
+    ...
+    'rest_framework',
+    'drf_yasg',
+]
+```
+
+---
+
+### 41.3. Update `urls.py`
+
+Edit `backend/urls.py` and add the Swagger schema view:
+
+```python
+from django.contrib import admin
+from django.urls import path, include
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Jeco Chat API",
+        default_version='v1',
+        description="API documentation for Jeco Chat",
+        terms_of_service="https://www.jeco.com/terms/",
+        contact=openapi.Contact(email="support@jeco.com"),
+        license=openapi.License(name="MIT License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include('chat.urls')),  # your main app routes
+
+    # API Documentation
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('swagger.json', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+]
+```
+
+---
+
+### 41.4. Start Server & Test
+
+Run Django:
+
+```bash
+python manage.py runserver
+```
+
+Then open in your browser:
+
+* **Swagger UI** → `http://127.0.0.1:8000/swagger/`
+* **ReDoc UI** → `http://127.0.0.1:8000/redoc/`
+
+---
+
+### 41.5. What You’ll See
+
+* ✅ **Swagger UI**: Interactive interface where you can expand endpoints, see required parameters, and even **send test requests** right from the browser.
+* ✅ **ReDoc**: Clean, scrollable API reference for developers and stakeholders.
+* ✅ **JSON Schema**: Machine-readable OpenAPI spec at `/swagger.json` (can be imported into Postman or other tools).
+
+---
+
+🎯 With this:
+
+* Developers can **quickly learn & test your API**.
+* You can share a **live API reference** with your team or external collaborators.
+* You avoid manual endpoint documentation getting out of sync.
+
+---
+
+👉 Do you want me to also add **JWT authentication integration into Swagger UI** (so you can log in directly inside Swagger and test protected endpoints)?
+
+Excellent 🚀 — let’s extend our **Swagger API docs** so you (and other developers) can **log in with JWT tokens directly inside Swagger** and test protected endpoints (like sending messages, editing profiles, etc.).
+
+---
+
+# 🔑 Step 42: Add JWT Authentication to Swagger UI
+
+Since Jeco Chat uses **JWT (JSON Web Tokens)** for authentication, we’ll configure Swagger to accept an **Authorization: Bearer <token>** header.
+
+---
+
+### 42.1. Update `urls.py` Swagger Config
+
+In `backend/urls.py`, update the schema view definition:
+
+```python
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework import permissions
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Jeco Chat API",
+        default_version='v1',
+        description="API documentation for Jeco Chat",
+        terms_of_service="https://www.jeco.com/terms/",
+        contact=openapi.Contact(email="support@jeco.com"),
+        license=openapi.License(name="MIT License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+
+# Add JWT security scheme
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Jeco Chat API",
+        default_version='v1',
+        description="API documentation for Jeco Chat",
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+    authentication_classes=[],
+)
+```
+
+---
+
+### 42.2. Add Security Definitions
+
+Still in `urls.py`, define the **JWT bearer token scheme**:
+
+```python
+from drf_yasg import openapi
+
+swagger_schema = get_schema_view(
+    openapi.Info(
+        title="Jeco Chat API",
+        default_version='v1',
+        description="API documentation with JWT support",
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
+
+swagger_schema.security_definitions = {
+    "Bearer": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "description": "Enter: **Bearer &lt;JWT token&gt;**",
+    }
+}
+```
+
+---
+
+### 42.3. Tell Swagger to Use JWT
+
+Now add this at the bottom of `urls.py`:
+
+```python
+urlpatterns = [
+    path('swagger/', swagger_schema.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', swagger_schema.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('swagger.json', swagger_schema.without_ui(cache_timeout=0), name='schema-json'),
+]
+```
+
+---
+
+### 42.4. How to Use JWT in Swagger
+
+1. Go to `/swagger/` in your browser.
+2. Click the **Authorize 🔒** button in the top-right.
+3. Enter your token like this:
+
+   ```
+   Bearer your.jwt.access.token
+   ```
+4. Now Swagger automatically includes the token in **all requests**.
+
+---
+
+### 42.5. Example Flow
+
+* `POST /api/auth/login/` → get JWT access + refresh tokens.
+* Copy the **access token**.
+* Paste into Swagger → Authorize popup.
+* Now test endpoints like:
+
+  * `POST /api/messages/direct/:user_id/`
+  * `POST /api/groups/:id/messages/`
+  * `PUT /api/users/:id/`
+
+✅ You’ll see responses as if you were logged in!
+
+---
+
+✨ With this, your Swagger UI is now a **fully interactive API console**:
+
+* Try endpoints **live**.
+* Test protected routes without Postman.
+* Share with your team as a **self-updating API reference**.
+
+---
+
+👉 Do you want me to continue with **Step 43: Adding API versioning & rate limiting (so v1/v2 endpoints can coexist, and clients don’t overload the server)?**
+
+Perfect 🔥 — let’s move into **API versioning & rate limiting**, which are crucial for long-term stability and scalability.
+
+---
+
+# ⚡ Step 43: API Versioning & Rate Limiting
+
+As Jeco Chat grows, we’ll need:
+
+* **Versioning** → so old clients keep working while new ones use updated APIs (`/api/v1/`, `/api/v2/`).
+* **Rate Limiting** → to prevent abuse (too many requests per second from one user/IP).
+
+---
+
+## 43.1. API Versioning
+
+Django REST Framework supports multiple strategies. The simplest and most common: **URL-based versioning**.
+
+### Update `settings.py`
+
+```python
+REST_FRAMEWORK = {
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
+    "DEFAULT_VERSION": "v1",
+    "ALLOWED_VERSIONS": ("v1", "v2"),
+}
+```
+
+---
+
+### Update `urls.py`
+
+Wrap your routes in a version namespace:
+
+```python
+from django.urls import path, include
+
+urlpatterns = [
+    path('api/<str:version>/', include('chat.urls')),
+]
+```
+
+---
+
+### Example Usage
+
+* **Current version**: `/api/v1/messages/direct/2/`
+* **Future version**: `/api/v2/messages/direct/2/`
+
+✅ This means when you add new features, you can roll them out in `/v2` without breaking existing apps.
+
+---
+
+## 43.2. API Rate Limiting
+
+To avoid abuse, we use **DRF’s throttling system**.
+
+### Update `settings.py`
+
+```python
+REST_FRAMEWORK = {
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",   # for unauthenticated users
+        "rest_framework.throttling.UserRateThrottle",   # for authenticated users
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "10/minute",   # Guests can only hit 10 requests/minute
+        "user": "100/minute",  # Logged-in users: 100 requests/minute
+    }
+}
+```
+
+---
+
+### Example Behavior
+
+* A guest hitting `/api/v1/auth/login/` more than 10 times/minute → `429 Too Many Requests`.
+* A logged-in user spamming `/api/v1/messages/search/?q=hello` more than 100 times/minute → also blocked.
+
+---
+
+## 43.3. Combining Rate Limiting with JWT
+
+Because we’re using JWT authentication, throttling applies **per user token**.
+This ensures a single account can’t spam the API endlessly.
+
+---
+
+✅ With Step 43 complete:
+
+* Your API is **versioned** → future-proof.
+* Your API is **protected** → no abuse/spam.
+* Your API docs (Swagger) still work → they’ll show both `/v1/` and `/v2/` when added.
+
+---
+
+👉 Do you want me to continue with **Step 44: Adding WebSocket authentication & scaling (secure group chat + load balancing with Redis Channels layer)?**
+
+Great — continuing the numbered walkthrough from **Step 44**. Below is a practical, production-ready guide for **WebSocket authentication & scaling** for Jeco Chat. It includes concrete settings, code snippets, server configs and operational notes so you can run secure, scalable real-time messaging with Channels + Redis + Daphne (or Uvicorn) behind Nginx.
+
+---
+
+### 44. WebSocket Authentication & Scaling (Channels + Redis + Daphne + Nginx)
+
+#### 44.1 Goals
+
+1. Authenticate WebSocket connections securely (validate JWT / cookie).
+2. Use Redis **Channel Layer** so multiple ASGI workers share state (no sticky sessions).
+3. Serve WebSockets via **Daphne** (ASGI) and proxy via **Nginx** with `Upgrade` headers (wss).
+4. Scale horizontally — multiple Daphne/ASGI instances behind load balancer.
+5. Protect WebSocket endpoints (Origins, message size, rate limiting).
+6. Track presence/presence state in Redis (not in-memory) so status survives restarts and multiple workers.
+
+---
+
+#### 44.2 Channel layer (Redis) — quick config
+
+In `backend/settings.py`:
+
+```python
+# CHANNEL_LAYERS using Redis
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],   # Docker service name or "127.0.0.1"
+            # optional: "symmetric_encryption_keys": [os.environ.get("CHANNELS_SECRET")]
+        },
+    },
+}
+```
+
+* Use Redis instance(s) in production (single node for small scale; Redis Cluster or managed Redis for large scale).
+* Make sure Redis auth is configured if exposed.
+
+---
+
+#### 44.3 WebSocket auth strategy (recommended)
+
+Two secure approaches:
+
+**A — Cookie-based refresh token approach (recommended for web apps)**
+
+* Store a short-lived access token client-side (in-memory) and a refresh token in a **HttpOnly, Secure cookie**.
+* On WS connect, the browser sends cookies automatically. The consumer reads the cookie `refresh_token`, validates and optionally issues an access token server-side, or validates a session. Advantage: JS cannot read cookie value (reduces XSS risk).
+
+**B — Authorization header / query param (commonly used)**
+
+* Pass `Authorization: Bearer <access_token>` as a query string on WS connection: `wss://api.example.com/ws/chat/?token=<access>` (or use a custom header via `Sec-WebSocket-Protocol` or a subprotocol).
+* MUST use `wss` (TLS) and short-lived tokens; rotate/blacklist refresh tokens server-side.
+
+**Important**: For mobile apps, passing token in initial query param is acceptable over TLS; for browser, prefer cookie flow if you can.
+
+---
+
+#### 44.4 Example: Secure token validation inside consumer (SimpleJWT)
+
+Add these imports and helper to your consumer (`backend/chat/consumers.py`):
+
+```python
+# backend/chat/consumers.py
+import json
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
+from rest_framework_simplejwt.tokens import AccessToken, TokenError
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+class AuthenticatedConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        # Get token from query string OR cookies
+        token = None
+        query_string = self.scope.get("query_string", b"").decode()
+        qs = dict(x.split("=", 1) for x in query_string.split("&") if "=" in x)
+        token = qs.get("token")  # e.g. ?token=ey...
+
+        # If you prefer cookie-based:
+        if not token:
+            # cookies are in scope["headers"] as b'cookie': b'sessionid=..; refresh_token=...'
+            cookies = dict()
+            for header_name, header_value in self.scope.get("headers", []):
+                if header_name == b"cookie":
+                    cookie_header = header_value.decode()
+                    for pair in cookie_header.split(";"):
+                        k, _, v = pair.strip().partition("=")
+                        cookies[k] = v
+            token = cookies.get("access") or cookies.get("refresh_token")
+
+        user = await self.get_user_from_token(token)
+
+        if not user:
+            await self.close(code=4001)  # unauthorized
+            return
+
+        self.scope["user"] = user
+        # now you can join groups etc.
+        await self.channel_layer.group_add("some_group", self.channel_name)
+        await self.accept()
+
+    @database_sync_to_async
+    def get_user_from_token(self, token):
+        try:
+            if not token:
+                return None
+            access = AccessToken(token)
+            user_id = access.get("user_id")
+            return User.objects.get(id=user_id)
+        except Exception:
+            return None
+```
+
+Notes:
+
+* `AccessToken(token)` validates signature and expiry. If expired, return `None`. If using `ROTATE_REFRESH_TOKENS`, you may need to accept refresh token and issue new access server-side.
+* Use `database_sync_to_async` to fetch user from DB.
+
+---
+
+#### 44.5 Nginx proxy config for WebSockets (wss)
+
+Example Nginx config snippet (add to your server block):
+
+```nginx
+# upstream daphne (multiple daphne instances)
+upstream daphne_up {
+    server 127.0.0.1:8001;  # Daphne instance 1
+    server 127.0.0.1:8002;  # Daphne instance 2 (if running)
+}
+
+server {
+    listen 443 ssl;
+    server_name app.yourdomain.com;
+
+    # SSL certs ...
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+
+    # WebSocket proxy
+    location /ws/ {
+        proxy_pass http://daphne_up;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 86400;
+    }
+
+    # API proxy to Gunicorn
+    location /api/ {
+        proxy_pass http://127.0.0.1:8000;
+        # normal proxy headers...
+    }
+}
+```
+
+Key:
+
+* `proxy_set_header Upgrade` and `Connection "Upgrade"` are required.
+* Use `proxy_read_timeout` large for idle ws.
+* Point ws location to upstream daphne pool.
+
+---
+
+#### 44.6 Running Daphne (ASGI server) scaled
+
+Run multiple Daphne instances on different ports and put them in Nginx `upstream`. Example systemd unit for Daphne instance (copy + adjust port):
+
+`/etc/systemd/system/jeco-daphne@.service`:
+
+```ini
+[Unit]
+Description=Jeco Chat Daphne instance %i
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/jeco_chat/backend
+EnvironmentFile=/var/www/jeco_chat/backend/.env
+ExecStart=/var/www/jeco_chat/venv/bin/daphne -b 127.0.0.1 -p %i backend.asgi:application
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable/Start two instances:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable jeco-daphne@8001
+sudo systemctl start jeco-daphne@8001
+sudo systemctl enable jeco-daphne@8002
+sudo systemctl start jeco-daphne@8002
+```
+
+* Multiple daphne processes allow concurrency. Channel layer (Redis) ensures messages go to correct group channels across workers.
+
+---
+
+#### 44.7 Presence & shared state — store in Redis (not memory)
+
+Use Redis pub/sub or sets for presence. Example helper using `aioredis` or `redis` lib:
+
+Pseudo-code to mark online:
+
+```python
+import aioredis
+REDIS_URL = "redis://127.0.0.1:6379/1"
+
+async def mark_online(username):
+    r = await aioredis.create_redis_pool(REDIS_URL)
+    await r.sadd("online_users", username)
+    await r.close()
+
+async def mark_offline(username):
+    r = await aioredis.create_redis_pool(REDIS_URL)
+    await r.srem("online_users", username)
+    await r.close()
+
+async def get_online_users():
+    r = await aioredis.create_redis_pool(REDIS_URL)
+    users = await r.smembers("online_users")
+    await r.close()
+    return [u.decode() for u in users]
+```
+
+Inside consumer `connect` / `disconnect`, call `mark_online` / `mark_offline`. Use `expire` or TTL if you want stale session removal.
+
+---
+
+#### 44.8 Rate limiting and message size protection on WS
+
+* **Message size**: In consumer `receive`, reject huge messages early.
+
+```python
+MAX_MESSAGE_SIZE = 2000  # characters
+
+async def receive(self, text_data=None, bytes_data=None):
+    if text_data and len(text_data) > MAX_MESSAGE_SIZE:
+        await self.close(code=4009)  # custom code: message too big
+        return
+    # proceed processing
+```
+
+* **Rate limiting**: Implement simple token bucket per user in Redis.
+
+Simplified token-bucket idea (pseudocode):
+
+```python
+# increments and checks in Redis using INCR and EXPIRE
+# key = f"ws_rate:{user_id}"
+count = await redis.incr(key)
+if count == 1:
+    await redis.expire(key, 1)  # window 1 second
+if count > 10:
+    # too many messages in 1s
+    await self.close(code=4008)
+```
+
+Tune limits to your app usage (e.g., 10 messages/sec).
+
+---
+
+#### 44.9 Security: origin checking & CSRF
+
+Check origin header in connect to only allow known hosts:
+
+```python
+ALLOWED_WS_ORIGINS = ["https://app.yourdomain.com"]
+
+# in connect
+origin = dict(self.scope.get("headers", [])).get(b'origin', b'').decode()
+if origin not in ALLOWED_WS_ORIGINS:
+    await self.close(code=4003)
+    return
+```
+
+* Keep `ALLOWED_HOSTS` and `CORS_ALLOWED_ORIGINS` in sync.
+* For cookie-based flows, protect refresh endpoints via CSRF; for WS initial handshake you may accept cookie but verify token server-side.
+
+---
+
+#### 44.10 Monitoring & scaling tips
+
+* **Monitoring**: instrument metrics (Prometheus) for:
+
+  * active WebSocket connections
+  * messages/sec
+  * message processing latency
+  * Redis queue length
+* **Autoscale** Daphne instances\*\* behind Nginx\*\* based on CPU and connections.
+* Use **managed Redis** or Redis Cluster for high throughput.
+* If you need >1k concurrent connections per machine, consider using specialized brokers or a cluster of Daphne instances; each Daphne can handle many connections but depends on CPU & memory.
+* **Sticky sessions NOT required**: Channels + Redis channel layer removes need for sticky sessions — any Daphne can handle any WS connection because groups are centralized.
+
+---
+
+#### 44.11 Example end-to-end checklist & commands
+
+1. Install redis and run it.
+
+   ```bash
+   sudo apt install redis-server
+   redis-cli ping  # PONG
+   ```
+2. Configure `CHANNEL_LAYERS` in `settings.py` (see 44.2).
+3. Add consumer token validation (see 44.4).
+4. Configure and start multiple Daphne services (systemd unit above).
+5. Configure Nginx upstream to point to Daphne instances and proxy `/ws/` to `daphne_up` (see 44.5).
+6. Ensure `ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS`, and `ALLOWED_WS_ORIGINS` only include your domains.
+7. Implement Redis presence and rate limiting (44.7/44.8).
+8. Add monitoring (Prometheus + Grafana) and alerts for connection spikes and redis errors.
+
+---
+
+#### 44.12 Final notes & recommended libraries
+
+* Use `channels-redis` (official) for Redis channel layer.
+* For async Redis: `aioredis` (or `aredis`) if your logic uses async direct Redis calls.
+* For token validation server-side: `rest_framework_simplejwt.tokens.AccessToken` as shown. If you want RSA-based tokens, configure `SIGNING_KEY`/`VERIFYING_KEY` in SIMPLE\_JWT.
+* Consider putting WebSocket auth/refresh logic behind a short-lived **socket token** endpoint: client authenticates via HTTPS, server returns a one-time socket token (valid for a few minutes) that the client uses to open the WS — this avoids passing long-lived tokens over query strings.
+
+---
+
+If you want, I can now:
+
+* 44.a Provide a full ready-to-drop `ChatConsumer` implementation that includes **Redis presence**, **token validation**, **rate limiting**, and **typing/message handling** (complete code).
+* 44.b Prepare the exact Nginx + systemd files and sample `docker-compose` changes to run multiple Daphne instances behind Nginx.
+
+Which would you like next?
+
+44.a — below is a **ready-to-drop** `ChatConsumer` implementation for Django Channels that includes:
+
+* ✅ **JWT token validation** (SimpleJWT `AccessToken`)
+* ✅ **Redis-based presence** (adds/removes username in a Redis set; supports multiple connections per user)
+* ✅ **Rate limiting** (simple token-bucket / counter per user in Redis)
+* ✅ **Typing indicator** events broadcasting to room group
+* ✅ **Message handling** (save + broadcast) with maximum message size protection
+* ✅ Clean handling of **connect / disconnect / errors** and origin checking
+
+Drop this file into your `chat/consumers.py` (or adapt file paths). After the code there's a short integration checklist and notes about dependencies & settings you must have.
+
+> ⚠️ **Security note:** This consumer expects JWT access tokens (short-lived) passed as a `token` query parameter or as a cookie named `access` (you can adapt to your cookie names). Over TLS only (`wss://`). For refresh-token cookie flows you must implement separate refresh logic server-side.
+
+---
+
+```python
+# backend/chat/consumers.py
+import json
+import logging
+import asyncio
+from urllib.parse import parse_qs
+
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import AccessToken, TokenError
+
+import redis.asyncio as aioredis  # pip install redis>=4.2.0 (async support)
+
+# Replace these with imports from your models/serializers as needed:
+from .models import Message, Room, Notification  # adapt names to your project
+from .serializers import MessageSerializer  # optional, if you return serializer dicts
+
+User = get_user_model()
+logger = logging.getLogger("chat.consumers")
+
+# --- Configuration constants (tweak for your app) ---
+REDIS_URL = getattr(settings, "REDIS_URL", "redis://127.0.0.1:6379/0")
+ONLINE_USERS_SET = "jeco:online_users"          # Redis set of online usernames
+USER_CONN_PREFIX = "jeco:user_conns:"          # Redis key prefix counting open connections per user
+WS_RATE_KEY = "jeco:ws_rate:"                  # prefix + user_id for per-second rate
+WS_RATE_LIMIT_PER_SEC = getattr(settings, "WS_RATE_LIMIT_PER_SEC", 10)  # messages/sec
+WS_RATE_LIMIT_PER_MIN = getattr(settings, "WS_RATE_LIMIT_PER_MIN", 500)  # messages/min
+MAX_MESSAGE_LENGTH = getattr(settings, "MAX_WS_MESSAGE_LENGTH", 4000)   # chars
+
+# Redis client will be lazily initialized
+_redis_client = None
+
+
+async def get_redis():
+    global _redis_client
+    if _redis_client is None:
+        _redis_client = aioredis.from_url(REDIS_URL)
+    return _redis_client
+
+
+class ChatConsumer(AsyncWebsocketConsumer):
+    """
+    ChatConsumer handles:
+      - WebSocket authentication via JWT (querystring ?token=... or cookie 'access')
+      - Redis-backed presence (online users set + per-user connection counting)
+      - Rate limiting using Redis counters (per-second and per-minute windows)
+      - Typing indicator events
+      - Message save & broadcast to room group
+    """
+
+    async def connect(self):
+        # Origin check (optional but recommended)
+        origin = None
+        for name, value in self.scope.get("headers", []):
+            if name == b"origin":
+                origin = value.decode()
+                break
+
+        allowed_origins = getattr(settings, "ALLOWED_WS_ORIGINS", None)
+        if allowed_origins:
+            if origin is None or origin not in allowed_origins:
+                logger.warning("WS connection rejected due to origin: %s", origin)
+                await self.close(code=4003)  # Forbidden origin
+                return
+
+        # Parse token from query string or cookie
+        token = None
+        qs = parse_qs(self.scope.get("query_string", b"").decode())
+        token_list = qs.get("token") or qs.get("access")
+        if token_list:
+            token = token_list[0]
+
+        # If not in query, try cookies
+        if not token:
+            cookies = {}
+            for header_name, header_value in self.scope.get("headers", []):
+                if header_name == b"cookie":
+                    raw = header_value.decode()
+                    for pair in raw.split(";"):
+                        k, _, v = pair.strip().partition("=")
+                        cookies[k] = v
+                    break
+            token = cookies.get("access")  # adjust cookie name if different
+
+        # Validate JWT and fetch user
+        user = await self.get_user_from_token(token)
+        if not user:
+            await self.close(code=4001)  # Unauthorized
+            return
+
+        # Save user into scope for later
+        self.scope["user"] = user
+        self.user = user
+        self.username = user.username
+        self.user_id = str(user.id)
+
+        # Determine room_name from URL route kwargs (adjust route key)
+        # expected route: ws/chat/<room_name>/
+        self.room_name = self.scope["url_route"]["kwargs"].get("room_name")
+        if not self.room_name:
+            await self.close(code=4004)  # Missing room
+            return
+
+        self.room_group_name = f"chat_room_{self.room_name}"
+
+        # Add connection to room group
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+
+        # Mark presence in Redis
+        await self._increment_user_conn_count()
+
+        # Notify room of presence
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "user.status",
+                "username": self.username,
+                "status": "online",
+            },
+        )
+
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        # Remove from room group
+        try:
+            await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        except Exception:
+            pass
+
+        # Decrement connection count; if zero remove from online set
+        await self._decrement_user_conn_count()
+
+        # Notify group of offline if appropriate
+        # If still has open conns, we don't announce offline
+        conn_count = await self._get_user_conn_count()
+        if conn_count == 0:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "user.status",
+                    "username": self.username,
+                    "status": "offline",
+                },
+            )
+
+    # -------------------------
+    # Receive messages from WebSocket
+    # -------------------------
+    async def receive(self, text_data=None, bytes_data=None):
+        if bytes_data is not None:
+            # we don't accept binary payloads in this consumer
+            logger.debug("Binary message rejected")
+            await self.close(code=4009)
+            return
+
+        if not text_data:
+            return
+
+        # Limit message size
+        if len(text_data) > MAX_MESSAGE_LENGTH:
+            # Too large
+            logger.warning("Dropped oversized message from %s", self.username)
+            await self.send_json({"error": "message_too_large"})
+            return
+
+        # Rate limiting per user
+        allowed = await self._rate_limit_check()
+        if not allowed:
+            await self.send_json({"error": "rate_limited"})
+            # Optionally close connection:
+            # await self.close(code=4008)
+            return
+
+        try:
+            data = json.loads(text_data)
+        except json.JSONDecodeError:
+            await self.send_json({"error": "invalid_json"})
+            return
+
+        # Message types we expect: "message", "typing", "read", "reaction"
+        mtype = data.get("type")
+        if mtype == "typing":
+            # broadcast typing event to room
+            is_typing = bool(data.get("is_typing"))
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "user.typing",
+                    "username": self.username,
+                    "is_typing": is_typing,
+                },
+            )
+            return
+
+        elif mtype == "message":
+            content = data.get("content", "").strip()
+            file_info = data.get("file")  # optional: file handled via REST upload in many designs
+            if not content and not file_info:
+                await self.send_json({"error": "empty_message"})
+                return
+
+            # Save message to DB (sync call)
+            msg_obj = await self._save_message(content=content, file_info=file_info)
+            # Serialize message (dict)
+            try:
+                serialized = MessageSerializer(msg_obj).data
+            except Exception:
+                # fallback minimal dict
+                serialized = {
+                    "id": msg_obj.id,
+                    "sender": {"id": self.user.id, "username": self.username},
+                    "content": msg_obj.content,
+                    "timestamp": msg_obj.timestamp.isoformat(),
+                }
+
+            # Broadcast to group
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "chat.message",
+                    "message": serialized,
+                },
+            )
+
+            # Optionally create notifications for other users (async DB)
+            await self._create_notifications_for_room(msg_obj)
+
+            return
+
+        elif mtype == "read":
+            # mark message read
+            message_id = data.get("message_id")
+            if message_id:
+                await self._mark_message_read(message_id)
+                # notify group
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "chat.read",
+                        "message_id": message_id,
+                        "user": self.username,
+                    },
+                )
+            return
+
+        elif mtype == "reaction":
+            message_id = data.get("message_id")
+            emoji = data.get("emoji")
+            if message_id and emoji:
+                # Implement reaction DB create/toggle in DB method
+                reaction_obj = await self._toggle_reaction(message_id, emoji)
+                # Broadcast new reaction
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "chat.reaction",
+                        "reaction": reaction_obj,  # should be serializable dict
+                    },
+                )
+            return
+
+        else:
+            await self.send_json({"error": "unknown_type"})
+            return
+
+    # -------------------------
+    # Handlers for messages sent to channel layer
+    # These are called by group_send with "type": "<something>"
+    # -------------------------
+    async def chat_message(self, event):
+        await self.send_json({"type": "chat_message", "message": event["message"]})
+
+    async def user_typing(self, event):
+        # legacy name mapping; some group messages may call "user.typing"
+        await self.send_json({"type": "typing", "username": event["username"], "is_typing": event["is_typing"]})
+
+    async def user_status(self, event):
+        # legacy mapping
+        await self.send_json({"type": "status", "username": event["username"], "status": event["status"]})
+
+    async def chat_message(self, event):
+        await self.send_json({"type": "chat_message", "message": event["message"]})
+
+    async def chat_read(self, event):
+        await self.send_json({"type": "message_read", "message_id": event["message_id"], "user": event["user"]})
+
+    async def chat_reaction(self, event):
+        await self.send_json({"type": "reaction", "reaction": event["reaction"]})
+
+    # -------------------------
+    # Helper / DB methods (sync calls wrapped)
+    # -------------------------
+    @database_sync_to_async
+    def _save_message(self, content="", file_info=None):
+        """
+        Save message to DB. Adjust to your Message model fields.
+        If you handle file uploads via REST endpoints, file_info may be None.
+        """
+        try:
+            room = Room.objects.get(name=self.room_name)
+        except Room.DoesNotExist:
+            # create or raise depending on your logic
+            room = Room.objects.create(name=self.room_name)
+
+        msg = Message.objects.create(sender=self.user, room=room, content=content)
+        return msg
+
+    @database_sync_to_async
+    def _create_notifications_for_room(self, message_obj):
+        """
+        Create Notification objects for room members other than sender.
+        Keep this fast; alternatively push to Celery for heavy work.
+        """
+        try:
+            members = message_obj.room.members.exclude(id=self.user.id)
+            notifications = []
+            for m in members:
+                n = Notification.objects.create(
+                    user=m,
+                    message=message_obj,
+                    text=f"New message from {self.username} in {message_obj.room.name}",
+                )
+                notifications.append(n)
+            return notifications
+        except Exception as e:
+            logger.exception("Failed creating notifications: %s", e)
+            return []
+
+    @database_sync_to_async
+    def _mark_message_read(self, message_id):
+        try:
+            msg = Message.objects.get(id=message_id)
+            msg.read_by.add(self.user)
+            msg.save()
+            return True
+        except Message.DoesNotExist:
+            return False
+
+    @database_sync_to_async
+    def _toggle_reaction(self, message_id, emoji):
+        """
+        Create or remove a reaction; return a serializable dict describing current reaction.
+        Implement according to your Reaction model API.
+        """
+        from .models import Reaction
+        try:
+            msg = Message.objects.get(id=message_id)
+        except Message.DoesNotExist:
+            return {"error": "msg_not_found"}
+
+        # toggle
+        reaction, created = Reaction.objects.get_or_create(message=msg, user=self.user, emoji=emoji)
+        if not created:
+            reaction.delete()
+            return {"action": "removed", "message_id": message_id, "emoji": emoji, "user": self.username}
+        return {"action": "added", "message_id": message_id, "emoji": emoji, "user": self.username, "id": reaction.id}
+
+    @database_sync_to_async
+    def _get_user_by_id(self, user_id):
+        try:
+            return User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return None
+
+    # -------------------------
+    # Redis presence & connection counting
+    # -------------------------
+    async def _increment_user_conn_count(self):
+        r = await get_redis()
+        conn_key = USER_CONN_PREFIX + self.user_id
+        # atomic increment
+        await r.incr(conn_key)
+        # set TTL so stale locks vanish in case of crash (e.g., 1 day)
+        await r.expire(conn_key, 86400)
+        # add user to online set
+        await r.sadd(ONLINE_USERS_SET, self.username)
+
+    async def _decrement_user_conn_count(self):
+        r = await get_redis()
+        conn_key = USER_CONN_PREFIX + self.user_id
+        val = await r.decr(conn_key)
+        if val <= 0:
+            # cleanup
+            await r.delete(conn_key)
+            await r.srem(ONLINE_USERS_SET, self.username)
+
+    async def _get_user_conn_count(self):
+        r = await get_redis()
+        conn_key = USER_CONN_PREFIX + self.user_id
+        val = await r.get(conn_key)
+        try:
+            return int(val) if val is not None else 0
+        except (TypeError, ValueError):
+            return 0
+
+    # -------------------------
+    # Rate limiting (token counters in Redis)
+    # basic: per-second and per-minute counters using INCR+EXPIRE
+    # -------------------------
+    async def _rate_limit_check(self):
+        r = await get_redis()
+        sec_key = f"{WS_RATE_KEY}{self.user_id}:sec"
+        min_key = f"{WS_RATE_KEY}{self.user_id}:min"
+
+        # increment second counter
+        sec_count = await r.incr(sec_key)
+        if sec_count == 1:
+            await r.expire(sec_key, 1)  # 1 second window
+
+        if sec_count > WS_RATE_LIMIT_PER_SEC:
+            logger.warning("WS rate limit (per sec) exceeded for %s: %s", self.username, sec_count)
+            return False
+
+        # increment minute counter
+        min_count = await r.incr(min_key)
+        if min_count == 1:
+            await r.expire(min_key, 60)  # 60 second window
+
+        if min_count > WS_RATE_LIMIT_PER_MIN:
+            logger.warning("WS rate limit (per min) exceeded for %s: %s", self.username, min_count)
+            return False
+
+        return True
+
+    # -------------------------
+    # JWT token -> user extraction
+    # -------------------------
+    @database_sync_to_async
+    def get_user_from_token(self, token):
+        """
+        Validate JWT access token and return user instance or None.
+        This runs in threadpool because it touches DB.
+        """
+        if not token:
+            return None
+        try:
+            # AccessToken raises TokenError if invalid/expired
+            access = AccessToken(token)
+            user_id = access.get("user_id")
+            if not user_id:
+                return None
+            return User.objects.get(id=user_id)
+        except (TokenError, User.DoesNotExist) as e:
+            logger.debug("Invalid/expired token: %s", e)
+            return None
+
+    # convenience JSON send
+    async def send_json(self, content):
+        await self.send(text_data=json.dumps(content))
+```
+
+---
+
+## Integration Checklist (what you must configure)
+
+1. **Install dependencies**
+
+   ```bash
+   pip install channels channels-redis redis rest_framework_simplejwt redis>=4.2.0
+   ```
+
+   If you plan to use `aioredis` older versions, adjust imports — modern `redis` provides asyncio client.
+
+2. **CHANNEL\_LAYERS in `settings.py`** (Redis channel layer):
+
+   ```python
+   CHANNEL_LAYERS = {
+       "default": {
+           "BACKEND": "channels_redis.core.RedisChannelLayer",
+           "CONFIG": {"hosts": [("redis", 6379)]},
+       }
+   }
+   ```
+
+3. **ALLOWED\_WS\_ORIGINS** in `settings.py` (optional but recommended):
+
+   ```python
+   ALLOWED_WS_ORIGINS = ["https://app.yourdomain.com"]
+   ```
+
+4. **Routing** — in `chat/routing.py`:
+
+   ```python
+   from django.urls import re_path
+   from . import consumers
+
+   websocket_urlpatterns = [
+       re_path(r"ws/chat/(?P<room_name>[^/]+)/$", consumers.ChatConsumer.as_asgi()),
+   ]
+   ```
+
+   And include this in your project `asgi.py`/`routing.py`.
+
+5. **Run Daphne** (ASGI) and point Nginx `/ws/` to Daphne (see earlier Nginx config). Run multiple daphne instances for scale.
+
+6. **Model names** — the consumer refers to `Room`, `Message`, `Notification`, `Reaction`. Ensure those exist and adapt method names (`room.members`, `MessageSerializer`) to your models. If you store rooms differently, change `_save_message`.
+
+7. **Ensure JWT tokens** are issued by `SimpleJWT` with `user_id` in payload (default behavior).
+
+8. **Testing**: open two browser windows, connect to same room with tokens, send `{"type":"typing","is_typing":true}` and `{"type":"message","content":"hello"}` to see events delivered.
+
+---
+
+## Notes & Recommendations
+
+* This consumer mixes some DB work synchronously (wrapped) — for heavy work (notifications, image processing) prefer pushing to Celery tasks instead of creating Notification objects inline.
+* You can adapt token extraction to accept `Sec-WebSocket-Protocol` header for Bearer tokens if you prefer not to use query string tokens.
+* The rate limiter is intentionally simple and efficient (INCR + EXPIRE). For complex quotas use a Lua script in Redis or a token-bucket library.
+* Presence uses Redis set + per-user connection counters so multiple browser tabs count properly.
+* Consider adding metrics (Prometheus) around `ws connections`, `rate_limited` events, etc.
+
+---
+
+If you want, I can now:
+
+* generate a **drop-in systemd unit file** to run multiple Daphne instances (8001/8002) and the matching Nginx config for `/ws/`, or
+* adapt the consumer to use **one-time socket tokens** (server issues short-lived socket token over HTTPS, client uses it to connect) which is slightly more secure than passing JWTs in query strings.
+
+Which of those would you like next?
+
+Perfect — let’s continue and provide a **full deployment-ready setup** for Jeco Chat WebSockets, including **systemd units for multiple Daphne instances** and **Nginx config** to proxy both REST API and WebSocket (`/ws/`) traffic. This complements the `ChatConsumer` we just implemented.
+
+---
+
+# ⚡ Step 45: Deployment Setup for WebSockets (Daphne + Nginx + Redis)
+
+---
+
+## 45.1. Systemd Unit for Daphne Instances
+
+We want **multiple Daphne processes** to handle high concurrency. This allows horizontal scaling behind Nginx and Redis channel layer.
+
+Create a systemd template unit: `/etc/systemd/system/jeco-daphne@.service`
+
+```ini
+[Unit]
+Description=Jeco Chat Daphne instance %i
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/jeco_chat/backend
+EnvironmentFile=/var/www/jeco_chat/backend/.env
+ExecStart=/var/www/jeco_chat/venv/bin/daphne -b 127.0.0.1 -p %i backend.asgi:application
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Explanation
+
+* `%i` → instance port number (e.g., 8001, 8002)
+* `ExecStart` → points to your virtual environment’s Daphne executable and `asgi` app
+* `EnvironmentFile` → optional `.env` file for sensitive settings (SECRET\_KEY, DB URL, JWT secret, etc.)
+* `Restart=always` → auto-restarts on crash
+
+---
+
+### 45.2. Enable & Start Instances
+
+Run **two or more Daphne instances**:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable jeco-daphne@8001
+sudo systemctl start jeco-daphne@8001
+
+sudo systemctl enable jeco-daphne@8002
+sudo systemctl start jeco-daphne@8002
+```
+
+* Check status:
+
+```bash
+sudo systemctl status jeco-daphne@8001
+```
+
+* Add more instances for high concurrency by repeating with other ports (8003, 8004, etc.).
+
+---
+
+## 45.3. Nginx Configuration
+
+We want **one Nginx server** to serve both:
+
+1. REST API (`/api/`) via Gunicorn
+2. WebSockets (`/ws/`) via Daphne
+
+Create a server block (e.g., `/etc/nginx/sites-available/jeco_chat`):
+
+```nginx
+upstream daphne_up {
+    server 127.0.0.1:8001;
+    server 127.0.0.1:8002;
+}
+
+server {
+    listen 443 ssl;
+    server_name app.yourdomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+
+    # WebSocket proxy
+    location /ws/ {
+        proxy_pass http://daphne_up;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 86400;
+    }
+
+    # API proxy to Gunicorn
+    location /api/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Serve static files (if collected)
+    location /static/ {
+        alias /var/www/jeco_chat/backend/static/;
+    }
+
+    location /media/ {
+        alias /var/www/jeco_chat/backend/media/;
+    }
+}
+```
+
+### Notes
+
+* `proxy_set_header Upgrade` + `Connection "Upgrade"` is **required** for WebSocket upgrade
+* `proxy_read_timeout` ensures long-lived WS connections don’t timeout
+* `upstream daphne_up` balances WS connections across multiple Daphne instances
+* Static files served directly by Nginx; API requests go to Gunicorn (HTTP), WS requests go to Daphne (ASGI)
+
+---
+
+## 45.4. Reload Nginx
+
+```bash
+sudo nginx -t  # test syntax
+sudo systemctl reload nginx
+```
+
+Check logs if connections fail:
+
+```bash
+sudo tail -f /var/log/nginx/error.log
+```
+
+---
+
+## 45.5. Redis for Channel Layer
+
+* Ensure **Redis is running** on same server or separate cluster:
+
+```bash
+sudo apt install redis-server
+redis-cli ping  # should return PONG
+```
+
+* Use the same `REDIS_URL` in `settings.py`:
+
+```python
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
+    },
+}
+```
+
+---
+
+## 45.6. Summary Checklist
+
+1. Install Redis.
+2. Configure `CHANNEL_LAYERS` in Django settings.
+3. Configure `ChatConsumer` with JWT, presence, and rate limiting (from Step 44.a).
+4. Create systemd template for Daphne and start 2+ instances.
+5. Configure Nginx to proxy `/ws/` to Daphne upstream and `/api/` to Gunicorn.
+6. Ensure SSL is enabled (HTTPS/WSS).
+7. Reload Nginx.
+8. Test WebSocket endpoints with token authentication (`wss://app.yourdomain.com/ws/chat/<room_name>/?token=<JWT>`).
+9. Monitor `redis-cli`, `systemctl status jeco-daphne@*`, and Nginx logs.
+
+✅ After completing these steps, Jeco Chat will be:
+
+* **Scalable**: multiple Daphne instances handle WS concurrency
+* **Secure**: JWT auth, origin check, WSS, rate limiting
+* **Resilient**: Redis channel layer shares state across workers
+
+---
+
+If you want, I can now prepare a **full Docker Compose setup** including:
+
+* Django backend
+* Gunicorn
+* Daphne (multiple instances)
+* Redis channel layer
+* Nginx reverse proxy
+* PostgreSQL
+
+…so you can deploy Jeco Chat in one command.
+
+Do you want me to do that next?
+
+Perfect! Let’s create a **full Docker Compose setup** for Jeco Chat. This will let you spin up the **entire stack** in one command: backend (Django + Daphne + Gunicorn), Redis, PostgreSQL, Nginx, and optional frontend.
+
+---
+
+# ⚡ Step 46: Docker Compose Setup for Jeco Chat
+
+---
+
+## 46.1 Directory Structure (recommended)
+
+```
+jeco_chat/
+├─ backend/
+│   ├─ manage.py
+│   ├─ backend/       # Django project
+│   ├─ chat/          # Django app
+│   ├─ Dockerfile
+│   ├─ requirements.txt
+├─ frontend/
+│   ├─ package.json
+│   ├─ src/
+│   ├─ Dockerfile
+├─ nginx/
+│   ├─ default.conf
+├─ docker-compose.yml
+```
+
+---
+
+## 46.2 Backend Dockerfile (`backend/Dockerfile`)
+
+```dockerfile
+FROM python:3.11-slim
+
+# Install OS dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create working directory
+WORKDIR /app
+
+# Copy Python dependencies
+COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+# Copy backend code
+COPY . .
+
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
+# Expose Daphne ports for ASGI and Gunicorn for API
+EXPOSE 8000  # Gunicorn API
+EXPOSE 8001  # Daphne instance 1
+EXPOSE 8002  # Daphne instance 2
+
+# Entrypoint (adjust as needed)
+CMD ["sh", "-c", "gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 3"]
+```
+
+---
+
+## 46.3 Frontend Dockerfile (`frontend/Dockerfile`)
+
+```dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
+
+# Build React app
+RUN npm run build
+
+# Expose port
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+---
+
+## 46.4 Nginx Config (`nginx/default.conf`)
+
+```nginx
+upstream daphne_up {
+    server backend:8001;
+    server backend:8002;
+}
+
+server {
+    listen 80;
+
+    server_name localhost;
+
+    # Redirect all HTTP to HTTPS if desired
+    # return 301 https://$host$request_uri;
+
+    # WebSocket proxy
+    location /ws/ {
+        proxy_pass http://daphne_up;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 86400;
+    }
+
+    # API proxy to Gunicorn
+    location /api/ {
+        proxy_pass http://backend:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Serve static files
+    location /static/ {
+        alias /app/static/;
+    }
+
+    location /media/ {
+        alias /app/media/;
+    }
+
+    # Frontend React build
+    location / {
+        root /frontend/build;
+        index index.html;
+        try_files $uri /index.html;
+    }
+}
+```
+
+---
+
+## 46.5 Docker Compose File (`docker-compose.yml`)
+
+```yaml
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: jeco_postgres
+    environment:
+      POSTGRES_DB: jeco_db
+      POSTGRES_USER: jeco_user
+      POSTGRES_PASSWORD: jeco_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: jeco_redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    container_name: jeco_backend
+    command: >
+      sh -c "
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000
+      "
+    volumes:
+      - ./backend:/app
+    environment:
+      DJANGO_SETTINGS_MODULE: backend.settings
+      POSTGRES_DB: jeco_db
+      POSTGRES_USER: jeco_user
+      POSTGRES_PASSWORD: jeco_pass
+      DATABASE_URL: postgres://jeco_user:jeco_pass@postgres:5432/jeco_db
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8000"  # Gunicorn
+      - "8001:8001"  # Daphne 1
+      - "8002:8002"  # Daphne 2
+
+  frontend:
+    build: ./frontend
+    container_name: jeco_frontend
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost/api
+
+  nginx:
+    image: nginx:alpine
+    container_name: jeco_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend/build:/frontend/build
+      - ./backend/static:/app/static
+      - ./backend/media:/app/media
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  postgres_data:
+```
+
+---
+
+## 46.6 How to Run Everything
+
+```bash
+# Build images
+docker-compose build
+
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
+✅ This command will launch:
+
+* PostgreSQL database
+* Redis channel layer
+* Django backend (Gunicorn + Daphne)
+* React frontend
+* Nginx reverse proxy for `/api/`, `/ws/`, static/media, and React frontend
+
+---
+
+## 46.7 Notes
+
+* Adjust `.env` or `environment` variables for production (SECRET\_KEY, DEBUG=False, allowed hosts, JWT secrets).
+* Daphne ports `8001`/`8002` are hardcoded in Nginx upstream. You can scale horizontally by adding more ports and adjusting `upstream`.
+* Use Docker volumes for persistent data (`postgres_data`) and static/media if you don’t want to rebuild images every time.
+* For production TLS, replace Nginx with certbot or use a reverse proxy like Traefik.
+
+---
+
+If you want, I can now create a **complete production checklist** including:
+
+1. HTTPS/WSS setup
+2. JWT refresh & access token rotation
+3. Redis persistence and monitoring
+4. Running Celery for notifications and background tasks
+
+…so that the entire Jeco Chat stack is **production-ready**.
+
+Do you want me to do that next?
+
+Perfect! Let’s create a **complete production readiness checklist** for Jeco Chat, covering security, scalability, and background processing. This ensures your app is fully production-ready.
+
+---
+
+# ⚡ Step 47: Production Readiness Checklist for Jeco Chat
+
+---
+
+## 47.1 HTTPS / WSS Setup
+
+1. **Obtain SSL certificates**
+
+   * Use Let’s Encrypt (free) or commercial SSL.
+   * Example with certbot:
+
+     ```bash
+     sudo apt install certbot python3-certbot-nginx
+     sudo certbot --nginx -d app.yourdomain.com
+     ```
+
+2. **Enforce HTTPS / WSS**
+
+   * Redirect all HTTP traffic to HTTPS in Nginx.
+   * WebSocket connections must use WSS (`wss://app.yourdomain.com/ws/...`).
+
+3. **Set HSTS headers** (optional but recommended) in Nginx:
+
+   ```nginx
+   add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+   ```
+
+---
+
+## 47.2 JWT Refresh & Access Token Rotation
+
+1. **Use short-lived access tokens** (e.g., 5–15 min).
+2. **Use long-lived refresh tokens** (e.g., 7 days) stored securely (HTTP-only, Secure cookies).
+3. **Rotate refresh tokens** on every use to prevent replay attacks.
+4. **Invalidate refresh tokens** on logout or password change.
+5. **Django implementation**:
+
+   * Use `rest_framework_simplejwt` with:
+
+     ```python
+     SIMPLE_JWT = {
+         "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+         "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+         "ROTATE_REFRESH_TOKENS": True,
+         "BLACKLIST_AFTER_ROTATION": True,
+     }
+     ```
+
+---
+
+## 47.3 CORS Hardening
+
+1. Install `django-cors-headers`:
+
+   ```bash
+   pip install django-cors-headers
+   ```
+
+2. Add to `INSTALLED_APPS` and middleware in `settings.py`:
+
+   ```python
+   INSTALLED_APPS += ["corsheaders"]
+   MIDDLEWARE = ["corsheaders.middleware.CorsMiddleware"] + MIDDLEWARE
+   ```
+
+3. Restrict allowed origins:
+
+   ```python
+   CORS_ALLOWED_ORIGINS = [
+       "https://app.yourdomain.com",
+   ]
+   CORS_ALLOW_CREDENTIALS = True
+   ```
+
+4. Do **not** use `CORS_ALLOW_ALL_ORIGINS=True` in production.
+
+---
+
+## 47.4 Redis Persistence & Monitoring
+
+1. **Persistence**
+
+   * Enable AOF or RDB persistence in `redis.conf`:
+
+     ```conf
+     appendonly yes
+     save 900 1
+     save 300 10
+     save 60 10000
+     ```
+
+2. **Monitoring**
+
+   * Use `redis-cli info` for metrics.
+   * Optional: integrate **Redis Exporter + Prometheus + Grafana**.
+
+---
+
+## 47.5 Celery for Background Tasks
+
+Use Celery for:
+
+* Sending emails (verification, notifications)
+* Processing uploaded media (resizing images, generating thumbnails)
+* Notifications for chat messages
+
+**Celery Docker service example in `docker-compose.yml`:**
+
+```yaml
+celery:
+  build: ./backend
+  container_name: jeco_celery
+  command: celery -A backend worker -l info
+  depends_on:
+    - redis
+    - backend
+  environment:
+    - DATABASE_URL=postgres://jeco_user:jeco_pass@postgres:5432/jeco_db
+    - REDIS_URL=redis://redis:6379/0
+```
+
+**Celery beat** (for scheduled tasks):
+
+```yaml
+celery-beat:
+  build: ./backend
+  container_name: jeco_celery_beat
+  command: celery -A backend beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+  depends_on:
+    - redis
+    - backend
+```
+
+---
+
+## 47.6 Rate Limiting & Security
+
+1. **Django REST API**:
+
+   * Use `rest_framework.throttling` to limit requests per IP/user.
+
+   ```python
+   REST_FRAMEWORK = {
+       'DEFAULT_THROTTLE_CLASSES': [
+           'rest_framework.throttling.UserRateThrottle',
+           'rest_framework.throttling.AnonRateThrottle',
+       ],
+       'DEFAULT_THROTTLE_RATES': {
+           'user': '500/min',
+           'anon': '50/min',
+       }
+   }
+   ```
+
+2. **WebSocket Rate Limiting**: Already implemented in ChatConsumer (Step 44.a).
+
+3. **Enforce HTTPS-only cookies**:
+
+   ```python
+   SESSION_COOKIE_SECURE = True
+   CSRF_COOKIE_SECURE = True
+   ```
+
+---
+
+## 47.7 Logging & Monitoring
+
+1. **Django Logging**:
+
+   ```python
+   LOGGING = {
+       'version': 1,
+       'disable_existing_loggers': False,
+       'handlers': {
+           'file': {
+               'level': 'INFO',
+               'class': 'logging.FileHandler',
+               'filename': '/var/log/jeco_chat/app.log',
+           },
+       },
+       'loggers': {
+           'django': {
+               'handlers': ['file'],
+               'level': 'INFO',
+               'propagate': True,
+           },
+           'chat.consumers': {
+               'handlers': ['file'],
+               'level': 'INFO',
+               'propagate': True,
+           },
+       },
+   }
+   ```
+
+2. **Monitor Docker containers**:
+
+   ```bash
+   docker stats
+   docker-compose logs -f
+   ```
+
+3. Optional: integrate **Prometheus + Grafana** for metrics (WS connections, message counts, CPU/memory).
+
+---
+
+## 47.8 Database & Migrations
+
+1. Run Django migrations on startup (already in Docker Compose backend command).
+2. **Use PostgreSQL in production** with SSL enabled.
+3. Optional: create read replicas if user base grows.
+
+---
+
+## 47.9 Static & Media Files
+
+1. **Collect static files**: `python manage.py collectstatic --noinput`
+2. **Store media in cloud storage** (S3, GCP, Azure) instead of `/media/` volume.
+
+   * Example: `django-storages` with S3 backend.
+
+---
+
+## 47.10 Optional Scaling Tips
+
+1. **Horizontal scaling**:
+
+   * More Daphne instances behind Nginx upstream for WS.
+   * Multiple Gunicorn workers for REST API.
+
+2. **Celery workers** can be scaled horizontally for heavy tasks.
+
+3. **Redis** can be clustered for high availability.
+
+---
+
+✅ Completing all steps in **Step 44–47** makes Jeco Chat:
+
+* Fully **secure** (HTTPS/WSS, JWT, CORS)
+* **Scalable** (multiple Daphne instances, Celery for async tasks)
+* **Production-ready** (PostgreSQL + Redis + Nginx + static/media management)
+* Monitored & maintainable
+
+---
+
+If you want, I can now produce a **full, final README.md walkthrough** that incorporates all **frontend, backend, WebSocket, Docker, and production steps** in a **single zero-knowledge, step-by-step checklist**.
+
+Do you want me to do that next?
