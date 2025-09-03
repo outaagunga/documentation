@@ -1475,3 +1475,1879 @@ Now Jeco Chat supports:
 
 👉 Do you want me to extend this next into **showing a list of available rooms** (so users don’t have to type the room name manually)?
 
+Perfect — let’s make **room selection easier** by showing users a list of available rooms instead of requiring them to type the name manually.
+
+We’ll add:
+
+* A backend **API endpoint** that lists all existing rooms.
+* A frontend **room picker UI** that fetches and displays the available rooms.
+* Users can click a room to join it.
+
+---
+
+# 🔄 Step 10 — Show Available Rooms
+
+---
+
+## ✅ Backend Updates
+
+### 10.1 Add Room Serializer
+
+`backend/chat/serializers.py`:
+
+```python
+from rest_framework import serializers
+from .models import Message, Room
+
+class RoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ["id", "name"]
+```
+
+---
+
+### 10.2 Add API View to List Rooms
+
+`backend/chat/views.py`:
+
+```python
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
+from .models import Room
+from .serializers import RoomSerializer
+
+class RoomListView(ListAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+    permission_classes = [IsAuthenticated]
+```
+
+---
+
+### 10.3 Update Routes
+
+`backend/chat/urls.py`:
+
+```python
+from django.urls import path
+from .views import RoomMessagesView, RoomListView
+
+urlpatterns = [
+    path("messages/<str:room_name>/", RoomMessagesView.as_view(), name="room-messages"),
+    path("rooms/", RoomListView.as_view(), name="room-list"),
+]
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 10.4 Update `Chat.jsx`
+
+We’ll:
+
+* Fetch the list of rooms from the API.
+* Show them in a clickable list.
+* Allow creating/joining a new room manually if desired.
+
+```jsx
+import { useState, useEffect, useRef } from "react";
+import { getToken } from "../services/AuthService";
+import axios from "axios";
+
+function Chat() {
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState("");
+  const [room, setRoom] = useState("");
+  const [rooms, setRooms] = useState([]);
+  const [joined, setJoined] = useState(false);
+  const ws = useRef(null);
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token) return;
+
+    // Fetch available rooms
+    axios
+      .get("http://127.0.0.1:8000/api/chat/rooms/", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setRooms(res.data))
+      .catch((err) => console.error("Failed to fetch rooms", err));
+
+    return () => {
+      if (ws.current) ws.current.close();
+    };
+  }, []);
+
+  const joinRoom = async (selectedRoom) => {
+    const token = getToken();
+    if (!token) {
+      alert("You must log in first!");
+      window.location.href = "/login";
+      return;
+    }
+
+    const targetRoom = selectedRoom || room;
+    if (!targetRoom) return alert("Enter or select a room");
+
+    try {
+      // Load past messages
+      const res = await axios.get(
+        `http://127.0.0.1:8000/api/chat/messages/${targetRoom}/`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setMessages(res.data.reverse());
+    } catch (err) {
+      console.error("Failed to load past messages", err);
+    }
+
+    // Connect WebSocket
+    ws.current = new WebSocket(
+      `ws://127.0.0.1:8000/ws/chat/?token=${token}&room=${targetRoom}`
+    );
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setMessages((prev) => [...prev, data]);
+    };
+
+    setRoom(targetRoom);
+    setJoined(true);
+  };
+
+  const sendMessage = () => {
+    if (text.trim() && ws.current) {
+      ws.current.send(JSON.stringify({ message: text }));
+      setText("");
+    }
+  };
+
+  return (
+    <div className="container mt-5">
+      <h1>💬 Jeco Chat</h1>
+
+      {!joined ? (
+        <div>
+          <h3>Available Rooms</h3>
+          <ul className="list-group mb-3">
+            {rooms.map((r) => (
+              <li
+                key={r.id}
+                className="list-group-item list-group-item-action"
+                onClick={() => joinRoom(r.name)}
+                style={{ cursor: "pointer" }}
+              >
+                {r.name}
+              </li>
+            ))}
+          </ul>
+
+          <input
+            value={room}
+            onChange={(e) => setRoom(e.target.value)}
+            className="form-control mb-2"
+            placeholder="Or enter a new room"
+          />
+          <button className="btn btn-success" onClick={() => joinRoom(room)}>
+            Join Room
+          </button>
+        </div>
+      ) : (
+        <div>
+          <h3>Room: {room}</h3>
+          <div
+            className="border p-3 mb-3"
+            style={{ height: "300px", overflowY: "scroll" }}
+          >
+            {messages.map((msg, i) => (
+              <div key={i}>
+                <strong>{msg.sender}:</strong> {msg.content}
+              </div>
+            ))}
+          </div>
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="form-control mb-2"
+            placeholder="Type a message..."
+          />
+          <button className="btn btn-primary" onClick={sendMessage}>
+            Send
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ Test Flow
+
+1. Start backend & frontend.
+2. Log in.
+3. You should see a list of existing rooms (fetched from backend).
+4. Click on a room → loads old messages + connects to real-time updates.
+5. Optionally enter a **new room name** → it will be created automatically on join.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports:
+
+* Viewing a **list of available rooms**
+* Clicking to join any room
+* Option to create/join a new room manually
+* Still loads past messages + real-time updates
+
+---
+
+👉 Do you want me to extend this next into **direct private messages (1-on-1 chats between users)**, so it’s not just rooms but also personal chats?
+
+Perfect 🔥 — let’s extend **Jeco Chat** to support **direct private messages (1-on-1 chats between users)** in addition to group chat rooms.
+
+We’ll add:
+
+* A **PrivateRoom** model that links two users.
+* WebSocket logic to handle direct messages.
+* API endpoints so users can see who they can chat with.
+* Frontend updates to show a **“Users” list** and allow starting private chats.
+
+---
+
+# 🔄 Step 11 — Add Direct Private Messages
+
+---
+
+## ✅ Backend Updates
+
+### 11.1 Extend Models
+
+`backend/chat/models.py`:
+
+```python
+from django.db import models
+from django.contrib.auth.models import User
+
+class Room(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class PrivateRoom(models.Model):
+    user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="private_chats_1")
+    user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="private_chats_2")
+
+    class Meta:
+        unique_together = ("user1", "user2")
+
+    def __str__(self):
+        return f"PrivateChat: {self.user1.username} <-> {self.user2.username}"
+
+    def get_room_name(self):
+        # Deterministic room name for WebSocket groups
+        users = sorted([self.user1.username, self.user2.username])
+        return f"private_{users[0]}_{users[1]}"
+
+
+class Message(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="messages", null=True, blank=True)
+    private_room = models.ForeignKey(PrivateRoom, on_delete=models.CASCADE, related_name="messages", null=True, blank=True)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        if self.room:
+            return f"[{self.room.name}] {self.sender.username}: {self.content[:20]}"
+        if self.private_room:
+            return f"[DM] {self.sender.username}: {self.content[:20]}"
+        return f"{self.sender.username}: {self.content[:20]}"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "room": self.room.name if self.room else None,
+            "private": self.private_room.get_room_name() if self.private_room else None,
+            "sender": self.sender.username,
+            "content": self.content,
+            "timestamp": self.timestamp.isoformat(),
+        }
+```
+
+---
+
+### 11.2 Update Consumer for Private Messages
+
+`backend/chat/consumers.py`:
+
+```python
+import json
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import AccessToken
+from .models import Message, Room, PrivateRoom
+
+User = get_user_model()
+
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        query = dict(x.split("=") for x in self.scope["query_string"].decode().split("&"))
+        self.token = query.get("token")
+        self.room_name = query.get("room")
+        self.private_with = query.get("user")  # For private DM
+        self.user = await self.get_user_from_token(self.token)
+
+        if not self.user or isinstance(self.user, AnonymousUser):
+            await self.close()
+            return
+
+        if self.private_with:
+            # Setup private chat
+            self.room_group_name = await self.get_private_room_name(self.user.username, self.private_with)
+        else:
+            # Normal group chat
+            self.room_group_name = f"chat_{self.room_name}"
+            await self.create_room_if_not_exists(self.room_name)
+
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        content = data.get("message")
+
+        if self.user and content:
+            if self.private_with:
+                message = await self.save_private_message(self.user.username, self.private_with, content)
+            else:
+                message = await self.save_group_message(self.user, self.room_name, content)
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {"type": "chat_message", "message": message},
+            )
+
+    async def chat_message(self, event):
+        await self.send(text_data=json.dumps(event["message"]))
+
+    @database_sync_to_async
+    def save_group_message(self, user, room_name, content):
+        room, _ = Room.objects.get_or_create(name=room_name)
+        msg = Message.objects.create(sender=user, room=room, content=content)
+        return msg.to_dict()
+
+    @database_sync_to_async
+    def save_private_message(self, sender_username, receiver_username, content):
+        sender = User.objects.get(username=sender_username)
+        receiver = User.objects.get(username=receiver_username)
+
+        room, _ = PrivateRoom.objects.get_or_create(
+            user1=min(sender, receiver, key=lambda u: u.id),
+            user2=max(sender, receiver, key=lambda u: u.id),
+        )
+        msg = Message.objects.create(sender=sender, private_room=room, content=content)
+        return msg.to_dict()
+
+    @database_sync_to_async
+    def create_room_if_not_exists(self, room_name):
+        Room.objects.get_or_create(name=room_name)
+
+    @database_sync_to_async
+    def get_private_room_name(self, user1, user2):
+        users = sorted([user1, user2])
+        return f"private_{users[0]}_{users[1]}"
+
+    @database_sync_to_async
+    def get_user_from_token(self, token):
+        try:
+            access_token = AccessToken(token)
+            user = User.objects.get(id=access_token["user_id"])
+            return user
+        except Exception:
+            return None
+```
+
+---
+
+### 11.3 Add User List API
+
+`backend/chat/views.py`:
+
+```python
+from django.contrib.auth.models import User
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import serializers
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username"]
+
+class UserListView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+```
+
+---
+
+### 11.4 Add Route
+
+`backend/chat/urls.py`:
+
+```python
+from django.urls import path
+from .views import RoomMessagesView, RoomListView, UserListView
+
+urlpatterns = [
+    path("messages/<str:room_name>/", RoomMessagesView.as_view(), name="room-messages"),
+    path("rooms/", RoomListView.as_view(), name="room-list"),
+    path("users/", UserListView.as_view(), name="user-list"),
+]
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 11.5 Update `Chat.jsx`
+
+Now we’ll show a **Users list** alongside Rooms. Clicking a username starts a private chat.
+
+```jsx
+import { useState, useEffect, useRef } from "react";
+import { getToken } from "../services/AuthService";
+import axios from "axios";
+
+function Chat() {
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState("");
+  const [room, setRoom] = useState("");
+  const [rooms, setRooms] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [joined, setJoined] = useState(false);
+  const [chatType, setChatType] = useState(null); // "room" or "private"
+  const ws = useRef(null);
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token) return;
+
+    // Fetch rooms
+    axios
+      .get("http://127.0.0.1:8000/api/chat/rooms/", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setRooms(res.data));
+
+    // Fetch users
+    axios
+      .get("http://127.0.0.1:8000/api/chat/users/", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setUsers(res.data));
+
+    return () => {
+      if (ws.current) ws.current.close();
+    };
+  }, []);
+
+  const joinRoom = async (targetRoom) => {
+    const token = getToken();
+    setChatType("room");
+
+    ws.current = new WebSocket(
+      `ws://127.0.0.1:8000/ws/chat/?token=${token}&room=${targetRoom}`
+    );
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setMessages((prev) => [...prev, data]);
+    };
+
+    setRoom(targetRoom);
+    setJoined(true);
+  };
+
+  const startPrivateChat = async (username) => {
+    const token = getToken();
+    setChatType("private");
+
+    ws.current = new WebSocket(
+      `ws://127.0.0.1:8000/ws/chat/?token=${token}&user=${username}`
+    );
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setMessages((prev) => [...prev, data]);
+    };
+
+    setRoom(`Private with ${username}`);
+    setJoined(true);
+  };
+
+  const sendMessage = () => {
+    if (text.trim() && ws.current) {
+      ws.current.send(JSON.stringify({ message: text }));
+      setText("");
+    }
+  };
+
+  return (
+    <div className="container mt-5">
+      <h1>💬 Jeco Chat</h1>
+
+      {!joined ? (
+        <div className="row">
+          <div className="col-md-6">
+            <h3>Rooms</h3>
+            <ul className="list-group mb-3">
+              {rooms.map((r) => (
+                <li
+                  key={r.id}
+                  className="list-group-item list-group-item-action"
+                  onClick={() => joinRoom(r.name)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {r.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="col-md-6">
+            <h3>Users</h3>
+            <ul className="list-group mb-3">
+              {users.map((u) => (
+                <li
+                  key={u.id}
+                  className="list-group-item list-group-item-action"
+                  onClick={() => startPrivateChat(u.username)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {u.username}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <h3>{room}</h3>
+          <div
+            className="border p-3 mb-3"
+            style={{ height: "300px", overflowY: "scroll" }}
+          >
+            {messages.map((msg, i) => (
+              <div key={i}>
+                <strong>{msg.sender}:</strong> {msg.content}
+              </div>
+            ))}
+          </div>
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="form-control mb-2"
+            placeholder="Type a message..."
+          />
+          <button className="btn btn-primary" onClick={sendMessage}>
+            Send
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ Test Flow
+
+1. Log in with **User A** in one browser, **User B** in another.
+2. Click on **Rooms** → join a public room (works as before).
+3. Click on **User B** from **User A’s list** → starts private chat.
+4. Both users should see direct messages in real-time, separate from rooms.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports:
+
+* Group rooms
+* Private 1-on-1 chats
+* Room + User lists in the UI
+* Separate real-time streams for public & private messages
+
+---
+
+👉 Do you want me to extend this next into **notifications (e.g., new message alerts when you’re not in that room/private chat)**?
+
+Perfect 🔔 — let’s add **real-time notifications** so users see an alert when they get a **new message in a room or private chat they’re not currently viewing**.
+
+This will require:
+
+* Backend: sending a **notification event** alongside the message.
+* Frontend: a **notification panel** (like a badge or list of unread chats).
+* Tracking unread messages by room or private chat.
+
+---
+
+# 🔄 Step 12 — Add Notifications
+
+---
+
+## ✅ Backend Updates
+
+We’ll expand our **ChatConsumer** so every message sent also triggers a **notification event** for the target user(s).
+
+### 12.1 Add Notification Model
+
+`backend/chat/models.py`:
+
+```python
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="notifications")
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notify {self.user.username} -> {self.message.content[:20]}"
+```
+
+---
+
+### 12.2 Update Consumer to Create Notifications
+
+`backend/chat/consumers.py`:
+
+```python
+    @database_sync_to_async
+    def save_private_message(self, sender_username, receiver_username, content):
+        sender = User.objects.get(username=sender_username)
+        receiver = User.objects.get(username=receiver_username)
+
+        room, _ = PrivateRoom.objects.get_or_create(
+            user1=min(sender, receiver, key=lambda u: u.id),
+            user2=max(sender, receiver, key=lambda u: u.id),
+        )
+        msg = Message.objects.create(sender=sender, private_room=room, content=content)
+
+        # Create notification for receiver
+        Notification.objects.create(user=receiver, message=msg)
+
+        return msg.to_dict()
+
+    @database_sync_to_async
+    def save_group_message(self, user, room_name, content):
+        room, _ = Room.objects.get_or_create(name=room_name)
+        msg = Message.objects.create(sender=user, room=room, content=content)
+
+        # Notify all other users (who are members of this room in future)
+        # For now: notify everyone except sender
+        for u in User.objects.exclude(id=user.id):
+            Notification.objects.create(user=u, message=msg)
+
+        return msg.to_dict()
+```
+
+---
+
+### 12.3 Notifications API
+
+`backend/chat/views.py`:
+
+```python
+from .models import Notification
+from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.permissions import IsAuthenticated
+
+class NotificationSerializer(serializers.ModelSerializer):
+    message = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Notification
+        fields = ["id", "message", "is_read", "created_at"]
+
+    def get_message(self, obj):
+        return obj.message.to_dict()
+
+class NotificationListView(ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user, is_read=False).order_by("-created_at")
+
+class NotificationMarkReadView(UpdateAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Notification.objects.all()
+
+    def perform_update(self, serializer):
+        serializer.save(is_read=True)
+```
+
+---
+
+### 12.4 Add Routes
+
+`backend/chat/urls.py`:
+
+```python
+from .views import RoomMessagesView, RoomListView, UserListView, NotificationListView, NotificationMarkReadView
+
+urlpatterns = [
+    path("messages/<str:room_name>/", RoomMessagesView.as_view(), name="room-messages"),
+    path("rooms/", RoomListView.as_view(), name="room-list"),
+    path("users/", UserListView.as_view(), name="user-list"),
+    path("notifications/", NotificationListView.as_view(), name="notification-list"),
+    path("notifications/<int:pk>/read/", NotificationMarkReadView.as_view(), name="notification-mark-read"),
+]
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 12.5 Update `Chat.jsx` with Notifications
+
+We’ll fetch **notifications** every few seconds and display a badge.
+
+```jsx
+import { useState, useEffect, useRef } from "react";
+import { getToken } from "../services/AuthService";
+import axios from "axios";
+
+function Chat() {
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState("");
+  const [room, setRoom] = useState("");
+  const [rooms, setRooms] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [joined, setJoined] = useState(false);
+  const [chatType, setChatType] = useState(null);
+  const ws = useRef(null);
+
+  const token = getToken();
+
+  // Fetch rooms & users
+  useEffect(() => {
+    if (!token) return;
+
+    axios
+      .get("http://127.0.0.1:8000/api/chat/rooms/", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setRooms(res.data));
+
+    axios
+      .get("http://127.0.0.1:8000/api/chat/users/", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setUsers(res.data));
+
+    return () => {
+      if (ws.current) ws.current.close();
+    };
+  }, [token]);
+
+  // Fetch notifications every 5s
+  useEffect(() => {
+    if (!token) return;
+    const fetchNotifications = () => {
+      axios
+        .get("http://127.0.0.1:8000/api/chat/notifications/", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => setNotifications(res.data));
+    };
+
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 5000);
+    return () => clearInterval(interval);
+  }, [token]);
+
+  const joinRoom = async (targetRoom) => {
+    ws.current = new WebSocket(
+      `ws://127.0.0.1:8000/ws/chat/?token=${token}&room=${targetRoom}`
+    );
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setMessages((prev) => [...prev, data]);
+    };
+
+    setRoom(targetRoom);
+    setChatType("room");
+    setJoined(true);
+
+    // Clear related notifications
+    clearNotificationsFor(targetRoom, "room");
+  };
+
+  const startPrivateChat = async (username) => {
+    ws.current = new WebSocket(
+      `ws://127.0.0.1:8000/ws/chat/?token=${token}&user=${username}`
+    );
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setMessages((prev) => [...prev, data]);
+    };
+
+    setRoom(`Private with ${username}`);
+    setChatType("private");
+    setJoined(true);
+
+    // Clear related notifications
+    clearNotificationsFor(username, "private");
+  };
+
+  const sendMessage = () => {
+    if (text.trim() && ws.current) {
+      ws.current.send(JSON.stringify({ message: text }));
+      setText("");
+    }
+  };
+
+  const clearNotificationsFor = async (target, type) => {
+    const toClear = notifications.filter((n) => {
+      if (type === "room" && n.message.room === target) return true;
+      if (type === "private" && n.message.private?.includes(target)) return true;
+      return false;
+    });
+
+    for (let n of toClear) {
+      await axios.patch(
+        `http://127.0.0.1:8000/api/chat/notifications/${n.id}/read/`,
+        { is_read: true },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    }
+  };
+
+  return (
+    <div className="container mt-5">
+      <h1>💬 Jeco Chat</h1>
+
+      <div className="mb-3">
+        <h4>
+          🔔 Notifications ({notifications.length})
+        </h4>
+        {notifications.map((n) => (
+          <div key={n.id} className="alert alert-info p-2">
+            <strong>{n.message.sender}</strong>: {n.message.content}
+          </div>
+        ))}
+      </div>
+
+      {!joined ? (
+        <div className="row">
+          <div className="col-md-6">
+            <h3>Rooms</h3>
+            <ul className="list-group mb-3">
+              {rooms.map((r) => (
+                <li
+                  key={r.id}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                  onClick={() => joinRoom(r.name)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {r.name}
+                  <span className="badge bg-danger">
+                    {
+                      notifications.filter((n) => n.message.room === r.name)
+                        .length
+                    }
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="col-md-6">
+            <h3>Users</h3>
+            <ul className="list-group mb-3">
+              {users.map((u) => (
+                <li
+                  key={u.id}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                  onClick={() => startPrivateChat(u.username)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {u.username}
+                  <span className="badge bg-danger">
+                    {
+                      notifications.filter(
+                        (n) => n.message.private?.includes(u.username)
+                      ).length
+                    }
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <h3>{room}</h3>
+          <div
+            className="border p-3 mb-3"
+            style={{ height: "300px", overflowY: "scroll" }}
+          >
+            {messages.map((msg, i) => (
+              <div key={i}>
+                <strong>{msg.sender}:</strong> {msg.content}
+              </div>
+            ))}
+          </div>
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="form-control mb-2"
+            placeholder="Type a message..."
+          />
+          <button className="btn btn-primary" onClick={sendMessage}>
+            Send
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ Test Flow
+
+1. Open **User A** in Chrome, **User B** in Firefox.
+2. **User B** sends a message in a room that User A hasn’t joined yet → User A sees a 🔔 notification.
+3. **User B** sends a private DM → User A sees a notification badge beside User B’s name.
+4. When User A clicks the room or User → notifications clear automatically.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports:
+
+* ✅ Group rooms
+* ✅ Private DMs
+* ✅ Real-time notifications with unread badges
+
+---
+
+👉 Do you want me to take this further into **“online status (who’s active right now)”** so users know who’s available before starting a chat?
+
+Awesome 🚀 — let’s add **real-time online status (presence)** so users can see who’s online before starting a chat.
+
+We’ll:
+
+* Update the **WebSocket consumer** to track connected users.
+* Broadcast when a user **connects** or **disconnects**.
+* Show online/offline status in the **frontend user list**.
+
+---
+
+# 🔄 Step 13 — Add Online Status (Presence)
+
+---
+
+## ✅ Backend Updates
+
+### 13.1 Extend `ChatConsumer` to Track Active Users
+
+We’ll keep a global in-memory store (for dev) of connected users.
+Later, this can move to **Redis** for production scaling.
+
+`backend/chat/consumers.py`:
+
+```python
+active_users = set()
+
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        user = self.scope["user"]
+        if user.is_authenticated:
+            active_users.add(user.username)
+            await self.channel_layer.group_add("presence", self.channel_name)
+            await self.channel_layer.group_send(
+                "presence",
+                {
+                    "type": "user_status",
+                    "user": user.username,
+                    "status": "online",
+                },
+            )
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        user = self.scope["user"]
+        if user.is_authenticated and user.username in active_users:
+            active_users.remove(user.username)
+            await self.channel_layer.group_send(
+                "presence",
+                {
+                    "type": "user_status",
+                    "user": user.username,
+                    "status": "offline",
+                },
+            )
+
+    async def receive(self, text_data):
+        # (existing message handling stays the same)
+        data = json.loads(text_data)
+        message = data.get("message")
+
+        if "room" in self.scope["url_route"]["kwargs"]:
+            room_name = self.scope["url_route"]["kwargs"]["room"]
+            msg = await self.save_group_message(self.scope["user"], room_name, message)
+            await self.channel_layer.group_send(
+                room_name,
+                {"type": "chat_message", **msg},
+            )
+        elif "user" in self.scope["url_route"]["kwargs"]:
+            receiver = self.scope["url_route"]["kwargs"]["user"]
+            msg = await self.save_private_message(self.scope["user"].username, receiver, message)
+            await self.channel_layer.group_send(
+                f"private_{receiver}",
+                {"type": "chat_message", **msg},
+            )
+            await self.channel_layer.group_add(f"private_{self.scope['user'].username}", self.channel_name)
+
+    async def chat_message(self, event):
+        await self.send(text_data=json.dumps(event))
+
+    async def user_status(self, event):
+        # Broadcast presence updates
+        await self.send(text_data=json.dumps({
+            "type": "status",
+            "user": event["user"],
+            "status": event["status"],
+        }))
+```
+
+---
+
+### 13.2 Add API for Initial Online Users
+
+`backend/chat/views.py`:
+
+```python
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+class OnlineUsersView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(list(active_users))
+```
+
+---
+
+### 13.3 Add Route
+
+`backend/chat/urls.py`:
+
+```python
+from .views import OnlineUsersView
+
+urlpatterns += [
+    path("online-users/", OnlineUsersView.as_view(), name="online-users"),
+]
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 13.4 Connect to Presence Channel
+
+We’ll use a **dedicated WebSocket** for presence updates.
+
+`Chat.jsx`:
+
+```jsx
+const [onlineUsers, setOnlineUsers] = useState([]);
+
+useEffect(() => {
+  if (!token) return;
+
+  // Get initial online users
+  axios
+    .get("http://127.0.0.1:8000/api/chat/online-users/", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((res) => setOnlineUsers(res.data));
+
+  // Connect to presence WebSocket
+  const presenceSocket = new WebSocket(
+    `ws://127.0.0.1:8000/ws/chat/?token=${token}`
+  );
+
+  presenceSocket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.type === "status") {
+      setOnlineUsers((prev) => {
+        if (data.status === "online") {
+          return [...new Set([...prev, data.user])];
+        } else {
+          return prev.filter((u) => u !== data.user);
+        }
+      });
+    }
+  };
+
+  return () => presenceSocket.close();
+}, [token]);
+```
+
+---
+
+### 13.5 Show Status in User List
+
+Update the **users list rendering**:
+
+```jsx
+<ul className="list-group mb-3">
+  {users.map((u) => (
+    <li
+      key={u.id}
+      className="list-group-item d-flex justify-content-between align-items-center"
+      onClick={() => startPrivateChat(u.username)}
+      style={{ cursor: "pointer" }}
+    >
+      {u.username}
+      <span
+        className={`badge ${
+          onlineUsers.includes(u.username) ? "bg-success" : "bg-secondary"
+        }`}
+      >
+        {onlineUsers.includes(u.username) ? "Online" : "Offline"}
+      </span>
+    </li>
+  ))}
+</ul>
+```
+
+---
+
+## ✅ Test Flow
+
+1. Open **User A** in Chrome, **User B** in Firefox.
+2. Log both in → each sees the other as **Online**.
+3. Close User B’s browser → User A sees them switch to **Offline**.
+4. When User B logs back in → User A sees **Online** again in real time.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports:
+
+* ✅ Real-time presence tracking
+* ✅ Online/offline badges next to users
+* ✅ Status updates broadcast instantly
+
+---
+
+👉 Next level: Do you want me to extend this into a **"typing indicator" (e.g. “User is typing…")** so users see when the other person is actively writing a message?
+
+Great choice 😃 — let’s add a **typing indicator** so users can see when someone is writing in a room or private chat.
+
+We’ll:
+
+* Extend the **WebSocket consumer** to handle a `"typing"` event.
+* Broadcast typing events to all users in that chat (room or private).
+* Update the frontend to display `"User is typing..."` below the chat box.
+
+---
+
+# 🔄 Step 14 — Add Typing Indicator
+
+---
+
+## ✅ Backend Updates
+
+### 14.1 Update `ChatConsumer`
+
+We’ll add a handler for `"typing"` events.
+
+`backend/chat/consumers.py`:
+
+```python
+async def receive(self, text_data):
+    data = json.loads(text_data)
+
+    if "typing" in data:  
+        # typing event (not a message)
+        if "room" in self.scope["url_route"]["kwargs"]:
+            room_name = self.scope["url_route"]["kwargs"]["room"]
+            await self.channel_layer.group_send(
+                room_name,
+                {
+                    "type": "user_typing",
+                    "user": self.scope["user"].username,
+                    "typing": data["typing"],
+                },
+            )
+        elif "user" in self.scope["url_route"]["kwargs"]:
+            receiver = self.scope["url_route"]["kwargs"]["user"]
+            await self.channel_layer.group_send(
+                f"private_{receiver}",
+                {
+                    "type": "user_typing",
+                    "user": self.scope["user"].username,
+                    "typing": data["typing"],
+                },
+            )
+    elif "message" in data:  
+        # existing message handling
+        message = data.get("message")
+
+        if "room" in self.scope["url_route"]["kwargs"]:
+            room_name = self.scope["url_route"]["kwargs"]["room"]
+            msg = await self.save_group_message(self.scope["user"], room_name, message)
+            await self.channel_layer.group_send(
+                room_name,
+                {"type": "chat_message", **msg},
+            )
+        elif "user" in self.scope["url_route"]["kwargs"]:
+            receiver = self.scope["url_route"]["kwargs"]["user"]
+            msg = await self.save_private_message(self.scope["user"].username, receiver, message)
+            await self.channel_layer.group_send(
+                f"private_{receiver}",
+                {"type": "chat_message", **msg},
+            )
+            await self.channel_layer.group_add(f"private_{self.scope['user'].username}", self.channel_name)
+
+async def user_typing(self, event):
+    await self.send(text_data=json.dumps({
+        "type": "typing",
+        "user": event["user"],
+        "typing": event["typing"],
+    }))
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 14.2 Track Typing State
+
+We’ll send `"typing": true/false` events when a user starts/stops typing.
+
+In `Chat.jsx`:
+
+```jsx
+const [typingUsers, setTypingUsers] = useState([]);
+
+// Handle typing events
+useEffect(() => {
+  if (!ws.current) return;
+  ws.current.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.type === "chat_message") {
+      setMessages((prev) => [...prev, data]);
+    } else if (data.type === "typing") {
+      if (data.typing) {
+        setTypingUsers((prev) => [...new Set([...prev, data.user])]);
+      } else {
+        setTypingUsers((prev) => prev.filter((u) => u !== data.user));
+      }
+    }
+  };
+}, [ws.current]);
+
+// Send typing status
+const handleTyping = (e) => {
+  setText(e.target.value);
+  if (ws.current) {
+    ws.current.send(JSON.stringify({ typing: e.target.value.length > 0 }));
+  }
+};
+```
+
+---
+
+### 14.3 Show Typing Indicator
+
+Update the chat UI to display typing users:
+
+```jsx
+<div
+  className="border p-3 mb-3"
+  style={{ height: "300px", overflowY: "scroll" }}
+>
+  {messages.map((msg, i) => (
+    <div key={i}>
+      <strong>{msg.sender}:</strong> {msg.content}
+    </div>
+  ))}
+</div>
+
+{typingUsers.length > 0 && (
+  <div className="text-muted mb-2">
+    {typingUsers.join(", ")} {typingUsers.length === 1 ? "is" : "are"} typing...
+  </div>
+)}
+
+<input
+  value={text}
+  onChange={handleTyping}
+  className="form-control mb-2"
+  placeholder="Type a message..."
+/>
+<button className="btn btn-primary" onClick={sendMessage}>
+  Send
+</button>
+```
+
+---
+
+## ✅ Test Flow
+
+1. Open **User A** and **User B** in two browsers.
+2. User A starts typing → User B sees **“UserA is typing…”**.
+3. When User A stops typing (input cleared or message sent), the indicator disappears.
+4. Works in both **rooms** and **private chats**.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports:
+
+* ✅ Typing indicators in real-time
+* ✅ Works for rooms and private chats
+* ✅ Shows multiple users typing at once
+
+---
+
+👉 Next upgrade: Do you want me to add **message reactions (👍❤️😂 etc.)** so users can react to messages without sending a reply?
+
+
+Perfect 🎉 — let’s add **message reactions (👍❤️😂 etc.)** so users can quickly respond without typing a reply.
+
+We’ll:
+
+* Extend the **Message model** with a `Reaction` model.
+* Add an **API + WebSocket event** for reacting to messages.
+* Show reactions under each message in the chat UI.
+
+---
+
+# 🔄 Step 15 — Add Message Reactions
+
+---
+
+## ✅ Backend Updates
+
+### 15.1 Create a `Reaction` Model
+
+`backend/chat/models.py`:
+
+```python
+class Reaction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reactions")
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="reactions")
+    emoji = models.CharField(max_length=10)  # e.g. 👍 ❤️ 😂
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "message", "emoji")  # one reaction per user per emoji
+
+    def __str__(self):
+        return f"{self.user.username} reacted {self.emoji} to {self.message.id}"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user": self.user.username,
+            "emoji": self.emoji,
+            "message_id": self.message.id,
+        }
+```
+
+---
+
+### 15.2 Add Serializer
+
+`backend/chat/serializers.py`:
+
+```python
+from .models import Reaction
+
+class ReactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reaction
+        fields = ["id", "user", "emoji", "message"]
+```
+
+---
+
+### 15.3 Add API View
+
+`backend/chat/views.py`:
+
+```python
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Reaction, Message
+
+class ReactionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, message_id):
+        emoji = request.data.get("emoji")
+        if not emoji:
+            return Response({"error": "Emoji required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        message = Message.objects.get(id=message_id)
+        reaction, created = Reaction.objects.get_or_create(
+            user=request.user, message=message, emoji=emoji
+        )
+
+        if not created:
+            # toggle off if exists
+            reaction.delete()
+            return Response({"removed": True})
+
+        # Broadcast reaction via WebSocket
+        async_to_sync(channel_layer.group_send)(
+            f"message_{message.id}",
+            {
+                "type": "new_reaction",
+                "reaction": reaction.to_dict(),
+            },
+        )
+
+        return Response(ReactionSerializer(reaction).data)
+```
+
+---
+
+### 15.4 Update Consumer to Handle Reactions
+
+`backend/chat/consumers.py`:
+
+```python
+async def new_reaction(self, event):
+    await self.send(text_data=json.dumps({
+        "type": "reaction",
+        "reaction": event["reaction"],
+    }))
+```
+
+---
+
+### 15.5 Add Route
+
+`backend/chat/urls.py`:
+
+```python
+urlpatterns += [
+    path("messages/<int:message_id>/react/", ReactionView.as_view(), name="react-message"),
+]
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 15.6 Add Reactions in Chat UI
+
+We’ll:
+
+* Show **emoji buttons** under each message.
+* Call API to toggle reactions.
+* Listen to WebSocket for live updates.
+
+In `Chat.jsx`:
+
+```jsx
+const availableReactions = ["👍", "❤️", "😂", "🔥", "👏"];
+
+const reactToMessage = async (messageId, emoji) => {
+  try {
+    await axios.post(
+      `http://127.0.0.1:8000/api/chat/messages/${messageId}/react/`,
+      { emoji },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  } catch (err) {
+    console.error("Failed to react", err);
+  }
+};
+
+useEffect(() => {
+  if (!ws.current) return;
+
+  ws.current.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.type === "chat_message") {
+      setMessages((prev) => [...prev, data]);
+    } else if (data.type === "reaction") {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === data.reaction.message_id
+            ? {
+                ...msg,
+                reactions: [...(msg.reactions || []), data.reaction],
+              }
+            : msg
+        )
+      );
+    } else if (data.type === "typing") {
+      if (data.typing) {
+        setTypingUsers((prev) => [...new Set([...prev, data.user])]);
+      } else {
+        setTypingUsers((prev) => prev.filter((u) => u !== data.user));
+      }
+    }
+  };
+}, [ws.current]);
+```
+
+---
+
+### 15.7 Render Messages with Reactions
+
+```jsx
+<div
+  className="border p-3 mb-3"
+  style={{ height: "300px", overflowY: "scroll" }}
+>
+  {messages.map((msg, i) => (
+    <div key={i} className="mb-2">
+      <strong>{msg.sender}:</strong> {msg.content}
+
+      <div className="d-flex align-items-center mt-1">
+        {availableReactions.map((emoji) => (
+          <span
+            key={emoji}
+            style={{ cursor: "pointer", marginRight: "5px" }}
+            onClick={() => reactToMessage(msg.id, emoji)}
+          >
+            {emoji}
+          </span>
+        ))}
+      </div>
+
+      {msg.reactions && msg.reactions.length > 0 && (
+        <div className="mt-1">
+          {msg.reactions.map((r, j) => (
+            <span key={j} style={{ marginRight: "8px" }}>
+              {r.emoji} ({r.user})
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  ))}
+</div>
+```
+
+---
+
+## ✅ Test Flow
+
+1. User A sends a message.
+2. User B clicks 👍 → User A sees the reaction instantly under the message.
+3. Clicking again toggles it off (removes reaction).
+4. Multiple users can react with different emojis.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports:
+
+* ✅ Emoji reactions under messages
+* ✅ Toggle reactions on/off
+* ✅ Real-time updates via WebSocket
+
+---
+
+👉 Next upgrade: Do you want me to add **file/image sharing (upload + preview)** so users can send pictures and documents in chat?
+
+Awesome 🚀 — let’s add **file & image sharing** so users can upload and send pictures, documents, or any file in Jeco Chat.
+
+We’ll:
+
+* Extend the **Message model** with an optional `file` field.
+* Create an **API for uploading files**.
+* Update the **WebSocket consumer** to broadcast messages with files.
+* Update the **frontend** to allow file uploads and previews (images show inline, other files show as downloadable links).
+
+---
+
+# 🔄 Step 16 — Add File/Image Sharing
+
+---
+
+## ✅ Backend Updates
+
+### 16.1 Update `Message` Model
+
+`backend/chat/models.py`:
+
+```python
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True)
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="received_messages")
+    content = models.TextField(blank=True)
+    file = models.FileField(upload_to="chat_files/", null=True, blank=True)  # NEW
+    timestamp = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.sender} -> {self.receiver or self.room}: {self.content or self.file.url}"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "sender": self.sender.username,
+            "content": self.content,
+            "file": self.file.url if self.file else None,
+            "timestamp": self.timestamp.isoformat(),
+        }
+```
+
+---
+
+### 16.2 Update Serializer
+
+`backend/chat/serializers.py`:
+
+```python
+class MessageSerializer(serializers.ModelSerializer):
+    sender = serializers.CharField(source="sender.username", read_only=True)
+
+    class Meta:
+        model = Message
+        fields = ["id", "sender", "content", "file", "timestamp"]
+```
+
+---
+
+### 16.3 API for Upload
+
+`backend/chat/views.py`:
+
+```python
+from rest_framework.parsers import MultiPartParser, FormParser
+
+class FileMessageView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, *args, **kwargs):
+        room_id = request.data.get("room")
+        receiver_id = request.data.get("receiver")
+        content = request.data.get("content", "")
+
+        file = request.FILES.get("file")
+        if not file:
+            return Response({"error": "File is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        msg = Message.objects.create(
+            sender=request.user,
+            room=Room.objects.get(id=room_id) if room_id else None,
+            receiver=User.objects.get(id=receiver_id) if receiver_id else None,
+            content=content,
+            file=file,
+        )
+
+        # Broadcast via WebSocket
+        async_to_sync(channel_layer.group_send)(
+            f"room_{room_id}" if room_id else f"private_{receiver_id}",
+            {"type": "chat_message", **msg.to_dict()},
+        )
+
+        return Response(MessageSerializer(msg).data, status=status.HTTP_201_CREATED)
+```
+
+---
+
+### 16.4 Add Route
+
+`backend/chat/urls.py`:
+
+```python
+urlpatterns += [
+    path("upload/", FileMessageView.as_view(), name="upload-file"),
+]
+```
+
+---
+
+### 16.5 Media Settings
+
+In `backend/settings.py`:
+
+```python
+import os
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+```
+
+In `backend/urls.py`:
+
+```python
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/chat/", include("chat.urls")),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 16.6 Add File Input
+
+In `Chat.jsx`:
+
+```jsx
+const [file, setFile] = useState(null);
+
+const handleFileChange = (e) => {
+  setFile(e.target.files[0]);
+};
+
+const sendFile = async () => {
+  if (!file) return;
+
+  const formData = new FormData();
+  if (roomId) formData.append("room", roomId);
+  if (receiverId) formData.append("receiver", receiverId);
+  formData.append("file", file);
+  formData.append("content", text);
+
+  try {
+    await axios.post("http://127.0.0.1:8000/api/chat/upload/", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    setFile(null);
+    setText("");
+  } catch (err) {
+    console.error("File upload failed", err);
+  }
+};
+```
+
+---
+
+### 16.7 Update UI
+
+Add file input + upload button:
+
+```jsx
+<input
+  type="file"
+  onChange={handleFileChange}
+  className="form-control mb-2"
+/>
+<button className="btn btn-secondary mb-2" onClick={sendFile}>
+  Send File
+</button>
+```
+
+---
+
+### 16.8 Show File Messages
+
+In message rendering:
+
+```jsx
+{messages.map((msg, i) => (
+  <div key={i} className="mb-2">
+    <strong>{msg.sender}:</strong> {msg.content}
+
+    {msg.file && (
+      msg.file.match(/\.(jpg|jpeg|png|gif)$/i) ? (
+        <div>
+          <img
+            src={`http://127.0.0.1:8000${msg.file}`}
+            alt="chat file"
+            style={{ maxWidth: "200px", marginTop: "5px" }}
+          />
+        </div>
+      ) : (
+        <div>
+          <a
+            href={`http://127.0.0.1:8000${msg.file}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            📎 Download File
+          </a>
+        </div>
+      )
+    )}
+  </div>
+))}
+```
+
+---
+
+## ✅ Test Flow
+
+1. User selects a file (image or doc).
+2. Clicks **Send File** → Uploads via API → Broadcast via WebSocket.
+3. Other users instantly see the file:
+
+   * 🖼 Images show inline.
+   * 📎 Docs show as clickable download links.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports:
+
+* ✅ Sending images and files.
+* ✅ Inline previews for images.
+* ✅ Real-time delivery via WebSocket.
+
+---
+
+👉 Next upgrade: Do you want me to add **message notifications (desktop + in-app alerts when a new message arrives)?**
+
+
