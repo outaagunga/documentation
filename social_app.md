@@ -1262,3 +1262,216 @@ Now Jeco Chat supports:
 
 👉 Do you want me to extend this next into **loading past messages when someone joins a room** (so they don’t just see new ones)?
 
+Perfect 🚀 — let’s extend **Jeco Chat** so that when a user joins a room, they also **load the past messages** from the database (instead of only seeing new ones).
+
+We’ll add an API endpoint on the backend to fetch old messages and then update the frontend to load them when a room is joined.
+
+---
+
+# 🔄 Step 9 — Load Past Messages on Room Join
+
+---
+
+## ✅ Backend Updates
+
+### 9.1 Create a Serializer
+
+`backend/chat/serializers.py`:
+
+```python
+from rest_framework import serializers
+from .models import Message
+
+class MessageSerializer(serializers.ModelSerializer):
+    sender = serializers.CharField(source="sender.username")
+    room = serializers.CharField(source="room.name")
+
+    class Meta:
+        model = Message
+        fields = ["id", "room", "sender", "content", "timestamp"]
+```
+
+---
+
+### 9.2 Create a Messages API View
+
+`backend/chat/views.py`:
+
+```python
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .models import Room, Message
+from .serializers import MessageSerializer
+
+class RoomMessagesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, room_name):
+        try:
+            room = Room.objects.get(name=room_name)
+        except Room.DoesNotExist:
+            return Response({"error": "Room not found"}, status=404)
+
+        messages = room.messages.order_by("-timestamp")[:50]  # last 50 messages
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
+```
+
+---
+
+### 9.3 Add Route to `urls.py`
+
+`backend/chat/urls.py`:
+
+```python
+from django.urls import path
+from .views import RoomMessagesView
+
+urlpatterns = [
+    path("messages/<str:room_name>/", RoomMessagesView.as_view(), name="room-messages"),
+]
+```
+
+And include in `backend/urls.py`:
+
+```python
+from django.urls import path, include
+
+urlpatterns = [
+    path("api/chat/", include("chat.urls")),
+]
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 9.4 Update `Chat.jsx`
+
+We’ll fetch past messages from the API **before** connecting to WebSocket.
+
+```jsx
+import { useState, useEffect, useRef } from "react";
+import { getToken } from "../services/AuthService";
+import axios from "axios";
+
+function Chat() {
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState("");
+  const [room, setRoom] = useState("general");
+  const [joined, setJoined] = useState(false);
+  const ws = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (ws.current) ws.current.close();
+    };
+  }, []);
+
+  const joinRoom = async () => {
+    const token = getToken();
+    if (!token) {
+      alert("You must log in first!");
+      window.location.href = "/login";
+      return;
+    }
+
+    try {
+      // Load past messages from API
+      const res = await axios.get(`http://127.0.0.1:8000/api/chat/messages/${room}/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Messages come in reverse order, so flip them
+      setMessages(res.data.reverse());
+    } catch (err) {
+      console.error("Failed to load past messages", err);
+    }
+
+    // Now connect WebSocket
+    ws.current = new WebSocket(`ws://127.0.0.1:8000/ws/chat/?token=${token}&room=${room}`);
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setMessages((prev) => [...prev, data]);
+    };
+
+    setJoined(true);
+  };
+
+  const sendMessage = () => {
+    if (text.trim() && ws.current) {
+      ws.current.send(JSON.stringify({ message: text }));
+      setText("");
+    }
+  };
+
+  return (
+    <div className="container mt-5">
+      <h1>💬 Jeco Chat</h1>
+
+      {!joined ? (
+        <div>
+          <input
+            value={room}
+            onChange={(e) => setRoom(e.target.value)}
+            className="form-control mb-2"
+            placeholder="Enter room name"
+          />
+          <button className="btn btn-success" onClick={joinRoom}>
+            Join Room
+          </button>
+        </div>
+      ) : (
+        <div>
+          <h3>Room: {room}</h3>
+          <div className="border p-3 mb-3" style={{ height: "300px", overflowY: "scroll" }}>
+            {messages.map((msg, i) => (
+              <div key={i}>
+                <strong>{msg.sender}:</strong> {msg.content}
+              </div>
+            ))}
+          </div>
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="form-control mb-2"
+            placeholder="Type a message..."
+          />
+          <button className="btn btn-primary" onClick={sendMessage}>
+            Send
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ Test Flow
+
+1. Run backend + frontend.
+2. Join a room (e.g., `family`).
+3. Send some messages.
+4. Refresh the page and re-join `family`.
+
+   * The last **50 messages** should load from the database before new ones arrive.
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports:
+
+* Multiple chat rooms
+* Past message history loaded from DB
+* Real-time updates for new messages
+
+---
+
+👉 Do you want me to extend this next into **showing a list of available rooms** (so users don’t have to type the room name manually)?
+
