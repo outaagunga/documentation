@@ -4979,4 +4979,880 @@ Now Jeco Chat supports **user avatars**:
 
 Do you want me to move next into **Better Notifications (real-time WebSockets instead of 5s polling)**, or would you prefer I do **Message Search** first?
 
+Perfect — let’s implement **Message Search** 🔍.
+
+---
+
+# 📝 Step 24 — Message Search (Backend + Frontend)
+
+---
+
+## ✅ Backend Implementation
+
+We’ll expose a **search endpoint** that allows users to query messages by keyword.
+
+---
+
+### 24.1 Update Views
+
+`backend/chat/views.py`
+
+```python
+from rest_framework import generics, permissions
+from django.db.models import Q
+from .models import Message
+from .serializers import MessageSerializer
+
+class MessageSearchView(generics.ListAPIView):
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        query = self.request.query_params.get("q", "")
+        return Message.objects.filter(
+            Q(content__icontains=query),
+            Q(sender=self.request.user) | Q(room__members=self.request.user)
+        ).order_by("-timestamp")
+```
+
+👉 This ensures:
+
+* Users can **only search messages they are part of** (security).
+* `q` query param is matched against `content`.
+
+---
+
+### 24.2 Add URL Route
+
+`backend/chat/urls.py`
+
+```python
+from .views import MessageSearchView
+
+urlpatterns += [
+    path("messages/search/", MessageSearchView.as_view(), name="message-search"),
+]
+```
+
+---
+
+### 24.3 Example API Usage
+
+```
+GET /api/chat/messages/search/?q=hello
+Authorization: Bearer <token>
+```
+
+Response:
+
+```json
+[
+  {
+    "id": 15,
+    "sender": { "id": 2, "username": "alice" },
+    "content": "hello team!",
+    "timestamp": "2025-09-03T07:40:00Z",
+    "room": 1
+  }
+]
+```
+
+---
+
+## ✅ Frontend Implementation
+
+We’ll add a **search bar** in the chat page.
+
+---
+
+### 24.4 Update Chat Page
+
+`src/pages/Chat.js`
+
+```jsx
+import { useState } from "react";
+
+function Chat() {
+  const [messages, setMessages] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/api/chat/messages/search/?q=${searchQuery}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const data = await res.json();
+      setSearchResults(data);
+    } catch (err) {
+      console.error("Search failed", err);
+    }
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>Chat Room</h2>
+
+      {/* Search Bar */}
+      <form onSubmit={handleSearch} className="mb-3 d-flex">
+        <input
+          type="text"
+          placeholder="Search messages..."
+          className="form-control me-2"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button className="btn btn-secondary">Search</button>
+      </form>
+
+      {/* Search Results */}
+      {searchResults.length > 0 && (
+        <div className="mb-3">
+          <h5>Search Results</h5>
+          <ul className="list-group">
+            {searchResults.map((msg) => (
+              <li key={msg.id} className="list-group-item">
+                <strong>{msg.sender.username}:</strong> {msg.content}{" "}
+                <small className="text-muted">
+                  ({new Date(msg.timestamp).toLocaleString()})
+                </small>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Regular Chat Messages */}
+      <div>
+        {messages.map((msg) => (
+          <div key={msg.id} className="mb-2">
+            <strong>{msg.sender.username}:</strong> {msg.content}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ Test Flow
+
+1. Open a chat.
+2. Enter a keyword (e.g., "hello") in the search box.
+3. Search results appear **separately above the chat messages**.
+4. If no results → nothing shows.
+
+---
+
+## 🎉 Result
+
+* ✅ Search messages across all conversations you’re part of.
+* ✅ Secure (only searches your messages + your rooms).
+* ✅ Results show sender, message, and timestamp.
+
+---
+
+👉 Now Jeco Chat supports **Message Search** 🔍.
+
+Would you like me to move on to **Better Notifications (real-time WebSockets instead of polling)** next?
+
+
+Awesome 🚀 — let’s upgrade **Notifications** from basic polling to **real-time WebSockets**.
+
+---
+
+# 🔔 Step 25 — Real-Time Notifications
+
+Right now, Jeco Chat checks for new messages every **5 seconds (polling)**. That’s wasteful and slow. We’ll switch to **Django Channels + WebSockets** for instant notifications.
+
+---
+
+## ✅ Backend (Django)
+
+We already have **Channels** set up for chat messages. Now we’ll add a **notifications consumer**.
+
+---
+
+### 25.1 Create Notifications Consumer
+
+`backend/chat/consumers.py`
+
+```python
+import json
+from channels.generic.websocket import AsyncWebsocketConsumer
+
+class NotificationConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        if self.scope["user"].is_anonymous:
+            await self.close()
+        else:
+            self.group_name = f"user_{self.scope['user'].id}"
+            await self.channel_layer.group_add(self.group_name, self.channel_name)
+            await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+
+    async def notify(self, event):
+        await self.send(text_data=json.dumps(event["content"]))
+```
+
+👉 Each user has their own private group (`user_<id>`).
+
+---
+
+### 25.2 Update Routing
+
+`backend/chat/routing.py`
+
+```python
+from django.urls import re_path
+from . import consumers
+
+websocket_urlpatterns = [
+    re_path(r"ws/chat/(?P<room_name>\w+)/$", consumers.ChatConsumer.as_asgi()),
+    re_path(r"ws/notifications/$", consumers.NotificationConsumer.as_asgi()),  # NEW
+]
+```
+
+---
+
+### 25.3 Trigger Notifications
+
+We’ll send a notification when a **new message** is created.
+
+`backend/chat/views.py` → inside `send_message` view:
+
+```python
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
+channel_layer = get_channel_layer()
+
+# after saving message:
+for member in room.members.exclude(id=request.user.id):
+    async_to_sync(channel_layer.group_send)(
+        f"user_{member.id}",
+        {
+            "type": "notify",
+            "content": {
+                "type": "new_message",
+                "room_id": room.id,
+                "room_name": room.name,
+                "sender": request.user.username,
+                "message": message.content,
+            },
+        },
+    )
+```
+
+👉 Every other room member gets a **new message notification**.
+
+---
+
+## ✅ Frontend (React)
+
+We’ll open a **WebSocket connection** just for notifications.
+
+---
+
+### 25.4 Create Notification Hook
+
+`src/hooks/useNotifications.js`
+
+```jsx
+import { useEffect } from "react";
+
+function useNotifications(onNotify) {
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const socket = new WebSocket("ws://127.0.0.1:8000/ws/notifications/");
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (onNotify) onNotify(data);
+    };
+
+    socket.onclose = () => {
+      console.log("Notifications socket closed");
+    };
+
+    return () => socket.close();
+  }, [onNotify]);
+}
+
+export default useNotifications;
+```
+
+---
+
+### 25.5 Show Notifications
+
+We’ll add a **toast-style alert**.
+
+`src/components/Notifications.js`
+
+```jsx
+import { useState } from "react";
+import useNotifications from "../hooks/useNotifications";
+
+function Notifications() {
+  const [alerts, setAlerts] = useState([]);
+
+  useNotifications((data) => {
+    setAlerts((prev) => [...prev, data]);
+    setTimeout(() => setAlerts((prev) => prev.slice(1)), 5000); // auto-hide
+  });
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: "20px",
+        right: "20px",
+        zIndex: 9999,
+      }}
+    >
+      {alerts.map((alert, index) => (
+        <div key={index} className="alert alert-info shadow">
+          <strong>{alert.sender}</strong>: {alert.message}
+          <br />
+          <small>in {alert.room_name}</small>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default Notifications;
+```
+
+---
+
+### 25.6 Integrate Into App
+
+`src/App.js`
+
+```jsx
+import Notifications from "./components/Notifications";
+
+function App() {
+  return (
+    <>
+      <Notifications />
+      {/* rest of routes */}
+    </>
+  );
+}
+```
+
+---
+
+## ✅ Test Flow
+
+1. Open app in **two browsers** (Alice + Bob).
+2. Alice sends a message in a group.
+3. Bob instantly sees a **popup notification** (no refresh, no polling).
+4. Notifications auto-hide after 5 seconds.
+
+---
+
+## 🎉 Result
+
+* ✅ Real-time notifications via WebSockets.
+* ✅ No more wasteful polling.
+* ✅ Toast-style popup messages.
+* ✅ Scales per user (private notification channel).
+
+---
+
+👉 With **Notifications** done, Jeco Chat now feels **much closer to WhatsApp / Messenger**.
+
+Would you like me to go next into **Deployment Setup (production-ready: Gunicorn, Nginx, React build, Docker option)**, or finish smaller features like **Dark Mode + Message Pinning** first?
+
+
+Great 🚀 — since you confirmed, I’ll take you into the **Deployment Setup** next, because it’s critical for making Jeco Chat production-ready.
+
+---
+
+# 🌍 Step 26 — Deployment Setup (Production Ready)
+
+We’ll move Jeco Chat from “developer mode” to something you can actually **host on a VPS or cloud**.
+
+---
+
+## ✅ 26.1 Prepare Django Backend for Production
+
+### Install Gunicorn (WSGI server)
+
+```bash
+pip install gunicorn
+```
+
+### Run Gunicorn (test locally)
+
+```bash
+gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+```
+
+👉 This replaces `python manage.py runserver` in production.
+
+---
+
+### Configure Static & Media Files
+
+`backend/settings.py`
+
+```python
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+```
+
+Collect static files:
+
+```bash
+python manage.py collectstatic
+```
+
+---
+
+## ✅ 26.2 Nginx as Reverse Proxy
+
+Nginx will:
+
+* Serve **React build (frontend)**
+* Proxy **API requests** to Django/Gunicorn
+* Handle **WebSockets** for chat/notifications
+
+Example config: `/etc/nginx/sites-available/jeco_chat`
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    location / {
+        root /var/www/jeco_chat/frontend/build;
+        index index.html;
+        try_files $uri /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location /ws/ {
+        proxy_pass http://127.0.0.1:8001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+
+    location /static/ {
+        alias /var/www/jeco_chat/backend/staticfiles/;
+    }
+
+    location /media/ {
+        alias /var/www/jeco_chat/backend/media/;
+    }
+}
+```
+
+Enable site:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/jeco_chat /etc/nginx/sites-enabled/
+sudo systemctl restart nginx
+```
+
+---
+
+## ✅ 26.3 React Frontend Build
+
+In the frontend folder:
+
+```bash
+npm run build
+```
+
+This creates a **production-ready build** in `build/` that Nginx serves.
+
+---
+
+## ✅ 26.4 WebSockets (Daphne or Uvicorn)
+
+Gunicorn can’t handle WebSockets.
+We’ll run **Daphne** (or Uvicorn) for Channels.
+
+Install:
+
+```bash
+pip install daphne
+```
+
+Run:
+
+```bash
+daphne -b 0.0.0.0 -p 8001 backend.asgi:application
+```
+
+👉 Now:
+
+* Gunicorn serves API (`:8000`)
+* Daphne serves WebSockets (`:8001`)
+* Nginx proxies both correctly
+
+---
+
+## ✅ 26.5 Systemd Services (Autostart)
+
+Create `/etc/systemd/system/jeco_chat_backend.service`:
+
+```ini
+[Unit]
+Description=Jeco Chat Django Backend
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/var/www/jeco_chat/backend
+ExecStart=/var/www/jeco_chat/venv/bin/gunicorn backend.wsgi:application --bind 127.0.0.1:8000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Create `/etc/systemd/system/jeco_chat_ws.service`:
+
+```ini
+[Unit]
+Description=Jeco Chat WebSockets
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/var/www/jeco_chat/backend
+ExecStart=/var/www/jeco_chat/venv/bin/daphne -b 127.0.0.1 -p 8001 backend.asgi:application
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable:
+
+```bash
+sudo systemctl enable jeco_chat_backend
+sudo systemctl start jeco_chat_backend
+sudo systemctl enable jeco_chat_ws
+sudo systemctl start jeco_chat_ws
+```
+
+---
+
+## ✅ 26.6 (Optional) Docker Setup
+
+If you want **Dockerized deployment**, we’d add:
+
+`Dockerfile.backend`
+
+```dockerfile
+FROM python:3.11
+WORKDIR /app
+COPY backend/ .
+RUN pip install -r requirements.txt
+CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
+```
+
+`Dockerfile.frontend`
+
+```dockerfile
+FROM node:18
+WORKDIR /app
+COPY frontend/ .
+RUN npm install && npm run build
+```
+
+Then use **docker-compose** to orchestrate Django, Postgres, and React build.
+
+---
+
+## 🎉 Result
+
+* ✅ Backend served by **Gunicorn** (fast, reliable).
+* ✅ WebSockets handled by **Daphne**.
+* ✅ Nginx serving React build + static files.
+* ✅ Systemd keeps services alive.
+* ✅ Optional Docker for containerization.
+
+---
+
+👉 With deployment ready, Jeco Chat is **production-ready**.
+
+Would you like me to move next into **smaller UX features (Dark Mode + Message Pinning)**, or finish **Password Reset flow** first?
+
+Perfect 👍 — since you confirmed, I’ll now take you into the **Password Reset (Forgot Password) Flow**, which is the last *critical* missing piece for real-world users.
+
+---
+
+# 🔑 Step 27 — Password Reset (Forgot Password)
+
+We’ll implement a secure **password reset** flow using Django’s built-in tools + email.
+
+---
+
+## ✅ 27.1 Backend Implementation
+
+### Install Email Backend (for dev)
+
+Add this to `backend/settings.py`:
+
+```python
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+```
+
+👉 In development, reset emails will just print to the terminal.
+👉 In production, you’d configure real SMTP (e.g., Gmail, SendGrid).
+
+---
+
+### 27.2 Create Password Reset Views
+
+`backend/chat/views.py`
+
+```python
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth import get_user_model
+from rest_framework.response import Response
+from rest_framework import status
+
+User = get_user_model()
+token_generator = PasswordResetTokenGenerator()
+
+
+class PasswordResetRequestView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        try:
+            user = User.objects.get(email=email)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = token_generator.make_token(user)
+
+            reset_link = f"http://localhost:3000/reset-password/{uid}/{token}/"
+
+            send_mail(
+                "Password Reset Request",
+                f"Click here to reset your password: {reset_link}",
+                "no-reply@jeco-chat.com",
+                [user.email],
+                fail_silently=True,
+            )
+
+        except User.DoesNotExist:
+            pass  # Don’t reveal email existence
+
+        return Response({"message": "If that email exists, a reset link was sent."})
+
+
+class PasswordResetConfirmView(APIView):
+    def post(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+
+            if not token_generator.check_token(user, token):
+                return Response({"error": "Invalid or expired token"}, status=400)
+
+            new_password = request.data.get("password")
+            user.set_password(new_password)
+            user.save()
+            return Response({"message": "Password reset successful"})
+
+        except Exception:
+            return Response({"error": "Invalid request"}, status=400)
+```
+
+---
+
+### 27.3 Add URLs
+
+`backend/chat/urls.py`
+
+```python
+from .views import PasswordResetRequestView, PasswordResetConfirmView
+
+urlpatterns += [
+    path("password-reset/", PasswordResetRequestView.as_view(), name="password-reset"),
+    path("password-reset-confirm/<uidb64>/<token>/", PasswordResetConfirmView.as_view(), name="password-reset-confirm"),
+]
+```
+
+---
+
+## ✅ 27.4 Frontend Implementation
+
+We’ll create **two pages**:
+
+1. **Request Reset (enter email)**
+2. **Reset Password (new password form)**
+
+---
+
+### 27.4.1 Request Reset Page
+
+`src/pages/PasswordResetRequest.js`
+
+```jsx
+import { useState } from "react";
+
+function PasswordResetRequest() {
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await fetch("http://127.0.0.1:8000/api/chat/password-reset/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    setMessage(data.message);
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>Forgot Password</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          className="form-control mb-2"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <button className="btn btn-primary">Send Reset Link</button>
+      </form>
+      {message && <p className="mt-3">{message}</p>}
+    </div>
+  );
+}
+
+export default PasswordResetRequest;
+```
+
+---
+
+### 27.4.2 Reset Password Page
+
+`src/pages/PasswordResetConfirm.js`
+
+```jsx
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+
+function PasswordResetConfirm() {
+  const { uidb64, token } = useParams();
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await fetch(
+      `http://127.0.0.1:8000/api/chat/password-reset-confirm/${uidb64}/${token}/`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      }
+    );
+    const data = await res.json();
+    setMessage(data.message || data.error);
+  };
+
+  return (
+    <div className="container mt-4">
+      <h2>Reset Password</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="password"
+          className="form-control mb-2"
+          placeholder="Enter new password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button className="btn btn-success">Reset Password</button>
+      </form>
+      {message && <p className="mt-3">{message}</p>}
+    </div>
+  );
+}
+
+export default PasswordResetConfirm;
+```
+
+---
+
+### 27.4.3 Add Routes
+
+`src/App.js`
+
+```jsx
+import PasswordResetRequest from "./pages/PasswordResetRequest";
+import PasswordResetConfirm from "./pages/PasswordResetConfirm";
+
+<Routes>
+  <Route path="/forgot-password" element={<PasswordResetRequest />} />
+  <Route path="/reset-password/:uidb64/:token" element={<PasswordResetConfirm />} />
+</Routes>
+```
+
+---
+
+## ✅ 27.5 Test Flow
+
+1. Go to `/forgot-password`.
+2. Enter email → check Django console for reset link.
+3. Open reset link → `/reset-password/:uid/:token`.
+4. Enter new password → login works with new password.
+
+---
+
+## 🎉 Result
+
+* ✅ Users can request a reset link.
+* ✅ Secure token-based reset.
+* ✅ Works via email (console for dev).
+* ✅ Protects user privacy (always same message even if email not found).
+
+---
+
+👉 With this, **Jeco Chat has all major account features**: signup, login, logout, profile update, avatars, password reset.
+
+Would you like me to now move into **smaller UX features (Dark Mode + Message Pinning)**, or polish **Security & Permissions (file access, rate limiting, CSRF)** first?
+
 
