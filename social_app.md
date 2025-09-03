@@ -996,4 +996,269 @@ Now you have:
 
 Would you like me to **extend this further into Group Chats (rooms)**, so users can join specific chat rooms instead of a single global one?
 
+Awesome 👍 — let’s now upgrade **Jeco Chat** so users can join specific **chat rooms** instead of being stuck in one global chatroom.
+
+This will give us **group chats**, where each room is independent and stores its own messages.
+
+---
+
+# 🔄 Step 8 — Add Group Chats (Rooms)
+
+---
+
+## ✅ Backend Updates
+
+### 8.1 Update Models
+
+We’ll create a `Room` model and link `Message` to a specific room.
+
+`backend/chat/models.py`:
+
+```python
+from django.db import models
+from django.contrib.auth.models import User
+
+class Room(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Message(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="messages")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"[{self.room.name}] {self.sender.username}: {self.content[:20]}"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "room": self.room.name,
+            "sender": self.sender.username,
+            "content": self.content,
+            "timestamp": self.timestamp.isoformat(),
+        }
+```
+
+---
+
+### 8.2 Run Migrations
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+---
+
+### 8.3 Update `ChatConsumer`
+
+Now each WebSocket connection belongs to a **room**.
+
+`backend/chat/consumers.py`:
+
+```python
+import json
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import AccessToken
+from .models import Message, Room
+
+User = get_user_model()
+
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        # Extract room name and token from query params
+        query = dict(x.split("=") for x in self.scope["query_string"].decode().split("&"))
+        self.room_name = query.get("room", "general")  # default = general
+        self.token = query.get("token")
+        self.user = await self.get_user_from_token(self.token)
+
+        if not self.user or isinstance(self.user, AnonymousUser):
+            await self.close()
+        else:
+            # Ensure room exists
+            self.room_group_name = f"chat_{self.room_name}"
+            await self.create_room_if_not_exists(self.room_name)
+
+            # Join room
+            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        content = data.get("message")
+
+        if self.user and content:
+            message = await self.save_message(self.user, self.room_name, content)
+
+            # Broadcast message to the room
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {"type": "chat_message", "message": message},
+            )
+
+    async def chat_message(self, event):
+        await self.send(text_data=json.dumps(event["message"]))
+
+    @database_sync_to_async
+    def save_message(self, user, room_name, content):
+        room, _ = Room.objects.get_or_create(name=room_name)
+        msg = Message.objects.create(sender=user, room=room, content=content)
+        return msg.to_dict()
+
+    @database_sync_to_async
+    def create_room_if_not_exists(self, room_name):
+        Room.objects.get_or_create(name=room_name)
+
+    @database_sync_to_async
+    def get_user_from_token(self, token):
+        try:
+            access_token = AccessToken(token)
+            user = User.objects.get(id=access_token["user_id"])
+            return user
+        except Exception:
+            return None
+```
+
+---
+
+## ✅ Frontend Updates
+
+### 8.4 Add Room Selection
+
+We’ll let users enter a room name before chatting.
+
+`frontend/src/pages/Chat.jsx`:
+
+```jsx
+import { useState, useEffect, useRef } from "react";
+import { getToken } from "../services/AuthService";
+
+function Chat() {
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState("");
+  const [room, setRoom] = useState("general");
+  const [joined, setJoined] = useState(false);
+  const ws = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (ws.current) ws.current.close();
+    };
+  }, []);
+
+  const joinRoom = () => {
+    const token = getToken();
+    if (!token) {
+      alert("You must log in first!");
+      window.location.href = "/login";
+      return;
+    }
+
+    ws.current = new WebSocket(`ws://127.0.0.1:8000/ws/chat/?token=${token}&room=${room}`);
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setMessages((prev) => [...prev, data]);
+    };
+
+    setJoined(true);
+  };
+
+  const sendMessage = () => {
+    if (text.trim() && ws.current) {
+      ws.current.send(JSON.stringify({ message: text }));
+      setText("");
+    }
+  };
+
+  return (
+    <div className="container mt-5">
+      <h1>💬 Jeco Chat</h1>
+
+      {!joined ? (
+        <div>
+          <input
+            value={room}
+            onChange={(e) => setRoom(e.target.value)}
+            className="form-control mb-2"
+            placeholder="Enter room name"
+          />
+          <button className="btn btn-success" onClick={joinRoom}>
+            Join Room
+          </button>
+        </div>
+      ) : (
+        <div>
+          <h3>Room: {room}</h3>
+          <div className="border p-3 mb-3" style={{ height: "300px", overflowY: "scroll" }}>
+            {messages.map((msg, i) => (
+              <div key={i}>
+                <strong>{msg.sender}:</strong> {msg.content}
+              </div>
+            ))}
+          </div>
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="form-control mb-2"
+            placeholder="Type a message..."
+          />
+          <button className="btn btn-primary" onClick={sendMessage}>
+            Send
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Chat;
+```
+
+---
+
+## ✅ Test Flow
+
+1. **Run backend**
+
+   ```bash
+   python manage.py runserver
+   ```
+
+2. **Run frontend**
+
+   ```bash
+   npm run dev
+   ```
+
+3. Open **Tab 1** → Enter room `family` → Chat
+
+4. Open **Tab 2** → Enter room `family` → Messages sync in real-time
+
+5. Open **Tab 3** → Enter room `friends` → Independent chat
+
+---
+
+## 🎉 Result
+
+Now Jeco Chat supports:
+
+* Multiple **chat rooms**
+* Each room stores its own history
+* Users only see messages from the room they joined
+
+---
+
+👉 Do you want me to extend this next into **loading past messages when someone joins a room** (so they don’t just see new ones)?
 
