@@ -1,32 +1,38 @@
 
-df.head()     # first 5 rows
-df.tail()     # last 5 rows
-df.sample(10) # 10 random rows
+```python
+# import the libraries we need
+from faker import Faker
+import pandas as pd
 
-def create_employees_fast(num_employees):
-    return pd.DataFrame([{
-        "First Name": fake.first_name(),
-        "Last Name": fake.last_name(),
-        "Job": fake.job(),
-        "Department": fake.random_element(["HR", "Marketing", "Finance"]),
-        "Role": fake.random_element(["Manager", "Developer", "Analyst", "Associate"]),
-        "Salary": fake.random_int(min=3000, max=150000, step=1000),
-        "Email": fake.email()
-    } for _ in range(num_employees)])
+# create an instance of Faker
+fake = Faker(locale='en_US')
 
+# Let's create a function
+def create_employees(num_employees):
+    # Let's create an empty list to add our employee dictionaries
+    employee_list = []
+    
+    # Let's create an employees dictionary
+    for i in range(num_employees):   # ensures we get exactly num_employees
+        employee = {}
+        employee['first_name'] = fake.first_name()
+        employee['last_name'] = fake.last_name()
+        employee['job'] = fake.job()
+        employee['department'] = fake.random_element(elements=("IT", "HR", "Marketing", "Finance"))
+        employee['role'] = fake.random_element(elements=("Manager", "Developer", "Analyst", "Associate"))
+        employee['salary'] = fake.random_int(min=30000, max=150000, step=1000)
+        employee['email'] = fake.email()
+        
+        employee_list.append(employee)
+    
+    return pd.DataFrame(employee_list)
 
-df = create_employees_fast(50000)
-print(df.shape)   # should print (50000, 7)
+# Generate 5000 fake employee records
+data = create_employees(5000)
 
+# Save to CSV
+data.to_csv("employees.csv", index=False)
 
-df.to_csv("employees_50k.csv", index=False)
-
-chunk_size = 10000
-with open("employees_large.csv", "w") as f:
-    for i in range(5):  # 5 chunks of 10k = 50k
-        df_chunk = create_employees_fast(chunk_size)
-        df_chunk.to_csv(f, header=(i==0), index=False, mode="a")
-
-df = create_employees_fast(50000)
-df.to_csv("employees_50k.csv", index=False)
-print("Done! File saved.")
+# Save to Excel
+data.to_excel("employees.xlsx", index=False)
+```
