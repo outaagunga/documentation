@@ -37,7 +37,7 @@ data.to_csv("employees.csv", index=False)
 data.to_excel("employees.xlsx", index=False)
 ```
 
-# Code-along: Generate Fake Employee Data with Faker (step‑by‑step)
+## Guide into generating fake Data with python Faker library (step‑by‑step)
 
 **Goal:** Walk through creating a small Python project that generates fake employee data (CSV and optional Excel). You'll start from creating the project folder, set up a virtual environment, install the libraries, then write and run a robust script that supports both in‑memory generation (for small/medium datasets) and chunked generation (for large datasets).
 
@@ -64,123 +64,71 @@ faker-employees/
 └─ README.md
 ```
 
-### 0) Create project directory
-
+### 0) Create project directory (Folder)
+Go to terminal
 ```bash
 mkdir faker-employees
 cd faker-employees
 mkdir outputs
 ```
+Or you can create folder directly- then right click and select open in terminal
 
-### 1) Create & activate a virtual environment
-
-**macOS / Linux**
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
+While in the project folder, Launch virtual environment 
+```python
+pip install pipenv
 ```
-
-**Windows (PowerShell)**
-
-```powershell
-python -m venv venv
-.\env\Scripts\Activate.ps1
+if you get an error use 
+```python
+sudo apt install pipenv
 ```
-
-**Windows (cmd.exe)**
-
-```cmd
-python -m venv venv
-venv\Scripts\activate
+Then activate the virtual environment i.e 
+```python
+pipenv shell
 ```
-
-After activation you should see `(venv)` in your prompt.
-
-### 2) Install required libraries
-
+If you want to activate it manually, then
+```python
+.\venv\Scripts\activate #(for windows)
+```
+Or 
+```python
+source venv/bin/activate #(for mac/ linux os)
+```
+Install required libraries i.e 
 We will use `Faker` for fake data, `pandas` for DataFrame operations and saving, `openpyxl` for Excel support (if you need Excel output), and `tqdm` for progress bars.
 
 ```bash
 pip install --upgrade pip
 pip install Faker pandas openpyxl tqdm
+```
 
-# Freeze for reproducibility
+Then create requirements.txt file. You can use command 
+```python
 pip freeze > requirements.txt
 ```
 
-`requirements.txt` will be created so you (or others) can recreate the environment.
-
----
-
-## 3) The code-along: building `generate_employees.py`
-
-
-Got it ✅ — I’ll break this into simple **step-by-step code along instructions** so you can follow without skipping anything.
-
----
-
-# 📒 Code-Along: Generate Fake Employee Data with Faker
-
-### Step 1: Create a new project folder
-
-Open your terminal (or command prompt) and make a folder for this project:
-
-```bash
-mkdir fake_employee_data
-cd fake_employee_data
+To install everything listed in the requirements.txt, we use this command 
+```python
+pip install -r .\requirements.txt
 ```
+If you run into version compatibility issues while working on your project, simply install the available version first. Then, update the version in your requirements.txt file to the one compatible with your project requirements, and reinstall the dependencies using the updated requirements.txt
+
+
+Simple **step-by-step code along instructions** so you can follow to generate fake data.
 
 ---
 
-### Step 2: Create and activate a virtual environment
-
-This keeps your project dependencies clean and isolated.
-
-```bash
-# Create virtual environment
-python3 -m venv venv
-
-# Activate it
-# On Linux/Mac
-source venv/bin/activate  
-
-# On Windows (PowerShell)
-venv\Scripts\activate
-```
-
-You should see `(venv)` appear before your command line — that means it’s active.
-
----
-
-### Step 3: Install required libraries
-
-We need **Faker** for fake data and **Pandas** to store/export it.
-
-```bash
-pip install faker pandas openpyxl
-```
-
-*(We add `openpyxl` because Pandas uses it for Excel export.)*
-
----
 
 ### Step 4: Create a Python file
+Open your project folder in vs code and create a file and name it ```generate_employees.py``` :
 
-Inside your project folder, create a file:
-
+Or on your terminal
 ```bash
 touch generate_employees.py
 ```
-
-Or just make a new file in VS Code/your editor called `generate_employees.py`.
-
 ---
 
 ### Step 5: Import the libraries
-
-At the top of your file, write:
-
+Inside the ```generate_employees.py``` add
 ```python
 from faker import Faker
 import pandas as pd
