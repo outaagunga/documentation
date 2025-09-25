@@ -43,14 +43,6 @@ data.to_excel("employees.xlsx", index=False)
 
 ---
 
-## Prerequisites
-
-* Python 3.8+ installed (`python3` or `python` on Windows)
-* Basic terminal/command‑line knowledge
-* (Optional) VS Code or your favourite editor
-
----
-
 ## Project setup (file structure)
 
 We'll use this layout:
@@ -63,68 +55,98 @@ faker-employees/
 ├─ requirements.txt
 └─ README.md
 ```
+## Setting up a Python development environment:
+This ensures you have a consistent and isolated development space for your projects:
+a) installing Python
+Download the latest version of ```Python``` from the official website
+During installation (when using Windows), ensure you check the box to "```Add Python to PATH```" so you can
+run Python commands from the command line. 
+If you are using windows, then also ensure you install ```WSL``` (Windows Subsystem for Linux) - this lets you run ```linux commands``` directly from windows
 
-### 0) Create project directory (Folder)
-Go to terminal
-```bash
-mkdir faker-employees
-cd faker-employees
-mkdir outputs
-```
-Or you can create folder directly- then right click and select open in terminal
+b) Install an IDE (e.g VS Code), 
+c) Install VS Code extensions e.g (prettier formatters, autocomplete and extensions)
+d) Install AI helper (e.g Copilot, Codium extension)
+e) Install a virtual environment manager e.g venv
+f) Install python extension on the vs code to be able to run python directly from the vs code. Then click  ▶️ to run python
 
-While in the project folder, Launch virtual environment 
-```python
-pip install pipenv
-```
-if you get an error use 
-```python
-sudo apt install pipenv
-```
-Then activate the virtual environment i.e 
-```python
-pipenv shell
-```
-If you want to activate it manually, then
-```python
-.\venv\Scripts\activate #(for windows)
-```
-Or 
-```python
-source venv/bin/activate #(for mac/ linux os)
-```
-Install required libraries i.e 
-We will use `Faker` for fake data, `pandas` for DataFrame operations and saving, `openpyxl` for Excel support (if you need Excel output), and `tqdm` for progress bars.
 
+## Set up a Virtual Environment: (Why virtual environments?)
+They isolate project dependencies, preventing conflicts between different projects and ensuring your code runs consistently.
+ 
+### Tools for managing virtual environments:
+- venv (built-in in Python 3.3+)
+- virtualenv (third-party library)
+
+## How to create and activate virtual environment
+### Option I:
+- Create project folder and open the folder in your terminal
+- Launch virtual environment using command: ```pip install pipenv``` (if you get an error use ```sudo apt install pipenv```)
+- Then activate the virtual environment using command: ```pipenv shell```
+if you get error, unstall the older version of pipenv using this command:  ```sudo apt remove pipenv```
+
+Then re- install new version using this command:
+- ```pip install --user pipenv```
+- Then ```sudo apt install pipenv```
+Then re-activate virtual environment using command:  ```pipenv shell```
+
+
+### Option II:
+Create project folder and open the folder in your terminal
+Launch virtual environment using command: ```python3 -m venv venv```
+Then activate the virtual environment using command:
+```.\venv\Scripts\activate #(for windows)```
+or
+```source venv/bin/activate #(for mac/ linux os)```
+
+## Then create requirements.txt file. 
+### Option I:
+- Use command:   ```pip freeze > requirements.txt```
+- To install everything listed in the requirements.txt, 
+Use command:   ```pip install -r .\requirements.txt```
+
+## Nb:
+If you run into version compatibility issues while working on your project, simply install the available version first. Then, update the version in your ```requirements.txt``` file to the one compatible with your project, and reinstall the dependencies using the updated requirements.txt
+
+### Option II:
+Install pipreqs using this command: 
+```pip install pipreqs``` 
+Pipreqs is a tool that automatically generates a requirements.txt file for your Python project by scanning your project folder for all the libraries your code is importing.
+
+Then run the pipreqs tool on the current directory using this command:
+```pipreqs . ```
+Then install all the Python packages listed inside your requirements.txt file using this command:
+```pip install -r requirements.txt```
+
+
+## Install Dependencies
+(Frameworks that you will use for your project e,g Faker, Pandas, Django, Rest, Flask e.t.c).
+Use ```pip``` which is the recommended Python's package installer. Ensure you do this after activating your virtual environment.
+
+## In our case, we are going to use:
+- We will use `Faker` for fake data,
+- `pandas` for DataFrame operations and saving,
+- `openpyxl` for Excel support (if you need Excel output), and
+- `tqdm` for progress bars.
+
+We are going to install the libraries using this command:
 ```bash
 pip install --upgrade pip
 pip install Faker pandas openpyxl tqdm
 ```
 
-Then create requirements.txt file. You can use command 
-```python
-pip freeze > requirements.txt
-```
-
-To install everything listed in the requirements.txt, we use this command 
-```python
-pip install -r .\requirements.txt
-```
-If you run into version compatibility issues while working on your project, simply install the available version first. Then, update the version in your requirements.txt file to the one compatible with your project requirements, and reinstall the dependencies using the updated requirements.txt
-
-
-Simple **step-by-step code along instructions** so you can follow to generate fake data.
+Simple **step-by-step code along instructions**  you can follow to generate fake data.
 
 ---
 
 
 ### Step 4: Create a Python file
-Open your project folder in vs code and create a file and name it ```generate_employees.py``` :
+- Open your project folder in vs code and create a file and name it ```generate_employees.py``` :
 
 Or on your terminal
-```bash
-touch generate_employees.py
-```
+- ```bash
+    touch generate_employees.py
+  ```
+
 ---
 
 ### Step 5: Import the libraries
@@ -138,7 +160,7 @@ import pandas as pd
 
 ### Step 6: Create a Faker instance
 
-This lets us generate fake data in English (US style).
+This lets us generate fake data in English (US style). You can use other languages as you desire
 
 ```python
 fake = Faker(locale='en_US')
@@ -185,7 +207,9 @@ data = create_employees(5000)
 
 ---
 
-### Step 9: Save data to CSV
+### Step 9: Save the generated data (to your desired format)
+
+#### Save data to CSV
 
 Export the fake data into a CSV file:
 
@@ -195,7 +219,7 @@ data.to_csv("employees.csv", index=False)
 
 ---
 
-### Step 10: Save data to Excel
+#### Save data to Excel
 
 Export the same data into an Excel file:
 
@@ -203,9 +227,17 @@ Export the same data into an Excel file:
 data.to_excel("employees.xlsx", index=False)
 ```
 
+#### Save data to json
+
+Export the same data into a json file:
+
+```python
+research on the code to save data into json file
+```
+
 ---
 
-### Step 11: Run the script
+### Step 10: Run the script
 
 Go back to your terminal and run:
 
@@ -213,7 +245,7 @@ Go back to your terminal and run:
 python generate_employees.py
 ```
 
-This will create **`employees.csv`** and **`employees.xlsx`** in your folder. 🎉
+This will create **`employees.csv`** or **`employees.xlsx`** in your folder. 🎉
 
 ---
 
