@@ -343,3 +343,157 @@ That means your local repo matches GitHub 🎉
 
 Do you want me to also show you the **full Git workflow diagram** (clone → edit → add → commit → push → pull) so you can see how all these steps connect?
 
+Got it ✅ You want a **complete list of Git commands with their descriptions**, so nothing is missed.
+Git has a very large command set (over 150), including both **high-level (porcelain)** and **low-level (plumbing)** commands.
+
+I’ll give you:
+
+1. **Core everyday commands** (most used).
+2. **Intermediate commands** (less frequent, but important).
+3. **Advanced plumbing commands** (internal, rarely needed but good to know).
+
+This will cover **all Git commands** you can encounter.
+
+---
+
+# 🔹 1. Everyday Git Commands (Most Used)
+
+| Command                     | Description                                                            |
+| --------------------------- | ---------------------------------------------------------------------- |
+| `git init`                  | Initialize a new Git repository in the current folder.                 |
+| `git clone <url>`           | Copy a remote repository (GitHub, GitLab, etc.) to your local machine. |
+| `git config`                | Set or get configuration (username, email, editor, aliases).           |
+| `git status`                | Show the state of your working directory and staging area.             |
+| `git add <file>`            | Stage a file for commit.                                               |
+| `git add .`                 | Stage all changes in the current folder.                               |
+| `git commit -m "msg"`       | Save changes to the local repository with a message.                   |
+| `git log`                   | View commit history.                                                   |
+| `git diff`                  | Show changes not yet staged.                                           |
+| `git diff --staged`         | Show changes that are staged but not committed.                        |
+| `git push origin <branch>`  | Send local commits to remote repository.                               |
+| `git pull origin <branch>`  | Fetch and merge changes from remote repository.                        |
+| `git fetch`                 | Download changes from remote without merging.                          |
+| `git branch`                | List local branches.                                                   |
+| `git branch <name>`         | Create a new branch.                                                   |
+| `git checkout <branch>`     | Switch to another branch.                                              |
+| `git switch <branch>`       | Modern alternative to checkout for switching branches.                 |
+| `git merge <branch>`        | Merge another branch into current branch.                              |
+| `git reset <file>`          | Unstage a file (remove from staging).                                  |
+| `git reset --hard <commit>` | Reset repository to a commit (discard all changes).                    |
+| `git rm <file>`             | Remove a file from the repository.                                     |
+| `git mv <old> <new>`        | Rename or move a file.                                                 |
+
+---
+
+# 🔹 2. Intermediate Git Commands
+
+| Command                       | Description                                        |
+| ----------------------------- | -------------------------------------------------- |
+| `git remote`                  | List configured remotes.                           |
+| `git remote add origin <url>` | Link local repo to a remote repository.            |
+| `git remote -v`               | Show remote URLs.                                  |
+| `git show <commit>`           | Show details about a specific commit.              |
+| `git stash`                   | Temporarily save changes not ready to commit.      |
+| `git stash pop`               | Reapply stashed changes.                           |
+| `git stash list`              | Show all stashes.                                  |
+| `git rebase <branch>`         | Reapply commits on top of another base branch.     |
+| `git cherry-pick <commit>`    | Apply a specific commit to the current branch.     |
+| `git tag <name>`              | Create a tag (usually for releases).               |
+| `git tag`                     | List all tags.                                     |
+| `git revert <commit>`         | Create a new commit that undoes a specific commit. |
+| `git blame <file>`            | Show who last modified each line of a file.        |
+| `git shortlog`                | Summarize commits by author.                       |
+| `git clean -fd`               | Remove untracked files and directories.            |
+| `git archive`                 | Create a tar/zip archive of files.                 |
+| `git describe`                | Describe the current commit using tags.            |
+
+---
+
+# 🔹 3. Advanced Git Commands (Plumbing – internal, rarely used directly)
+
+These are the **internal commands** Git uses under the hood.
+
+| Command              | Description                                               |
+| -------------------- | --------------------------------------------------------- |
+| `git cat-file`       | Show contents of repository objects.                      |
+| `git hash-object`    | Compute object ID (SHA-1 hash) of a file.                 |
+| `git ls-tree`        | List contents of a tree object.                           |
+| `git rev-parse`      | Parse revision (commit/branch/tag names).                 |
+| `git update-ref`     | Update a reference (branch, tag).                         |
+| `git symbolic-ref`   | Read or change symbolic references.                       |
+| `git show-ref`       | List references in the repository.                        |
+| `git for-each-ref`   | Loop through refs (branches, tags).                       |
+| `git reflog`         | Show history of reference changes (even deleted commits). |
+| `git gc`             | Clean up unnecessary files and optimize repository.       |
+| `git fsck`           | Check integrity of Git objects.                           |
+| `git count-objects`  | Count number of objects in the repository.                |
+| `git daemon`         | Run a Git server process.                                 |
+| `git send-pack`      | Push objects to another repository.                       |
+| `git receive-pack`   | Receive objects from another repository.                  |
+| `git unpack-objects` | Unpack objects from a pack file.                          |
+| `git pack-objects`   | Create a pack file with multiple objects.                 |
+
+---
+
+# 🔹 4. Collaboration Commands
+
+| Command                                   | Description                                             |
+| ----------------------------------------- | ------------------------------------------------------- |
+| `git fork`                                | (Not built-in, done on GitHub/GitLab UI) – copy a repo. |
+| `git pull-request`                        | (Via GitHub CLI, not raw Git) – create PR.              |
+| `git submodule add <url>`                 | Add another repo as a submodule.                        |
+| `git submodule update --init --recursive` | Initialize and update submodules.                       |
+| `git worktree add`                        | Create a new working tree tied to the same repo.        |
+
+---
+
+# 🔹 5. Debugging and Fixing
+
+| Command              | Description                                            |
+| -------------------- | ------------------------------------------------------ |
+| `git bisect`         | Find the commit that introduced a bug (binary search). |
+| `git bisect start`   | Begin a bisect session.                                |
+| `git bisect good`    | Mark a commit as good.                                 |
+| `git bisect bad`     | Mark a commit as bad.                                  |
+| `git bisect reset`   | End bisect.                                            |
+| `git grep <pattern>` | Search for text inside tracked files.                  |
+| `git verify-commit`  | Check GPG signature of commits.                        |
+| `git verify-tag`     | Check GPG signature of tags.                           |
+| `git notes`          | Add or show notes attached to commits.                 |
+
+---
+
+# 🔹 6. Full Utility Commands (from `git help -a`)
+
+For completeness, here’s the **full set of Git commands** available:
+
+```
+add, am, archive, bisect, branch, bundle, checkout, cherry-pick, citool, 
+clean, clone, commit, describe, diff, fetch, format-patch, gc, gitk, 
+grep, gui, init, log, maintenance, merge, mv, notes, pull, push, range-diff, 
+rebase, reset, restore, revert, rm, shortlog, show, sparse-checkout, stash, 
+status, submodule, switch, tag, worktree, 
+
+apply, blame, branch, cat-file, check-attr, check-ignore, check-mailmap, 
+check-ref-format, checkout-index, commit-graph, commit-tree, config, 
+count-objects, credential, credential-cache, credential-store, daemon, 
+diff-files, diff-index, diff-tree, fast-export, fast-import, fsck, 
+fetch-pack, filter-branch, for-each-ref, hash-object, http-backend, 
+imap-send, index-pack, init-db, ls-files, ls-remote, ls-tree, mailinfo, 
+mailsplit, merge-base, merge-file, merge-index, merge-one-file, merge-tree, 
+mktag, mktree, multi-pack-index, name-rev, pack-objects, pack-redundant, 
+pack-refs, patch-id, prune, prune-packed, read-tree, replace, rev-list, 
+rev-parse, run, send-email, shell, sh-i18n, sh-setup, show-index, show-ref, 
+symbolic-ref, unpack-file, unpack-objects, update-index, update-ref, 
+update-server-info, upload-archive, upload-pack, var, verify-pack, 
+verify-commit, verify-tag, write-tree
+```
+
+---
+
+✅ This is **every Git command** grouped logically.
+In real-world work, you’ll mostly use the **Everyday commands (section 1)** and sometimes the **Intermediate ones (section 2)**.
+
+---
+
+👉 Do you want me to turn this into a **cheat sheet PDF/Markdown** that you can keep offline as a quick reference?
