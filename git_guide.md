@@ -124,6 +124,80 @@ Do you want me to also include **steps for making your first commit & push after
 Great 🚀 Let’s continue from where we left off. Now that you have **cloned your repo locally**, I’ll walk you through making your **first commit and push** so that any changes you make are synced back to GitHub.
 
 ---
+Got it 👍 Let’s clean up your text, make it more professional, and correct small issues while keeping it simple and step-by-step.
+
+---
+
+# **Setting up SSH Key for Easy Project Transmission**
+
+To avoid typing your GitHub username and password every time, you can use **SSH keys** for secure authentication. Here’s how to set it up:
+
+---
+
+## **Step 1: Generate SSH Keys**
+
+On your local machine, open a terminal and run:
+
+```bash
+ssh-keygen -t ed25519 -C "your_primary_email_address"
+```
+
+* This creates **two files** inside the `.ssh` directory:
+
+  * `id_ed25519` → your **private key** (keep this safe, never share).
+  * `id_ed25519.pub` → your **public key** (this is the one you’ll upload to GitHub).
+
+---
+
+## **Step 2: Open the Public Key**
+
+Navigate to the `.ssh` directory:
+
+```bash
+cd ~/.ssh
+```
+
+Open the public key file (you can use VS Code or any text editor):
+
+```bash
+code id_ed25519.pub
+```
+
+Copy the full contents of this file.
+
+---
+
+## **Step 3: Add the Public Key to GitHub**
+
+1. Go to **GitHub → Settings → SSH and GPG Keys**.
+2. Click **New SSH Key**.
+3. Give it a title (e.g., *My Laptop*).
+4. Paste the contents of your public key.
+5. Click **Add SSH Key**.
+
+---
+
+## **Step 4: Clone a Project Using SSH**
+
+1. On GitHub, open the repository you want to clone.
+2. Click the green **Code** button.
+3. Select **SSH** from the dropdown.
+4. Copy the SSH URL (it looks like `git@github.com:username/repo.git`).
+
+Back in your terminal, navigate to the directory where you want the repo and run:
+
+```bash
+git clone git@github.com:username/repo.git
+```
+
+---
+
+✅ That’s it! From now on, you can **push and pull** without entering your username or password each time.
+
+---
+
+👉 Do you also want me to add the step for **testing the connection with GitHub** (`ssh -T git@github.com`) so you can confirm the key works before cloning?
+
 
 # 🔹 Steps for First Commit & Push
 
