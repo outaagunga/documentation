@@ -571,3 +571,54 @@ In real-world work, you’ll mostly use the **Everyday commands (section 1)** an
 ---
 
 👉 Do you want me to turn this into a **cheat sheet PDF/Markdown** that you can keep offline as a quick reference?
+
+Perfect 👍 Cleaning up old SSH keys is a good security practice. If your old PC is no longer in use, you should **remove its SSH key** from your GitHub account. Here’s how:
+
+---
+
+# 🔹 Removing Old SSH Keys from GitHub
+
+## **Step 1: Log in to GitHub**
+
+* Go to [https://github.com](https://github.com).
+* Click your profile picture → **Settings**.
+
+---
+
+## **Step 2: Go to SSH and GPG Keys**
+
+* In the left sidebar, click **SSH and GPG keys**.
+* You’ll see a list of SSH keys linked to your account.
+  Example:
+
+  ```
+  Laptop-2023    Added on Jan 10, 2023
+  Work-PC        Added on May 14, 2024
+  New-Laptop-2025 (your latest one)
+  ```
+
+---
+
+## **Step 3: Identify the Old Key**
+
+* Look at the **Title/Label** and **Date Added**.
+* Find the one that belonged to your obsolete PC.
+
+---
+
+## **Step 4: Remove the Old Key**
+
+* Next to the key, click the **Delete** button (trash icon).
+* Confirm removal.
+
+---
+
+✅ Done. That key is now invalid — even if someone got hold of your old PC, they can’t push/pull to your GitHub anymore.
+
+---
+
+👉 Pro tip: If you use **multiple PCs** (e.g., home, work, school), you can safely have **multiple SSH keys** added under the same GitHub account.
+
+---
+
+Would you like me to create a **step-by-step visual guide (with mock screenshots)** for this, so it’s easier to follow?
