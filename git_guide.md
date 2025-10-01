@@ -20,6 +20,26 @@ Perfect 👍 Let’s go step by step so you don’t miss anything. I’ll assume
 
 ---
 
+### **Set identity for all repositories (recommended)**
+
+This will help the git to know you better.  
+Open the terminal and run these command:  
+
+```bash
+git config --global user.name "your_username"
+git config --global user.email "your_email_address"
+```
+
+Example (replace with your actual GitHub details):  
+e.g  
+```bash
+git config --global user.name "outaagunga"
+git config --global user.email "jeconiaagunga@gmail.com"
+```
+
+---
+
+
 ## **Step 2: Copy the Repository URL from GitHub**
 
 1. Go to your GitHub account and open the repository you created.
