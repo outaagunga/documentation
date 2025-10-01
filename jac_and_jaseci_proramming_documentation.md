@@ -16006,6 +16006,5856 @@ with entry {
 ??? example "NOTE:"
     "The `stream=True` parameter only supports `str` output type. Tool calling is not currently supported in streaming mode but will be available in future releases."
 
+# byLLM Tutorials and Examples
+
+
+## Tutorials
+
+<div class="grid cards" markdown>
+
+-   **RPG Game Level Genaration**
+
+    ---
+
+    *A Tutorial on building an AI-Intergrated RPG Game using byLLM.*
+
+    [Start](./../../examples/mtp_examples/rpg_game/){ .md-button }
+
+-   **Fantacy Trading Game**
+
+    ---
+
+    *A text-based trding game where non-player charaters are handled using large language models. This is use tool calling for game mechanics such as bargaining at shops.*
+
+    [Start](./../../examples/mtp_examples/fantasy_trading_game/){ .md-button }
+
+-   **AI-Powered Multimodal MCP Chatbot**
+
+    ---
+
+    *This Tutorial shows how to implemented a agentic AI application using the byLLM package and object-spatiol programming. In additionn MCP integration is demonstrated here.*
+
+    [Start](./../../examples/rag_chatbot/Overview/){ .md-button }
+
+</div>
+
+
+## Examples
+
+This section collects the example byllm programs bundled in `jac-byllm/examples/`. Examples are grouped by type. For each example the source is shown in a tab so you can quickly inspect the code.
+
+### Core Examples
+Small, focused examples that show common byLLM patterns for integrating LLMs in Jac programs.
+
+Repository location: [jac-byllm/examples/core_examples](https://github.com/Jaseci-Labs/jaseci/tree/main/jac-byllm/examples/core_examples)
+
+??? note "Core examples (code)"
+
+    === "personality_finder.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/core_examples/personality_finder.jac"
+        ```
+
+    === "level_genarator.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/core_examples/level_genarator.jac"
+        ```
+
+### Vision / Multimodal examples
+
+Examples that demonstrate multimodal usage (images and video) with byLLM and vision-capable LLMs. Accompanying media files live alongside the Jac code in the repo.
+
+Repository location: [jac-byllm/examples/vision](https://github.com/Jaseci-Labs/jaseci/tree/main/jac-byllm/examples/vision)
+
+??? note "Vision / Multimodal examples (code)"
+    Vision-enabled examples that combine image/video inputs with byLLM workflows. Only the Jac code files are shown below; accompanying media are in the examples folder (e.g. `person.png`, `receipt.jpg`, `mugen.mp4`).
+
+    === "math_solver.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/vision/math_solver.jac"
+        ```
+
+    === "personality_finder.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/vision/personality_finder.jac"
+        ```
+
+    === "receipt_analyzer.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/vision/receipt_analyzer.jac"
+        ```
+
+    === "mugen.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/vision/mugen.jac"
+        ```
+
+### Tool-calling examples
+
+Examples showing how to orchestrate external tools (APIs, search, or internal tool servers) from Jac/byLLM and how to coordinate multi-agent workflows.
+
+Repository location: [jac-byllm/examples/tool_calling](https://github.com/Jaseci-Labs/jaseci/tree/main/jac-byllm/examples/tool_calling)
+
+??? note "Tool-calling examples (code)"
+    Examples that demonstrate calling external tools, tool orchestration, or multi-agent interactions.
+
+    === "wikipedia_react.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/tool_calling/wikipedia_react.jac"
+        ```
+
+    === "marketing_agency.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/tool_calling/marketing_agency.jac"
+        ```
+
+    === "fantasy_trading_game.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/tool_calling/fantasy_trading_game.jac"
+        ```
+
+    === "debate_agent.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/tool_calling/debate_agent.jac"
+        ```
+
+### Agentic AI examples
+
+Small agentic patterns and lightweight multi-step reasoning examples (multi-turn planning, simple agents). These live under the agentic_ai examples folder.
+
+Repository location: [jac-byllm/examples/agentic_ai](https://github.com/Jaseci-Labs/jaseci/tree/main/jac-byllm/examples/agentic_ai)
+
+??? note "Agentic AI examples (code)"
+    Examples that demonstrate small agentic behaviors and light-weight multi-step reasoning.
+
+    === "friendzone_lite.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/agentic_ai/friendzone_lite.jac"
+        ```
+
+    === "genius_lite.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/agentic_ai/genius_lite.jac"
+        ```
+
+### Microbenchmarks
+
+Short, single-purpose microbenchmarks for probing model behavior and performance on targeted tasks. Used for evaluations done in the MTPm paper.
+
+Repository location: [jac-byllm/examples/microbenchmarks](https://github.com/Jaseci-Labs/jaseci/tree/main/jac-byllm/examples/microbenchmarks)
+
+??? note "Microbenchmarks (code)"
+    Small microbenchmarks and single-purpose prompts useful for testing model behavior and performance.
+
+    === "text_to_type.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/microbenchmarks/text_to_type.jac"
+        ```
+
+    === "odd_word_out.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/microbenchmarks/odd_word_out.jac"
+        ```
+
+    === "joke_gen.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/microbenchmarks/joke_gen.jac"
+        ```
+
+    === "grammar_checker.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/microbenchmarks/grammar_checker.jac"
+        ```
+
+    === "translator.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/microbenchmarks/translator.jac"
+        ```
+
+    === "essay_review.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/microbenchmarks/essay_review.jac"
+        ```
+
+    === "expert_answer.jac"
+        ```jac linenums="1"
+        --8<-- "jac-byllm/examples/microbenchmarks/expert_answer.jac"
+        ```
+# byLLM as a Library for Python
+
+The byLLM module is a Jaclang plugin that provides AI functionality. Since Jaclang supersets Python, byLLM can be integrated into Python applications. This guide demonstrates how to use byLLM in Python.
+
+byLLM is a Python package that needs to be installed using:
+
+```bash
+pip install byllm
+```
+
+## Importing byLLM in Python
+
+byLLM functionality is accessed by importing the `byllm` module and using the `by` decorator on functions.
+
+```python linenums="1"
+import jaclang
+from dataclasses import dataclass
+from byllm import Model, Image, by
+
+llm = Model(model_name="gpt-4o")
+
+@dataclass
+class Person:
+    full_name: str
+    description: str
+    year_of_birth: int
+
+
+@by(llm)
+def get_person_info(img: Image) -> Person: ...
+
+img = Image("https://bricknellschool.co.uk/wp-content/uploads/2024/10/einstein3.webp")
+
+person = get_person_info(img)
+print(f"Name: {person.full_name}, Description: {person.description}, Year of Birth: {person.year_of_birth}")
+```
+??? example "NOTE:"
+    Here byLLM can only use primitive types and dataclasses as input and output types. We are working to resolve this limitation.
+
+
+## Model Hyper-parameters
+
+In Jaclang, hyper-parameters are set by passing them to the LLM model:
+
+```jac linenums="1"
+import from byllm { Model }
+
+glob llm = Model(model_name="gpt-4o")
+
+def generate_joke() -> str by llm(temperature=0.3);
+```
+
+The `temperature` hyper-parameter controls the randomness of the output. Lower values produce more deterministic output, while higher values produce more random output.
+
+In Python, hyper-parameters are passed as follows:
+
+```python linenums="1"
+import jaclang
+from byllm import Model, by
+
+llm = Model(model_name="gpt-4o")
+
+@by(llm(temperature=0.3))
+def generate_joke() -> str: ...
+```
+
+## Using Python Functions as Tools
+
+Python functions can be used as tools in byLLM. Functions defined in Python are callable by the LLM to perform specific tasks:
+
+```python linenums="1"
+import jaclang
+from byllm import Model
+llm = Model(model_name="gpt-4o")
+
+
+def get_weather(city: str) -> str:
+    return f"The weather in {city} is sunny."
+
+@by(llm(tools=[get_weather]))
+def answer_question(question: str) -> str: ...
+```
+
+## Using Semstrings for Semantic Enrichment
+
+In Jac we introduced the `sem` keyword as a means to attach additional semantics to code objects such as object attributes and function argument. The syntax in jac is as follows.
+
+```jac
+obj Person {
+    has name:str;
+    has age:int;
+    has ssn: int;
+}
+sem Person.ssn = "last four digits of the Social Security number"
+```
+
+Using `sem` functionality in python is a bit diferent as the attachment is done using a `@sem` decorator.
+
+```python
+from jaclang import JacMachineInterface as Jac
+
+@Jac.sem('<Person Semstring>', {
+    'name' : '<name semstring>',
+    'age' : '<age semstring>',
+    'ssn' : "<ssn semstring>"
+    }
+)
+@datclass
+class Person:
+    name: str
+    age: int
+    ssn: int
+```
+
+!!! note
+    The `sem` implementation in Python is a work-in-progress. The Python way of adding semstrings may change in future releases of byLLM.
+
+# Using Multi-modal Models
+
+byLLM supports multimodal inputs including text, images, and videos. This section covers how byLLM handles multimodal inputs.
+
+Images are supported in the default byLLM distribution. Video support requires installing byllm with the `video` extra:
+
+```bash
+pip install byllm[video]
+```
+
+## Image
+
+byLLM supports image inputs through the `Image` format. Images can be provided as input to byLLM functions or methods:
+
+```jac
+import from byllm { Model, Image }
+
+glob llm = Model(model_name="gpt-4o");
+
+'Personality of the Person'
+enum Personality {
+   INTROVERT,
+   EXTROVERT
+}
+
+sem Personality.INTROVERT = 'Person who is shy and reticent';
+sem Personality.EXTROVERT = 'Person who is outgoing and socially confident';
+
+
+
+obj Person {
+    has full_name: str,
+        yod: int,
+        personality: Personality;
+}
+
+def get_person_info(img: Image) -> Person by llm();
+
+with entry {
+    image = Image("photo.jpg");
+    person_obj = get_person_info(image);
+    print(person_obj);
+}
+```
+
+Input Image :
+[person.png](https://rarehistoricalphotos.com/wp-content/uploads/2022/06/albert-einstein-tongue-3.webp)
+
+
+??? example "Output"
+    Person(full_name='Albert Einstein', yod=1955, personality=Personality.INTROVERT)
+
+In this example, an image of a person is provided as input to the `get_person_info` method. The method returns a `Person` object containing the extracted information from the image.
+
+## Video
+
+byLLM supports video inputs through the `Video` format. Videos can be provided as input to byLLM functions or methods:
+
+```jac
+import from byllm { Model, Video }
+
+glob llm = Model(model_name="gpt-4o");
+
+def explain_the_video(video: Video) -> str by llm();
+
+with entry {
+    video_file_path = "SampleVideo_1280x720_2mb.mp4";
+    target_fps = 1
+    video = Video(path=video_file_path, fps=target_fps);
+    print(explain_the_video(video));
+}
+```
+
+Input Video:
+[SampleVideo_1280x720_2mb.mp4](https://github.com/Jaseci-Labs/jaseci/raw/refs/heads/main/jac-byllm/tests/fixtures/SampleVideo_1280x720_2mb.mp4)
+
+
+??? example "Output"
+    The video features a large rabbit emerging from a burrow in a lush, green environment. The rabbit stretches and yawns, seemingly enjoying the morning. The scene is set in a vibrant, natural setting with bright skies and trees, creating a peaceful and cheerful atmosphere.
+
+
+# LiteLLM proxy server
+
+<img width="2069" height="1071" alt="image" src="https://github.com/user-attachments/assets/2680a26d-8f66-4288-a06c-5aa02898a91e" />
+
+byLLM model can also be connected to a [LiteLLM proxy server](https://docs.litellm.ai/docs/simple_proxy). This allows you to use the byLLM model as a proxy for LiteLLM, enabling you to leverage the capabilities of byLLM in a LiteLLM environment.
+
+To set up and deploy the LiteLLM proxy server, you can follow the instructions provided in the LiteLLM documentation:
+
+Reference: [https://docs.litellm.ai/docs/proxy/deploy](https://docs.litellm.ai/docs/proxy/deploy)
+
+Once The proxy server is setted up and running, you can connect to it by simply passing the URL of the proxy server to the byLLM model with the parameter `proxy_url`:
+
+```python
+from byllm import Model
+
+llm = Model(
+    model_name="gpt-4o",                # The model name to be used
+    api_key="your_litellm_api_key",     # LiteLLM proxy server key
+    proxy_url="http://localhost:8000",  # URL of the LiteLLM proxy server
+)
+```
+
+Note that the `api_key` parameter is necessary to authenticate the connection, which is not the OpenAI API key but the virtual key (or master key) generated by the LiteLLM proxy server. You can find more information about how to obtain this key in the [LiteLLM documentation](https://docs.litellm.ai/docs/proxy/virtual_keys).
+
+
+# Introduction to Jac Cloud
+
+## What is Jac Cloud?
+
+Jac Cloud is a powerful cloud-native framework that transforms your Jac applications into production-ready API servers with minimal configuration. It bridges the gap between local Jac development and scalable cloud deployment, providing enterprise-grade features out of the box.
+
+With Jac Cloud, you can:
+
+- Deploy your Jac applications as RESTful APIs, WebSocket services, and scheduled tasks
+- Simply replace `jac run` with `jac serve` to transform your application into a fully-featured web service
+- Access a rich set of cloud-native features without writing additional code
+
+## Key Features at a Glance
+
+### Instant API Generation
+- Automatically converts Jac walkers into REST endpoints
+- Supports all HTTP methods (GET, POST, PUT, DELETE, etc.)
+- Built-in OpenAPI/Swagger documentation at `/docs`
+
+### Authentication & Authorization
+- Token-based authentication system
+- Role-based access control
+- Configurable endpoint security
+
+### Real-time Communication
+- WebSocket support for real-time applications
+- Channel-based messaging
+- Client and user notification systems
+
+### Task Scheduling
+- Cron-based scheduling
+- Interval-based tasks
+- One-time date triggers
+
+### Production-Ready Features
+- Comprehensive logging with Elastic integration
+- Environment variable configuration
+- Health monitoring and metrics
+- File upload support
+
+### Cloud Integration
+- Kubernetes deployment support
+- Docker containerization
+- ConfigMap-based configuration
+- Horizontal scaling capabilities
+
+## Quick Start (5-Minute Setup)
+
+The simplest way to start with Jac Cloud is to take an existing Jac application and serve it:
+
+```bash
+# Install Jac Cloud
+pip install jac-cloud
+
+# Instead of running locally
+jac run main.jac
+
+# Serve as an API
+jac serve main.jac
+```
+
+Your application will be available at `http://localhost:8000` with automatic API documentation at `http://localhost:8000/docs`.
+
+## How Jac Cloud Works
+
+Jac Cloud follows a modular architecture that includes:
+
+- **Walker Endpoints**: Automatic REST API generation from walker declarations
+- **WebSocket Manager**: Real-time bidirectional communication
+- **Scheduler**: Background task execution
+- **Authentication System**: Secure access control
+- **Logging Framework**: Comprehensive request/response logging
+
+## Perfect Use Cases for Beginners
+
+Jac Cloud is ideal for:
+
+- **Microservices**: Build scalable, independent services
+- **Real-time Applications**: Chat systems, live updates, notifications
+- **Data Processing APIs**: Transform and analyze data at scale
+- **AI/ML Services**: Deploy machine learning models as APIs
+- **IoT Backends**: Handle device communication and data ingestion
+- **Task Automation**: Scheduled data processing and workflows
+
+## Next Steps
+
+Ready to get started? Check out these guides:
+
+- [Quick Start Guide](quickstart.md) - Build your first Jac Cloud application
+- [Walker Endpoints](quickstart.md#walker-endpoints) - Learn how to configure API endpoints
+- [WebSocket Communication](websocket.md) - Add real-time features
+- [Task Scheduling](scheduler.md) - Automate recurring tasks
+- [Kubernetes Deployment](deployment.md) - Deploy to the cloud
+
+<!-- ## Community and Support
+
+Jac Cloud is part of the larger Jaseci ecosystem. Join our community to get help, share your projects, and contribute to the platform's growth.
+
+---
+
+*Transform your Jac applications into production-ready cloud services with Jac Cloud's powerful, yet simple framework.* -->
+
+
+# Quick Start Guide
+
+This guide will help you quickly get up and running with Jac Cloud, with step-by-step instructions designed for beginners.
+
+## Your First Jac Cloud Server in 30 Seconds
+
+Transform any Jac application into a cloud API server with a single command:
+
+```bash
+# Basic usage - this is all you need to start!
+jac serve main.jac
+
+# With custom host and port (optional)
+jac serve main.jac --host 0.0.0.0 --port 8080 --reload
+```
+
+## Development Mode
+- `--reload`
+    - Enable auto-reload. Uvicorn supports two versions of auto-reloading behavior enabled by this option. Default: `False`.
+- `--watch path/to/dir1,path/to/dir2`
+    - Select which path/s (comma separated) to watch for changes for auto-reload. Requires `--reload` to work. Defaults to main jac directory
+
+---
+
+Once started, your API will be available at:
+
+- **API Endpoint**: `http://localhost:8000`
+- **Interactive Documentation**: `http://localhost:8000/docs`
+
+## Understanding Walker Endpoints
+
+### What Happens Automatically
+
+Jac Cloud automatically converts your walker declarations into REST API endpoints. By default, each walker creates two endpoint groups:
+
+| Endpoint Type | URL Pattern | Description |
+|--------------|-------------|-------------|
+| **Root Entry** | `/walker/{walker_name}` | Executes on the root |
+| **Node Entry** | `/walker/{walker_name}/{node_id}` | Executes on a specific node |
+
+### Want to Disable Auto-Generation?
+
+To disable automatic endpoint generation, set the environment variable:
+```bash
+export DISABLE_AUTO_ENDPOINT=True
+```
+
+## Configuring Your Walkers
+
+### Basic Configuration
+
+Control endpoint behavior using the `__specs__` object within your walker:
+
+```jac
+walker my_walker {
+    has data: str;
+
+    # This is where you configure your endpoint behavior
+    obj __specs__ {
+        static has methods: list = ["get", "post"];   # Supports both GET and POST
+        static has auth: bool = False;                # No authentication required
+        static has as_query: list = ["data"];         # "data" will be a query parameter
+        static has private: bool = True;              # Skip auto endpoint generation from walker
+    }
+}
+```
+
+## Configuration Reference
+
+### Core Settings (Most Common)
+
+| **Setting** | **Type** | **Description** | **Default** |
+|-------------|----------|-----------------|-------------|
+| `methods` | `list[str]` | Allowed HTTP methods: `"get"`, `"post"`, `"put"`, `"delete"`, etc. | `["post"]` |
+| `as_query` | `str \| list[str]` | Fields to treat as query parameters. Use `"*"` for all fields | `[]` |
+| `auth` | `bool` | Whether endpoint requires authentication | `true` |
+| `path` | `str` | If it starts with `/`, it will be the complete path. Otherwise, it will be prefixed with `/walker` (for walkers) or /`webhook/walker` (for webhooks). If not specified, it defaults to the walker's name with its respective prefix. | N/A |
+| `private` | `bool` | Skip walker in auto-generation | `false` |
+
+### Advanced Settings
+
+| **Setting** | **Type** | **Description** | **Default** |
+|-------------|----------|-----------------|-------------|
+| `entry_type` | `str` | `"NODE"`, `"ROOT"`, or `"BOTH"` | `"BOTH"` |
+| `webhook` | `dict` | [Webhook configuration](webhook.md) | `None` |
+| `schedule` | `dict` | [Scheduler configuration](scheduler.md) | `None` |
+
+### Documentation Settings
+
+| **Setting** | **Type** | **Description** | **Default** |
+|-------------|----------|-----------------|-------------|
+| `response_model` | `Any` | Type for response serialization and validation | `None` |
+| `tags` | `list[str \| Enum]` | API tags for grouping in Swagger UI | `None` |
+| `status_code` | `int` | Default response status code | `None` |
+| `summary` | `str` | Brief endpoint description | `None` |
+| `description` | `str` | Detailed endpoint description (supports Markdown) | `None` |
+| `response_description` | `str` | Description for the default response | `"Successful Response"` |
+| `responses` | `dict[int \| str, dict]` | Additional responses that could be returned | `None` |
+| `deprecated` | `bool` | Mark endpoint as deprecated | `None` |
+| `include_in_schema` | `bool` | Include endpoint in generated OpenAPI schema | `True` |
+| `response_class` | `Type[Response]` | Response class to use for this endpoint | `JSONResponse` |
+| `name` | `str` | Internal name for the path operation | `None` |
+| `openapi_extra` | `dict[str, Any]` | Extra metadata for OpenAPI schema | `None` |
+
+## Examples for Beginners
+
+### Basic Endpoint Example - Time Service
+Let's create a simple endpoint that returns the current time. For this example, we create a walker named `public_info` which provides one rest method `get` at the url `http://localhost:8000/walker/public_info`. The ability `get_current_time` will return the current timestamp in ISO format via the use of the `report` statement.
+
+```jac
+import from datetime {datetime}
+
+# Public endpoint (no authentication)
+walker public_info {
+    obj __specs__ {
+        static has methods: list = ["get"];
+        static has auth: bool = False;
+    }
+
+    can get_current_time with `root entry{
+        report {
+            "timestamp": datetime.now().isoformat()
+        };
+    }
+}
+```
+
+
+### Parameterized Endpoint Example - User Search
+This example demonstrates how to create an endpoint from a walker that accepts query parameters for searching users. The walker `search_users` will allow users to search for a user by their username.
+
+```jac
+# GET endpoint with query parameters
+walker search_users {
+    has query: str;
+    static has users: list = [
+        {"username": "alice", "email": "alice@example.com"},
+        {"username": "bob", "email": "bob@example.com"}
+    ];
+
+    obj __specs__ {
+        static has methods: list = ["get"];
+        static has as_query: list = ["query"];
+        static has auth: bool = False;
+    }
+
+    can search_by_name with `root entry{
+        for user in self.users {
+            if user['username'] == self.query {
+                report user;
+                return;
+            }
+        }
+
+        report {
+            "error": f"User with username {self.query} not found"
+        };
+    }
+}
+```
+
+To test this endpoint, you can use a web browser or a tool like `curl`:
+
+```bash
+curl -X 'GET' \
+  'http://0.0.0.0:8000/walker/search_users?query=alice' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json'
+```
+
+If the user is found, the response will look like this:
+
+```json
+{
+    "status": 200,
+    "reports": [
+        {
+            "username": "alice",
+            "email": "alice@example.com"
+        }
+    ]
+}
+```
+
+### File Upload Example
+In this example, we will create a walker that allows users to upload a file. The walker `single_file_upload` will accept a single file and return the filename in the response. This shows how the walker can handle post requests with file uploads.
+
+Since jac is a superset of Python, we can use the `UploadFile` type from FastAPI to handle file uploads.
+
+First, we create the upload_file.jac file with the following content:
+```jac
+# upload_file.jac
+import from fastapi { UploadFile }
+
+# Single file upload
+walker single_file_upload {
+    has file: UploadFile;
+
+    obj __specs__ {
+        static has methods: list = ["post"];
+        static has auth: bool = False;
+    }
+
+    can enter with `root entry {
+        report {
+            "output": f"Received file: {self.file.filename}"
+        };
+    }
+}
+
+```
+
+Next we can create a test text file named `test.txt` with the content "Hello, Jac Cloud!".
+```bash
+echo "Hello, Jac Cloud!" > test.txt
+```
+
+Now we can test the file upload endpoint using `curl`:
+
+```bash
+curl -L -F "file=@test.txt" \
+"http://0.0.0.0:8080/walker/single_file_upload" \
+```
+
+Successful file upload will return a response like this:
+
+```json
+{
+    "status": 200,
+    "reports": [
+        {
+            "output": "Received file: test.txt"
+        }
+    ]
+}
+```
+
+## Response Format
+
+### What to Expect
+
+All walker endpoints return a standardized JSON response:
+
+```json
+{
+    "status": 200,
+    "reports": [
+        "Any reports generated during walker execution"
+    ],
+    "returns": [
+        "Walker return values (optional - requires SHOW_ENDPOINT_RETURNS=true)"
+    ]
+}
+```
+
+### Working with Node and Edge Data
+
+Jac Cloud automatically serializes walker, edge, and node archetypes:
+
+```json
+{
+    "id": "unique_anchor_reference_id",
+    "context": {
+        "attribute1": "value1",
+        "attribute2": "value2"
+    }
+}
+```
+
+## Data Persistence: Manual Saving and Commits
+
+### **Save**
+
+To save a walker or object to memory (queued for later database commit):
+
+```jac
+# Save a walker instance
+save(my_walker_instance)
+
+# Save an object instance
+save(my_object_instance)
+```
+
+### **Commit**
+
+**Commit all in-memory data:**
+```jac
+commit()  # Saves everything currently in memory to database
+```
+
+**Commit specific archetype:**
+```jac
+commit(archetype)  # Only commits this specific archetype
+```
+
+## Helpful Environment Variables
+
+Control Jac Cloud behavior with these environment variables:
+
+- `DISABLE_AUTO_ENDPOINT=True` - Disable automatic endpoint generation
+- `SHOW_ENDPOINT_RETURNS=True` - Include walker return values in responses
+
+## Next Steps
+
+Now that you understand the basics, explore these features:
+
+- [Authentication & Permissions](permission.md) - Secure your API
+- [Real-time WebSocket Communication](websocket.md) - Add real-time features
+- [Task Scheduling](scheduler.md) - Automate recurring tasks
+- [Webhook Integration](webhook.md) - Create API integrations
+- [Environment Variables](env_vars.md) - Configure your application
+- [Logging & Monitoring](logging.md) - Track application performance
+
+## Edge Case: Manually Creating Walker Endpoints
+
+While not recommended, as you typically shouldn't change your API specifications in this manner, Jac Cloud does support manually creating walker endpoints.
+This allows for advanced customization if absolutely necessary, but generally, you should rely on the automatic generation and configuration via **specs**.
+
+Example Code snippet:
+
+```
+type("NameOfYourWalker", (_.Walker,), {
+    "__specs__": your_specs_class,
+    ... annotations / additional fields ...
+})
+```
+
+# Permission Management: Secure Multi-User Access
+
+## Why Permissions Matter
+
+Jac Cloud's permission system lets you control who can access different parts of your application. This is crucial for:
+
+- Building multi-user applications
+- Protecting sensitive data
+- Enabling collaboration features
+- Creating public/private content
+- Implementing access control
+
+## Key Concepts for Beginners
+
+### Understanding Data Representations
+
+In Jac Cloud, your data exists in two forms:
+
+- Anchor
+  - EdgeAnchor
+  - NodeAnchor
+  - ObjectAnchor
+  - WalkerAnchor
+- Archetype
+  - EdgeArchetype
+  - NodeArchetype
+  - ObjectArchetype
+  - WalkerArchetype
+
+#### **Anchors** are database-side class representations that contain:
+
+| Name      | Description                                                       |
+| --------- | ----------------------------------------------------------------- |
+| id        | The database identifier.                                          |
+| name      | The name of the associated archetype.                             |
+| root      | The owning root anchor.                                           |
+| access    | Permissions defining which nodes or roots can access this anchor. |
+| archetype | The JSON representation of the actual archetype.                  |
+
+#### **Archetypes** are the runtime class representations, directly reflecting fields declared in Jac source code. Dev can access their respective anchors via the `__jac__` attribute
+
+### Permission Levels Explained
+
+Jac Cloud has four permission levels that control what users can do:
+
+| Level       | Description                          | Example Use Case           |
+| ----------- | ------------------------------------ | -------------------------- |
+| `NoPerm` | Cannot see or interact with the item | Private user data          |
+| `ReadPerm`      | Can view but not modify the item     | Public profile information |
+| `ConnectPerm`   | Can link nodes to this node          | Friend requests, comments  |
+| `WritePerm`     | Full access to modify the item       | User's own content         |
+
+## How Permissions Work (Simple Example)
+
+Imagine a social media app with three users:
+
+```
+Root1 → User1 → Post1
+Root2 → User2 → Post2
+Root3 → User3 → Post3
+```
+
+By default, User2 cannot see Post1 (created by User1). To allow this:
+
+1. User1 must explicitly grant permission to User2
+2. This creates a connection in the permissions system
+3. Now User2 can access Post1 according to the permission level granted
+
+## Managing Permissions in Code
+
+### Grant Access Using Helper Functions
+
+```jac
+# Allow User2 to read a post
+walker grant_access {
+    has target_root_id: str;  # ID of User2's root
+    has access_level: str;    # ReadPerm, ConnectPerm, or WritePerm
+
+    can grant_access with post entry {
+        # Grant access to the current post
+        _.allow_root(here, NodeAnchor.ref(self.target_root_id), self.access_level);
+        report "Access granted!";
+    }
+}
+```
+
+The code snippet `_.allow_root(here, NodeAnchor.ref(self.target_root_id), self.access_level)` facilitates granting a specified level of access to a target root node from the current node.
+
+Here's a breakdown of the components:
+
+- `here`
+
+  - Represents the current node, which in this context is the post node.
+
+- `NodeAnchor.ref(self.target_root_id)`
+
+  - This converts the target_root_id (a string identifier) into a NodeAnchor representation. This NodeAnchor then points to the specific target root node that will be granted access.
+
+- `self.access_level`
+  - This parameter specifies the level of access that the target root node will have to the current node's data (i.e., the post node's data).
+
+In essence, this line of code enables the post node to grant the designated target root node permission to access its data, with the access permissions defined by self.access_level.
+
+### Revoke Access Using Helper Functions
+
+```jac
+# Remove User2's access to a post
+walker revoke_access {
+    has target_root_id: str;  # ID of User2's root
+
+    can revoke_access with post entry {
+        # Revoke access to the current post
+        _.disallow_root(here, NodeAnchor.ref(self.target_root_id));
+        report "Access revoked!";
+    }
+}
+```
+
+The code snippet `_.disallow_root(here, NodeAnchor.ref(self.target_root_id))` performs the inverse operation of `_.allow_root`; it removes existing access permissions that a target root node had to the current node's data.
+
+Here's how it works:
+
+- `here`
+  - This refers to the current node, which, as before, is the post node. This is the node from which the permission is being revoked.
+- `NodeAnchor.ref(self.target_root_id)`
+  - This converts the target_root_id (a string identifier) into a NodeAnchor representation. This NodeAnchor pinpoints the specific target root node whose access privileges are being revoked.
+
+In essence, this line of code instructs the post node to remove the previously granted access for the designated target root node to its data.
+
+### Make Content Public
+
+```jac
+# Make a post readable by everyone
+walker make_public {
+    can make_public with post entry {
+        # Grant READ access to all users
+        grant(here, ReadPerm);
+        report "Post is now public!";
+    }
+}
+```
+
+The code snippet `grant(here, ReadPerm)` provides a mechanism to grant read access to all other root nodes concerning the data within the current node.
+
+Here's a breakdown of the elements:
+
+- `here`
+  - This represents the current node, which in this case is the post node. This is the node whose data will be accessible.
+- `ReadPerm`
+  - This literal string specifies the type of permission being granted. In this instance, it grants read access, allowing other root nodes to view the data on the post node. They can choose one from permission levels.
+
+### Make Content Private
+
+```jac
+# Make a post private (owner-only)
+walker make_private {
+    can make_private with post entry {
+        # Remove all access
+        revoke(here);
+        report "Post is now private!";
+    }
+}
+```
+
+The code snippet `revoke(here)` is used to remove all previously granted access permissions from all other root nodes to the current node's data. It's the inverse operation of `grant`.
+
+Here's a breakdown:
+
+- `here`
+  - This represents the current node (in this context, the post node) from which all access will be revoked.
+
+Essentially, this line of code completely withdraws any permissions that were previously granted to other root nodes, making the post node's data inaccessible to them.
+
+## Common Permission Patterns
+
+### Public Read, Private Write
+
+Perfect for social media posts or articles:
+
+```jac
+# Create a public post
+walker create_public_post {
+    has content: str;
+
+    can enter with `root entry {
+        # Create the post
+        post = Post({content: self.content});
+        here ++> post;
+
+        # Make it readable by everyone, but only writable by owner
+        grant(post, ReadPerm);
+
+        report "Public post created!";
+    }
+}
+```
+
+### Group Access
+
+Ideal for team collaboration:
+
+```jac
+# Grant access to a team
+walker grant_team_access {
+    has team_members: list[str];  # List of root IDs
+    has access_level: str;        # ReadPerm, ConnectPerm, or WritePerm
+
+    can grant_access with document entry {
+        # Grant access to each team member
+        for member_id in self.team_members {
+            _.allow_root(here, NodeAnchor.ref(member_id), self.access_level);
+        }
+
+        report "Team access granted!";
+    }
+}
+```
+
+### Connection-based Permissions
+
+For friend systems or social networks:
+
+```jac
+# Only friends can see posts
+walker check_access {
+    has viewer_id: str;
+
+    can check with post entry {
+        owner = [post<--][0];
+
+        # Check if viewer is friends with owner
+        is_friend = False;
+        for friend in [owner -->] {
+            if friend.id == self.viewer_id {
+                is_friend = True;
+                break;
+            }
+        }
+
+        if is_friend {
+            # Grant access if they're friends
+            _.allow_root(here, NodeAnchor.ref(self.viewer_id), "READ");
+            report "Access granted to friend!";
+        } else {
+            report "Access denied - not a friend!";
+        }
+    }
+}
+```
+
+## Best Practices for Beginners
+
+1. **Start restrictive**: Begin with tight permissions and open up as needed
+2. **Use helper functions**: Prefer `_.allow_root()` over direct manipulation
+3. **Check permissions**: Use `_.check_read_access()` to verify permissions
+4. **Document your scheme**: Keep track of which nodes have which permissions
+5. **Batch similar permissions**: Update permissions for multiple nodes at once
+
+## Next Steps
+
+- Learn about [WebSocket Communication](websocket.md) for real-time features
+- Explore [Webhook Integration](webhook.md) for third-party service integration
+- Set up [Logging & Monitoring](logging.md) to track access patterns
+
+# Custom Access Validation
+
+> This will only get triggered if the target node is not owned by current root
+
+```jac
+node A {
+    # suggested to be `with access {}`
+    def __jac_access__ {
+
+        ###############################################
+        #              YOUR PROCESS HERE              #
+        ###############################################
+
+        # Allowed string return NoPerm, ReadPerm, ConnectPerm, or WritePerm
+        return NoPerm;
+
+        # Allowed enum return AccessLevel.NO_ACCESS, AccessLevel.READ, AccessLevel.ConnectPerm, AccessLevel.WRITE
+        # return AccessLevel.NO_ACCESS;
+
+        # Not recommended as it may change in the future
+        # Allowed int return -1 (NoPerm), 0 (ReadPerm), 1 (ConnectPerm), 2 (WritePerm)
+        # return -1;
+
+    }
+}
+```
+
+> if you wish to prioritize current access validation and process it afterwards, you may follow this code
+
+```jac
+node A {
+    # suggested to be `with access {}`
+    def __jac_access__ {
+
+        level = _Jac.check_access_level(here, True); # True means skip custom access validation trigger to avoid infinite loop
+
+        ###############################################
+        #              YOUR PROCESS HERE              #
+        ###############################################
+
+        # Allowed string return NoPerm, ReadPerm, ConnectPerm, or WritePerm
+        return "NO_ACCESS";
+
+        # Allowed enum return AccessLevel.NO_ACCESS, AccessLevel.READ, AccessLevel.ConnectPerm, AccessLevel.WRITE
+        # return AccessLevel.NO_ACCESS;
+
+        # Not recommended as it may change in the future
+        # Allowed int return -1 (NoPerm), 0 (ReadPerm), 1 (ConnectPerm), 2 (WritePerm)
+        # return -1;
+
+    }
+}
+```
+
+# Logging and Monitoring Your Application
+
+## Why Logging Matters
+
+Effective logging is crucial for:
+
+- Troubleshooting problems
+- Understanding user behavior
+- Monitoring application performance
+- Detecting security issues
+- Analyzing usage patterns
+
+Jac Cloud includes a comprehensive logging system that automatically tracks requests and responses, making your development experience smoother.
+
+## Quick Start: Check Your Logs
+
+By default, Jac Cloud logs everything to the `/tmp/jac_cloud_logs/` directory. To check your logs:
+
+```bash
+# View the latest log entries
+tail -f /tmp/jac_cloud_logs/jac-cloud.log
+
+# Search for errors
+grep "ERROR" /tmp/jac_cloud_logs/jac-cloud.log
+```
+
+All logs are in JSON format, making them easy to parse and analyze.
+
+## Setting Up Visualization with Elastic Stack
+
+For a better logging experience, connect Jac Cloud to Elastic Stack (Elasticsearch + Kibana) in three easy steps:
+
+### Step 1: Install Filebeat
+
+[Download and install Filebeat](https://www.elastic.co/downloads/beats/filebeat) on your server.
+
+### Step 2: Create Configuration File
+
+Create a file named `filebeat.yml` with this content:
+
+```yml
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /tmp/jac_cloud_logs/*-jac-cloud-*.log
+    - /tmp/jac_cloud_logs/jac-cloud.log
+  json:
+    keys_under_root: true
+    overwrite_keys: true
+    add_error_key: true
+    expand_keys: true
+
+output.elasticsearch:
+  hosts: ["localhost:9200"]  # Replace with your Elastic URL
+  protocol: https
+  api_key: "id:api_key"      # Replace with your API key
+  index: "jac-cloud-logs"
+
+setup.template.name: "filebeat"
+setup.template.pattern: "filebeat-*"
+```
+
+### Step 3: Run Filebeat
+
+```bash
+filebeat -e -c filebeat.yml
+```
+
+For more detailed documentation:
+
+- [Getting Started](https://www.elastic.co/guide/en/cloud/current/ec-getting-started-search-use-cases-python-logs.html)
+- [Configure filebeat](https://www.elastic.co/guide/en/beats/filebeat/current/configuring-howto-filebeat.html)
+
+Now you can view your logs in Kibana with powerful filtering, visualization, and alerting capabilities!
+
+!!! warning "Port Configuration"
+    If your Elastic instance is behind a load balancer with a URL that doesn't include a port, add either `:80` or `:443` to the hosts config:
+    ```
+    hosts: ["https://my_elastic_instance.me.com:443"]
+    ```
+
+## Customizing Your Logging
+
+Adjust logging behavior by setting these environment variables:
+
+| **Setting** | **Environment Variable** | **Description** | **Default** |
+|-------------|--------------------------|-----------------|-------------|
+| Logger Name | `LOGGER_NAME` | Name for your logger | `app` |
+| Log Level | `LOGGER_LEVEL` | Level of detail (debug, info, warning, error) | `debug` |
+| File Path | `LOGGER_FILE_PATH` | Where logs are stored | `/tmp/jac_cloud_logs/jac-cloud.log` |
+| Rotation | `LOGGER_ROLLOVER_INTERVAL` | How often to create new log files (M=minute, H=hour, D=day, W=week) | `D` (daily) |
+| Backup Count | `LOGGER_MAX_BACKUP` | Number of old logs to keep (-1 = unlimited) | `-1` |
+| File Size | `LOGGER_ROLLOVER_MAX_FILE_SIZE` | Maximum log file size in bytes | `10000000` (10MB) |
+| UTC Time | `LOGGER_USE_UTC` | Whether to use UTC time | `false` |
+
+### Example: Production Settings
+
+For a production environment, you might want to:
+
+1. Use `info` level to reduce log size
+2. Keep logs for 30 days
+3. Use UTC time for consistency
+
+```bash
+export LOGGER_LEVEL=info
+export LOGGER_MAX_BACKUP=30
+export LOGGER_USE_UTC=true
+```
+
+## Understanding Log Structure
+
+Jac Cloud logs contain these key components:
+
+```json
+{
+  "timestamp": "2024-04-10T14:25:36.789Z",
+  "level": "INFO",
+  "message": "Request processed successfully",
+  "request": {
+    "method": "POST",
+    "path": "/walker/create_user",
+    "headers": {"authorization": "Bearer ***", "content-type": "application/json"},
+    "body": {"username": "example_user", "email": "user@example.com"}
+  },
+  "response": {
+    "status_code": 200,
+    "body": {"status": 200, "reports": ["User created successfully"]}
+  },
+  "duration": 125,
+  "client_ip": "192.168.1.1"
+}
+```
+
+This format makes it easy to filter and search for specific information.
+
+## Common Log Analysis Tasks
+
+### Finding Errors
+
+```bash
+grep '"level":"ERROR"' /tmp/jac_cloud_logs/jac-cloud.log
+```
+
+### Tracking Slow Requests
+
+```bash
+grep -v '"level":"DEBUG"' /tmp/jac_cloud_logs/jac-cloud.log |
+  jq 'select(.duration > 1000) | {path: .request.path, duration: .duration, time: .timestamp}'
+```
+
+### Monitoring User Activity
+
+```bash
+grep '/walker/login' /tmp/jac_cloud_logs/jac-cloud.log |
+  jq '.request.body.username'
+```
+
+## Logging Best Practices
+
+### 1. **Use appropriate log levels**:
+
+   - `debug`: Detailed information for debugging
+   - `info`: Confirmation that things are working
+   - `warning`: Something unexpected but not critical
+   - `error`: Something failed but the application continues
+   - `critical`: Application cannot continue
+
+### 2. **Be careful with sensitive data**:
+
+   - Passwords, tokens, and personal information should never be logged
+   - Jac Cloud automatically masks Authorization headers
+
+### 3. **Establish log retention policies**:
+
+   - Configure `LOGGER_MAX_BACKUP` based on your needs
+   - Consider compliance requirements (GDPR, HIPAA, etc.)
+
+### 4. **Set up alerts**:
+
+   - Configure alerts in Kibana for error spikes
+   - Monitor for unusual patterns or security issues
+
+## Troubleshooting Common Issues
+
+### Missing Logs
+
+If logs aren't appearing:
+
+1. Check directory permissions:
+   ```bash
+   sudo mkdir -p /tmp/jac_cloud_logs
+   sudo chmod 777 /tmp/jac_cloud_logs
+   ```
+
+2. Verify the logger configuration:
+   ```bash
+   echo $LOGGER_FILE_PATH
+   ```
+
+### Filebeat Connection Issues
+
+If Filebeat isn't sending logs to Elasticsearch:
+
+1. Check connection:
+   ```bash
+   curl -k https://your-elastic-instance:9200
+   ```
+
+2. Verify API key:
+   ```bash
+   filebeat test output
+   ```
+
+### High Disk Usage
+
+If logs are consuming too much space:
+
+1. Adjust rotation settings:
+   ```bash
+   export LOGGER_ROLLOVER_INTERVAL=D
+   export LOGGER_MAX_BACKUP=7
+   ```
+
+2. Manually clean old logs:
+   ```bash
+   find /tmp/jac_cloud_logs -name "*.log.*" -type f -mtime +7 -delete
+   ```
+
+## Next Steps
+
+- Learn about [WebSocket Communication](websocket.md) for real-time features
+- Explore [Webhook Integration](webhook.md) for third-party service integration
+- Set up [Environment Variables](env_vars.md) for application configuration
+
+
+
+# Environment Variables: Configuration Made Easy
+
+## What Are Environment Variables?
+
+Environment variables are a simple way to configure your Jac Cloud application without changing code. Think of them as settings you can adjust from outside your application. They're perfect for:
+
+- Switching between development and production settings
+- Connecting to different databases
+- Adjusting security parameters
+- Enabling or disabling features
+- Storing API keys and secrets
+
+## Quick Start: Setting Your First Variables
+
+### In Development (Command Line)
+
+```bash
+# Set variables before running your application
+export DATABASE_NAME=my_app_dev
+export LOGGER_LEVEL=debug
+jac serve main.jac
+```
+
+### In Production (Environment File)
+
+```bash
+# Create a .env file
+echo "DATABASE_NAME=my_app_prod" > .env
+echo "LOGGER_LEVEL=info" >> .env
+
+# Load variables and run
+source .env
+jac serve main.jac
+```
+
+## Core Configuration Groups
+
+### Database Connection
+
+Connect to MongoDB or local storage:
+
+```bash
+# MongoDB Atlas (cloud database)
+export DATABASE_HOST="mongodb+srv://username:password@cluster.mongodb.net"
+export DATABASE_NAME="production_db"
+
+# OR Local database
+export DATABASE_PATH="local_data"
+export DATABASE_NAME="my_app"
+```
+
+### Redis Configuration (for WebSockets & Caching)
+
+```bash
+# Basic Redis setup
+export REDIS_HOST="redis://redis.example.com"
+export REDIS_PORT="6379"
+
+# Secured Redis
+export REDIS_USER="admin"
+export REDIS_PASS="your_secure_password"
+```
+
+### API Behavior
+
+```bash
+# Show detailed responses including return values
+export SHOW_ENDPOINT_RETURNS=true
+
+# Disable automatic API endpoint generation
+export DISABLE_AUTO_ENDPOINT=true
+
+# Disable authentication requirement for all walker endpoints
+export REQUIRE_AUTH_BY_DEFAULT=false
+
+# Performance optimizations
+export DISABLE_AUTO_CLEANUP=true
+export SINGLE_QUERY=true
+export SESSION_MAX_TRANSACTION_RETRY=3
+export SESSION_MAX_COMMIT_RETRY=3
+```
+
+## Security Settings
+
+### Token Security
+
+```bash
+# Strong security for production
+export TOKEN_SECRET="a_long_random_string_that_is_very_hard_to_guess"
+export TOKEN_ALGORITHM="HS512"  # More secure algorithm
+export TOKEN_TIMEOUT="4"        # 4-hour tokens
+```
+
+### User Verification
+
+```bash
+# Require email verification before login
+export RESTRICT_UNVERIFIED_USER=true
+export VERIFICATION_CODE_TIMEOUT=48  # 48 hours to verify
+export RESET_CODE_TIMEOUT=1          # 1 hour to reset password
+```
+
+### Email Integration (for Verification)
+
+```bash
+# SendGrid configuration for email notifications
+export SENDGRID_HOST="https://api.example.com"
+export SENDGRID_API_KEY="SG.your-sendgrid-api-key"
+```
+
+## Logging Configuration
+
+Control what gets logged and where:
+
+```bash
+# Production logging setup
+export LOGGER_NAME="production"                   # Custom logger name
+export LOGGER_LEVEL="info"                        # Less verbose logging
+export LOGGER_FILE_PATH="/var/log/jac-cloud.log"  # Standard log location
+export LOGGER_ROLLOVER_INTERVAL="D"               # Daily rotation
+export LOGGER_MAX_BACKUP="30"                     # Keep 30 days of logs
+export LOGGER_ROLLOVER_MAX_FILE_SIZE="10000000"   # 10MB max file size
+export LOGGER_USE_UTC="true"                      # Use UTC timestamps
+```
+
+## Environment Variable Reference Tables
+
+### Database & Cache Settings
+
+| **Variable** | **Description** | **Default** | **Example** |
+|--------------|-----------------|-------------|-------------|
+| `DATABASE_HOST` | MongoDB connection string | `mongodb://localhost/?retryWrites=true&w=majority` | `mongodb+srv://user:pass@cluster.mongodb.net` |
+| `DATABASE_NAME` | MongoDB database name | `jaseci` | `my_production_db` |
+| `DATABASE_PATH` | Local path for DB | `mydatabase` | `path/to/db` |
+| `REDIS_HOST` | Redis connection host | `redis://localhost` | `redis://redis.example.com` |
+| `REDIS_PORT` | Redis connection port | `6379` | `6380` |
+| `REDIS_USER` | Redis username | `null` | `admin` |
+| `REDIS_PASS` | Redis password | `null` | `secret123` |
+
+### API & Application Behavior
+
+| **Variable** | **Description** | **Default** | **Example** |
+|--------------|-----------------|-------------|-------------|
+| `DISABLE_AUTO_ENDPOINT` | Disable automatic API endpoints | `false` | `true` |
+| `REQUIRE_AUTH_BY_DEFAULT` | Require authentication for all walker endpoints | `true` | `false` |
+<!-- | `SHOW_ENDPOINT_RETURNS` | Include walker return values | `false` | `true` | -->
+| `DISABLE_AUTO_CLEANUP` | Disable automatic deletion of disconnected nodes | `false` | `true` |
+| `SINGLE_QUERY` | Use individual queries instead of batch | `false` | `true` |
+| `SESSION_MAX_TRANSACTION_RETRY` | MongoDB's transactional retry | `1` | `3` |
+| `SESSION_MAX_COMMIT_RETRY` | MongoDB's transaction commit retry | `1` | `3` |
+
+### Authentication & Security
+
+| **Variable** | **Description** | **Default** | **Example** |
+|--------------|-----------------|-------------|-------------|
+| `TOKEN_SECRET` | Secret key for token encryption | 50 random characters | `your-super-secure-secret-key` |
+| `TOKEN_ALGORITHM` | Algorithm for token encryption | `HS256` | `HS512` |
+| `TOKEN_TIMEOUT` | Token expiration in hours | `12` | `24` |
+| `RESTRICT_UNVERIFIED_USER` | Require email verification | `false` | `true` |
+| `VERIFICATION_CODE_TIMEOUT` | Verification code expiration (hours) | `24` | `48` |
+| `RESET_CODE_TIMEOUT` | Password reset code expiration (hours) | `24` | `1` |
+| `SENDGRID_HOST` | Host for verification links | `http://localhost:8000` | `https://api.example.com` |
+| `SENDGRID_API_KEY` | SendGrid API key | `null` | `SG.your-api-key` |
+
+### Logging Configuration
+
+| **Variable** | **Description** | **Default** | **Example** |
+|--------------|-----------------|-------------|-------------|
+| `LOGGER_NAME` | Logger name | `app` | `production` |
+| `LOGGER_LEVEL` | Log level | `debug` | `info` |
+| `LOGGER_FILE_PATH` | Log file location | `/tmp/jac_cloud_logs/jac-cloud.log` | `/var/log/jac-cloud.log` |
+| `LOGGER_ROLLOVER_INTERVAL` | Rotation interval (M=minute, H=hour, D=day, W=week) | `D` | `H` |
+| `LOGGER_MAX_BACKUP` | Maximum backup files | `-1` (unlimited) | `30` |
+| `LOGGER_ROLLOVER_MAX_FILE_SIZE` | Maximum file size in bytes before rollover | `10000000` | `5000000` |
+| `LOGGER_USE_UTC` | Use UTC time | `false` | `true` |
+
+## Social Login Configuration
+
+### Basic Pattern
+
+```bash
+# Replace PLATFORM with: GOOGLE, GITHUB, FACEBOOK, etc.
+export SSO_{PLATFORM}_CLIENT_ID="your_client_id"
+export SSO_{PLATFORM}_CLIENT_SECRET="your_client_secret"
+```
+
+### Google Example
+
+```bash
+export SSO_GOOGLE_CLIENT_ID="123456789-abcdef.apps.googleusercontent.com"
+export SSO_GOOGLE_CLIENT_SECRET="GOCSPX-abcdefghijklmnop"
+```
+
+### GitHub Example
+
+```bash
+export SSO_GITHUB_CLIENT_ID="abc123def456"
+export SSO_GITHUB_CLIENT_SECRET="ghp_abcdefghijklmnopqrstuvwxyz"
+```
+
+### Complete SSO Environment Variables
+
+| **Variable Pattern** | **Description** |
+|----------------------|-----------------|
+| `SSO_{PLATFORM}_CLIENT_ID` | OAuth client ID for the platform |
+| `SSO_{PLATFORM}_CLIENT_SECRET` | OAuth client secret for the platform |
+| `SSO_{PLATFORM}_ALLOW_INSECURE_HTTP` | Allow non-HTTPS connections (not recommended for production) |
+| `SSO_GITLAB_BASE_ENDPOINT_URL` | Base URL for GitLab SSO (for self-hosted GitLab) |
+| `SSO_MICROSOFT_TENANT` | Microsoft tenant ID for Azure AD |
+
+### Apple-Specific SSO Configuration
+
+Apple requires a special configuration for client secret generation:
+
+| **Variable** | **Description** |
+|--------------|-----------------|
+| `SSO_APPLE_CLIENT_ID` | Apple client ID |
+| `SSO_APPLE_CLIENT_TEAM_ID` | Apple developer team ID |
+| `SSO_APPLE_CLIENT_KEY` | Apple client key |
+| `SSO_APPLE_CLIENT_CERTIFICATE_PATH` | Path to Apple client certificate |
+| `SSO_APPLE_CLIENT_CERTIFICATE` | Raw Apple client certificate content |
+
+### Supported Platforms
+
+<div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>Google</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>Facebook</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>GitHub</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>Microsoft</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>Apple</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>LinkedIn</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>Twitter</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>GitLab</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>KAKAO</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>Notion</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>YANDEX</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>FITBIT</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>LINE</div>
+    </div>
+    <div class="grid-item" style="text-align: center; padding: 15px; border: 1px solid #444; border-radius: 8px; background-color: #333;">
+        <div>NAVER</div>
+    </div>
+</div>
+
+## Server Configuration (Uvicorn)
+
+Jac Cloud uses Uvicorn as its server. Configure it with these variables:
+
+### Basic Server Settings
+
+```bash
+# Public server configuration
+export UV_HOST="0.0.0.0"        # Listen on all interfaces
+export UV_PORT="80"              # Standard HTTP port
+export UV_TIMEOUT_KEEP_ALIVE="120"  # Keep connections alive longer
+```
+
+### HTTPS/SSL Configuration
+
+```bash
+# Enable HTTPS
+export UV_SSL_KEYFILE="/etc/ssl/private/key.pem"
+export UV_SSL_CERTFILE="/etc/ssl/certs/cert.pem"
+```
+
+### Complete Uvicorn Configuration Table
+
+| **Variable** | **Uvicorn Equivalent** | **Default** | **Description** |
+|--------------|------------------------|-------------|-----------------|
+| `UV_HOST` | host | "127.0.0.1" | Interface to bind to |
+| `UV_PORT` | port | 8000 | Port to bind to |
+| `UV_UDS` | uds | None | Unix domain socket path |
+| `UV_FD` | fd | None | File descriptor to use |
+| `UV_LOOP` | loop | "auto" | Event loop implementation |
+| `UV_HTTP` | http | "auto" | HTTP protocol implementation |
+| `UV_WS` | ws | "auto" | WebSocket protocol implementation |
+| `UV_WS_MAX_SIZE` | ws_max_size | 16777216 | WebSocket max message size |
+| `UV_WS_MAX_QUEUE` | ws_max_queue | 32 | WebSocket max queue size |
+| `UV_WS_PING_INTERVAL` | ws_ping_interval | 20.0 | WebSocket ping interval |
+| `UV_WS_PING_TIMEOUT` | ws_ping_timeout | 20.0 | WebSocket ping timeout |
+| `UV_WS_PER_MESSAGE_DEFLATE` | ws_per_message_deflate | True | WebSocket message compression |
+| `UV_LIFESPAN` | lifespan | "auto" | Lifespan implementation |
+| `UV_INTERFACE` | interface | "auto" | ASGI interface type |
+| `UV_RELOAD_DIRS` | reload_dirs | None | Directories to monitor for reload |
+| `UV_RELOAD_INCLUDES` | reload_includes | None | File patterns to include for reload |
+| `UV_RELOAD_EXCLUDES` | reload_excludes | None | File patterns to exclude from reload |
+| `UV_RELOAD_DELAY` | reload_delay | 0.25 | Reload delay in seconds |
+| `UV_ENV_FILE` | env_file | None | Environment file path |
+| `UV_LOG_CONFIG` | log_config | LOGGING_CONFIG | Logging configuration |
+| `UV_LOG_LEVEL` | log_level | None | Log level |
+| `UV_ACCESS_LOG` | access_log | True | Enable access log |
+| `UV_PROXY_HEADERS` | proxy_headers | True | Trust proxy headers |
+| `UV_SERVER_HEADER` | server_header | True | Include server header |
+| `UV_DATE_HEADER` | date_header | True | Include date header |
+| `UV_FORWARDED_ALLOW_IPS` | forwarded_allow_ips | None | IPs allowed for X-Forwarded-For |
+| `UV_ROOT_PATH` | root_path | "" | ASGI root path |
+| `UV_LIMIT_CONCURRENCY` | limit_concurrency | None | Maximum concurrent connections |
+| `UV_BACKLOG` | backlog | 2048 | Maximum number of pending connections |
+| `UV_LIMIT_MAX_REQUESTS` | limit_max_requests | None | Maximum requests per worker |
+| `UV_TIMEOUT_KEEP_ALIVE` | timeout_keep_alive | 5 | Keep-alive connection timeout |
+| `UV_TIMEOUT_GRACEFUL_SHUTDOWN` | timeout_graceful_shutdown | None | Graceful shutdown timeout |
+| `UV_SSL_KEYFILE` | ssl_keyfile | None | SSL key file path |
+| `UV_SSL_CERTFILE` | ssl_certfile | None | SSL certificate file path |
+| `UV_SSL_KEYFILE_PASSWORD` | ssl_keyfile_password | None | SSL key file password |
+| `UV_SSL_VERSION` | ssl_version | SSL_PROTOCOL_VERSION | SSL version |
+| `UV_SSL_CERT_REQS` | ssl_cert_reqs | ssl.CERT_NONE | SSL certificate requirements |
+| `UV_SSL_CA_CERTS` | ssl_ca_certs | None | SSL CA certificate file |
+| `UV_SSL_CIPHERS` | ssl_ciphers | "TLSv1" | SSL cipher suite |
+| `UV_HEADERS` | headers | None | HTTP headers to include |
+| `UV_USE_COLORS` | use_colors | None | Use colors in logs |
+| `UV_APP_DIR` | app_dir | None | Application directory |
+| `UV_FACTORY` | factory | False | Use application factory pattern |
+| `UV_H11_MAX_INCOMPLETE_EVENT_SIZE` | h11_max_incomplete_event_size | None | Maximum h11 incomplete event size |
+
+!!! note "Running with Workers"
+    `UV_RELOAD` and `UV_WORKERS` are not supported with `jac serve`. If you need multiple workers, use `poetry run standalone` and set the `APP_PATH` environment variable to your Jac file.
+
+## Environment Presets for Different Scenarios
+
+### Local Development
+
+```bash
+# Quick setup for local development
+export DATABASE_NAME="dev_db"
+export LOGGER_LEVEL="debug"
+export SHOW_ENDPOINT_RETURNS="true"
+```
+
+### Testing
+
+```bash
+# Configuration for testing
+export DATABASE_NAME="test_db"
+export LOGGER_LEVEL="debug"
+export TOKEN_TIMEOUT="1"  # Short-lived tokens for testing
+export REQUIRE_AUTH_BY_DEFAULT="false"  # Disable auth for easier testing
+```
+
+### Production
+
+```bash
+# Secure production configuration
+export DATABASE_HOST="mongodb+srv://user:pass@cluster.mongodb.net"
+export DATABASE_NAME="prod_db"
+export LOGGER_LEVEL="info"
+export LOGGER_MAX_BACKUP="30"
+export TOKEN_ALGORITHM="HS512"
+export TOKEN_TIMEOUT="4"
+export RESTRICT_UNVERIFIED_USER="true"
+export UV_HOST="0.0.0.0"
+export UV_PORT="443"
+export UV_SSL_KEYFILE="/etc/ssl/private/key.pem"
+export UV_SSL_CERTFILE="/etc/ssl/certs/cert.pem"
+```
+
+## Best Practices for Beginners
+
+1. **Use environment files**: Create `.env` files for different environments
+   ```bash
+   # Create different environment files
+   touch .env.development .env.testing .env.production
+   ```
+
+2. **Never commit secrets**: Add `.env` files to your `.gitignore`
+   ```bash
+   # Add to .gitignore
+   echo ".env*" >> .gitignore
+   ```
+
+3. **Use different values per environment**:
+   ```bash
+   # Development
+   DATABASE_NAME=my_app_dev
+
+   # Production
+   DATABASE_NAME=my_app_prod
+   ```
+
+4. **Document your variables**: Create a template file showing all options
+   ```bash
+   # Create a template with comments
+   touch .env.template
+   ```
+
+5. **Validate critical variables**: Check for required variables in your code
+   ```jac
+   walker check_config {
+       can enter with `root entry {
+           if not env("DATABASE_HOST") {
+               print("Warning: DATABASE_HOST not set, using default");
+           }
+       }
+   }
+   ```
+
+## Next Steps
+
+- Learn about [WebSocket Communication](websocket.md) for real-time features
+- Explore [Task Scheduling](scheduler.md) for automated background tasks
+- Set up [Logging & Monitoring](logging.md) to track application performance
+- Deploy your app using the [Kubernetes Deployment Guide](deployment.md)
+
+# SSO integration made Easy
+
+## What Is SSO?
+
+Single Sign-On (SSO) is an authentication process that allows users to log in once and gain access to multiple applications or services without needing to enter their credentials repeatedly. Think of it as a single key that opens multiple doors securely.
+
+It’s especially useful for:
+
+- Simplifying user login → Users don’t have to remember multiple usernames and passwords.
+
+- Improving security → Credentials are managed centrally, reducing risks of weak or reused passwords.
+
+- Enhancing user experience → Smooth, one-click login across different apps and platforms.
+
+- Centralized control → Admins can manage authentication policies and permissions from one place.
+
+- Integration with identity providers → Works with providers like Google, Facebook, Microsoft, or enterprise systems (Okta, Azure AD).
+
+## Supported Platforms in Jac Cloud
+
+Currently following SSO platforms are supported in Jac cloud for SSO
+
+| **Platform name** | **Used for** |
+|----------------------|-----------------|
+| `APPLE` |  Used for apple SSO integration for both websites and mobile apps|
+| `GOOGLE` | Used for gmail SSO integration for websites|
+| `GOOGLE_ANDROID` | Used for gmail SSO integration for android mobile apps|
+| `GOOGLE_IOS` | Used for gmail SSO integration for ios mobile apps|
+
+
+
+## Steps to implement SSO in Jac cloud Setting Your Environment variables
+
+### Step 1: Obtain relevant client credentials from supported platforms
+First choose the supported platform and register your application with the relevant platform to get credentials needed
+to setup SSO in jac cloud.You can read following documentations and tutorials to register your application.
+
+#### Google
+
+##### General Implementation
+- [Step by step to integrate Google OAuth2/SSO](https://dev.to/idrisakintobi/a-step-by-step-guide-to-google-oauth2-authentication-with-javascript-and-bun-4he7) - Complete guide with JavaScript and Bun
+- [Easy Configure SSO with Google](https://developer.slashid.dev/docs/access/guides/SSO/oauth_creds_google) - Simplified configuration guide
+
+##### Platform-Specific Guides
+- **Web**: [Implementation guide for Web](https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid) - Official Google documentation
+- **Android**: [Implementation guide for Android](https://developer.android.com/identity/sign-in/credential-manager-siwg) - Using Credential Manager
+- **iOS**: [Implementation guide for iOS](https://developers.google.com/identity/sign-in/ios/start-integrating) - Google Sign-In for iOS
+
+#### Apple
+
+- [Easy Configure SSO with Apple](https://developer.slashid.dev/docs/access/guides/SSO/oauth_creds_apple) - Configuration guide for Apple ID authentication
+
+---
+
+### Step 2: Setup relevant env variables
+### Basic Pattern
+
+```bash
+# Replace PLATFORM with: GOOGLE, GITHUB, FACEBOOK, etc.
+export SSO_{PLATFORM}_CLIENT_ID="your_client_id"
+export SSO_{PLATFORM}_CLIENT_SECRET="your_client_secret"
+```
+
+#### Google Web Example
+
+```bash
+export SSO_GOOGLE_CLIENT_ID="123456789-abcdef.apps.googleusercontent.com"
+export SSO_GOOGLE_CLIENT_SECRET="GOCSPX-abcdefghijklmnop"
+```
+
+#### Google iOS Example
+
+```bash
+export SSO_GOOGLE_IOS_CLIENT_ID="123456789-abcdef.apps.googleusercontent.com"
+export SSO_GOOGLE_IOS_CLIENT_SECRET="GOCSPX-abcdefghijklmnop"
+```
+
+#### Google Android Example
+
+```bash
+export SSO_GOOGLE_ANDROID_CLIENT_ID="123456789-abcdef.apps.googleusercontent.com"
+export SSO_GOOGLE_ANDROID_CLIENT_SECRET="GOCSPX-abcdefghijklmnop"
+```
+
+#### Apple-Specific SSO Configuration
+
+Apple requires a special configuration for client secret generation:
+
+| **Variable** | **Description** |
+|--------------|-----------------|
+| `SSO_APPLE_CLIENT_ID` | Apple client ID |
+| `SSO_APPLE_CLIENT_TEAM_ID` | Apple developer team ID |
+| `SSO_APPLE_CLIENT_KEY` | Apple client key |
+| `SSO_APPLE_CLIENT_CERTIFICATE_PATH` | Path to Apple client certificate |
+| `SSO_APPLE_CLIENT_CERTIFICATE` | Raw Apple client certificate content |
+
+
+### Step 3: Call Register Callback Endpoint Provided by JAC Cloud
+
+#### 1. Start the Backend Server
+
+Once all the relevant platform specific environment variables are set, run the backend using:
+
+```bash
+jac serve main.jac
+```
+
+This command will provide the `backendURL` of the FastAPI server.
+
+#### 2. Obtain ID Token from Frontend
+
+In your frontend application (Web App, Android, or iOS), use the relevant libraries provided by each framework to get the `id_token`:
+
+- **Web**: Google Sign-In JavaScript library
+- **Android**: Google Sign-In for Android / Apple Sign-In
+- **iOS**: Google Sign-In SDK / Apple Sign-In
+
+#### 3. Call the Callback Endpoint
+
+Once the `id_token` is obtained, call the callback endpoint provided by JAC Cloud
+
+##### Endpoint Format
+```
+$GET {backendURL}/sso/${provider}/register/callback?id_token=${id_token}
+```
+
+##### Curl Example for apple with id_token
+```bash
+curl -X 'GET' \
+  'http://localhost:8000/sso/apple/register/callback?id_token=eyJraWQiOiJFNnE4M1JCMTVuIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoibGlmZS50b2J1IiwiZXhwIjoxNzU2NTYxOTg0LCJpYXQiOjE3NTY0NzU1ODQsInN1YiI6IjAwMDkwNC5hMTI5MDJmMzA1ZGE0ZWY1ODE5MGVmN2VjMGQ3ODE1OS4xMzU3IiwiY19oYXNoIjoiQksxdTdBYmlua2RsMUlBWUVISWp2dyIsImVtYWlsIjoicWM5N2s3Mm5mN0Bwcml2YXRlcmVsYXkuYXBwbGVpZC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNfcHJpdmF0ZV9lbWFpbCI6dHJ1ZSwiYXV0aF90aW1lIjoxNzU2NDc1NTg0LCJub25jZV9zdXBwb3J0ZWQiOnRydWV9.iC_vnj2Ar268Z2IW0Ums1gr6OT0UFZocUFJaU_X1S9fudnd_pmIvgOgnlYO8Y7_P134xzjyrHV2-sB_APjZluaUNid7dUkLu7FaCEjU4GReuXlav9Ek9pZfV0FY0D2wqEJhMZ2EcQfgBJbthSewlbbwIeEF4OTHOPB3Pfw8jVJxEMseJ6glxOL0UHC7jRAJNsyYePG2ld1o66UMiFpOaIuuoTjJmigaPA4Mwe1Tiu_ZtGPONd9TEZo7xCXP_c2E68Rh9dLZcqULXAot58l71XEJJok63SQfGMfolR-ibCRAbWvqfe-ZFYYuxVIplva1MnLmiwuPCsb76nUxn0nNa5Q' \
+  -H 'accept: application/json'
+```
+
+#### Supported Providers
+
+The `${provider}` parameter can take the following values based on your frontend platform.
+
+| Platform | Provider Value |
+|----------|----------------|
+| Apple (any platform) | `apple` |
+| Google Web | `google` |
+| Google Android | `google_android` |
+| Google iOS | `google_ios` |
+
+This will register your user with jac cloud and sso platform and returns you the required user informations like name,email etc
+#### Example Calls
+
+```bash
+# For Apple Sign-In
+curl "${backendURL}/sso/apple/register/callback?id_token=${id_token}"
+
+# For Google Web
+curl "${backendURL}/sso/google/register/callback?id_token=${id_token}"
+
+# For Google Android
+curl "${backendURL}/sso/google_android/register/callback?id_token=${id_token}"
+
+# For Google iOS
+curl "${backendURL}/sso/google_ios/register/callback?id_token=${id_token}"
+```
+
+# WebSocket: Real-Time Communication
+
+## Overview
+
+WebSockets enable real-time, bidirectional communication between clients and your Jac application. This is particularly useful for:
+
+- Chat applications
+- Real-time dashboards
+- Collaborative tools
+- Live notifications
+- Any application requiring instant updates
+
+## Walker Declaration for WebSockets
+
+You can declare a walker to handle WebSocket connections by setting the `methods` property to include `"websocket"` in the `__specs__` configuration:
+
+```jac
+walker your_event_name {
+    has val: int;
+
+    can enter with `root entry {
+        report "Do something!";
+    }
+
+    class __specs__ {
+        has methods: list = ["websocket"];
+    }
+}
+```
+
+**Note**: WebSocket walkers can still work with other HTTP methods; however, they currently don't support file uploads.
+
+## WebSocket Connection Details
+
+### Connection URL and Parameters
+
+- **Protocol**: `ws`
+- **URL**: `/websocket`
+- **Optional Header**: `Authorization: Bearer {{USER-TOKEN}}`
+- **Optional Query Parameter**: `?channel_id=anystring`
+
+### Connection Process
+
+When a client connects to the WebSocket endpoint, it will immediately receive a connection information event:
+
+```python
+{
+	"type": "connection",
+	"data": {
+        # your websocket client id
+		"client_id": "1730887348:f46d85203c704c099e9f44e948322a20",
+
+        # user's root_id
+		"root_id": "n::672b35cec309e5ef8469c372",
+
+        # non authenticated
+		# "root_id": "n::000000000000000000000001",
+
+        # user's channel id, random if not specified
+		"channel_id": "1730887348:796ad2e9fa3e484ebe01f071c381b7e8"
+	}
+}
+```
+
+### Connection Types
+
+There are two types of connections:
+
+1. **Authenticated Connection** - Uses a valid Authorization token
+2. **Non-Authenticated Connection** - Public access
+
+### Channel Subscription
+
+You can specify a `channel_id` via query parameter to receive notifications from a specific channel. This is particularly useful for group chat or notification applications.
+
+## Client Event Types
+
+Clients can send different types of events to the server through the WebSocket connection:
+
+### 1. Walker Event
+
+Triggers a walker just like a REST API call:
+
+```python
+{
+    # event type
+	"type": "walker",
+
+    # walker's name
+	"walker": "your_event_name",
+
+    # if you want to receive a notification for response
+	"response": true,
+
+    # walker's request context
+	"context": {
+        "val": 1
+    }
+}
+```
+
+### 2. User Event
+
+Sends a notification to specific users:
+
+```python
+{
+    # event type
+	"type": "user",
+
+    # target user/s via root_id
+    "root_ids": ["n::672b35cec309e5ef8469c372"],
+
+    # data you want to send
+	"data": {
+        "val": 1
+    }
+}
+```
+
+### 3. Channel Event
+
+Sends a notification to all clients subscribed to specific channels:
+
+```python
+{
+    # event type
+	"type": "channel",
+
+    # target channel_id/s
+    "channel_ids": ["anystring"],
+
+    # data you want to send
+	"data": {
+        "val": 1
+    }
+}
+```
+
+### 4. Client Event
+
+Sends a notification to specific clients:
+
+```python
+{
+    # event type
+	"type": "client",
+
+    # target client_ids
+    "client_ids": ["1730887348:f46d85203c704c099e9f44e948322a20"],
+
+    # data you want to send
+	"data": {
+        "val": 1
+    }
+}
+```
+
+### 5. Change User Event
+
+Switches between authenticated and public user:
+
+```python
+{
+    # event type
+	"type": "change_user",
+
+    # optional - defaults to public user
+	"token": "bearer {{user's token}}"
+}
+```
+
+## Server-Side Notification Methods
+
+### Prerequisites
+
+To send notifications from your walker, import the WebSocket manager:
+
+```python
+import from jac_cloud.plugin {WEBSOCKET_MANAGER as socket}
+```
+
+### Available Notification Methods
+
+#### 1. Self Notification
+
+Sends a notification to the current WebSocket client (only valid on WebSocket walker events):
+
+```python
+socket.notify_self({"any_field": "for_progress", "progress": "0%", "status": "started"});
+```
+
+#### 2. User Notification
+
+Sends a notification to all clients of specific users:
+
+```python
+socket.notify_users([root], {"any_field": "for_progress", "progress": "0%", "status": "started"});
+```
+
+#### 3. Channel Notification
+
+Sends a notification to all clients subscribed to specific channels:
+
+```python
+socket.notify_channels([channel_id], {"any_field": "for_progress", "progress": "0%", "status": "started"});
+```
+
+#### 4. Client Notification
+
+Sends a notification to specific client connections:
+
+```python
+socket.notify_clients([client_id], {"any_field": "for_progress", "progress": "0%", "status": "started"});
+```
+
+## End-to-End Integration Example
+
+### Server-Side (Jac)
+
+```jac
+"""Websocket scenarios."""
+import from jac_cloud.plugin {WEBSOCKET_MANAGER as socket}
+
+###########################################################
+#                   WEBSOCKET ENDPOINTS                   #
+###########################################################
+
+walker send_chat_to_user {
+    has root_id: str;
+
+    can enter1 with `root entry {
+        _root = &(self.root_id);
+
+        socket.notify_users([_root], {"type": "chat", "data": {"message": "string"}});
+    }
+
+    class __specs__ {
+        has methods: list = ["websocket", "post"];
+    }
+}
+
+
+walker send_chat_to_group {
+    has channel_id: str;
+
+    can enter1 with `root entry {
+        socket.notify_channels([self.channel_id], {"type": "chat", "data": {"message": "string"}});
+    }
+
+    class __specs__ {
+        has methods: list = ["websocket", "post"];
+    }
+}
+
+walker send_chat_to_client {
+    has client_id: str;
+
+    can enter1 with `root entry {
+        socket.notify_clients([self.client_id], {"type": "chat", "data": {"message": "string"}});
+    }
+
+    class __specs__ {
+        has methods: list = ["websocket", "post"];
+    }
+}
+```
+
+### Client-Side (JavaScript)
+
+#### WebSocket Connection
+
+**Important Note**: The JavaScript WebSockets API doesn't natively support headers for authentication. You'll need to use the `change_user` event or a third-party WebSocket library that supports headers.
+
+```js
+//####################################################//
+//           NOT AUTHENTICATED - JS LIBRARY           //
+//####################################################//
+const client = new WebSocket("ws://localhost:8000/websocket");
+
+//####################################################//
+//             AUTHENTICATED - JS LIBRARY             //
+//####################################################//
+
+const client = new WebSocket("ws://localhost:8000/websocket");
+client.onopen = (event) => {
+  client.send(JSON.stringify({
+    "type": "change_user",
+    "token": "Bearer {{user's token}}" // optional - default to public user
+  }));
+};
+
+//####################################################//
+//           AUTHENTICATED - NPM WS LIBRARY           //
+//####################################################//
+import WebSocket from 'ws';
+
+const client = new WebSocket('ws://localhost:8000/websocket', {
+  headers: {
+    "Authorization": "Bearer {{user's token}}"
+  }
+});
+```
+
+#### Consuming Events
+
+```js
+client.onmessage = (event) => {
+  const msg = JSON.parse(event.data);
+  switch (msg.type) {
+    case "connection":
+      // to check connection info
+    case "chat":
+      console.log(msg.data)
+    case "your_event1":
+      console.log(msg.data)
+    case "your_event2":
+      console.log(msg.data)
+    case "your_event3":
+      console.log(msg.data)
+  }
+};
+```
+
+#### Publishing Events
+
+```js
+// TRIGGER WALKER EVENT
+client.send(JSON.stringify({
+	"type": "walker",
+	"walker": "your_walker_name",
+	"response": true,
+	"context": {}
+}));
+
+// TRIGGER CLIENT EVENT (ex: direct chat)
+client.send(JSON.stringify({
+	"type": "client",
+	"client_ids": ["target client_id from connection event"],
+	"data": {
+		"type": "chat",
+    "data": {
+      "any_field": "any_value"
+    }
+	}
+}));
+
+// TRIGGER CHANNEL EVENT (ex: group chat or chat blast)
+client.send(JSON.stringify({
+	"type": "channel",
+	"channel_ids": ["target channel_id from connection event"],
+	"data": {
+		"type": "chat",
+    "data": {
+      "any_field": "any_value"
+    }
+	}
+}));
+
+// TRIGGER USER EVENT (ex: chat but all target user's client)
+client.send(JSON.stringify({
+	"type": "user",
+	"root_ids": ["target root_id from connection event"],
+	"data": {
+		"type": "chat",
+    "data": {
+      "any_field": "any_value"
+    }
+	}
+}));
+
+// TRIGGER CONNECTION EVENT - to get connection info)
+client.send(JSON.stringify({
+	"type": "connection"
+}));
+```
+
+## Best Practices
+
+1. **Use Channels for Group Communication**: Instead of sending messages to multiple clients individually, use channels.
+2. **Handle Reconnection Logic**: Implement reconnection logic in your client to handle network disruptions.
+3. **Validate All Messages**: Always validate incoming messages to prevent security issues.
+4. **Set Ping/Pong Timeouts**: Configure appropriate ping/pong intervals to detect disconnected clients.
+5. **Use Authorization**: For private communications, always use authenticated connections.
+
+## Common Use Cases
+
+- **Chat Applications**: Real-time messaging between users
+- **Notifications**: Instant alerts and notifications
+- **Live Updates**: Real-time updates to dashboards or data displays
+- **Collaborative Tools**: Multiple users working on the same document or project
+- **Gaming**: Real-time multiplayer games
+
+## Troubleshooting
+
+- **Connection Issues**: Verify the WebSocket URL and ensure your server is running
+- **Authentication Problems**: Check that your token is valid and properly formatted
+- **Message Delivery Failures**: Confirm that client IDs, user IDs, or channel IDs are correct
+- **Performance Issues**: Consider using channels instead of individual client notifications for better performance
+
+---
+### Additional Resources
+For a complete working example, you may download this [API Request Collection](https://github.com/amadolid/jaseci/blob/websocket-backup-final/jac-cloud/jac_cloud/tests/jac-cloud-websocket.insomnia)
+
+# Task Scheduling: Automate Your Jac Applications
+
+## Overview
+
+Jac Cloud's scheduler allows you to run walkers automatically at specific times or intervals. This is useful for:
+
+- Running periodic background tasks
+- Processing data at scheduled intervals
+- Sending scheduled notifications
+- Executing maintenance operations
+- Any task that needs to happen on a recurring basis
+
+## Scheduler Configuration
+
+To configure a scheduled walker, add a `schedule` dictionary to the walker's `__specs__` configuration. The schedule supports three trigger types:
+
+1. **Cron** - Schedule using cron expressions
+2. **Interval** - Schedule at regular time intervals
+3. **Date** - Schedule at a specific date and time
+
+### Common Configuration Options
+
+| **NAME**      | **TYPE**               | **DESCRIPTION**                                                                                   | **DEFAULT** |
+| ------------- | ---------------------- | ------------------------------------------------------------------------------------------------- | ----------- |
+| trigger       | str                    | trigger type (`cron`, `interval`, `date`)                                                         | N/A         |
+| node          | str or None            | entry node if necessary, defaults to root                                                         | None        |
+| args          | list[Any] or None      | list of arguments to initialize the walker                                                        | None        |
+| kwargs        | dict[str, Any] or None | dict of keyword arguments to initialize the walker                                                | None        |
+| max_instances | int                    | max simultaneous running job per walker type                                                      | 1           |
+| next_run_time | datetime or None       | target date before the first trigger will happen                                                  | None        |
+| propagate     | bool                   | if multiple jac-cloud service can trigger at the same time or first service only per trigger only | false       |
+| save          | bool                   | if walker instance will be save to the db including the results                                   | false       |
+
+## Cron Trigger
+
+The cron trigger uses a cron-like expression to schedule tasks with high precision.
+
+### Additional Cron Configuration Options
+
+| **NAME**    | **TYPES**               | **DESCRIPTION**                                                | **DEFAULT** |
+| ----------- | ----------------------- | -------------------------------------------------------------- | ----------- |
+| year        | int or str              | 4-digit year                                                   | \*          |
+| month       | int or str              | month (1-12)                                                   | \*          |
+| day         | int or str              | day of month (1-31)                                            | \*          |
+| week        | int or str              | ISO week (1-53)                                                | \*          |
+| day_of_week | int or str              | number or name of weekday (0-6 or mon,tue,wed,thu,fri,sat,sun) | \*          |
+| hour        | int or str              | hour (0-23)                                                    | \*          |
+| minute      | int or str              | minute (0-59)                                                  | \*          |
+| second      | int or str              | second (0-59)                                                  | \*          |
+| start_date  | datetime or str or None | earliest possible date/time to trigger on (inclusive)          | None        |
+| end_date    | datetime or str or None | latest possible date/time to trigger on (inclusive)            | None        |
+
+### Cron Example
+
+```jac
+walker walker_cron {
+    has arg1: int;
+    has arg2: str;
+    has kwarg1: int = 3;
+    has kwarg2: str = "4";
+
+    can enter with `root entry {
+        print("I am a scheduled walker!")
+    }
+
+    class __specs__ {
+        has private: bool = True;
+        has schedule: dict = {
+            "trigger": "cron",
+            "args": [1, "2"],
+            "kwargs": {
+                "kwarg1": 30,
+                "kwarg2": "40"
+            },
+            # Run every day at midnight
+            "hour": "0",
+            "minute": "0",
+            "save": True
+        };
+    }
+}
+```
+
+## Interval Trigger
+
+The interval trigger runs a task at regular time intervals.
+
+### Additional Interval Configuration Options
+
+| **NAME**   | **TYPES**               | **DESCRIPTION**                             | **DEFAULT** |
+| ---------- | ----------------------- | ------------------------------------------- | ----------- |
+| weeks      | int                     | number of weeks to wait                     |             |
+| days       | int                     | number of days to wait                      |             |
+| hours      | int                     | number of hours to wait                     |             |
+| minutes    | int                     | number of minutes to wait                   |             |
+| seconds    | int                     | number of seconds to wait                   | 1           |
+| start_date | datetime or str or None | starting point for the interval calculation |             |
+| end_date   | datetime or str or None | latest possible date/time to trigger on     |             |
+
+### Interval Example
+
+```jac
+walker walker_interval {
+    has arg1: int;
+    has arg2: str;
+    has kwarg1: int = 3;
+    has kwarg2: str = "4";
+
+    can enter with `root entry {
+        print("I am a scheduled walker running every 5 seconds!");
+    }
+
+    class __specs__ {
+        has private: bool = True;
+        has schedule: dict = {
+            "trigger": "interval",
+            "args": [1, "2"],
+            "kwargs": {
+                "kwarg1": 30,
+                "kwarg2": "40"
+            },
+            "seconds": 5,
+            "save": True
+        };
+    }
+}
+```
+
+## Date Trigger
+
+The date trigger runs a task once at a specific date and time.
+
+### Additional Date Configuration Options
+
+| **NAME** | **TYPES**       | **DESCRIPTION**                 | **DEFAULT** |
+| -------- | --------------- | ------------------------------- | ----------- |
+| run_date | datetime or str | the date/time to run the job at |             |
+
+### Date Example
+
+```jac
+walker walker_date {
+    has arg1: int;
+    has arg2: str;
+    has kwarg1: int = 3;
+    has kwarg2: str = "4";
+
+    can enter with `root entry {
+        print("I am a scheduled walker running once at a specific time!");
+    }
+
+    class __specs__ {
+        has private: bool = True;
+        has schedule: dict = {
+            "trigger": "date",
+            "args": [1, "2"],
+            "kwargs": {
+                "kwarg1": 30,
+                "kwarg2": "40"
+            },
+            "run_date": "2025-04-30T11:12:00+00:00",
+            "save": True
+        };
+    }
+}
+```
+
+## Jac Cloud Optional Task Queue
+
+Jac Cloud also supports asynchronous task management that can be enabled by setting the `TASK_CONSUMER_CRON_SECOND` environment variable. This allows you to create tasks that will be processed by a background worker.
+
+### Example Use Case
+
+```jac
+import from jac_cloud.plugin.implementation {create_task}
+
+node TaskCounter {
+    has val: int = 0;
+}
+
+walker get_or_create_counter {
+    can enter1 with `root entry {
+        tc = TaskCounter();
+        here ++> tc;
+
+        report tc;
+    }
+
+    can enter2 with TaskCounter entry {
+        report here;
+    }
+}
+
+walker increment_counter {
+    has val: int;
+
+    can enter with TaskCounter entry {
+        here.val += self.val;
+    }
+
+    class __specs__ {
+        has private: bool = True;
+    }
+}
+
+walker trigger_counter_task {
+    can enter with `root entry {
+        tcs = [-->(`?TaskCounter)];
+        if tcs {
+            report create_task(increment_counter(val=1), tcs[0]);
+        }
+    }
+}
+```
+
+### How Tasks Work
+
+- `trigger_counter_task` creates a walker task that will be consumed by the Task Consumer
+- The task is saved to both the database and Redis
+- The polling mechanism uses Redis to avoid excessive database traffic
+  - The minimum polling interval is 1 second, configurable via `TASK_CONSUMER_CRON_SECOND`
+- Task consumption is atomic, ensuring only one Jac Cloud instance processes each task
+- If Redis is cleared, pending tasks will be repopulated from the database when Jac Cloud restarts
+
+## Best Practices
+
+1. **Set Appropriate Intervals**: Use intervals that match your application's needs (e.g., don't poll every second if hourly updates are sufficient)
+2. **Make Tasks Idempotent**: Design scheduled tasks to be safely run multiple times
+3. **Handle Failures Gracefully**: Add error handling in your scheduled walkers
+4. **Consider Time Zones**: Be aware of server time zones when scheduling date/time-specific tasks
+5. **Monitor Task Performance**: Log execution times and success rates for scheduled tasks
+
+## Debugging Scheduled Tasks
+
+If your scheduled task isn't running:
+
+1. Check that the `schedule` configuration is correctly formatted
+2. Ensure the `private` flag is set to `true` (recommended for scheduled tasks)
+3. Verify the environment variable `TASK_CONSUMER_CRON_SECOND` is set (for async tasks)
+4. Check the logs for any errors during task execution
+5. Test the walker manually to ensure it works properly
+
+## Next Steps
+
+- Learn about [WebSocket Communication](websocket.md) for real-time updates
+- Explore [Webhook Integration](webhook.md) for external service integration
+- Set up [Logging & Monitoring](logging.md) to track task execution
+- Deploy your application using [Kubernetes](deployment.md) for scalable task processing
+
+# Async Walker
+
+## Overview
+
+Async walkers in Jac Cloud allow you to execute walkers asynchronously in separate threads. This is particularly useful for long-running operations that shouldn't block the main execution flow, such as intensive computations or external API calls.
+
+## Basic Usage
+
+To create an async walker, simply add the `async` keyword before the walker declaration:
+
+```jac
+async walker sample {
+    has value: int = 0;
+
+    can enter with `root entry {
+        print("test");
+        self.value = 1;
+    }
+}
+```
+
+Key characteristics:
+
+- Executes in a separate thread without blocking the main application
+- Returns immediately with a reference ID while continuing execution in the background
+- Similar to task scheduling but with a simpler syntax
+- Results can be retrieved later using the walker ID
+
+## How It Works
+
+1. When an async walker is triggered, it's scheduled as a background task
+2. The API call returns immediately with a walker ID reference
+3. The walker executes asynchronously in its own thread
+4. Results are stored in the database and can be retrieved later
+
+## Response Format
+
+When you call an async walker, you receive a response containing the walker's unique ID:
+
+```json
+{
+  "status": 200,
+  "walker_id": "w:sample:550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+## Retrieving Results
+
+You can retrieve the results of an async walker by using its ID:
+
+```jac
+walker view_sample_result {
+    has walker_id: str;
+
+    can enter with `root entry {
+        # Get a reference to the walker instance
+        wlk = &walker_id;
+
+        # Access the walker's attributes
+        print(wlk.value);  # Will be 1 after execution completes
+
+        # Check execution status and metadata
+        schedule_info = wlk.__jac__.schedule;
+
+        # Print execution details
+        print(f"Status: {schedule_info.status}");
+        print(f"Executed at: {schedule_info.executed_date}");
+
+        # Check for errors
+        if schedule_info.error{
+            print(f"Error: {schedule_info.error}");
+        }
+    }
+}
+```
+
+## Available Status Information
+
+The `__jac__.schedule` object contains all execution metadata:
+
+| **Field**       | **Description**                                                |
+| --------------- | -------------------------------------------------------------- |
+| `status`        | Current execution status (pending, running, completed, failed) |
+| `node_id`       | ID of the node where the walker was executed                   |
+| `root_id`       | ID of the root node of the user who triggered the walker       |
+| `execute_date`  | When the walker was scheduled to execute                       |
+| `executed_date` | When the walker actually executed                              |
+| `http_status`   | HTTP status code for the execution result                      |
+| `reports`       | Any values reported during walker execution                    |
+| `custom`        | Custom metadata associated with the walker                     |
+| `error`         | Error message if execution failed                              |
+
+### Even though those fields are available, we still recommend using a walker's attribute as your status checker for more customizable and direct status updates.
+
+## Example: Long-Running Process
+
+```jac
+async walker process_large_dataset {
+    has dataset_id: str;
+    has results: list = [];
+
+    can enter with `root entry {
+        # Simulate long-running process
+        dataset = get_dataset(self.dataset_id);
+
+        for item in dataset{
+            # Do intensive processing
+            processed = complex_computation(item);
+            self.results.append(processed);
+        }
+
+        # Final result is stored in the walker
+        print("Processing complete!");
+    }
+}
+
+# Retrieve results when needed
+walker check_processing {
+    has process_id: str;
+
+    can enter with `root entry {
+        process = &process_id;
+
+        if process.__jac__.schedule.status == "COMPLETED"{
+            print("Results:", process.results);
+        }
+        else{
+            print("Still processing...");
+        }
+    }
+}
+```
+
+## Common Use Cases
+
+### 1. Processing Large Datasets
+
+```jac
+async walker analyze_data {
+    has dataset_id: str;
+    has summary: dict = {};
+
+    can enter with `root entry {
+        # Fetch data (could take minutes)
+        data = fetch_dataset(self.dataset_id);
+
+        # Process each item (CPU intensive)
+        for item in data{
+            process_item(item);
+        }
+
+        # Generate final summary
+        self.summary = create_summary(data);
+    }
+}
+```
+
+### 2. Generating Reports
+
+```jac
+async walker generate_report {
+    has user_id: str;
+    has report_type: str;
+    has report_url: str;
+
+    can enter with `root entry {
+        # Collect user data
+        user_data = fetch_user_data(self.user_id);
+
+        # Generate PDF (slow operation)
+        report_file = create_pdf_report(user_data, self.report_type);
+
+        # Upload to storage
+        self.report_url = upload_file(report_file);
+
+        # Optional: Notify user
+        send_email(self.user_id, "Your report is ready!", self.report_url);
+    }
+}
+```
+
+### 3. External API Integration
+
+```jac
+async walker sync_with_external_system {
+    has account_id: str;
+    has sync_status: str = "pending";
+    has sync_results: list = [];
+
+    can enter with `root entry {
+        # Connect to external API
+        self.sync_status = "connecting";
+        api_client = connect_to_api();
+
+        # Fetch data (network-bound, can be slow)
+        self.sync_status = "fetching";
+        external_data = api_client.fetch_account_data(self.account_id);
+
+        # Process and save data
+        self.sync_status = "processing";
+        for item in external_data{
+            result = process_and_save(item);
+            self.sync_results.append(result);
+        }
+
+        self.sync_status = "complete";
+    }
+}
+```
+
+## Advanced Techniques
+
+### Combining with WebSockets for Real-time Updates
+
+```jac
+import from jac_cloud.plugin {WEBSOCKET_MANAGER as socket}
+
+async walker process_with_updates {
+    has client_id: str;
+    has progress: int = 0;
+
+    can enter with `root entry {
+        # Send initial notification
+        socket.notify_clients([self.client_id], {
+            "type": "progress",
+            "data": {"progress": 0}
+        });
+
+        # Process in chunks and send updates
+        for i in range(10){
+            process_chunk(i);
+            self.progress = (i+1) * 10;
+
+            # Send progress update via WebSocket
+            socket.notify_clients([self.client_id], {
+                "type": "progress",
+                "data": {"progress": self.progress}
+            });
+        }
+
+        # Send completion notification
+        socket.notify_clients([self.client_id], {
+            "type": "complete",
+            "data": {"message": "Processing complete!"}
+        });
+    }
+}
+```
+
+### Error Handling
+
+```jac
+async walker safe_process {
+    has input_id: str;
+    has success: bool = False;
+    has error_message: str = "";
+    has results: dict = {};
+
+    can enter with `root entry {
+        try {
+            # Attempt processing
+            data = fetch_data(self.input_id);
+            if not data{
+                self.error_message = "No data found";
+                return;
+            }
+
+            self.results = process_data(data);
+            self.success = True;
+        } except e {
+            # Capture error details
+            self.error_message = str(e);
+            log_error(self.input_id, str(e));
+        }
+    }
+}
+```
+
+## Next Steps
+
+- Learn about [Task Scheduling](scheduler.md) for recurring tasks
+- Explore [WebSockets](websocket.md) for real-time communication
+- Set up [Logging](logging.md) to monitor your async processes
+
+# Webhooks: External API Integration
+
+## What are Webhooks?
+
+Webhooks are a way for external services to securely call your Jac Cloud application when certain events occur. Unlike regular authenticated walkers (which are associated with a specific user), webhook walkers are directly linked to the root node and are secured with API keys rather than user tokens.
+
+## Key Features
+
+- **Direct Root Access**: Webhooks operate at the root level, not tied to any specific user
+- **API Key Management**: Generate, extend, and delete API keys through the API
+- **Flexible Authentication**: Support for different API key placement methods (header, query, path, body)
+- **Customizable**: You can specify allowed walkers, nodes, and expiration dates for each API key
+
+## Creating a Webhook Walker
+
+To declare a walker as a webhook endpoint, add a `webhook` configuration to the `__specs__` class:
+
+```jac
+walker webhook {
+    can enter1 with `root entry {
+        report here;
+    }
+
+    class __specs__ {
+        has webhook: dict = {
+            "type": "header | query | path | body",  # optional: defaults to header
+            "name": "any string"                     # optional: defaults to X-API-KEY
+        };
+    }
+}
+```
+
+The `type` field specifies where the API key will be placed in the HTTP request:
+
+- `header`: In the HTTP headers (default)
+- `query`: As a query parameter
+- `path`: As part of the URL path
+- `body`: In the request body
+
+The `name` field is the name of the parameter that will contain the API key.
+
+## Managing API Keys
+
+Jac Cloud provides several endpoints for managing webhook API keys:
+
+![Webhook Management API endpoints](https://github.com/user-attachments/assets/3a01ab35-06b0-4942-8f1f-0c4ae794ce21)
+
+### Generating a New API Key
+
+**Endpoint:** `POST /webhook/generate-key`
+
+**Request Body:**
+
+```python
+{
+  "name": "webhook1",
+  "walkers": ["webhook"],
+  "nodes": ["root"],
+  "expiration": {
+    "count": 60,
+    "interval": "days"
+  }
+}
+```
+
+| Parameter  | Description                                                                                                                  |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| name       | A unique identifier for the webhook key.                                                                                     |
+| walkers    | A list of specific walker names that are permitted to use this key. If this list is empty, all walkers are allowed.          |
+| nodes      | A list of specific node names that are permitted to be accessed with this key. If this list is empty, all nodes are allowed. |
+| expiration | Defines the expiration settings for the webhook key.                                                                         |
+| count      | The numerical value for the expiration duration.                                                                             |
+| interval   | The unit of time for the expiration duration. Valid values include "seconds", "minutes", "hours", and "days".                |
+
+**Response:**
+
+```python
+{
+  "id": "672203ee093fd3d208a4b6d4",
+  "name": "webhook1",
+  "key": "6721f000ee301e1d54c3de3d:1730282478:P4Nrs3DOLIkaw5aYsbIWNzWZZAwEyb20"
+}
+```
+
+### Listing All API Keys
+
+**Endpoint:** `GET /webhook`
+
+**Response:**
+
+```python
+{
+  "keys": [
+    {
+      "id": "672203ee093fd3d208a4b6d4",
+      "name": "test",
+      "root_id": "6721f000ee301e1d54c3de3d",
+      "walkers": ["webhook"],
+      "nodes": ["root"],
+      "expiration": "2025-12-24T10:01:18.206000",
+      "key": "6721f000ee301e1d54c3de3d:1730282478:P4Nrs3DOLIkaw5aYsbIWNzWZZAwEyb20"
+    }
+  ]
+}
+```
+
+### Extending an API Key's Expiration
+
+**Endpoint:** `PATCH /webhook/extend/{id}`
+
+**Request Body:**
+
+```python
+{
+  "count": 60,
+  # seconds | minutes | hours | days
+  "interval": "days"
+}
+```
+
+**Response:**
+
+```python
+{
+  "message": "Successfully Extended!"
+}
+```
+
+### Deleting API Keys
+
+**Endpoint:** `DELETE /webhook/delete`
+
+**Request Body:**
+
+```python
+{
+  # list of ids to be deleted
+  "ids": ["672203ee093fd3d208a4b6d4"]
+}
+```
+
+**Response:**
+
+```python
+{
+  "message": "Successfully Deleted!"
+}
+```
+
+## Webhook Implementation Examples
+
+Here are examples of different webhook implementations:
+
+### 1. Using Header for API Key (Default)
+
+```jac
+walker webhook_by_header {
+    can enter1 with `root entry {
+        report here;
+    }
+
+    class __specs__ {
+        has webhook: dict = {
+            "type": "header",
+            "name": "test-key"
+        };
+    }
+}
+```
+
+**Example Request:**
+
+```bash
+curl -X 'POST' 'http://localhost:8001/webhook/walker/webhook_by_header' \
+  -H 'test-key: YOUR-GENERATED-KEY'
+```
+
+### 2. Using Query Parameter for API Key
+
+```jac
+walker webhook_by_query {
+    can enter1 with `root entry {
+        report here;
+    }
+
+    class __specs__ {
+        has webhook: dict = {
+            "type": "query",
+            "name": "test_key"
+        };
+    }
+}
+```
+
+**Example Request:**
+
+```bash
+curl -X 'POST' 'http://localhost:8001/webhook/walker/webhook_by_query?test_key=YOUR-GENERATED-KEY'
+```
+
+### 3. Using Path Parameter for API Key
+
+```jac
+walker webhook_by_path {
+    can enter1 with `root entry {
+        report here;
+    }
+
+    class __specs__ {
+        has webhook: dict = {
+            "type": "path",
+            "name": "test_key"  # name and the path var should be the same
+        }, path: str = "/{test_key}";
+    }
+}
+```
+
+**Example Request:**
+
+```bash
+curl -X 'POST' 'http://localhost:8001/webhook/walker/webhook_by_path/YOUR-GENERATED-KEY'
+```
+
+### 4. Using Request Body for API Key
+
+```jac
+walker webhook_by_body {
+    can enter1 with `root entry {
+        report here;
+    }
+
+    class __specs__ {
+        has webhook: dict = {
+            "type": "body",
+            "name": "test_key"
+        };
+    }
+}
+```
+
+**Example Request:**
+
+```bash
+curl -X 'POST' 'http://localhost:8001/webhook/walker/webhook_by_body' -d '{"test_key": "YOUR-GENERATED-KEY"}'
+```
+
+## Best Practices
+
+1. **Set Appropriate Expirations**: For security, use short-lived keys when possible.
+2. **Limit Walker Access**: Specify only the walkers that should be accessible for each key.
+3. **Use Specific Node Restrictions**: When possible, limit which nodes can be accessed.
+4. **Regularly Rotate Keys**: Create a process to regularly generate new keys and invalidate old ones.
+5. **Use Headers by Default**: Header-based API keys are generally more secure than query parameters or body values.
+
+## Common Use Cases
+
+Webhooks are ideal for:
+
+- **Integration with Third-Party Services**: Allow external services to trigger specific actions in your application
+- **Scheduled Events**: Receive notifications from scheduling services
+- **Notifications**: Handle notifications from payment processors, source control systems, etc.
+- **IoT Communication**: Enable secure communication from IoT devices
+- **CI/CD Pipelines**: Trigger deployments or other actions from CI/CD systems
+
+## Troubleshooting
+
+If your webhook isn't working:
+
+1. Verify the API key hasn't expired
+2. Ensure you're sending the key in the correct location (header, query, path, or body)
+3. Check that the parameter name matches your configuration
+4. Confirm the walker and node are allowed for the API key
+5. Check the logs for any errors
+
+## Next Steps
+
+- Learn about [WebSocket Communication](websocket.md) for real-time bidirectional communication
+- Explore [Task Scheduling](scheduler.md) for running walkers on a schedule
+- See how to properly [Deploy to Production](deployment.md) with secure webhook configurations
+
+
+# Cloud Deployment Guide
+
+## Overview
+
+Jac Cloud provides a Kubernetes-based deployment template to easily deploy your service into your cluster. This setup includes:
+
+1. A Docker image with all necessary dependencies
+2. Kubernetes configuration for essential resources (namespaces, service accounts, roles, etc.)
+3. Dynamic configuration through environment variables and ConfigMaps
+
+This guide will help you deploy your Jac applications to a Kubernetes cluster with minimal effort.
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+1. **Kubernetes Cluster**: Access to a running Kubernetes cluster
+2. **kubectl**: The Kubernetes command-line tool installed and configured
+3. **Docker**: Docker installed for building and pushing images
+4. **Namespace**: The target namespace should be created before deployment
+5. **OpenAI API Key**: (Optional) An OpenAI API key if you're using OpenAI services
+
+## Directory Structure
+
+The deployment files are organized as follows:
+
+```
+jac-cloud/
+├── scripts/
+│   ├── Dockerfile
+│   ├── init_jac_cloud.sh
+│   ├── jac-cloud.yml
+│   ├── module-config.yml
+```
+
+## Step-by-Step Deployment Guide
+
+Follow these steps to deploy your Jac application to Kubernetes:
+
+### 1. Build and Push the Docker Image
+
+First, build the Jac Cloud Docker image using the provided Dockerfile:
+
+```bash
+docker build -t your-dockerhub-username/jac-cloud:latest -f jac-cloud/scripts/Dockerfile .
+docker push your-dockerhub-username/jac-cloud:latest
+```
+
+After pushing the image, update the `image` field in `jac-cloud.yml` with your Docker image path.
+
+### 2. Apply the ConfigMap
+
+Apply the module configuration to set up module-specific settings:
+
+```bash
+kubectl apply -f jac-cloud/scripts/module-config.yml
+```
+
+This creates the `littlex` namespace and configures the module settings.
+
+### 3. Apply Kubernetes Resources
+
+Deploy the Jac Cloud application and all required resources:
+
+```bash
+kubectl apply -f jac-cloud/scripts/jac-cloud.yml
+```
+
+This sets up:
+
+- RBAC roles and bindings
+- The Jac Cloud deployment in the `littlex` namespace
+
+### 4. Add OpenAI API Key (Optional)
+
+If your application uses OpenAI services, add your API key as a Kubernetes secret:
+
+```bash
+# Encode your API key in base64
+echo -n "your-openai-key" | base64
+```
+
+Then, update the base64 value in the `data.openai-key` field of the secret definition in `jac-cloud.yml` and apply it:
+
+```bash
+kubectl apply -f jac-cloud/scripts/jac-cloud.yml
+```
+
+### 5. Verify Your Deployment
+
+Check that all resources are created successfully:
+
+```bash
+kubectl get all -n littlex
+```
+
+You should see the Jac Cloud pod running along with all associated resources.
+
+## Configuration Details
+
+### Environment Variables
+
+The following environment variables can be configured for your deployment:
+
+| Variable         | Description                         | Default Value   |
+| ---------------- | ----------------------------------- | --------------- |
+| `NAMESPACE`      | Target namespace for the deployment | `default`       |
+| `CONFIGMAP_NAME` | Name of the ConfigMap to mount      | `module-config` |
+| `FILE_NAME`      | JAC file to execute in the pod      | `example.jac`   |
+| `OPENAI_API_KEY` | OpenAI API key (from secret)        | None            |
+
+## Troubleshooting and Validation
+
+### Verify Namespace
+
+Check if the namespace exists:
+
+```bash
+kubectl get namespaces
+```
+
+### Verify ConfigMap
+
+Ensure the ConfigMap is properly applied:
+
+```bash
+kubectl get configmap -n littlex
+```
+
+### Verify Deployment
+
+Check if the Jac Cloud pod is running:
+
+```bash
+kubectl get pods -n littlex
+```
+
+## Advanced Usage
+
+### Updating Configurations
+
+To update the ConfigMap or deployment:
+
+1. Modify the YAML files as needed
+2. Apply the changes:
+
+```bash
+kubectl apply -f jac-cloud/scripts/module-config.yml
+kubectl apply -f jac-cloud/scripts/jac-cloud.yml
+```
+
+### Monitoring Logs
+
+View the logs of your Jac Cloud application:
+
+```bash
+kubectl logs -f deployment/jac-cloud -n littlex
+```
+
+### Scaling the Deployment
+
+Increase the number of replicas to handle more traffic:
+
+```bash
+kubectl scale deployment jac-cloud --replicas=3 -n littlex
+```
+
+### Configuring Resource Limits
+
+Adjust CPU and memory limits in the `jac-cloud.yml` file:
+
+```yaml
+resources:
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+```
+
+## Cleanup
+
+To remove all deployed resources:
+
+```bash
+kubectl delete namespace littlex
+```
+
+This will delete all resources associated with your Jac Cloud deployment.
+
+## Next Steps
+
+- Learn about [Environment Variables](env_vars.md) for configuration options
+- Explore [WebSockets](websocket.md) for real-time features
+- Set up [Logging](logging.md) to monitor your deployment
+- Implement [Task Scheduling](scheduler.md) for background processing
+
+
+# Utility APIs
+
+**Base URL:** `/util`
+
+This section details the Utility APIs, which can be used to facilitate 3rd party Graph Access. Currently, there's two available endpoints, with plans for future expansion to include additional functionalities.
+
+---
+
+## Traverse
+
+This API allows for the traversal of the knowledge graph starting from a specified source.
+
+### Endpoint
+
+`GET /util/traverse`
+
+### Authentication
+
+Bearer Token (Required)
+
+### Query Parameters
+
+| Name         | Type      | Description                                                                                                                                                                              | Default Value       |
+| :----------- | :-------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------ |
+| `source`     | `string`  | The **JID** of the starting root, node, or edge for the traversal.                                                                                                                       | Current user's root |
+| `detailed`   | `boolean` | If `true`, the response will include the archetype's context for each traversed item.                                                                                                    | `false`             |
+| `depth`      | `integer` | The maximum number of steps to traverse. Both nodes and edges are considered one step.                                                                                                   | `1`                 |
+| `node_types` | `string`  | Can be declared multiple times to filter the traversal results by node type. For example, `node_types=Node1&node_types=Node2` will include only nodes that are `Node1` or `Node2` types. | All node types      |
+| `edge_types` | `string`  | Can be declared multiple times to filter the traversal results by edge type. For example, `edge_types=Edge1&edge_types=Edge2` will include only edges that are `Edge1` or `Edge2` types. | All edge types      |
+
+### Sample Request
+
+```bash
+curl -X GET "/util/traverse?source=n::68875f383d1e672f517094ff&detailed=true&depth=2&node_types=Node1&node_types=Node2&edge_types=Edge1" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### Sample Response
+
+```json
+{
+  "edges": [
+    {
+      "id": "e::68875f483d1e672f517096a5",
+      "source": "n::68875f383d1e672f517094ff",
+      "target": "n:A:68875f483d1e672f517096a0"
+    },
+    {
+      "id": "e::68875f483d1e672f517096a2",
+      "source": "n:A:68875f483d1e672f517096a0",
+      "target": "n:B:68875f483d1e672f517096a1"
+    },
+    {
+      "id": "e::68875f483d1e672f517096a4",
+      "source": "n:B:68875f483d1e672f517096a1",
+      "target": "n:C:68875f483d1e672f517096a3"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "n::68875f383d1e672f517094ff",
+      "edges": ["e::68875f483d1e672f517096a5"]
+    },
+    {
+      "id": "n:A:68875f483d1e672f517096a0",
+      "edges": ["e::68875f483d1e672f517096a2", "e::68875f483d1e672f517096a5"]
+    },
+    {
+      "id": "n:B:68875f483d1e672f517096a1",
+      "edges": ["e::68875f483d1e672f517096a2", "e::68875f483d1e672f517096a4"]
+    },
+    {
+      "id": "n:C:68875f483d1e672f517096a3",
+      "edges": ["e::68875f483d1e672f517096a4"]
+    }
+  ]
+}
+```
+
+---
+
+## Traverse Stream
+
+This API is similar to the `/util/traverse` endpoint but streams the traversal results. It returns data incrementally, pushing results as they are processed for each step of the traversal.
+
+### Endpoint
+
+`GET /util/traverse-stream`
+
+### Authentication
+
+Bearer Token (Required)
+
+### Query Parameters
+
+The query parameters for `/util/traverse-stream` are identical to those for `/util/traverse`:
+
+| Name         | Type      | Description                                                                                                                                                                              | Default Value       |
+| :----------- | :-------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------ |
+| `source`     | `string`  | The **JID** of the starting root, node, or edge for the traversal.                                                                                                                       | Current user's root |
+| `detailed`   | `boolean` | If `true`, the response will include the archetype's context for each traversed item.                                                                                                    | `false`             |
+| `depth`      | `integer` | The maximum number of steps to traverse. Both nodes and edges are considered one step.                                                                                                   | `1`                 |
+| `node_types` | `string`  | Can be declared multiple times to filter the traversal results by node type. For example, `node_types=Node1&node_types=Node2` will include only nodes that are `Node1` or `Node2` types. | All node types      |
+| `edge_types` | `string`  | Can be declared multiple times to filter the traversal results by edge type. For example, `edge_types=Edge1&edge_types=Edge2` will include only edges that are `Edge1` or `Edge2` types. | All edge types      |
+
+### Sample Request
+
+```bash
+curl -X GET "/util/traverse-stream?source=n::68875f383d1e672f517094ff&detailed=true&depth=2&node_types=Node1&node_types=Node2&edge_types=Edge1" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+### Sample Streamed Response
+
+The response will be a continuous stream of JSON objects, each representing a "step" in the traversal. The order of `nodes` and `edges` within each step may vary depending on the traversal logic.
+
+```json
+{"nodes": [], "edges": [{"id": "e::step1_edge1", "source": "n::start_node", "target": "n::next_node_A"}]}
+{"nodes": [{"id": "n::next_node_A", "edges": ["e::step1_edge1"]}], "edges": []}
+{"nodes": [], "edges": [{"id": "e::step2_edge1", "source": "n::next_node_A", "target": "n::final_node_B"}]}
+{"nodes": [{"id": "n::final_node_B", "edges": ["e::step2_edge1"]}], "edges": []}
+... (additional steps will be streamed as the traversal continues)
+```
+
+<div style="text-align: center; margin-bottom: 30px;">
+    <!-- <img src="./assets/jac-lens/jac-lens-logo.png" alt="Jac Lens Logo" style="width: 120px; height: auto; margin-bottom: 15px;"> -->
+    <h1 style="color: orange; font-weight: bold; margin: 0;">Jac Lens</h1>
+    <h2 style="color: white; font-weight: 300; font-size: 1.2em; margin-top: 5px; margin-bottom: 0; opacity: 0.8;">Manage your jac cloud data at ease</h2>
+</div>
+
+<style>
+.md-typeset .grid.cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.md-typeset .grid.cards > * {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.md-typeset .grid.cards.single-column {
+    grid-template-columns: 1fr;
+}
+
+@media (max-width: 768px) {
+    .md-typeset .grid.cards {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+
+Jac Lens is a powerful Progressive Web App (PWA) that provides an intuitive visual interface for exploring and managing your Jac graph data. It allows you to connect to your Jac server, navigate through node relationships, and modify node properties in real-time.
+
+## Quick Start
+
+### 1. Access the Application
+
+- **URL**: https://jaclens.jaseci.org/
+- **Browser**: Chrome recommended for optimal experience
+- **Installation**: Follow browser prompts to install as a Progressive Web App (PWA)
+
+<div class="grid cards single-column" markdown>
+
+-   __Install as PWA__
+
+    ---
+
+    *Get the full app experience*
+
+    ![PWA Installation](./assets/jac-lens/jac-lens-download.gif)
+
+-   __Connect to Server__
+
+    ---
+
+    *Link to your Jac instance*
+
+    ![Server Connection](./assets/jac-lens/jac-lens-create-session.gif)
+
+-   __Explore Graph__
+
+    ---
+
+    *Navigate node relationships*
+
+    ![Graph Exploration](./assets/jac-lens/jac-lens-explore-graphs.gif)
+
+-   __Update Graph__
+
+    ---
+
+    *Navigate node relationships*
+
+    ![Graph Exploration](./assets/jac-lens/jac-lens-modify-graph.gif)
+
+</div>
+
+### 2. Installation Process
+
+The Jac Lens PWA installation is straightforward:
+
+1. **Open the URL** in Chrome browser
+2. **Look for the install prompt** in the address bar or menu
+3. **Click "Install"** to add to your home screen
+4. **Launch from your apps** for a native experience
+
+> **Note**
+>
+> Installing as a PWA provides offline capabilities and a more app-like experience.
+
+## Setup for Jac Cloud (Pre-0.2.5)
+
+If you're using Jac Cloud version prior to 0.2.5, you need to manually add the required walkers to your application.
+
+### Required Walkers
+
+Create a file named `jaclens.jac` with the following content:
+
+```jac
+walker get_attached_nodes {
+    has node_id: str = "";
+    can get_attach_nodes with `root entry {
+        if(self.node_id == "") {
+            report jid(here);
+        } else {
+            selected_node = &self.node_id;
+            attached_nodes = [selected_node-->];
+            report attached_nodes;
+        }
+    }
+}
+
+walker update_node_data {
+    has node_id: str = "";
+    has node_data: dict = {};
+    can update_node_data with `root entry {
+        selected_node = &self.node_id;
+        selected_node.__dict__.update(self.node_data);
+        report selected_node;
+    }
+}
+```
+
+### Integration Steps
+
+1. **Create the file** `jaclens.jac` in your project
+2. **Copy the walker code** above into the file
+3. **Include in your main file** by adding `include jaclens;` at the top of your application entry JAC file
+
+??? info "Why These Walkers?"
+    These walkers provide the necessary functionality for Jac Lens to:
+    - Retrieve node information and relationships
+    - Update node properties in real-time
+    - Navigate through your graph structure
+
+## Using Jac Lens
+
+### 1. Server Connection
+
+Connect to your Jac server by providing:
+
+- **Host URL**: Your Jac server address (remove trailing slash)
+- **Email**: Your account email
+- **Password**: Your account password
+
+??? example "Example Connection"
+    ```
+    Host URL: https://my-jac-server.com
+    Email: user@example.com
+    Password: ********
+    ```
+
+### 2. Graph Navigation
+
+Once connected, you can explore your graph:
+
+- **Click on nodes** to view their properties
+- **Navigate connections** between nodes
+- **Zoom and pan** to explore large graphs
+- **Search for specific nodes** using the search functionality
+
+### 3. Node Management
+
+Modify node properties directly in the interface:
+
+- **Edit node attributes** in the side panel
+- **Save changes** to update your server
+- **View node relationships** and connections
+- **Delete nodes** when needed
+
+### 4. Session Management
+
+Jac Lens automatically manages your sessions:
+
+- **Automatic saving** of your current view
+- **Session persistence** across browser sessions
+- **Resume where you left off** when returning to the app
+
+## Features Overview
+
+<div class="grid cards" markdown>
+
+-   __Real-time Updates__
+
+    ---
+
+    *See changes instantly*
+
+    Changes made in Jac Lens are immediately reflected in your Jac server
+
+-   __Graph Visualization__
+
+    ---
+
+    *Visual node relationships*
+
+    Interactive graph view with zoom, pan, and node selection
+
+-   __Property Editing__
+
+    ---
+
+    *Modify node attributes*
+
+    In-place editing of node properties and metadata
+
+-   __Search & Filter__
+
+    ---
+
+    *Find nodes quickly*
+
+    Search functionality to locate specific nodes in large graphs
+
+</div>
+
+## Troubleshooting
+
+### Common Issues
+
+??? failure "Connection Failed"
+    - Verify your server URL is correct
+    - Ensure your credentials are valid
+    - Host url doesn't have trailing slash
+    - Check that your server is running and accessible
+
+
+??? failure "Graph Not Loading"
+    - Confirm you have the required walkers installed
+    - Check your server logs for errors
+    - Verify your graph has data to display
+
+??? failure "Changes Not Saving"
+    - Ensure you have write permissions
+    - Check your network connection
+    - Verify the update_node_data walker is working
+
+### Getting Help
+
+If you encounter issues not covered here:
+
+1. **Check the browser console** for error messages
+2. **Verify your Jac server logs** for backend errors
+3. **Ensure you're using a compatible browser** (Chrome recommended)
+4. **Contact the Jac community** for additional support
+
+# **Jac Language Command Line Interface (CLI)**
+
+Jac Language CLI is with a variety of commands to facilitate users. Additionally, Jac language offers users the ability to define custom CLI commands through plugins. This document aims to provide an overview of each command along with clear usage instructions. Jac CLI can ba accessed using bash commands as well as by bashing ```jac``` which will start the Jac CLI.
+
+
+## `jac tool`
+Jac Language offers language tools to perform various tasks efficiently. The `tool` command is utilized to execute specific language tools along with any optional arguments as needed. This command enables users to interact with language-specific command line tools designed to manage the language effectively.
+```bash
+$ jac tool <jac_tool> <args>
+```
+Parameters to execute the tool command:
+- `jac_tool`: The name of the language tool to execute.
+    - `ir`, `pass_template`, `py_uni_nodes`,  `md_doc`, `automate_ref` are the jac_tools used to handle (Usage instruction is below)
+- `args`: Optional arguments for the specific language tool.
+
+
+> 1.1. jac_tool `ir`:
+  `ir` tool generates an Abstract Syntax Tree (AST) and SymbolTable tree for a .jac file, or a Python AST for a .py file. `ir` tool is used with `tool` cli command.
+```bash
+jac tool ir <output_type> <file_path>
+```
+
+*Parameters for `jac tool ir`*
+
+- `output_type`: Choose one of the following options:
+- `sym`: Provides the symbol table of the specified .jac file.
+- `sym.`: Generates a dot graph representation of the symbol table for the specified .jac file.
+- `ast`: Displays the Abstract Syntax Tree (AST) of the specified .jac file.
+- `ast.`: Generates a dot graph representation of the AST for the specified .jac file.
+- `cfg.`: Genarates a dot graph of the control flow graph(s) for the specified .jac file.
+- `pyast`: Generates the Python AST for a .py file or the relevant Python AST for the generated Python code from a .jac file.
+- `py`: Displays the relevant generated Python code for the respective Jac code in a .jac file.
+- `file_path`: Path to the .jac or .py file.
+
+
+
+- To get the symbol table tree of a Jac file:
+```bash
+jac tool ir sym <file_path>
+```
+- To generate a dot graph of the symbol table tree for a Jac file:
+```bash
+jac tool ir sym. <file_path>
+```
+- To view the AST tree of a Jac file:
+```bash
+jac tool ir ast <file_path>
+```
+
+
+> jac_tool `pass_template`:
+  `pass_template` tool generates pass template for jac.
+```bash
+jac tool pass_template
+```
+
+
+> jac_tool `py_uni_nodes`:
+  `py_uni_nodes` tool lists python ast nodes.
+```bash
+jac tool py_uni_nodes
+```
+
+
+> jac_tool `md_doc`:
+  `md_doc` tool generate mermaid markdown doc.
+```bash
+jac tool md_doc
+```
+
+
+> jac_tool `automate_ref`:
+  `automate_ref` tool automates the reference guide generation.
+```bash
+jac tool automate_ref
+```
+
+
+
+## `jac run`
+
+The `run` command is utilized to run the specified .jac or .jir file.
+```bash
+jac run <file_path> [main] [cache]
+```
+Parameters to execute the run command:
+- `file_path`: Path of .jac or .jir file to run.
+- `main`: (Optional, bool) A flag indicating whether the module being executed is the main module. Defaults to True
+- `cache` :The cache flag to cache
+- To run file_path Jac file:
+```bash
+jac run <file_path>
+```
+
+
+
+## `jac clean`
+The `clean` command is utilized to remove the __jac_gen__ , __pycache__ folders from the current directory recursively.
+```bash
+jac clean
+```
+No Parameters needed to execute the clean command
+
+
+
+## `jac format`
+The `format` command is utilized to run the specified .jac file or format all .jac files in a given directory.
+```bash
+jac format <file_path/directory_path> [outfile] [debug]
+```
+  Parameters to execute the format command:
+  - `file_path/directory_path`: The path to the .jac file or directory containing .jac files.
+  - `outfile`: (Optional) The output file path (only applies when formatting a single file).
+  - `debug` :(Optional) If True, print debug information.  Defaults to False
+
+  >To format all .jac files from walking through current located directory:
+  >```bash
+  >$ jac format .
+  >```
+
+
+
+## `jac check`
+The `check` command is utilized to run type checker for a specified .jac file.
+```bash
+jac check <file_path>
+```
+Parameters to execute the check command:
+- `file_path`: Path of .jac file to run type checker.
+
+
+
+## `jac build`
+
+The `build` command is utilized to build the specified .jac file.
+```bash
+jac build <file_path>
+```
+  Parameters to execute the build command:
+  - `file_path`: Path of .jac file to build.
+
+
+
+## `jac enter`
+
+The `enter` command is utilized to run the specified entrypoint function in the given .jac file.
+
+```bash
+jac enter <file_path> <entrypoint> <args>
+```
+Parameters to execute the enter command:
+- `file_path`: The path to the .jac file.
+- `entrypoint`: The name of the entrypoint function.
+- `args`: Arguments to pass to the entrypoint function.
+
+- To enter file_path Jac file
+```bash
+jac enter <file_path>
+```
+
+
+
+## `jac test`
+
+The `test` command is utilized to run the test suite in the specified .jac file.
+```bash
+jac test <file_path>
+```
+Parameters to execute the test command:
+- `file_path`: The path to the .jac file.
+
+
+# Jac Streamlit Plugin
+
+The Jac Streamlit plugin enables you to create interactive web applications using Streamlit with Jac code. This plugin seamlessly integrates Jac's powerful features with Streamlit's web app capabilities, allowing you to build data science applications, dashboards, and interactive tools.
+
+## Installation
+
+The Jac Streamlit plugin needs to be installed separately using pip:
+
+```bash
+pip install jac-streamlit
+```
+
+This will install the plugin and make the `jac streamlit` command available.
+
+## Quick Start
+
+To run a Jac file as a Streamlit application, use the `jac streamlit` command:
+
+```bash
+jac streamlit your_app.jac
+```
+
+This command will:
+1. Compile your Jac code
+2. Launch a Streamlit web server
+3. Open your app in the default web browser
+
+### Example Applications
+
+We've included several example applications to help you get started:
+
+#### Simple Calculator
+A basic calculator demonstrating form handling and user interaction:
+
+```jac
+import streamlit as st;
+
+def simple_calculator() {
+    st.title("🧮 Simple Calculator");
+    st.write("A basic calculator built with Jac and Streamlit");
+
+    # Create two columns for inputs
+    columns = st.columns(2);
+    col1 = columns[0];
+    col2 = columns[1];
+
+    with col1 {
+        num1 = st.number_input("First number:", value=0.0);
+    }
+
+    with col2 {
+        num2 = st.number_input("Second number:", value=0.0);
+    }
+
+    # Operation selection
+    operation = st.selectbox(
+        "Choose operation:",
+        ["Add", "Subtract", "Multiply", "Divide"]
+    );
+
+    # Calculate result
+    if st.button("Calculate") {
+        if operation == "Add" {
+            result = num1 + num2;
+        } elif operation == "Subtract" {
+            result = num1 - num2;
+        } elif operation == "Multiply" {
+            result = num1 * num2;
+        } elif operation == "Divide" {
+            if num2 != 0 {
+                result = num1 / num2;
+            } else {
+                st.error("Cannot divide by zero!");
+                return;
+            }
+        }
+
+        st.success("Result: " + str(result));
+
+        # Add to history
+        if "history" not in st.session_state {
+            st.session_state.history = [];
+        }
+
+        st.session_state.history.append(
+            str(num1) + " " + operation.lower() + " " + str(num2) + " = " + str(result)
+        );
+    }
+
+    # Show calculation history
+    if "history" in st.session_state and st.session_state.history {
+        st.subheader("📝 History");
+        for calc in st.session_state.history {
+            st.write("• " + calc);
+        }
+
+        if st.button("Clear History") {
+            st.session_state.history = [];
+            st.rerun();
+        }
+    }
+}
+
+with entry {
+    simple_calculator();
+}
+```
+
+Run this example with:
+```bash
+jac streamlit simple_calculator.jac
+```
+
+#### Todo App
+A todo application showcasing session state management:
+
+```jac
+import streamlit as st;
+
+def todo_app() {
+    st.title("📋 Todo App");
+    st.write("A simple todo application built with Jac and Streamlit");
+
+    # Initialize session state
+    if "todos" not in st.session_state {
+        st.session_state.todos = [];
+    }
+
+    # Add new todo
+    with st.form("add_todo") {
+        new_todo = st.text_input("Add a new todo:");
+
+        if st.form_submit_button("Add Todo") and new_todo {
+            st.session_state.todos.append(new_todo);
+            st.success("Todo added!");
+        }
+    }
+
+    # Display todos
+    if st.session_state.todos {
+        st.subheader("📝 Your Todos");
+
+        todos_to_remove = [];
+
+        for todo in st.session_state.todos {
+            columns = st.columns([4, 1]);
+
+            with columns[0] {
+                st.write("• " + todo);
+            }
+
+            with columns[1] {
+                if st.button("Remove", key=todo) {
+                    todos_to_remove.append(todo);
+                }
+            }
+        }
+
+        # Remove completed todos
+        for todo in todos_to_remove {
+            st.session_state.todos.remove(todo);
+        }
+
+        if todos_to_remove {
+            st.rerun();
+        }
+
+        # Clear all button
+        if st.button("Clear All") {
+            st.session_state.todos = [];
+            st.rerun();
+        }
+    } else {
+        st.info("No todos yet! Add one above.");
+    }
+
+    # Show count
+    if st.session_state.todos {
+        st.write("Total todos: " + str(len(st.session_state.todos)));
+    }
+}
+
+with entry {
+    todo_app();
+}
+```
+
+Run this example with:
+```bash
+jac streamlit todo_app.jac
+```
+
+## Features
+
+### 1. Full Streamlit API Access
+
+You can use all Streamlit components and features in your Jac applications:
+
+```jac
+import streamlit as st;
+import pandas as pd;
+import numpy as np;
+
+with entry {
+    st.title("Data Dashboard");
+
+    # Create sample data
+    data = pd.DataFrame({
+        'x': np.random.randn(100),
+        'y': np.random.randn(100)
+    });
+
+    # Display chart
+    st.line_chart(data);
+
+    # Add sidebar
+    st.sidebar.header("Controls");
+    chart_type = st.sidebar.selectbox("Chart Type", ["line", "bar", "area"]);
+
+    if chart_type == "bar" {
+        st.bar_chart(data);
+    } elif chart_type == "area" {
+        st.area_chart(data);
+    }
+}
+```
+
+### 2. Session State Management
+
+Streamlit's session state works seamlessly with Jac:
+
+```jac
+import streamlit as st;
+
+with entry {
+    st.title("Counter App");
+
+    # Initialize session state
+    if "counter" not in st.session_state {
+        st.session_state.counter = 0;
+    }
+
+    # Display current count
+    st.write("Current count: " + str(st.session_state.counter));
+
+    # Buttons to modify counter
+    col1, col2, col3 = st.columns(3);
+
+    with col1 {
+        if st.button("Increment") {
+            st.session_state.counter += 1;
+        }
+    }
+
+    with col2 {
+        if st.button("Decrement") {
+            st.session_state.counter -= 1;
+        }
+    }
+
+    with col3 {
+        if st.button("Reset") {
+            st.session_state.counter = 0;
+        }
+    }
+}
+```
+
+
+## Advanced Usage
+
+### Integration with Jac Cloud
+
+You can build Streamlit frontends that interact with Jac Cloud APIs:
+
+```jac
+import streamlit as st;
+import requests;
+
+def make_api_call(token: str, endpoint: str, payload: dict) -> dict {
+    response = requests.post(
+        "http://localhost:8000/" + endpoint,
+        json=payload,
+        headers={"Authorization": "Bearer " + token}
+    );
+    return response.json() if response.status_code == 200 else {};
+}
+
+with entry {
+    st.title("Jac Cloud Frontend");
+
+    # Authentication
+    if "token" not in st.session_state {
+        st.session_state.token = None;
+    }
+
+    if not st.session_state.token {
+        with st.form("login_form") {
+            email = st.text_input("Email");
+            password = st.text_input("Password", type="password");
+
+            if st.form_submit_button("Login") {
+                # Attempt login
+                response = requests.post(
+                    "http://localhost:8000/user/login",
+                    json={"email": email, "password": password}
+                );
+
+                if response.status_code == 200 {
+                    st.session_state.token = response.json()["token"];
+                    st.rerun();
+                } else {
+                    st.error("Login failed!");
+                }
+            }
+        }
+    } else {
+        st.success("Logged in successfully!");
+
+        # Your app content here
+        user_input = st.text_input("Enter your message:");
+
+        if st.button("Send") and user_input {
+            result = make_api_call(
+                st.session_state.token,
+                "walker/interact",
+                {"message": user_input}
+            );
+
+            if result {
+                st.write("Response:", result);
+            }
+        }
+    }
+}
+```
+
+
+
+## Next Steps
+
+- Check out the [Jac Cloud documentation](../jac-cloud/introduction.md) for backend integration
+- Try building a complete application using Jac + Streamlit + Jac Cloud
+
+
+# Jac Programming Language Keyword Reference
+
+ Keywords are special reserved words that have a specific meaning and purpose in the language and cannot be used as identifiers for variables, functions, or other objects. In Jac, all the keywords that exist in Python can also be used.
+
+---
+
+## 1. Archetype and Data Structure Keywords
+
+These keywords define the core data and structural elements in Jac, forming the foundation for graph-based and object-oriented programming.
+
+**Core Archetype Keywords**
+
+| Keyword | Description |
+| --- | --- |
+| [`obj`](https://www.jac-lang.org/learn/jac_ref/#archetype-types) | Defines a standard object, similar to a Python class, for holding data and behaviors. |
+| [`node`](https://www.jac-lang.org/learn/jac_ref/#archetype-types) |Represents a vertex or location in a graph, capable of storing data.|
+| [`edge`](https://www.jac-lang.org/learn/jac_ref/#archetype-types)|Defines a directed connection between two nodes, which can have its own attributes and logic. |
+| [`walker`](https://www.jac-lang.org/learn/jac_ref/#archetype-types) | A mobile computational agent that traverses the graph of nodes and edges to process data. |
+| [`class`](https://www.jac-lang.org/learn/jac_ref/#archetype-types)  |Defines a standard Python-compatible class, allowing for seamless integration with the Python ecosystem. |
+| [`enum`](https://www.jac-lang.org/learn/jac_ref/#enumerations)  |Creates an enumeration, a set of named constants. |
+
+---
+
+## 2. Variable and State Declaration Keywords
+
+These keywords are used for declaring variables and managing their state and scope.
+
+**Variable Declaration**
+
+| Keyword | Description |
+| --- | --- |
+| [`has`](https://www.jac-lang.org/learn/jac_ref/#constructor-rules-and-has-variables) | Declares an instance variable within an archetype, with mandatory type hints. |
+| [`let`](https://www.jac-lang.org/learn/jac_ref/#declaration-keywords) | Declares a module-level variable with lexical (module-level) scope. |
+| [`glob`](https://www.jac-lang.org/learn/jac_ref/#declaration-keywords) | Declares a global variable accessible across all modules. |
+| [`global`](https://www.jac-lang.org/learn/jac_ref/#global-and-nonlocal-statements) | Modifies a global variable from within a local scope. |
+| [`nonlocal`](https://www.jac-lang.org/learn/jac_ref/#global-and-nonlocal-statements) | Modifies a variable from a nearby enclosing scope that isn't global. |
+
+---
+
+## 3. Ability and Function Keywords
+
+These keywords define callable units of code, such as functions and methods associated with archetypes.
+
+**Function and Method Definition**
+
+| Keyword | Description |
+| --- | --- |
+| [`can`](https://www.jac-lang.org/learn/jac_ref/#functions-and-abilities) | Defines an "ability" (a method) for an archetype. |
+| [`def`](https://www.jac-lang.org/learn/jac_ref/#functions-and-abilities) | Defines a standard function with mandatory type annotations. |
+| [`impl`](https://www.jac-lang.org/learn/jac_ref/#implementations) | Separates the implementation of a construct from its declaration. |
+| [`yield`](https://www.jac-lang.org/learn/jac_ref/#yield-statements) | Pauses a function, returns a value, and creates a generator. |
+
+---
+
+## 4. Control Flow and Logic Keywords
+
+These keywords direct the path of execution, enabling conditional logic, loops, and error handling.
+
+**Control Flow Statements**
+
+| Keyword | Description |
+| --- | --- |
+| [`if` / `elif` / `else`](https://www.jac-lang.org/learn/jac_ref/#if-statements) | Executes code blocks conditionally. |
+| [`for`](https://www.jac-lang.org/learn/jac_ref/#for-statements) | Iterates over a sequence. |
+| [`while`](https://www.jac-lang.org/learn/jac_ref/#while-statements) | Creates a loop that executes as long as a condition is true. |
+| [`match` / `case`](https://www.jac-lang.org/learn/jac_ref/#match-statements) | Implements structural pattern matching. |
+| [`try` / `except` / `finally`](https://www.jac-lang.org/learn/jac_ref/#try-statements) | Handles exceptions. |
+| [`break`](https://www.jac-lang.org/learn/jac_ref/#while-statements) | Exits the current loop. |
+| [`continue`](https://www.jac-lang.org/learn/jac_ref/#while-statements) | Proceeds to the next iteration of a loop. |
+| [`raise`](https://www.jac-lang.org/learn/jac_ref/#raise-statements) | Triggers an exception. |
+
+---
+
+## 5. Walker-Specific Control Keywords
+
+These keywords are used exclusively to control the traversal behavior of `walker` agents on a graph.
+
+**Walker Navigation**
+
+| Keyword | Description |
+| --- | --- |
+| [`visit`](https://www.jac-lang.org/learn/jac_ref/#visit-statement) | Directs a walker to traverse to a node or edge. |
+| [`spawn`](https://www.jac-lang.org/learn/jac_ref/#object-spatial-spawn-expressions) | Creates and starts a walker on a graph. |
+| [`ignore`](https://www.jac-lang.org/learn/jac_ref/#ignore-statement)  |Excludes a node or edge from a walker's traversal. |
+| [`disengage`](https://www.jac-lang.org/learn/jac_ref/#disengage-statement) | Immediately terminates a walker's traversal. |
+| [`report`](https://www.jac-lang.org/learn/jac_ref/#report-statements) | Sends a result from a walker back to its spawning context. |
+| [`with entry`](https://www.jac-lang.org/learn/jac_ref/#integration-with-entry-points) | Defines the main execution block for a module. |
+
+
+---
+
+## 6. Concurrency and Asynchronous Keywords
+
+These keywords are used to manage concurrent and asynchronous operations for non-blocking execution.
+
+**Asynchronous Operations**
+
+| Keyword | Description |
+| --- | --- |
+| [`flow`](https://www.jac-lang.org/learn/jac_ref/#flow-modifier)  |Initiates a concurrent, non-blocking execution of an expression. |
+| [`wait`](https://www.jac-lang.org/learn/jac_ref/#flow-modifier) | Pauses execution to await the completion of a concurrent operation. |
+| [`async`](https://www.jac-lang.org/learn/jac_ref/#flow-modifier) | Declares a function or ability as asynchronous. |
+
+---
+
+
+## 7. AI and Language Model Integration
+
+These keywords facilitate the integration of AI and Large Language Models (LLMs) directly into the language.
+
+
+**AI Integration**
+
+
+| Keyword | Description |
+| --- | --- |
+| [`sem`](https://www.jac-lang.org/learn/jac_ref/#semstrings)  |Associates a natural language "semantic string" with a code element for AI interpretation. |
+| [`by`](https://www.jac-lang.org/learn/jac-byllm/usage/) | Defers a task to an LLM instead of providing a manual implementation. |
+
+---
+
+## 8. Miscellaneous Keywords
+
+This section covers other essential keywords used for various operations.
+
+
+**Other Essential Keywords**
+
+| Keyword | Description |
+| --- | --- |
+| [`del`](https://www.jac-lang.org/learn/jac_ref/#delete-statements) | Deletes objects, properties, or elements. |
+| [`assert`](https://www.jac-lang.org/learn/jac_ref/#assert-statements) | Verifies if a condition is true, raising an error if not. |
+| [`<keyword>`](https://www.jac-lang.org/learn/jac_ref/#keyword-escaping) | Used to escape reserved keywords when you want to use them as variable or attribute names, e.g., `<>node= 90;`, `<>dict = 8;`|
+|[`test`](https://www.jac-lang.org/learn/jac_ref/#test-implementations)|Defines test cases for code validation and unit testing. |
+
+
+---
+
+!!! tip "Keyword Usage Guidelines"
+    - **Reserved words**: Keywords cannot be used as variable or function names
+    - **Case sensitive**: All keywords must be written in lowercase
+    - **Context matters**: Some keywords are only valid in specific contexts (e.g., walker keywords)
+    - **Type safety**: Many keywords work with Jac's type system for better code reliability
+
+
+# Object-Spatial Programming: A Topological Approach to Computation
+#### By Jason Mars ([Original Paper on Arxiv](https://arxiv.org/abs/2503.15812))
+
+## Introduction
+As modern software systems grow increasingly complex and interconnected, traditional programming paradigms often struggle to represent the rich spatial and topological relationships inherent in many problem domains. While Object-Oriented Programming (OOP) has served as a dominant paradigm for decades, it faces significant limitations when modeling systems with inherently graph-like structures, dynamic traversal patterns, or context-dependent behaviors. These limitations become particularly pronounced in domains such as social networks, agent-based systems, neural networks, and other topologically-oriented computational problems.
+
+Traditional programming models, including procedural, functional, and object-oriented paradigms, typically separate data structures from the algorithms that manipulate them. In this conventional model, data flows to computation through parameter passing and return values, with algorithms remaining stationary in functions and methods. This "data-to-compute" programming model is pervasive, being ubiquitous at the programming interface and can even be found as a fundamentally embedded presupposition in the von Neumann computer design itself, where data is moved from memory to the CPU for processing. Notably absent from the programming language landscape is a system of language constructs that naturally supports a complementary "compute-to-data" paradigm while maintaining compatibility with conventional popular programming languages. The lack of such a programming model creates friction when representing a wide range of computational problems where:
+
+- The topology of connections is central to the underlying computational model
+- Computation logically flows through a network of interconnected entities
+- Behavior is context-dependent based on tight couplings between data and compute
+- Traversal patterns are complex and dynamically determined
+
+Though graph algorithms and data structure libraries can be constructed in most programming languages, they remain secondary citizens, without first-class language support for topological semantics. This forces developers to implement complex traversal logic, maintain graph integrity, and manage event propagation through ad-hoc mechanisms that are often error-prone and difficult to maintain.
+
+Beyond the programmability advantages, embedding topological abstractions at the language level provides the runtime environment with rich semantic information about program behavior that would otherwise be obscured in conventional programming models. This heightened awareness of the spatial relationships and traversal patterns enables a new class of optimizations that are particularly relevant to modern hardware architectures. The runtime can make informed decisions about data locality, parallel execution paths, and distribution strategies based on the explicit topology of the computation graph. For instance, nodes that are frequently traversed together can be co-located in memory or on the same computational unit, reducing latency and communication overhead. Similarly, independent walker traversals can be automatically parallelized across processing cores or distributed across network nodes without developer intervention. Edge connections can inform predictive prefetching strategies, while the declarative nature of topological relationships enables automated reasoning about program correctness and performance characteristics. These runtime-level optimizations, which would require complex and error-prone manual implementation in traditional programming models, emerge naturally when the language itself encodes spatial and topological semantics as first-class citizens.
+
+To address these challenges, we introduce **Object-Spatial Programming (OSP)**, a novel programming model that fundamentally inverts the relationship between data and computation. Rather than moving data to stationary computation units (as in traditional programming), OSP enables computation to move to data through topologically-aware constructs. This paradigm extends the semantics of Object-Oriented Programming by introducing specialized class-like constructs called **archetypes** that formalize spatial and topological relationships within the programming model itself.
+
+At the core of Object-Spatial Programming are four key archetypes that extend traditional class semantics:
+
+1. **Object Classes** ($\tau_{\text{obj}}$): The universal supertype from which all other archetypes inherit, providing backward compatibility with traditional OOP concepts.
+
+2. **Node Classes** ($\tau_{\text{node}}$): Extensions of object classes that represent discrete locations or entities within a topological structure, capable of hosting computation and connecting to other nodes.
+
+3. **Edge Classes** ($\tau_{\text{edge}}$): First-class entities that represent relationships between nodes, encoding both the topology of connections and the semantics of those relationships. Edges serve not only as connections but also as potential locations where computation can reside.
+
+4. **Walker Classes** ($\tau_{\text{walker}}$): Autonomous computational entities that traverse the node-edge structure, residing and executing on both nodes and edges as they move through the topological space, carrying state and behaviors that execute based on their current location.
+
+Together, these archetypes create a complete topological representation framework where data (in nodes), relationships (as edges), and computational processes (through walkers) are explicitly modeled and integrated. This integration enables a paradigm shift from "data moving to computation" to "computation moving to data."
+
+The OSP paradigm offers significant advantages for a wide range of applications, including but not limited to: for agent-based systems, walkers provide a direct representation for autonomous agents that navigate environments, gather information, and make decisions based on local context; in distributed systems, the decoupling of data (nodes) from computation (walkers) creates a natural model for distributed execution where computational tasks can move between data locations; in social networks and graph-based systems, it enables intuitive representations of complex social structures through the natural mapping of users, relationships, and content to nodes and edges; and for finite state machines, states map naturally to nodes, transitions to edges, and execution flow to walker traversal, creating a clean representation of state-based systems. These examples represent just a few of the potential applications, as the paradigm's flexibility extends to numerous other domains. By formalizing these topological relationships at the language level, OSP enables more expressive, maintainable, and semantically rich programs for domains where connection topology is a fundamental aspect of the problem space.
+
+This paper makes the following contributions:
+
+1. We formalize Object-Spatial Programming as an extension to Object-Oriented Programming, introducing four distinct archetypes: object classes, node classes, edge classes, and walker classes.
+
+2. We define a semantic model that specifies how these archetypes interact, including instantiation rules, lifecycle management, and execution semantics for traversal operations.
+
+3. We introduce specialized operators and statements for object-spatial execution, including the spawn operator ($\Rightarrow$) for activating computational entities and the visit statement ($\triangleright$) for traversing topological structures.
+
+4. We present the concept of **abilities** as a new function type with implicit execution semantics, triggered by spatial events rather than explicit invocation.
+
+5. We demonstrate the practical application of OSP through a case study of a social media application that naturally maps domain concepts to object-spatial constructs.
+
+## Object-Spatial Topological Semantics
+
+The foundational concept of Object-Spatial Programming is the formalization of topological relationships through the introduction of special class types and a handful of new language constructs. This section outlines the core semantic elements of these constructs related to object-spatial topology, which fundamentally inverts the traditional relationship between data and computation.
+
+### Unified Notation
+
+To ensure clarity and consistency throughout the formalization of Object-Spatial Programming, we define the following notation:
+
+| **Symbol** | **Definition** |
+|------------|---------------|
+| **Classes and Instances** | |
+| $C$ | Set of all class definitions in the programming model |
+| $\tau_{\text{obj}}$ | Object class type (universal supertype) |
+| $\tau_{\text{node}}$ | Node class type (extends object classes) |
+| $\tau_{\text{edge}}$ | Edge class type (extends object classes) |
+| $\tau_{\text{walker}}$ | Walker class type (extends object classes) |
+| $n, n_i, n_{\text{src}}, n_{\text{dst}}$ | Instances of node classes |
+| $e, e_i$ | Instances of edge classes |
+| $w, w'$ | Instances of walker classes |
+| $o$ | Generic instance of any class |
+| **Object-Spatial Constructs** | |
+| $\mathcal{P}$ | Path collection (ordered collection of nodes or edges) |
+| $\mathcal{P}_N$ | Node path (ordered collection of connected nodes) |
+| $\mathcal{P}_E$ | Edge path (ordered collection of connected edges) |
+| $Q_w$ | Walker's traversal queue |
+| **Operations and References** | |
+| $\Rightarrow$ | Spawn operator (activates a walker) |
+| $\triangleright$ | Visit statement (adds to walker's traversal queue) |
+| $a_{\text{walker}}$ | Walker ability (triggered during traversal) |
+| $a_{\text{node}}$ | Node ability (triggered by walker visits) |
+| $a_{\text{edge}}$ | Edge ability (triggered by walker traversal) |
+| $a^{\text{entry}}$ | Entry ability (triggered on arrival) |
+| $a^{\text{exit}}$ | Exit ability (triggered on departure) |
+| $\mathbf{self}$ | Self-reference within an instance |
+| $\mathbf{here}$ | Contextual reference to current walker's edge or node location |
+| $\mathbf{visitor}$ | Contextual reference to current location's visiting walker |
+| $\mathbf{path}$ | Contextual reference to current walker's destination queue $Q_w$ |
+| $\prec$ | Execution precedence relation between operations; $a \prec b$ means operation $a$ must complete before operation $b$ begins |
+| **Set and Logical Notation** | |
+| $x \in X$ | $x$ is an element of set $X$ |
+| $A \subseteq B$ | Set $A$ is a subset of set $B$ |
+| $A \cup B$ | Union of sets $A$ and $B$ |
+| $A \cap B$ | Intersection of sets $A$ and $B$ |
+| $\wedge$ | Logical AND |
+| $\vee$ | Logical OR |
+| $\neg$ | Logical NOT |
+| $\forall$ | Universal quantification ("for all") |
+| $\exists$ | Existential quantification ("there exists") |
+| $f : X \rightarrow Y$ | Function $f$ mapping from domain $X$ to codomain $Y$ |
+| $:=$ | Definition or assignment |
+| $=$ | Equality test |
+
+### Archetypes of Classes
+
+We define four distinct **archetype** classes, extending the traditional class paradigm to incorporate object-spatial semantics:
+
+1. **Object Classes** ($\tau_{\text{obj}}$): These are conventional classes, analogous to traditional OOP class types. Objects can have properties that describe their intrinsic characteristics and methods that operate on those properties. They serve as the foundational building blocks from which other archetypes derive, maintaining backward compatibility with existing OOP concepts while enabling integration with object-spatial extensions.
+
+2. **Node Classes** ($\tau_{\text{node}}$): These extend object classes and can be connected via edges. Nodes represent discrete locations or entities within a topological graph structure. They encapsulate data, compute, and the potential for connections, serving as anchoring points in the object-spatial topology of the program. In addition to object semantics, nodes bind computation to data locations through *abilities*, allowing execution to be triggered by visitation rather than explicit invocation.
+
+3. **Edge Classes** ($\tau_{\text{edge}}$): These represent directed relationships between two node instances and can only be instantiated when two nodes are specified. Edges encode both the topology of connections and the semantics of those connections. Unlike simple references in traditional OOP, edges are first-class object entities with their own properties and behaviors, enabling rich modeling of connection types, weights, capacities, or other relationship attributes. Importantly, edges serve not only as connections but also as traversable locations for walkers, with their own computational context.
+
+4. **Walker Classes** ($\tau_{\text{walker}}$): These model autonomous entities that traverse node and edge objects. Walkers represent active computational elements that move through the data topological structure, processing data or triggering behaviors as they visit different nodes and edges. They enable decoupling of traversal logic from data structure, allowing for modularity in algorithm design and implementation. Walkers embody the paradigm shift of OSP, carrying computational behaviors to data rather than data being passed to computation.
+
+This archetype system creates a complete topological representation framework, where data (in nodes and edges), relationships (as edges), and computational processes (through walkers) are all explicitly modeled and integrated, inverting the traditional paradigm of passing data to functions.
+
+#### Formalization
+
+Let $C$ be the set of all class definitions in the programming model, where:
+
+1. $\tau_{\text{obj}} \in C$ is a standard object class type, representing the universal supertype from which all other archetypes inherit.
+
+2. $\tau_{\text{node}} \subseteq \tau_{\text{obj}}$ represents node class types, which extend object classes with connectivity capabilities and data-bound computation. This subset relationship ensures that nodes inherit all capabilities of objects while adding topological semantics and the ability to bind computation to data locations.
+
+3. $\tau_{\text{edge}} \subseteq \tau_{\text{obj}}$ represents edge class types, which extend object classes with relational semantics. Edges are not merely references but full-fledged objects that encapsulate relationship properties and behaviors, serving as both connections and traversable locations.
+
+4. $\tau_{\text{walker}} \subseteq \tau_{\text{obj}}$ represents walker class types, which extend object classes with mobility semantics within the node-edge structure. Walkers combine data, state, and traversal logic to model computational processes that flow through the topological structure, actualizing the concept of "computation moving to data."
+
+Each instance $n$ of a **node class** $\tau_{\text{node}}$ is defined simply as: $n = ()$.
+Nodes exist as independent entities in the topological structure, serving as primary data locations. Unlike edges which require references to nodes, nodes can exist without connections to other elements, though they typically participate in the graph structure through edges that reference them.
+
+Each instance $e$ of an **edge class** $\tau_{\text{edge}}$ is defined as a tuple:
+
+$$e = (n_{\text{src}}, n_{\text{dst}})$$
+
+where:
+
+- $n_{\text{src}}, n_{\text{dst}} \in \tau_{\text{node}}$ are the source and destination node instances, serving as the endpoints of the relationship. These must exist prior to edge creation, establishing a dependency constraint that maintains object-spatial graph integrity.
+
+This formalization ensures that edges properly connect existing nodes, maintaining topological graph consistency within the program.
+
+Each instance $w$ of a **walker class** $\tau_{\text{walker}}$ may exist in one of three states:
+
+$$w = \begin{cases}
+(n_{\text{loc}}) & \text{if active within node topological context} \\
+(e_{\text{loc}}) & \text{if active within edge topological context} \\
+() & \text{if inactive as a standard object}
+\end{cases}$$
+
+where $n_{\text{loc}} \in \tau_{\text{node}}$ is the node the walker resides on, or $e_{\text{loc}} \in \tau_{\text{edge}}$ is the edge the walker traverses when active. This location property is dynamic and changes as the walker traverses the topological structure, allowing the walker to access different data contexts based on its current position. When inactive, the walker exists as a standard object without object-spatial context, allowing for manipulation before activation within a object-spatial context.
+
+The **overall topological structure** with active computational elements can be represented as:
+
+$$G = (N, E, W, L)$$
+
+where:
+- $N$ is the set of all node instances, representing data locations in the topological space
+- $E$ is the set of all edge instances, defining the connectivity between nodes
+- $W$ is the set of all walker instances, representing the computational entities
+- $L: W \rightarrow N \cup E \cup \{\emptyset\}$ is a location mapping function that associates each walker with its current position in the topology, where $\emptyset$ indicates an inactive walker
+
+This representation captures both the static structural components (nodes and edges) and the dynamic computational elements (walkers) of the object-spatial system, along with their current positions within the topological structure. Next, we introduce the first-class construct of a path collection which represents a traversable path through a object-spatial topology.
+
+### Path Collections ($\mathcal{P}$) and Walker Destination Queues ($Q_w$)
+
+The Object-Spatial Programming model introduces two complementary constructs that govern traversal dynamics: **path collections** ($\mathcal{P}$), which represent potential traversal routes through the topology, and **walker destination queues** ($Q_w$), which manage the actual execution sequence during traversal. Together, these constructs create a flexible yet deterministic framework for computational movement through data spaces.
+
+#### Path Collections
+
+The **path collection** ($\mathcal{P}$) introduces a higher-order topological construct that represents an ordered sequence of nodes and edges within the object-spatial structure. As first-class citizens in the programming model, path collections can be created, modified, and manipulated like any other data structure. This abstraction serves as a critical link between topology and traversal semantics, enabling concise expression of traversal patterns while maintaining the integrity of the object-spatial model.
+
+The intent of the path collection is to provide a unified framework that bridges graph theory and computation, creating a formal way to express how walkers move through connected data structures. Rather than treating node traversals and edge traversals as separate concerns, the path collection unifies them into a single construct that preserves topological relationships while enabling richer expression of traversal algorithms.
+
+A path collection is defined as:
+$$\mathcal{P} = [p_1, p_2, \ldots, p_k]$$
+where each $p_i \in N \cup E$ (i.e., each element is either a node or an edge), subject to the following constraints:
+
+1. **Origin Connectivity:** The first element $p_1$ must be connected to an origin node $n_{\text{origin}} \in N$, either by being the origin itself or by being an edge with $n_{\text{origin}}$ as an endpoint.
+
+2. **Sequential Connectivity:** For each element $p_i$ where $i > 1$ in $\mathcal{P}$, at least one of the following must hold:
+   - If $p_i$ is a node, then there must exist at least one element $p_j$ where $j < i$ such that either:
+     - $p_j$ is a node and there exists an edge $e \in E$ connecting $p_j$ and $p_i$, or
+     - $p_j$ is an edge with $p_i$ as one of its endpoints
+
+   - If $p_i$ is an edge, then at least one of its endpoints must appear as a node in $\{p_1, p_2, \ldots, p_{i-1}\}$
+
+3. **Path Completeness:** For any element $p_i$ in $\mathcal{P}$, there must exist a path from $n_{\text{origin}}$ to $p_i$ such that all intermediate elements (nodes and edges) on that path are present in the prefix $\{p_1, p_2, \ldots, p_{i-1}\}$. This ensures that the path collection contains at least one valid traversal route to each included element.
+
+4. **Traversal Coherence:** When multiple elements are eligible for inclusion at a given point in the sequence (e.g., multiple nodes connected to previously included elements), their relative ordering follows breadth-first search (BFS) semantics from the most recently added elements, preserving locality of traversal.
+
+This definition ensures topological validity by anchoring all nodes to a common origin while allowing flexible expression of traversal patterns. The breadth-first ordering provides predictability and consistency for walkers traversing the path, particularly when dealing with hierarchical structures where multiple branches might need to be explored.
+
+As first-class citizens, path collections support arbitrary modifications, including additions, removals, reorderings, and transformations, provided that the resulting collection maintains the properties of a valid path collection. Operations such as concatenation, slicing, filtering, and mapping can be applied to path collections, yielding new valid path collections. This flexibility enables algorithmic manipulation of potential traversal paths while preserving the topological integrity of the underlying data structure.
+
+This generalized path collection model reflects a natural way to describe, in a declarative way, potential routes as to how walker may navigate through a data topology. By allowing both nodes and edges in the same sequence while maintaining topological context, path collections enable algorithms to be expressed in terms of the connected data structures they operate on, rather than as abstract operations that receive data as input.
+
+#### Path Construction
+
+Building on the definition of path collections as first-class citizens in the programming model, a path collection can be constructed in several ways:
+
+1. **Explicit Construction**: By directly specifying the ordered sequence of nodes and optional edges:
+
+    $$\mathcal{P} = [p_1, p_2, \ldots, p_k] \text{ where } p_i \in N \cup E$$
+
+    When explicitly constructing path collections, the elements must satisfy the reachability and ordering constraints defined earlier, ensuring that walkers can traverse through the path in a topologically valid sequence. Edges, when included, must immediately precede the nodes they connect to on the reachability path from the origin node.
+
+2. **Query-Based Construction**: By specifying an origin node and a traversal predicate:
+
+    $$\mathcal{P} = \text{path}(n_{\text{origin}}, \text{predicate}, \text{includeEdges}, d)$$
+
+    where:
+    - $n_{\text{origin}} \in N$ is the origin node from which all nodes in the path must be reachable
+    - $\text{predicate}: N \cup E \rightarrow \{\text{true}, \text{false}\}$ is a function that determines whether an element should be included in the path
+    - $\text{includeEdges} \in \{\text{true}, \text{false}\}$ specifies whether edges should be explicitly included in the path collection
+    - $d \in \{\text{outgoing}, \text{incoming}, \text{any}\}$ specifies the traversal direction for constructing the path
+
+    The construction algorithm performs a breadth-first traversal from the origin node, adding elements to the path collection according to the predicate and the includeEdges parameter. This ensures that the resulting path maintains proper reachability relations while allowing flexible filtering of elements.
+
+    A common example of query-based construction is creating a path that follows a specific sequence of edge types:
+
+    $$\mathcal{P} = \text{path}(n_{\text{origin}}, \lambda e : e \in E \land \text{type}(e) \in [\tau_{\text{edge}}^1, \tau_{\text{edge}}^2, \ldots, \tau_{\text{edge}}^k] \text{ in sequence}, \text{true}, \text{outgoing})$$
+
+    This creates a path collection starting at $n_{\text{origin}}$ and following only edges that match the specified sequence of edge types. The path resolution algorithm traverses the graph, selecting edges and their connected nodes that conform to this type pattern. A walker traversing this path would follow a route determined by these edge type constraints, enabling declarative specification of complex traversal patterns based on relationship types.
+
+Once constructed, these path collections can be passed to walkers to guide their traversal through the topological structure, as we'll see in the next section on walker destination queues.
+
+#### Walker Destination Queues
+
+While path collections define potential traversal routes through the topology, **walker destination queues** ($Q_w$) represent the actual execution sequence that a walker follows during its traversal. Each active walker $w$ maintains an internal traversal queue $Q_w$ that determines its next destinations:
+
+$$Q_w = [q_1, q_2, \ldots, q_m] \text{ where } q_i \in N \cup E$$
+
+Walker destination queues have several key properties that govern traversal dynamics:
+
+1. **First-In-First-Out (FIFO) Processing**: Walker destination queues follow FIFO semantics, with elements processed in the order they were added. When a walker completes execution at its current location, it automatically moves to the next element in its queue.
+
+2. **Dynamic Modification**: Walker destination queues are designed for dynamic modification during traversal through visit statements and other control flow mechanisms:
+
+    $$\text{visit}(w, n) \Rightarrow Q_w \leftarrow Q_w \cup [n]$$
+
+    This allows walkers to adapt their traversal paths based on discovered data or computed conditions.
+
+3. **Automatic Edge-to-Node Transitions**: When a walker traverses an edge, the appropriate destination node is automatically added to its queue if not already present, ensuring continuity in the traversal process.
+
+4. **Path-to-Queue Conversion**: When a walker spawns on or visits a path collection, the path is converted into queue entries according to traversal requirements:
+
+    $$\text{visit}(w, \mathcal{P}) \Rightarrow Q_w \leftarrow Q_w \cup \text{expandPath}(\mathcal{P}, L(w))$$
+
+    where $\text{expandPath}(\mathcal{P}, L(w))$ transforms the path collection into a physically traversable sequence from the walker's current location $L(w)$. This function ensures that:
+
+    - All elements in $\mathcal{P}$ are included in the expanded queue
+    - Any necessary intermediate nodes or edges required for physical traversal between non-adjacent elements are inserted
+    - The resulting sequence maintains the relative ordering of elements in the original path collection
+    - The expanded path respects the connectivity constraints of the topological structure
+
+    This conversion enables walkers to traverse path collections that express higher-level traversal intent without requiring explicit specification of every intermediate step.
+
+5. **Activity Persistence**: Once a walker transitions to an active state via spawn, it remains active until its queue is exhausted or it is explicitly disengaged. This ensures computational continuity during traversal, maintaining the walker's contextual state throughout its path exploration. When a walker's queue becomes empty after all abilities at its current location have executed, it automatically transitions back to an inactive state. However, while at a node with an empty queue, it temporarily preserves its active status, allowing for potential reactivation through new visit statements before the current execution cycle completes.
+
+The relationship between the path collection ($\mathcal{P}$) and the dynamic walker queue ($Q_w$) creates a flexible yet deterministic traversal model, allowing for both declarative path specifications and runtime adaptation of traversal behavior.
+
+### Abilities
+
+In addition to traditional methods $m: \tau \rightarrow \tau'$, we introduce **abilities**, a new function type $a: \varnothing \rightarrow \varnothing$ with *implicit* execution semantics. Unlike ordinary functions, abilities neither accept explicit arguments nor return values; instead, they gain access to relevant data through the walker or location (node or edge) that triggers them. This represents a fundamental paradigm shift: rather than moving data to computation through parameters and return values, computation is distributed throughout the topology and automatically activated by object-spatial interactions. Abilities are named using the same conventions as methods, providing a consistent interface pattern across the programming model.
+
+Each ability specifies an execution trigger that determines when it is activated during traversal:
+
+**Walker Abilities** $a_{\text{walker}}$ are automatically triggered when a walker enters or exits a node or edge of a specified type:
+
+$$a_{\text{walker}} : (\tau_{\text{location}}, t) \rightarrow \bot$$
+
+where $\tau_{\text{location}} \in \{\tau_{\text{node}}, \tau_{\text{edge}}\}$ and $t \in \{\text{entry}, \text{exit}\}$ specifies whether the ability is triggered upon the walker's entry to or exit from a location of the specified type. This notation indicates the *condition* under which the ability is invoked, rather than a parameter list. The ability thus acts as an event handler for location arrival or departure events. Once invoked, the ability can directly access the triggering walker's data (via $\mathbf{self}$), the location it arrived at or is departing from (via $\mathbf{here}$), and its traversal path and queue (via $\mathbf{path}$). The walker can modify its traversal queue $Q_w$ through visit statements or direct manipulation of $\mathbf{path}$. This allows walkers to respond contextually to different location types they encounter, implementing type-specific processing logic without explicit conditional branching and dynamically adapting their traversal path based on discovered data. The walker serves both as a carrier of computational behavior and as an activator of location-bound computation throughout the topology.
+
+**Node Abilities** $a_{\text{node}}$ are automatically triggered when a walker of a specified type enters or exits the node:
+
+$$a_{\text{node}} : (\tau_{\text{walker}}, t) \rightarrow \bot$$
+
+where $t \in \{\text{entry}, \text{exit}\}$ specifies whether the ability is triggered upon the walker's entry to or exit from the node. Similarly, this indicates the condition (arrival or departure of a walker of type $\tau_{\text{walker}}$), not an explicit parameter. The ability functions as an event handler for walker arrival or departure events. When triggered, the ability can access the node's data (via $\mathbf{self}$), the incoming or outgoing walker (via $\mathbf{visitor}$), and the walker's destination queue (via $\mathbf{path}$). This allows nodes to respond differently to different types of walkers, implementing specialized processing logic based on the visitor type and traversal stage, and potentially influencing the walker's future traversal path. Node abilities demonstrate that nodes are not merely passive data containers but active computational sites that respond to traversal events, embodying the distributed nature of computation in the OSP model.
+
+**Edge Abilities** $a_{\text{edge}}$ are automatically triggered when a walker of a specified type enters or exits the edge:
+
+$$a_{\text{edge}} : (\tau_{\text{walker}}, t) \rightarrow \bot$$
+
+where $t \in \{\text{entry}, \text{exit}\}$ specifies whether the ability is triggered upon the walker's entry to or exit from the edge. This ability functions similarly to node abilities but is specific to edge contexts. When triggered, the ability can access the edge's data (via $\mathbf{self}$), the traversing walker (via $\mathbf{visitor}$), and the walker's destination queue (via $\mathbf{path}$). Edge abilities enable computational behavior to be bound to relationship transitions, allowing for processing that specifically occurs during the movement between nodes, including the possibility of modifying the walker's future traversal path. This enables modeling of transition-specific computation, such as filtering, transformation, or validation of data as it flows through the topological structure. The presence of computational abilities in edges reinforces that in the OSP model, even transitions between data locations are first-class citizens capable of containing and executing computation.
+
+#### Ability Execution Order
+
+When a walker traverses the topological structure, abilities are executed in a consistent, predictable order regardless of location type. This execution order respects both entry/exit specifications and the dual-perspective model of location-walker interaction:
+
+1. **Arrival Phase** - When a walker arrives at any location (node or edge):
+   a. First, all relevant location entry abilities for the arriving walker type are executed. This allows the location (node or edge) to respond to the walker's arrival, potentially modifying its own state or the state of the walker. This represents location-bound computation triggered by mobile traversal.
+
+   b. Next, all relevant walker entry abilities for the current location type are executed. This allows the walker to respond to its new context, potentially modifying its own state or the state of the location. This represents mobile computation processing data at its current position.
+
+   c. During execution of these abilities, the walker may modify its traversal queue $Q_w$ through visit statements if at a node, or have its queue automatically updated if at an edge:
+      - At nodes: The walker may execute visit statements to enqueue new destinations
+      - At edges: The appropriate endpoint node is automatically added to $Q_w$ if not already present, based on traversal direction:
+        - If arrived from $n_{\text{src}}$, then $Q_w \leftarrow Q_w \cup [n_{\text{dst}}]$
+        - If arrived from $n_{\text{dst}}$, then $Q_w \leftarrow Q_w \cup [n_{\text{src}}]$
+
+2. **Departure Phase** - When a walker prepares to leave any location (node or edge):
+   a. First, all relevant walker exit abilities for the current location type are executed. This allows the walker to finalize any processing before departure.
+
+   b. Next, all relevant location exit abilities for the departing walker type are executed. This allows the location to respond to the walker's departure, potentially performing cleanup or transition operations.
+
+   c. After all exit abilities have executed, the walker updates its location to the next element in its queue: $L(w) \leftarrow \text{dequeue}(Q_w)$
+
+3. **Queue Exhaustion** - When a walker's queue $Q_w$ becomes empty after dequeuing:
+   a. If the walker is on a node, it remains at that node until further visit statements are executed or until explicitly disengaged
+
+   b. If the walker is on an edge, the program raises an error, as edges cannot be terminal locations
+
+This unified execution order establishes a predictable pattern where locations first respond to walker arrival before walkers process their new context, and walkers prepare for departure before locations respond to their exit. The order is expressed formally as:
+
+$$\begin{array}{c}
+\forall a_{\text{loc}}^{\text{entry}} \in l, \forall a_{\text{walker}}^{\text{entry}} \in w : \text{execute}(a_{\text{loc}}^{\text{entry}}) \prec \text{execute}(a_{\text{walker}}^{\text{entry}}) \\
+\forall a_{\text{walker}}^{\text{exit}} \in w, \forall a_{\text{loc}}^{\text{exit}} \in l : \text{execute}(a_{\text{walker}}^{\text{exit}}) \prec \text{execute}(a_{\text{loc}}^{\text{exit}})
+\end{array}$$
+
+Additionally, the relationship between queue operations and ability execution follows this pattern:
+
+$$\begin{array}{c}
+\forall w \in W, \forall l \in L(w) : \text{execute-all-abilities}(w, l) \prec \text{dequeue}(Q_w) \\
+\forall w \in W, \forall l' \in \text{dequeue}(Q_w) : \text{dequeue}(Q_w) \prec \text{execute-all-abilities}(w, l')
+\end{array}$$
+
+where $\prec$ denotes execution precedence, $l$ represents either a node or edge location, and
+$\text{execute-all-abilities}(w, l)$ represents the complete sequence of ability executions for walker $w$ at location $l$.
+
+This execution model creates a bidirectional coupling between data and computation that is central to the OSP paradigm, allowing both locations and walkers to respond to traversal events in a coordinated sequence while maintaining the queue-based traversal mechanism that guides walkers through the topological structure.
+
+#### Self and Contextual References
+
+To support the implicit execution model of abilities, OSP provides special reference mechanisms that give abilities access to their execution context:
+
+- **Self-reference** ($\mathbf{self}$): Traditional self-reference within an instance, providing access to the instance's own properties and methods. In walker abilities, $\mathbf{self}$ refers to the walker instance, while in node or edge abilities, $\mathbf{self}$ refers to the node or edge instance respectively.
+
+- **Here-reference** ($\mathbf{here}$): In walker abilities, $\mathbf{here}$ refers to the current location (node or edge) the walker is positioned at, providing access to the location's properties and methods from the walker's perspective. This enables walkers to interact with their current object-spatial context, representing mobile computation accessing local data.
+
+- **Visitor-reference** ($\mathbf{visitor}$): In node or edge abilities, $\mathbf{visitor}$ refers to the walker triggering the ability, providing access to the walker's properties and methods from the location's perspective. This enables locations to interact with visiting walkers based on their specific properties, representing data-bound computation accessing the mobile computational entity.
+
+- **Path-reference** ($\mathbf{path}$): In all abilities, $\mathbf{path}$ provides access to the walker's traversal path and destination queue $Q_w$, allowing inspection and manipulation of the planned traversal sequence. This enables walkers to dynamically adjust their future movement based on conditions encountered during traversal. The path reference gives runtime access to the entire destination queue, enabling operations such as:
+  - Viewing the next planned destinations
+  - Modifying the order of destinations
+  - Inserting or removing destinations based on runtime conditions
+  - Querying path properties such as length, connectivity, or destination types
+
+These contextual references create a dual-perspective model where both walkers and locations can access each other's state when they interact. This bidirectional access pattern enables rich interaction models where both entities can influence each other during traversal events, actualizing the tight coupling between data and computation that characterizes the OSP paradigm.
+
+### Complete Topological Structure
+
+With the foundational elements and constructs defined, we can now formally describe the complete topological structure that embodies a Object-Spatial Program. This structure encapsulates both the interconnected elements and the distributed computational capabilities:
+
+$$G = (N, E, W, Q, L)$$
+
+where:
+- $N = \{n_1, n_2, \ldots, n_m\}$ is the set of all node instances, each representing both a data location and a potential site of computation in the topological space
+- $E = \{e_1, e_2, \ldots, e_k\}$ is the set of all edge instances, each defining not only connectivity between nodes but also computational behaviors at transitions, where each $e_i = (n_{\text{src}}, n_{\text{dst}})$
+- $W = \{w_1, w_2, \ldots, w_j\}$ is the set of all walker instances, representing autonomous computational entities that activate location-bound behaviors
+- $Q = \{Q_{w_1}, Q_{w_2}, \ldots, Q_{w_j}\}$ is the set of all walker destination queues, representing the planned traversal sequences for each active walker
+- $L: W \rightarrow N \cup E \cup \{\emptyset\}$ is a location mapping function that associates each walker with its current position in the topology, where $\emptyset$ indicates an inactive walker
+
+The state of the topological structure at any given moment during program execution is characterized by:
+
+1. **Distributed Computational Capacity**: Unlike traditional models where computation is centralized in functions, the OSP model distributes computational capabilities across all elements:
+   - Nodes contain both data and computational abilities ($a_{\text{node}}$) that activate in response to walker visits
+   - Edges contain both relational data and computational abilities ($a_{\text{edge}}$) that execute during transitions
+   - Walkers contain both traversal logic and computational abilities ($a_{\text{walker}}$) that respond to encountered locations
+
+2. **Static Topological State**: The configuration of nodes and edges that form the underlying graph structure. This includes:
+   - The set of all nodes $N$ with their internal data states and latent computational abilities
+   - The set of all edges $E$ with their connection patterns and transition-specific abilities
+   - The resulting graph connectivity properties, such as reachability between nodes
+
+3. **Dynamic Computational State**: The current positions and planned movements of walkers within the structure. This includes:
+   - The location mapping $L$ that tracks the current position of each walker
+   - The traversal queues $Q_{w_i}$ for each active walker $w_i$, defining its future traversal path
+
+As the program executes, this topological structure evolves through several key mechanisms:
+
+1. **Computational Activation**: The OSP model fundamentally inverts traditional computation:
+   - Rather than data moving to stationary computation (functions), walkers activate computation embedded within themselves and the data locations they visit
+   - Nodes and edges contain dormant computational abilities that are triggered by compatible walkers
+   - The interaction between a walker and its current location creates a dynamic computational context where both entities can affect each other
+
+2. **Structural Modifications**: Changes to the node-edge graph through:
+   - Creation or deletion of nodes, affecting the set $N$
+   - Creation or deletion of edges, affecting the set $E$ and the connectivity of the graph
+
+3. **Path Construction and Utilization**: Although not part of the fundamental structure, path collections $\mathcal{P}$ play a crucial role as programming constructs that:
+   - Define traversable routes through the topology
+   - Provide abstraction mechanisms for walker traversal patterns
+   - Serve as intermediaries between static structure and dynamic traversal
+
+4. **Computational Movements**: Changes to the positions and traversal plans of walkers through:
+   - Activation of walkers via the spawn operator, transitioning walkers from inactive objects to active object-spatial entities positioned at specific locations
+   - Traversal between nodes and edges via the visit statement, updating the location mapping $L$ and modifying walker destination queues $Q_{w_i}$
+   - At each traversal step, triggering a cascade of ability executions that constitute the actual computational work
+   - Termination of traversals through disengage statements, removing walkers from the active set
+
+5. **State Transformations**: Changes to the internal states of elements through:
+   - Execution of node and edge abilities triggered by walker visits, allowing data locations to compute in response to visitors
+   - Execution of walker abilities triggered by encountered locations, allowing computational entities to respond to data contexts
+   - Bidirectional modification of properties through the **self** and **here** references
+   - Distributed effects as computation ripples through the topology via walker traversal
+
+This complete topological structure $G$ provides a unified mathematical representation of the OSP paradigm's distinctive approach: computation is not centralized in functions but distributed throughout a topological structure. Nodes and edges are not merely passive data containers but active computational sites that respond to walker visits. Walkers serve as both computational entities and activation mechanisms that trigger dormant abilities embedded within the topology.
+
+## Object-Spatial Execution Semantics
+
+The execution model of Object-Spatial Programming combines traditional method invocation with object-spatial traversal operations and context-sensitive execution. This section details how instances are created and how computation flows through the topological structure, fundamentally inverting the traditional relationship where data is moved to computation.
+
+### Instantiation Rules
+
+To maintain object-spatial graph consistency and support higher-order topological structures, OSP enforces specific instantiation constraints for different archetypes and references:
+
+1. **Object Instantiation**: Standard objects follow traditional OOP instantiation patterns, with constructors defining initial state.
+
+2. **Node Instantiation**: Nodes are instantiated like standard objects but gain the additional capability to serve as endpoints for edges and hosts for walkers. Their constructors may initialize object-spatial properties and connection capabilities. Nodes effectively become locations where data resides and computation can be triggered, rather than passive data containers.
+
+3. **Edge Instantiation**: An instance $e$ of an edge class $\tau_{\text{edge}}$ can only be created if two nodes $n_{\text{src}}, n_{\text{dst}}$ exist and are specified upon instantiation. This constraint ensures that edges always connect existing object-spatial elements, preventing dangling connections and maintaining referential integrity within the topological structure.
+
+4. **Walker Instantiation**: An instance $w$ of a walker class $\tau_{\text{walker}}$ can be instantiated as a standard object without an initial location. In this state, the walker functions as a regular object with all its properties and methods accessible, but it does not participate in object-spatial traversal until activated via the spawn operator.
+
+These instantiation rules ensure that all object-spatial elements—from individual nodes and edges to higher-order path collections—maintain topological consistency while providing flexible construction mechanisms. The rules for path collections are particularly important as they bridge between the static topological structure and the dynamic execution patterns of walkers, allowing for complex traversal strategies to be expressed concisely while preserving the integrity of the object-spatial model.
+
+### Lifecycle Management
+
+OSP extends traditional object lifecycle management with specialized rules for object-spatial archetypes:
+
+1. *Object Lifecycle*: Standard object instances follow traditional object lifecycle patterns from OOP, with standard creation, usage, and garbage collection.
+
+2. *Walker Lifecycle*: Walkers have a dual lifecycle, existing first as standard objects and then potentially transitioning to active object-spatial entities through the spawn operator. When active within the topological structure, walkers maintain their position and traversal state. They can be deactivated and return to standard object status under program control or when their traversal completes. This lifecycle reflects the mobile nature of computation in OSP, where algorithmic behaviors physically move through the data topology.
+
+3. *Node Lifecycle*: When a node instance is deleted, all edge instances that connect to or from that node are automatically deleted as well. This cascading deletion ensures object-spatial integrity by preventing dangling edges that would otherwise reference non-existent nodes. This constraint is expressed formally as:
+
+    $$\forall e \in \tau_{\text{edge}} \text{ where } e = (n_{\text{src}}, n_{\text{dst}}) : \text{del}(n_{\text{src}}) \lor \text{del}(n_{\text{dst}}) \Rightarrow \text{del}(e)$$
+
+4. *Edge Lifecycle*: Edge instances exist as long as both their source and destination nodes exist. They are automatically garbage collected when either endpoint node is deleted, or when explicitly deleted by the program.
+
+This lifecycle management system ensures that the topological structure remains consistent throughout program execution, with automatic cleanup of dependent connections when nodes are removed, while providing flexibility for walker activation and deactivation.
+
+### Spawn Operator ($\Rightarrow$)
+
+The **spawn operator** ($\Rightarrow$) activates a walker within the topological structure by placing it at a specified node, edge, or path. This operation transitions the walker from a standard object state to an active object-spatial entity within the graph $G$:
+
+**Spawning on a Single Element**
+
+For spawning on a node:
+$$w \Rightarrow n \rightarrow w'$$
+
+where:
+- $w$ is a walker instance currently in an inactive state ($L(w) = \emptyset$)
+- $n \in N$ is the node where the walker will be spawned
+- $w'$ is the resulting active walker with updated location $L(w') = n$
+- $Q_{w'} = []$ (empty queue) as no further destinations are automatically queued
+
+For spawning on an edge:
+$$w \Rightarrow e \rightarrow w'$$
+
+where:
+- $w$ is a walker instance currently in an inactive state ($L(w) = \emptyset$)
+- $e = (n_{\text{src}}, n_{\text{dst}}) \in E$ is the edge where the walker will be spawned
+- $w'$ is the resulting active walker with updated location $L(w') = e$
+- $Q_{w'} = [n_{\text{dst}}]$ by default, as edges cannot be terminal locations and require a subsequent node destination
+
+**Spawning on a Path**
+
+The spawn operator can also be applied to a path collection, allowing a walker to begin traversing a connected substructure:
+
+$$w \Rightarrow \mathcal{P} \rightarrow w'$$
+
+where:
+- $w$ is a walker instance currently in an inactive state ($L(w) = \emptyset$)
+- $\mathcal{P} = [p_1, p_2, \ldots, p_k]$ is a path collection where each $p_i \in N \cup E$
+- $w'$ is the resulting active walker with updated location $L(w') = p_1$
+- The remaining elements are directly added to the walker's queue: $Q_{w'} = [p_2, \ldots, p_k]$
+- Since $\mathcal{P}$ is well-formed by definition, the path maintains topological validity, ensuring the walker can traverse from each element to the next without additional path resolution
+
+This approach creates a direct mapping between the path collection and the walker's traversal queue, reflecting the assumption that path collections are already topologically valid. The spawn operation initiates the walker's journey through the specified path, activating it at the first element and scheduling visits to all subsequent elements in the exact order provided.
+
+The spawn operation has several important properties that affect the topological structure $G = (N, E, W, Q, L)$:
+
+1. It can only be applied to a walker that is not already active within the topological structure ($L(w) = \emptyset$)
+
+2. When executed, it modifies the location mapping $L$ to position the walker at the specified location (the first element of the spawn target)
+
+3. It initializes the walker's queue $Q_w$ based on the spawn target:
+   - For a single node: $Q_w = []$ (empty queue)
+   - For a single edge: $Q_w = [n_{\text{dst}}]$ (destination node)
+   - For a path: $Q_w = [p_2, \ldots, p_k]$ (remaining path elements)
+
+4. The operation triggers all entry abilities associated with the walker's arrival at the spawn location:
+   - First, relevant location entry abilities for the arriving walker type
+   - Next, relevant walker entry abilities for the location type
+
+5. After spawning, the walker maintains its active state until either:
+   - Its queue is exhausted and all abilities at its final location have executed, at which point it automatically returns to an inactive state
+   - It is explicitly terminated via a disengage statement
+
+6. The spawn operator marks the transition of computation from a dormant state to an active participant in the distributed computational system
+
+7. When spawned on a path, the walker traverses the elements in the exact order specified, relying on the path's well-formed nature to maintain topological validity
+
+The path-based spawn operation extends the expressiveness of the OSP model by allowing walkers to be initialized with a complete traversal plan, rather than building the traversal dynamically through visit statements. This enables more declarative expression of algorithms that operate on connected substructures.
+
+The spawn operator creates a clear separation between the initialization and activation phases of walker usage, allowing for complex setup before object-spatial traversal begins. It also marks the moment when the distributed computational model comes alive, with location-bound abilities and walker abilities beginning their interplay throughout the topological structure.
+
+### Visit Statement ($\triangleright$)
+
+The **visit statement** ($\triangleright$) enables a walker to move between nodes and edges in the topological structure, representing the dynamic traversal capability that is central to the OSP model. This statement produces side effects by adding destinations to the walker's traversal queue and can be applied to traverse either a single element, multiple elements based on directional constraints, or an entire path collection.
+
+**Single Element Traversal**
+
+For node to node traversal:
+$$w \triangleright n \rightarrow n$$
+
+where $w = (n_{\text{curr}})$ and $n \in \tau_{\text{node}}$, meaning that the walker at node $n_{\text{curr}}$ directly visits node $n$. This requires that a direct edge connection exists between $n_{\text{curr}}$ and $n$, i.e., $\exists e \in \tau_{\text{edge}} : e = (n_{\text{curr}}, n) \lor e = (n, n_{\text{curr}})$.
+
+For node to edge traversal:
+$$w \triangleright e \rightarrow \{e, n_{\text{next}}\}$$
+
+where $e = (n_{\text{src}}, n_{\text{dst}})$ and $w = (n_{\text{curr}})$, meaning that the walker at node $n_{\text{curr}}$ moves to edge $e$. This requires that $n_{\text{curr}}$ is one of the endpoints of $e$, i.e., $n_{\text{curr}} = n_{\text{src}} \lor n_{\text{curr}} = n_{\text{dst}}$. Importantly, when a walker visits an edge, both the edge and its appropriate endpoint node are automatically queued in sequence:
+
+- If $n_{\text{curr}} = n_{\text{src}}$, then $n_{\text{next}} = n_{\text{dst}}$
+- If $n_{\text{curr}} = n_{\text{dst}}$, then $n_{\text{next}} = n_{\text{src}}$
+
+**Edge Traversal Constraints**
+
+When a walker is positioned on an edge, the visit statement cannot be called. Instead, after completing any edge abilities, the walker automatically transitions to the appropriate endpoint node that was queued during the preceding visit operation:
+
+$$w = (e) \text{ where } e = (n_{\text{src}}, n_{\text{dst}}) \Rightarrow n_{\text{next}}$$
+
+This constraint ensures that edges serve as transitions between nodes rather than locations where traversal decisions are made, maintaining the natural flow of the walker through the topological structure.
+
+**Path Traversal**
+
+The visit statement can be applied to path collections, allowing a walker to traverse a connected substructure:
+
+$$w \triangleright \mathcal{P} \rightarrow \{p_1, p_2, ..., p_k\}$$
+
+where:
+- $w$ is an active walker instance currently at node $n_{\text{curr}}$
+- $\mathcal{P} = [p_1, p_2, \ldots, p_k]$ is a path collection where each $p_i \in N \cup E$
+- The path's first element $p_1$ must be directly reachable from the walker's current location:
+  - If $p_1$ is a node, either $n_{\text{curr}} = p_1$ or there exists an edge connecting $n_{\text{curr}}$ and $p_1$
+  - If $p_1$ is an edge, $n_{\text{curr}}$ must be an endpoint of $p_1$
+- All elements in the path are added to the walker's traversal queue in their path order: $Q_w \leftarrow Q_w \cup [p_1, p_2, \ldots, p_k]$
+- Since $\mathcal{P}$ is well-formed by definition, the path maintains topological validity, ensuring the walker can traverse from each element to the next without additional path resolution
+
+Note that a visit statement can only be initiated from a node, not from an edge, in accordance with the edge traversal constraints.
+
+The visit statement has several important properties:
+
+1. It is only valid if the walker is currently active and located at a node within the topological structure. Visit statements cannot be executed while a walker is on an edge.
+
+2. When executed from a node, the walker destination queues up all selected elements to visit after completing execution at its current location.
+
+3. When visiting an edge, both the edge and its appropriate endpoint node are automatically queued, ensuring that walkers always progress through the structure in a node-edge-node pattern.
+
+4. Once the walker completes executing all exit abilities at its current node, it will move to the first queued destination and trigger all relevant entry abilities at that new location.
+
+5. When on an edge, after executing all edge abilities, the walker automatically transitions to the queued endpoint node without requiring an explicit visit statement.
+
+6. This process continues recursively, with the walker moving through all queued locations until there are no more destinations in its queue.
+
+7. When the queue becomes empty after all abilities at the walker's current location have executed, the walker automatically transitions back to an inactive state.
+
+8. Multiple calls to the visit statement from a node append destinations to the walker's existing queue, allowing for dynamic construction of traversal paths during execution.
+
+9. When visiting a path, the walker enqueues all elements in the exact order specified in the path, relying on the path's well-formed nature to maintain topological validity.
+
+10. When a path collection is used with the visit statement, the first element of the path must be directly reachable from the walker's current position, enforcing a strict reachability constraint.
+
+11. When directly visiting a node from another node, the walker implicitly traverses the connecting edge, but does not trigger any edge abilities or perform any edge-specific processing. This provides a shorthand for node-to-node traversal when the intermediate edge context is not relevant to the algorithm.
+
+12. The model ensures that walkers never "get stuck" on edges, as they always automatically progress to nodes where further traversal decisions can be made.
+
+The path-based visit statement extends the expressiveness of the OSP model by allowing walkers to enqueue entire connected substructures for traversal in a single operation. This enables more concise expression of algorithms that operate on related sets of nodes or edges, such as graph search, path following, or subgraph processing.
+
+By supporting node-to-node, node-to-edge, and path-based traversal patterns, the visit statement enables programmatic expression of complex traversal paths, allowing algorithms to navigate the topological structure in a controlled and semantically meaningful way. The automatic queuing of endpoint nodes when visiting edges ensures that walkers maintain the fundamental node-edge-node traversal pattern that reflects the object-spatial topology. The clear distinction that visit statements can only be executed from nodes, not edges, reinforces the concept that nodes are decision points in the traversal process, while edges are transitions between nodes. This embodiment of computation moving to data creates a fundamentally different programming model compared to conventional approaches where data is passed to stationary functions.
+
+### Additional Flow Control Statements
+
+To provide finer control over walker traversal execution, OSP includes two additional specialized flow control statements that operate within the context of object-spatial execution:
+
+**Skip Statement**
+
+The **skip** statement allows a walker to immediately terminate execution at its current location and proceed to the next location in its traversal queue:
+
+$$\text{skip}(w) \Rightarrow L(w) \leftarrow \text{dequeue}(Q_w)$$
+
+where:
+- $w$ is the active walker instance with current location $L(w)$
+- $Q_w$ is the walker's traversal queue with at least one queued location
+
+When a skip statement is executed:
+- All remaining ability execution at the current location is immediately terminated
+- Any exit abilities for the current location type are bypassed
+- The walker immediately updates its position: $L(w) \leftarrow \text{dequeue}(Q_w)$
+- Normal entry ability execution begins at the new location following the established order:
+  - First, relevant location entry abilities for the arriving walker type
+  - Next, relevant walker entry abilities for the location type
+
+The skip statement is analogous to the *continue* statement in traditional loop constructs, allowing the walker to abort processing at the current location while continuing its overall traversal. This enables efficient implementation of conditional processing logic where certain nodes or edges might be examined but not fully processed based on their properties or the walker's state, providing fine-grained control over the distributed computation process.
+
+**Disengage Statement**
+
+The **disengage** statement allows a walker to immediately terminate its entire object-spatial traversal and return to an inactive object state:
+
+$$\text{disengage}(w) \Rightarrow L(w) \leftarrow \emptyset, Q_w \leftarrow []$$
+
+where:
+- $w$ is the active walker instance with current location $L(w) \in N \cup E$
+
+When a disengage statement is executed:
+- All remaining ability execution at the current location is immediately terminated
+- Any exit abilities for the current location type are bypassed
+- The walker's traversal queue is cleared: $Q_w \leftarrow []$
+- The walker's location is set to inactive: $L(w) \leftarrow \emptyset$
+- The walker transitions from an active participant in the distributed computational system to an inactive object
+- The walker retains all its properties and data accumulated during traversal
+
+The disengage statement is analogous to the *break* statement in traditional loop constructs, allowing the walker to completely exit the object-spatial execution context. This enables early termination of traversals when certain conditions are met, such as finding a target node, completing a computation, or encountering an error condition.
+
+Together with the visit statement, these flow control statements provide essential mechanisms for implementing complex traversal algorithms where the path and processing logic may adapt dynamically based on discovered data or computed conditions within the topological structure. They offer precise control over both the walker's movement through the topology and its participation in the distributed computational process that characterizes the OSP model.
+
+## Implementation Considerations
+
+A practical implementation of the Object-Spatial Programming model must address several important concerns that collectively guide the development of concrete OSP implementations in various programming languages. By addressing these aspects systematically, we can ensure that the theoretical OSP model translates into practical, efficient, and usable programming tools that effectively leverage the paradigm shift from moving data to computation to moving computation to data.
+
+### Type Safety
+The archetype system should be integrated with the host language's type system to ensure that object-spatial constraints (such as walker traversal rules) are checked at compile time when possible. This integration enables early detection of topology violations and provides developers with immediate feedback about invalid traversal patterns.
+
+### Concurrency
+In multi-walker scenarios, access to shared node and edge data must be properly synchronized to prevent race conditions. Implementations may adopt various concurrency models, from simple locking mechanisms to more sophisticated actor-based approaches. The "computation moves to data" paradigm creates new challenges and opportunities for parallel execution models, particularly when multiple walkers operate on overlapping sections of the topological structure.
+
+### Efficiency
+Naive implementations of walker traversal could lead to performance issues in large topological structures. Optimizations such as object-spatial indexing, traversal path caching, or parallel walker execution may be necessary for practical applications. The performance characteristics of mobile computation differ from traditional models and may require specialized optimization techniques, particularly for applications with complex traversal patterns or large data structures.
+
+### Integration
+OSP should be designed to complement rather than replace existing OOP mechanisms, allowing for gradual adoption and integration with legacy codebases. Hybrid approaches may be needed to bridge the paradigm gap between conventional data-to-computation models and OSP's computation-to-data approach. This enables incremental migration of existing systems toward object-spatial programming patterns while preserving investment in existing code.
+
+### Walker State Management
+The multi-state nature of walkers (as standard objects, active on nodes, or active on edges) requires careful state management to ensure consistency between these modes of operation, particularly when transitioning between states via spawn and disengage operations. Implementations must guarantee that walker state remains coherent throughout traversal operations and across transitions between active and inactive states.
+
+### Entry/Exit Ability Optimization
+Implementations should efficiently dispatch entry and exit abilities to minimize overhead during traversal operations, particularly in performance-critical applications. The implicit execution model of abilities requires careful design to maintain predictable performance characteristics. Techniques such as ability caching, ahead-of-time compilation, or just-in-time optimization may be necessary for high-performance systems.
+
+### Edge Transition Management
+The automatic queuing of edge destination nodes requires efficient handling of traversal queues and execution contexts to maintain predictable walker flow through the topological structure. This includes optimizing the mechanisms for determining the appropriate destination node based on traversal direction and managing the lifecycle of edge-bound computational processes.
+
+### Flow Control Semantics
+Implementations must handle visit, skip, and disengage statements efficiently, ensuring proper cleanup of execution contexts and maintaining the integrity of the walker's state during these control flow transitions. This is particularly important for complex traversal patterns where walkers may dynamically alter their paths based on discovered data or computational results.
+
+### Data Locality and Caching
+The computation-to-data paradigm can potentially improve data locality and cache efficiency compared to traditional approaches, but implementations must be designed to fully exploit these advantages, particularly when walkers traverse both nodes and edges. Memory layout strategies that co-locate related nodes and edges can significantly improve performance by reducing cache misses during traversal operations.
+
+
+# <span style="color: orange">Nodes and Edges</span>
+
+## Nodes
+Nodes are archetypes forming part of a graph, holding properties. They can be compared to custom classes in object-oriented programming (OOP).
+
+```jac linenums="1"
+node node_name{
+    has node_property: int;
+}
+node node_name{
+    has node_property: int = 10;
+}
+```
+
+### Custom Node Types
+- You can define custom node types to create specific instances within the graph.
+- Each node can have `attributes` (like fields in a class) and `abilities` (similar to methods in OOP).
+
+### Abilities in Nodes
+- **Callable Abilities:** They are similar to standard methods in OOP. Inside any ability, the node can refer to itself using the `self` keyword, much like in OOP.
+
+- **Visit-dependent Abilities:** These abilities are only triggered when a specific type of "walker" (discussed later) interacts with the node. This ensures that certain actions are performed only in response to a walker's visit. In these abilities, a special keyword `here` is used to reference the visiting walker. This allows you to access the walker's attributes and abilities directly during its interaction with the node.
+
+- This is an example of defining a node.
+```jac linenums="1"
+node test_node {
+    has value: int;
+
+    can log_entry with entry {
+        print(f">>> Some Walker entered the node: ", self);
+    }
+    can log_test_walker_entry with test_walker entry {
+        print(f">>> {here} entered the node {self}");
+        here.callable();
+    }
+    can log_test_walker_exit with test_walker exit {
+        print(f"<<< {here} exited the node {self}");
+    }
+    can log_exit with exit {
+        print(f"<<< Some Walker exited the node {self}");
+    }
+    def callable {
+        print(f"===== Callable on {self}");
+    }
+}
+```
+
+### Connecting Nodes
+Nodes in JacLang can establish connections in various ways, offering flexibility for building complex graphs:
+
+- **One-to-One**: A single node connects to another single node.
+- **One-to-Many**: A single node connects to multiple nodes.
+- **Many-to-One**: Multiple nodes connect to a single node.
+- **Many-to-Many**: A group of nodes connects to another group of nodes.
+
+This versatility allows for creating intricate and highly interconnected graph structures, tailored to the specific needs of your application.
+=== "one2one.jac"
+    ```jac linenums="1"
+    node MyNode{}
+
+    with entry{
+    first_node = MyNode();
+    second_node = MyNode();
+
+    root ++> first_node;
+    first_node ++> second_node;
+
+    }
+    ```
+    ??? example "Graph"
+        ```mermaid
+        flowchart LR
+        0 --> 1
+        1 --> 2
+        0["Root()"]
+        1["MyNode()"]
+        2["MyNode()"]
+        ```
+=== "one2many.jac"
+    ```jac linenums="1"
+    node MyNode{}
+
+    with entry{
+    first_node = MyNode();
+    second_tier = [MyNode() for i in range(2)];
+
+    root ++> first_node;
+    first_node ++> second_tier; # one to many
+
+    }
+    ```
+    ??? example "Graph"
+        ```mermaid
+        flowchart LR
+        0 --> 1
+        1 --> 2
+        1 --> 3
+        0["Root()"]
+        1["MyNode()"]
+        2["MyNode()"]
+        3["MyNode()"]
+        ```
+=== "many2one.jac"
+    ```jac linenums="1"
+    node MyNode{}
+
+    with entry{
+    first_tier = [MyNode() for i in range(2)];
+    second_node = MyNode();
+    root ++> first_tier;
+    first_tier ++> second_node; # many to one
+
+    }
+    ```
+    ??? example "Graph"
+        ```mermaid
+        flowchart LR
+        0 --> 1
+        1 --> 2
+        3 --> 2
+        0 --> 3
+        0["Root()"]
+        1["MyNode()"]
+        2["MyNode()"]
+        3["MyNode()"]
+        ```
+=== "many2many.jac"
+    ```jac linenums="1"
+    node MyNode{}
+
+    with entry{
+        first_tier =[MyNode() for i in range(2)];
+        second_tier =[MyNode() for i in range(2)];
+
+        root ++> first_tier;
+        first_tier ++> second_tier;
+
+        end_tier = MyNode();
+        second_tier ++> end_tier;
+    }
+    ```
+    ??? example "Graph"
+        ```mermaid
+        flowchart LR
+        0 --> 1
+        1 --> 2
+        3 --> 2
+        0 --> 3
+        3 --> 4
+        1 --> 4
+        4 --> 5
+        2 --> 5
+        0["Root()"]
+        1["MyNode()"]
+        2["MyNode()"]
+        3["MyNode()"]
+        4["MyNode()"]
+        5["MyNode()"]
+        ```
+
+## Edges
+Nodes can be linked using either *default edges* (generic connections) or *custom edges*, which have specific properties as shown in the following examples.
+=== "Generic Edges"
+    ```jac linenums="1"
+    with entry {
+      node_1 ++> node_2; # uni directional edge
+      node_1 <++> node_2; # bidirectional edge
+    }
+    ```
+=== "Custom Edges"
+    ```jac linenums="1"
+    edge custom1 {
+        has atrib1:str;
+    }
+
+    with entry {
+      node_1 +:custom1:atrib1='val1':+> node_2; # uni directional edge
+      node_1 <+:custom1:atrib1='val2':+> node_2; # bidirectional edge
+    }
+    ```
+
+To delete an edge between two nodes the ````del``` keyword can be used as shown below.
+
+```jac linenums="1"
+node_1 del --> node_2;
+```
+
+# <span style="color: orange">Walkers</span>
+Walkers are "worker bots" that move (walk) along the graph while performing tasks on the nodes they visit.
+
+They play a crucial role in executing visit-dependent abilities as discussed in nodes and facilitating interactions between graph nodes and themselves.
+
+## Spawning a Walker
+A walker can be spawned at any point on the graph with the ```spawn``` keyword.
+
+=== "Jac"
+    <div class="code-block">
+    ```jac
+    --8<-- "jac/examples/data_spatial/define_walker.jac"
+    ```
+    </div>
+??? example "Graph"
+    ```mermaid
+    flowchart LR
+    0 -->|"a()"| 1
+    1 -->|"a()"| 2
+    2 -->|"a()"| 3
+    1 -->|"a()"| 4
+    4 -->|"a()"| 5
+    0["Root()"]
+    1["A(val=5)"]
+    2["A(val=10)"]
+    3["A(val=15)"]
+    4["A(val=20)"]
+    5["A(val=25)"]
+    ```
+
+## Graph Traversal Using Visit
+Walkers navigate the graph using the ```visit``` keyword.
+=== "visiting_node.jac"
+    ```jac linenums="1"
+    visit [node_name]; # Visits a particular node
+    ```
+=== "visiting_sucessor.jac"
+    ```jac linenums="1"
+    visit [node_name-->]; # Visits successive nodes of a node
+    ```
+=== "visiting_predecessor.jac"
+    ```jac linenums="1"
+    visit [<--node_name]; # Visits predecessor nodes of a node
+    ```
+## Attributes & Abilities
+- Similar to nodes, walkers can have their own attributes and abilities including both callable and visit-dependent abilities.
+
+- **Visit-dependent Abilities:**
+    - Ensures the ability is executed only when the walker visits a node.
+    - Can be defined within:
+        - **Nodes:** Triggered upon a walker's arrival.
+        - **Walkers:**  Specific to the walker’s operation during its visit.
+## Reference Keywords:
+- ```self``` : Refers to the walker object itself.
+- ```here```: References the current node visited by the walker, enabling access to its attributes and callable abilities.
+    This allows seamless interaction between walker and node attributes.
+
+- Control Movement:
+    - Use ```visit``` to:
+        - Direct the walker to a specific node.
+        - Walk along an edge connecting nodes.
+
+- Remove Walkers:
+    - Use ```disengage``` to remove a walker from the graph.
+
+## Walkers in Action:
+- Walkers prioritize their visit-dependent abilities first before executing the abilities of the visited node.
+- This enables flexible task delegation:
+    - Define visit-dependent tasks either within the walker or in the node.
+
+By using these principles, walkers can efficiently traverse and interact with graphs, enabling dynamic workflows.
+
+### Example:
+=== "Jac"
+    <div class="code-block">
+    ```jac
+    --8<-- "jac/examples/data_spatial/ds_entry_exit.jac"
+    ```
+    </div>
+
+!!! Abstract  "can log_entry with entry"
+    -  This ability is triggered once when the walker is spawned. It is essentially the "entry point" of the walker’s operation.
+    In the example, it logs the entry at the beginning, increments entry_count by 1, and prints the node where the walker starts (in this case, the root node).
+    !!! Info ""
+        - This DS function is called once at the beginning of the walker’s traversal before visiting any nodes.
+
+!!! Abstract "can log_visit with test_node exit"
+    - This ability is executed each time the walker visits a node of type test_node during its traversal.
+    In the example, whenever the walker visits a test_node, it prints the node and appends the node to visited_nodes.
+    !!! Info ""
+        - This DS function operates during traversal and is called on each node of type test_node the walker visits.
+
+!!! Abstract "can log_exit with exit"
+    - This ability is triggered once when the walker finishes its traversal, marking the end of its operation.
+    In the example, it logs the exit point, increments exit_count by 1, and prints the final node visited.
+    !!! Info ""
+        - This DS function is executed at the end of the walker's execution, after all nodes have been visited.
+
+
+# Node and Edge Filtering
+
+JacLang provides flexible filtering mechanisms to control graph traversal and operations, allowing precise selection of nodes and edges based on specific criteria. These filters enable developers to optimize traversal and focus only on relevant parts of the graph.
+
+---
+
+## Node-Based Filtering
+
+Node-based filtering restricts traversal to specific nodes that satisfy predefined conditions. This is useful when you need to:
+
+- Limit traversal to nodes with certain attributes or properties.
+- Filter nodes dynamically based on walker state or external context.
+
+### Example:
+
+We can filter specific types of nodes from a list of visitable nodes based on their type, and further apply conditions on node attributes to refine the results.
+=== "Jac"
+    <div class="code-block">
+    ```jac
+    --8<-- "jac/examples/data_spatial/filtering.jac"
+    ```
+    </div>
+??? example "Graph"
+    ```mermaid
+    flowchart LR
+    0 -->|"a()"| 1
+    1 -->|"b()"| 2
+    2 -->|"c()"| 3
+    2 -->|"c()"| 4
+    5 -->|"a()"| 4
+    1 -->|"b()"| 5
+    0["Root()"]
+    1["A(val=5)"]
+    2["B(val=10)"]
+    3["C(val=15)"]
+    4["C(val=25)"]
+    5["A(val=20)"]
+    ```
+
+## Edge-Based Filtering
+
+Edge filtering in JacLang allows developers to control traversal by selecting edges based on specific attributes or conditions. This is especially useful in scenarios where certain edges in the graph are more relevant to the task at hand, such as weighted graphs or context-sensitive connections.
+
+---
+
+### Example:
+We can filter nodes based on specific edge attributes, such as filtering by edge values to retrieve a subset of connected nodes.
+=== "Jac"
+    <div class="code-block">
+    ```jac
+    --8<-- "jac/examples/data_spatial/edge_filtering.jac"
+    ```
+    </div>
+
+??? example "Graph"
+    ```mermaid
+    flowchart LR
+    0 -->|"a(val=10)"| 1
+    0 -->|"a(val=20)"| 2
+    0 -->|"b(val=30)"| 3
+    0["Root()"]
+    1["A(val=10)"]
+    2["A(val=20)"]
+    3["A(val=30)"]
+    ```
+
+# Walker and Node ability trigger sequence
+
+<div class="code-block">
+```jac
+node Node {
+    has val: str;
+
+    can entry1 with entry {
+        print(f"{self.val}-2");
+    }
+
+    can entry2 with Walker entry {
+        print(f"{self.val}-3");
+    }
+
+    can exit1 with Walker exit {
+        print(f"{self.val}-4");
+    }
+
+    can exit2 with exit {
+        print(f"{self.val}-5");
+    }
+}
+
+walker Walker {
+    can entry1 with entry {
+        print("walker entry");
+    }
+
+    can entry2 with `root entry {
+        print("walker enter to root");
+        visit [-->];
+    }
+
+    can entry3 with Node entry {
+        print(f"{here.val}-1");
+    }
+
+    can exit1 with Node exit {
+        print(f"{here.val}-6");
+    }
+
+    can exit2 with exit {
+        print("walker exit");
+    }
+}
+
+with entry{
+    root ++> Node(val = "a");
+    root ++> Node(val = "b");
+    root ++> Node(val = "c");
+
+    Walker() spawn root;
+}
+```
+</div>
+
+<!-- <a id="define-node-question" style="display: none;"></a> -->
+??? question "What is node and how to define a node?"
+    - Nodes are archetypes forming part of a graph, holding properties. You can define nodes with attributes and values:
+    ```jac
+      node node_name{
+          has node_property: int;
+      }
+      node node_name{
+          has node_property: int = 10;
+      }
+    ```
+
+??? question "How to delete a node? "
+    - You can delete a node using:
+    ```jac
+        del node_name;
+    ```
+
+??? question "How to connect two nodes?"
+    - Nodes can be connected with generic edges (default) or custom edges (defined with specific properties).
+    ```jac
+      node_1 ++> node_2; # uni directional edge
+      node_1 <++> node_2; # bidirectional edge
+    ```
+
+??? question "What is custom edge?"
+    - Custom edges allow defining specific properties and behaviors for relationships between nodes
+    ```jac
+      edge edge_name{
+          has edge_property: int = 10;
+      }
+    ```
+
+??? question "How to connect nodes with custom edge?"
+    - Nodes can be connected with a custom edge as follows:
+    ```jac
+      node_1 +: edge_name :+> node_2;
+      node_1 +: edge_name :edge_property= 15: +> node_2; # connect with specific property value
+    ```
+
+??? question "How to delete connection or edge between two nodes?"
+    - To delete a connection between nodes:
+    ```jac
+      node_1 del --> node_2;
+    ```
+
+??? question "What is walker and how to define a walker?"
+    - A walker is an archetype that performs actions within the graph. It can traverse nodes through edges, performing operations at each step.
+    ```jac
+    walker walker_name {
+      can walker_ability with `specific_node entry;
+    }
+    ```
+
+??? question "How to visit all the Successor nodes of a node/ list of nodes?"
+    - A walker can visit all successor nodes (directly connected nodes):
+      ```jac
+          visit [node_name -->];
+      ```
+
+??? question "How to get all the Successor nodes of a node/ list of nodes?"
+    -  To retrieve all the successor nodes:
+      ```jac
+          print([node_name -->]);
+      ```
+
+??? question "How to get all edges that is connected with a node?"
+    - You can retrieve all the edges connected to a node by using edge filtering expressions.
+    ```jac
+        print([edge node_a-->]);
+        print([edge node_a<--]);
+        print([edge node_list[0]-->]);
+    ```
+
+??? question "How to get all edges that is connected between two nodes?"
+    - To get all edges between two nodes:
+    ```jac
+        print([edge node_1-->node_2]);
+        print([edge node_list[0]-->node_list[1]]);
+
+    ```
+
+??? question "How do I connect a list of nodes to a single node, either in series or parallel?"
+    - You can connect a list of nodes to a single node in both series (one after the other) or in parallel (all at once):
+    ```jac
+        # Series connection (one after the other)
+        node_1 ++> node_list[0];
+        for i to i < length(node_list) by i+=1 {
+            node_list[i] ++> node_list[i+1];
+        }
+
+        # Parallel connection (all at once)
+        node_1 ++> node_list;
+    ```
+
+??? question "How do I create a mesh connection between two lists of nodes?"
+    - A mesh connection between two lists of nodes can be established, connecting each node in the first list to each node in the second list:
+    ```jac
+        node_list_1 ++> node_list_2;
+    ```
+
+??? question "How to spawn a walker from root?"
+    - You can spawn a walker from a specific node or root:
+    ```jac
+        with entry {
+          root spawn walker_name();
+        }
+    ```
+
+??? question "How to setup special ability for a entry through a given node or root?"
+    - You can set up special abilities for root or specific node entries in walkers:
+    ```jac
+        # Entry through root
+        walker  walker_name {
+          can walker_ability with `root entry;
+        }
+        # Entry through a given node
+        walker  walker_name {
+          can walker_ability with specific_node entry;
+        }
+        # Entry through root or a given node
+        walker  walker_name {
+          can walker_ability with `root | specific_node entry;
+        }
+    ```
+
+??? question "How to set up special Object-Spatial abilities for a `root` or specific node entry in a walker?"
+    - Walkers can have special DS abilities triggered through the `root` or a specific node. You can define such abilities based on where the walker starts its traversal:
+    ```jac
+        # Ability entry through the root
+        walker walker_name {
+          can walker_ability with `root entry;
+        }
+
+        # Ability entry through a specific node
+        walker walker_name {
+          can walker_ability with specific_node entry;
+        }
+
+        # Ability entry through either root or a specific node
+        walker walker_name {
+          can walker_ability with `root | specific_node entry;
+        }
+    ```
+    - This allows you to specify different behavior depending on whether the walker enters the DS ability from the root or a particular node, or both.
+
+??? question "What happens when using `can ability_name with entry` in a walker?"
+
+    - The ability_name ability is called once at the start of the walker’s lifecycle. It is triggered when the walker is first spawned and acts as the initial entry point.
+    - Key Point: This is executed only once at the beginning of the walker’s execution.
+        jac
+
+??? question "How to setup special ability of a node for a certain walker?"
+    - You can setup special ability of a node for a certain walker using:
+    ```jac
+        node  node_name {
+          can node_ability with walker_name entry;
+        }
+    ```
+
+??? question "How can I access the current node instance in DS abilities of a walker?"
+    - Current walker instance can be accessed using the `here` keyword within Object-Spatial abilities of the node.
+    ```jac
+    walker walker_name {
+
+        can log_visit with test_node entry{
+            print("Visiting node : ", here);
+        }
+    }
+    ```
+
+??? question "How to access the current walker inside DS abilities of a node?"
+    - You can access the current walker instance inside Object-Spatial abilities of a node using the `self` keyword.
+    ```jac
+    node node_name {
+        can node_ability with walker_name entry{
+            print("Current walker : ", here);
+        }
+    }
+    ```
+??? question "How to access the current walker inside DS abilities of the current walker?"
+    - You can access the current walker instance inside Object-Spatial abilities of the current walker using the `self` keyword.
+    ```jac
+    walker walker_name {
+        can walker_ability with node_name entry{
+            print("Current walker : ", self);
+        }
+    }
+    ```
+
+??? question "How to inherit walker?"
+    - Walkers can inherit from other walkers and override their abilities:
+    ```jac
+        walker walker_1{
+        }
+        walker walker_2 : walker_1:{
+        }
+    ```
+
+??? question "How to override walker ability?"
+    - To override a walker’s ability:
+    ```jac
+        walker walker_1{
+          can ability_1 with `root entry{
+              print("write");
+          }
+        }
+        walker walker_2 : walker_1:{
+          override can ability_1 with `root entry{
+              print("override");
+          }
+        }
+    ```
+
+??? question "How to filter nodes based on conditions?"
+    - You can filter nodes by their type or properties when traversing the graph using filters like `(?Type)` or attribute conditions.
+    ```jac
+    print([root --> -:edge_type:-> (`?NodeType)]);
+    print([root --> -:edge_type:-> (`?NodeType)](?attribute > value));
+    ```
+
+??? question "How do I traverse nodes in JacLang?"
+    - You can traverse nodes using the visit operation, which allows you to move from one node to another along edges.
+    ```jac
+    visit [node_a -->];
+    ```
+
+??? question "Can I visualize my graph in JacLang?"
+    - Yes, you can visualize your graph using built-in function `printgraph`.
+    ```jac
+    node a{
+        has val:int;
+    }
+    with entry{
+        end=root;
+        for i in range(0,4){
+            end++>(end:=[a(val=i) for i in range(0,3)]);
+        }
+        print(printgraph());  # Generates a DOT graph starting from the root node
+    }
+    ```
+
+??? question "How to customize the visualization of the graph?"
+    - You can use various parameters such as staring node,  depth, edge limit, node limit, and more to customize the output of `printgraph`. For example:
+    ```jac
+    print(printgraph(node_1, bfs=True, traverse=True, edge_type=["Edge1"], node_limit=100, edge_limit=900, depth=300, dot_file='graph.dot'));
+    ```
+
+??? question "What is BFS traversal in `printgraph`?"
+    - By default, `printgraph` uses breadth-first search (BFS) to explore nodes. This can be controlled with the `bfs` flag.
+
+??? question "Can I export the graph visualization to a file?"
+    - Yes, you can specify a `dot_file` to save the output in a `.dot` file, which can be rendered using external graph visualization tools like Graphviz.
+
+??? question "Can I exclude specific edge types from the visualization?"
+    - Yes, using the `edge_type` parameter, you can exclude specific edge types from the visualization:
+    ```jac
+    print(printgraph(node_1, edge_type=["CustomEdge"]));
+    ```
+
+??? question " What parameters can I use with `printgraph`?"
+
+    1. **Starting Node**:
+    The node from where graph traversal or visualization begins.
+    **Default**: Root.
+
+    2. **Depth**:
+    Limits how deep the traversal should go in the graph.
+    **Default**: Infinity.
+
+    3. **Edge Limit**:
+    Sets a cap on the number of edges to include in the visualization.
+    **Default**: 512.
+
+    4. **Node Limit**:
+    Specifies the maximum number of nodes to include.
+    **Default**: 512.
+
+    5. **BFS**:
+    Enables Breadth-First Search (BFS) for node traversal.
+    **Default**: True.
+
+    6. **Edge Type**:
+    Option to exclude specific edge types from the visualization.
+    **Default**: An empty list (i.e., no exclusion).
+
+    7. **dot_file**:
+    Optional parameter to specify a file name for saving the DOT graph output. If provided, the visualization will be saved in this file.
+
+??? question " How can I generate and visualize a graph from a `.jac` file using the CLI?"
+    - You can use the `jac dot` command to generate a graph visualization from a `.jac` file. This command allows you to specify various options like depth, breadth traversal method, connection types, and node/edge limits. The generated graph is saved as a DOT file, which you can use with visualization tools like Graphviz.
+    ```bash
+    jac dot filename.jac
+    ```
+
+    - You can specify an initial node and limit the traversal depth:
+    ```bash
+    jac dot filename.jac --initial "StartNode" --depth 3
+    ```
+
+    - You can use the following file to customize the visualization:
+        ```jac
+        node a{
+            has val:int;
+        }
+        with entry{
+            x=[a(val=i) for i in range(0,3)];
+            end=x[1];
+            for i in range(0,8){
+                locals()[chr(ord('b') + i)] = (values:=[a(val=j*i+5.2*i+6) for j in range(0,3)]);
+                end ++> (end:=values);
+            }
+        }
+        ```
+
+??? question "What parameters can I use with the jac dot command?"
+
+    - filename: The .jac file containing the graph definition.
+    - initial: The initial node for traversal (default is root).
+    - depth: The maximum depth for traversal (-1 for unlimited).
+    - traverse: Flag to traverse the graph (False by default).
+    - connection: List of edge types to include.
+    - bfs: Use Breadth-First Search for traversal (False by default).
+    - edge_limit: Maximum number of edges (512 by default).
+    - node_limit: Maximum number of nodes (512 by default).
+    - saveto: Specify a file path to save the generated DOT file.
+
+    ```jac
+    jac dot filename.jac --initial "StartNode" --depth 3 --traverse --connection "EdgeType1" --bfs --edge_limit 1000 --node_limit 1000 --saveto "output.dot"
+    ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
