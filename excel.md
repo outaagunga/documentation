@@ -2104,6 +2104,19 @@ Do you want me to also prepare a **ready-made Excel dashboard template** (pre-bu
 
 
 
+Timestamp	Student name	Which of these traditional foods do you enjoy? (Select all that apply)
+45927.75263	James Mwai	Roast maize, Fermented milk (mursik or similar), Sweet potatoes
+45927.75539	Emily Ngau	African tea
+45927.78441	Margaret Nyambura Wanjiku	Roast maize, Fermented milk (mursik or similar), African tea, Porridge
+45927.81453	Cate Wanjiru	Roast maize, African tea, Sweet potatoes
+45927.84148	Peninah Wanjiru	Roast maize, Brown ugali and traditional greens, Fermented milk (mursik or similar), Porridge, Sweet potatoes
+45929.32767	Nancy A.	Roast maize, African tea, Porridge, Sweet potatoes
+45930.37555	Emmanuel Petit	Roast maize, Brown ugali and traditional greens, Porridge, Sweet potatoes
+45930.46314	Rozzie Nicole	Roast maize, Sweet potatoes
+45930.51234	David Otieno	African tea, Brown ugali and traditional greens
+45930.61829	Susan Achieng	Roast maize, Fermented milk (mursik or similar), Porridge
+45930.72145	Mary Wekesa	Sweet potatoes, African tea
+<img width="981" height="241" alt="image" src="https://github.com/user-attachments/assets/81cf5598-c919-4af7-b361-b8e82de2c8b8" />
 
 
 Timestamp	Student name	Which of these traditional foods do you enjoy? (Select all that apply)
