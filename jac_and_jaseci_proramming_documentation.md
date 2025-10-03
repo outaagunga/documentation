@@ -21821,7 +21821,65 @@ with entry{
     jac dot filename.jac --initial "StartNode" --depth 3 --traverse --connection "EdgeType1" --bfs --edge_limit 1000 --node_limit 1000 --saveto "output.dot"
     ```
 
+## Addtional examples
 
+Based on the image you provided, here is the extracted code:
+
+```
+#these are classes with wings
+node Person {
+    has name: str;
+}
+edge Friend {}
+edge Family {}
+
+with entry {
+    p1 = Person(name="Jason");
+    p2 = Person(name="Loggee");
+    
+    root ++> p1;
+    p1 +>:Friend:> p2;
+    root ++> p2;
+    
+    print(p1.name, p2.name);
+    print([[root -->]]);
+}
+```
+
+Based on the image you provided, here is the extracted code, including the context from the previous image's structure for completeness where it seems to continue:
+
+```
+with entry {
+    p2 = Person(name="Susan");
+    
+    root ++> p1;
+    p1 +>:Friend:> p2;
+}
+
+#This is also a class
+walker FriendFinder {
+    has started: bool = False;
+    
+    # this is a special method (ability)
+    can report_friend with Person entry {
+        if self.started {
+            print(f"{here.name} is a friend");
+        } else {
+            self.started=True;
+            visit [here -->];
+        }
+    }
+    
+    can move with 'root entry {
+        visit [[-->]];
+    }
+}
+
+with entry {
+    result=FriendFinder() spawn root;
+    print(result);
+}
+```
 
 
 
