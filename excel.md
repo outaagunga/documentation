@@ -2101,3 +2101,152 @@ We’ll build 5 KPIs: Headcount, Avg Salary, Gender Ratio, Payroll Cost, Avg Ten
 ---
 
 Do you want me to also prepare a **ready-made Excel dashboard template** (pre-built with PivotTables, slicers, and KPIs) so you just plug in your data and it updates automatically?
+
+
+
+
+
+Timestamp	Student name	Which of these traditional foods do you enjoy? (Select all that apply)
+45927.75263	James Mwai	Roast maize, Fermented milk (mursik or similar), Sweet potatoes
+45927.75539	Emily Ngau	African tea
+45927.78441	Margaret Nyambura Wanjiku	Roast maize, Fermented milk (mursik or similar), African tea, Porridge
+45927.81453	Cate Wanjiru	Roast maize, African tea, Sweet potatoes
+45927.84148	Peninah Wanjiru	Roast maize, Brown ugali and traditional greens, Fermented milk (mursik or similar), Porridge, Sweet potatoes
+45929.32767	Nancy A.	Roast maize, African tea, Porridge, Sweet potatoes
+45930.37555	Emmanuel Petit	Roast maize, Brown ugali and traditional greens, Porridge, Sweet potatoes
+
+
+
+# Do-It-Along Guide: Visualizing Traditional Food Preferences
+
+You already have the data (`traditional_foods_responses.xls`). Follow these **exact steps**:
+
+---
+
+## 1. Open & Prepare Data
+
+1. Open the Excel file.
+2. Check: each student’s name is in one column, and their chosen foods are listed in another column (comma-separated).
+
+We’ll create **helper columns** (one per food) with 1 = liked, 0 = not liked.
+
+---
+
+## 2. Create Helper Columns
+
+1. In row 1, add headers:
+
+   * Roast Maize | Brown Ugali | Fermented Milk | African Tea | Porridge | Sweet Potatoes
+
+2. In row 2 (Roast Maize column), type this formula:
+
+   ```
+   =IF(ISNUMBER(SEARCH("Roast maize",$B2)),1,0)
+   ```
+
+   → Copy this down the whole column.
+
+3. Do the same for each food (change the word inside `"..."`).
+   Example for African Tea:
+
+   ```
+   =IF(ISNUMBER(SEARCH("African tea",$B2)),1,0)
+   ```
+
+Checkpoint ✅: You should now see **1s and 0s** filling under each food column.
+
+---
+
+## 3. Count Likes
+
+At the bottom of each column (say row 25), use:
+
+```
+=SUM(C2:C21)
+```
+
+(replace `C2:C21` with the actual column range).
+
+Now you have the number of students who like each food.
+
+---
+
+## 4. Make Charts
+
+### (a) Bar Chart
+
+1. Copy the totals into a small summary table:
+
+   ```
+   Food              Count
+   Roast Maize       X
+   Brown Ugali       X
+   Fermented Milk    X
+   African Tea       X
+   Porridge          X
+   Sweet Potatoes    X
+   ```
+2. Select this table → Insert → Column Chart (Bar).
+
+---
+
+### (b) Pie Chart
+
+1. With the same summary table, Insert → Pie Chart.
+2. Right-click → Add Data Labels → Show Percentage.
+
+---
+
+### (c) Venn Diagram (Overlap)
+
+Excel doesn’t have built-in Venns, so do this:
+
+1. Decide 3 foods to compare (e.g., African Tea, Brown Ugali, Fermented Milk).
+2. Use formulas to count overlaps. Example:
+
+   * Tea + Ugali:
+
+     ```
+     =COUNTIFS(F2:F21,1,D2:D21,1)
+     ```
+   * Tea + Milk:
+
+     ```
+     =COUNTIFS(F2:F21,1,E2:E21,1)
+     ```
+   * All three:
+
+     ```
+     =COUNTIFS(F2:F21,1,D2:D21,1,E2:E21,1)
+     ```
+3. Open PowerPoint → Insert → 3 circles → overlap them → type your numbers inside.
+
+---
+
+## 5. Write Summary
+
+At the bottom of your sheet or in Word, write 3–4 sentences:
+
+**Example template:**
+“Out of 20 students, African tea was the most popular (16 students). Brown ugali came second (14) and porridge was least popular (6). Many students enjoyed both tea and ugali (7 overlaps). Only 3 students liked all six foods, showing varied preferences.”
+
+---
+
+## 6. Save & Submit
+
+* Save charts as images or keep inside Excel.
+* Put them plus your summary into a Word file called `Takeaway_Task.docx`.
+
+Done ✅
+
+
+
+
+
+
+
+
+
+
+
+
