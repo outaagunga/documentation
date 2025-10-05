@@ -1,4 +1,4 @@
-
+## Employees fake data
 ```python
 # import the libraries we need
 from faker import Faker
@@ -37,6 +37,54 @@ data.to_csv("employees.csv", index=False)
 data.to_excel("employees.xlsx", index=False)
 ```
 
+## Survey fake data- survey on financial literacy  
+```python
+# import the libraries we need
+from faker import Faker
+import pandas as pd
+
+# create an instance of Faker
+fake = Faker(locale='en_US')
+
+# Let's create a function
+def create_surveydata(num_surveydata):
+    # Let's create an empty list to add our surveydata dictionaries
+    surveydata_list = []
+    
+    # Let's create an surveydata dictionary
+    for i in range(num_surveydata):   # ensures we get exactly num_surveydata
+        surveydata = {}
+        surveydata['consent'] = fake.random_element(elements=("Yes, I consent", "No, I don't consent"))
+        surveydata['age'] = fake.random_int(min=20, max=34)
+        surveydata['gender'] = fake.random_element(elements=("Male", "Female", "Prefer not to say"))
+        surveydata['residential'] = fake.random_element(elements=("Urban", "Rural"))
+        surveydata['interest_knowledge'] = fake.random_element(elements=("1100", "1110", "1010", "I don't know"))
+        surveydata['saving_knowledge'] = fake.random_element(elements=("Saving Account", "Stock Market", "They are the same", "I don't know"))
+        surveydata['inflation_knowledge'] = fake.random_element(elements=("Prices of goods and services are rising", "Prices of goods and services are falling", "The value of money stays the same", "I don't know"))
+        surveydata['personal_savings'] = fake.random_element(elements=("Yes", "No"))
+        surveydata['where_saving'] = fake.random_element(elements=("Bank Account", "E-wallet e.g M-Pesa", "Chama", "Sacco", "Other"))
+        surveydata['mobile_loan'] = fake.random_element(elements=("Yes, regularly", "Yes, occassionally", "No, I never"))
+        surveydata['creating_budget'] = fake.random_element(elements=("Always", "Sometimes", "Rarely", "Never"))
+        surveydata['financial_stress'] = fake.random_int(min=1, max=5)
+        surveydata['financial_management_confidence'] = fake.random_int(min=1, max=5)
+        surveydata['worrying_on_school_expenses'] = fake.random_element(elements=("Often", "Sometimes", "Rarely", "Never"))
+
+
+        surveydata_list.append(surveydata)
+    
+    return pd.DataFrame(surveydata_list)
+
+# Generate fake survey data
+data = create_surveydata(300)
+
+# Save to CSV
+data.to_csv("surveydata.csv", index=False)
+
+```
+
+
+
+---
 ## Guide into generating fake Data with python Faker library (step‑by‑step)
 
 **Goal:** Walk through creating a small Python project that generates fake employee data (CSV and optional Excel). You'll start from creating the project folder, set up a virtual environment, install the libraries, then write and run a robust script that supports both in‑memory generation (for small/medium datasets) and chunked generation (for large datasets).
