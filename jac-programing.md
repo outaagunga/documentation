@@ -1,7 +1,7 @@
 
-Got it ✅ — you want a **complete learning roadmap** for Jac programming, starting from beginner → intermediate → advanced, with *nothing left out*.
+**complete learning roadmap** for Jac programming, starting from beginner → intermediate → advanced, with *nothing left out*.
 
-Here’s the structured **outline of what you should learn in order**, covering all the essentials of Jac and the Jaseci stack:
+Here’s the structured **outline of what you should learn in order**, covering everything in Jac and the Jaseci stack:
 
 ---
 
