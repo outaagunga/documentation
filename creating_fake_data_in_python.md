@@ -1,4 +1,4 @@
-## Employees fake data
+## Code to generate Employees fake data
 ```python
 # import the libraries we need
 from faker import Faker
@@ -37,7 +37,8 @@ data.to_csv("employees.csv", index=False)
 data.to_excel("employees.xlsx", index=False)
 ```
 
-## Survey fake data- survey on financial literacy  
+## Code to generate Survey fake data  
+Example of feedback you get if you use google sheet to collect views online  
 ```python
 # import the libraries we need
 from faker import Faker
