@@ -54,8 +54,8 @@
 ---
 
 **Step 7: Create Your Output**
-
-* Ask AI: *“Turn my notes into a 1-page summary / essay / report / slides.”*
+How do you want the final output to look like
+* Ask AI: *“Turn my notes into a 1-page summary / essay / report / slides/comparison table.”*
 * Always **add your own words** so it’s personalized and authentic.
 
 ---
@@ -78,34 +78,6 @@
 * *“Draft a short report using my notes.”*
 
 ---
-
-**Tip for Beginners:** Start with short topics and practice until you feel comfortable moving to more complex ones.
-
-
-That's a great question! For a beginner in internet research, AI tools are game-changers because they can significantly speed up the process of finding, understanding, and summarizing information. You don't need any coding skills—most of these tools are designed to be used with simple, natural language questions (prompts).
-
-Here is a beginner's guide to using AI for online research, broken down into simple steps and essential tools:
-
----
-
-## Step 1: Start with the Right Tools (The Basics)
-
-As a beginner, you should start with conversational AI tools that are designed to search and summarize the web.
-
-| Tool Category | What it Does for Research | Example Tools (Often with Free Versions) |
-| :--- | :--- | :--- |
-| **AI Search Engines / Chatbots** | Finds, synthesizes, and summarizes information from the web into a coherent answer. Look for tools that provide **citations** (links to sources) so you can verify the information. | **Gemini (with web access), Perplexity, ChatGPT (with web browsing)** |
-| **Research-Specific AI** | Designed to search through academic papers, organize findings, and extract key information. | **Elicit, Consensus** |
-
-## Step 2: Master the Art of the "Prompt"
-
-The key to getting good research from AI is asking the right question, or writing a good "prompt."
-
-| Prompt Tip | What to Do | Example Prompt |
-| :--- | :--- | :--- |
-| **Be Specific** | The more detail you give, the better the result. Avoid broad or vague questions. | *Instead of:* "Tell me about climate change." *Use:* "**What were the top 3 renewable energy breakthroughs published in 2024?**" |
-| **Define the Role/Goal** | Tell the AI *how* you want it to act and *what* the final output should look like. | *Add to your prompt:* "**Generate a table comparing the technologies and provide the source for each breakthrough.**" |
-| **Ask for Sources/Citations** | This is the most crucial step for reliable research. Always ask the AI to show its work. | *Always include:* "**Please include a citation or URL for every fact you present.**" |
 
 ## Step 3: Core Research Tasks You Can Automate with AI
 
