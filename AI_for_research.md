@@ -2239,6 +2239,9 @@ By the end of this module, students will be able to:
 **Instructor Tip:**
 Conclude the course with a **showcase session** where students present their AI-assisted research portfolios. Provide feedback on research quality, ethics, storytelling, and professional presentation — this helps learners transition confidently into real-world research practice.
 
+
+---
+  
 **AI-ASSISTED ACADEMIC RESEARCH: A STEP-BY-STEP FOLLOW-ALONG GUIDE**
 *(For Beginners and Students Writing APA-Style Papers)*
 
