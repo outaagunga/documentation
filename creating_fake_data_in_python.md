@@ -42,6 +42,8 @@ Example of feedback you get if you use google sheet to collect views online
 ```python
 # import the libraries we need
 from faker import Faker
+from datetime import datetime, timedelta
+import random  # Needed to randomize time intervals
 import pandas as pd
 
 # create an instance of Faker
@@ -51,10 +53,25 @@ fake = Faker(locale='en_US')
 def create_surveydata(num_surveydata):
     # Let's create an empty list to add our surveydata dictionaries
     surveydata_list = []
+
+
+    # Start time for the survey
+    survey_start = datetime(2025, 10, 1, 8, 0, 0)
+
+    # Current timestamp for each response
+    current_time = survey_start
+
     
     # Let's create an surveydata dictionary
     for i in range(num_surveydata):   # ensures we get exactly num_surveydata
         surveydata = {}
+        
+       
+        # Increment time by a random duration (1 to 10 minutes)
+        time_increment = timedelta(minutes=random.randint(1, 10))
+        current_time += time_increment
+
+        surveydata['timestamp'] = current_time.strftime("%d-%m-%Y %H:%M:%S")
         surveydata['consent'] = fake.random_element(elements=("Yes, I consent", "No, I don't consent"))
         surveydata['age'] = fake.random_int(min=20, max=34)
         surveydata['gender'] = fake.random_element(elements=("Male", "Female", "Prefer not to say"))
@@ -71,12 +88,13 @@ def create_surveydata(num_surveydata):
         surveydata['worrying_on_school_expenses'] = fake.random_element(elements=("Often", "Sometimes", "Rarely", "Never"))
 
 
+               
         surveydata_list.append(surveydata)
     
     return pd.DataFrame(surveydata_list)
 
 # Generate fake survey data
-data = create_surveydata(300)
+data = create_surveydata(2000)
 
 # Save to CSV
 data.to_csv("surveydata.csv", index=False)
