@@ -53,7 +53,7 @@
 
 ---
 
-**Step 7: Create Your Output**
+**Step 7: Create Your Output**  
 How do you want the final output to look like
 * Ask AI: *“Turn my notes into a 1-page summary / essay / report / slides/comparison table.”*
 * Always **add your own words** so it’s personalized and authentic.
@@ -79,7 +79,7 @@ How do you want the final output to look like
 
 ---
 
-## Step 3: Core Research Tasks You Can Automate with AI
+## Core Research Tasks You Can Automate with AI
 
 AI can help you with all the time-consuming parts of traditional online research:
 
@@ -87,29 +87,41 @@ AI can help you with all the time-consuming parts of traditional online research
 
 If you need to learn about a new topic, an AI can give you a comprehensive overview much faster than reading multiple articles.
 
-* **Prompt Idea:** "Explain the concept of 'quantum computing' to a high school student and list the top three companies currently developing it. Please cite your sources."
-* **Result:** A clear, simplified explanation, followed by a list of companies and verifiable links to where the information was found.
+* **Prompt Idea:**  
+```bash
+  "Explain the concept of 'quantum computing' to a high school student and list the top three companies currently developing it. Please cite your sources."
+```
+**Result:** A clear, simplified explanation, followed by a list of companies and verifiable links to where the information was found.
 
 ### 2. Compare and Contrast Information
 
 Instead of opening multiple tabs to compare products or concepts, ask the AI to do it for you.
 
-* **Prompt Idea:** "I am trying to buy a new wireless headphone for under \$200. Create a comparison table between the Bose QuietComfort Ultra and the Sony WH-1000XM5. Compare them on Price, Battery Life, and Noise Cancellation rating from a reputable tech site."
-* **Result:** A clean, easy-to-read table with key data points and the source link for the review.
+* **Prompt Idea:**
+```bash
+"I am trying to buy a new smart phone for under kshs 15,000. Create a comparison table between Sumsang Galaxy A16 and Oppo A3X. Compare them on Price, Battery Life, Memory, Pixels rating from a reputable tech site."
+```
+**Result:** A clean, easy-to-read table with key data points and the source link for the review.
 
 ### 3. Analyze and Explain Complex Documents (PDFs/Webpages)
 
 Many AI tools allow you to upload a document or paste a long article/URL and ask questions about it. This is great for academic papers or long reports.
 
-* **Prompt Idea:** "I have uploaded a 50-page industry report. Read it and summarize the key market trends for the next 5 years into 5 bullet points. Also, what is the main risk identified in the report?"
-* **Result:** The AI extracts and synthesizes the core information, saving you hours of reading.
+* **Prompt Idea:**  
+```bash
+"I have uploaded a 50-page industry report. Read it and summarize the key market trends for the next 5 years into 5 bullet points. Also, what is the main risk identified in the report?"
+```
+**Result:** The AI extracts and synthesizes the core information, saving you hours of reading.
 
 ### 4. Organize Your Findings
 
 AI can help structure your notes or create outlines for reports.
 
-* **Prompt Idea:** "I've been researching the history of the Eiffel Tower. Create a 4-section outline for a presentation: 1. Conception and Design, 2. The 1889 World's Fair, 3. Role in the 20th Century, 4. Modern Significance."
-* **Result:** A structured, detailed outline that helps you see how to organize your collected facts.
+* **Prompt Idea:**
+```bash
+  "I've been researching the history of the Eiffel Tower. Create a 4-section outline for a presentation: 1. Conception and Design, 2. The 1889 World's Fair, 3. Role in the 20th Century, 4. Modern Significance."
+```
+**Result:** A structured, detailed outline that helps you see how to organize your collected facts.
 
 ## Step 4: The Beginner's Golden Rule: **Always Verify!**
 
