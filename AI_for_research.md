@@ -1,4 +1,87 @@
 
+**AI-Powered Online Research Workflow**
+
+**Step 1: Define Your Research Goal**
+
+* What do you want to know?
+* Example: “How does social media affect student learning?”
+
+---
+
+**Step 2: Generate Keywords with AI**
+
+* Ask AI: *“Suggest 5–10 keywords or search phrases for [your topic].”*
+* Example keywords: *“social media and education,” “impact of TikTok on study habits,” “digital distraction in students.”*
+
+---
+
+**Step 3: Collect Sources Online**
+
+* Use search engines (Google, Bing, or Scholar) with the keywords.
+* Save links, PDFs, or copy short sections.
+* Tip: Use quotation marks (“...”) for exact phrases.
+
+---
+
+**Step 4: Use AI to Process Sources**
+
+* Paste a paragraph, article, or link into AI. Ask:
+
+  * *“Summarize this in simple terms.”*
+  * *“What are the 3 main points?”*
+  * *“Explain this like I’m a beginner.”*
+* Compare multiple sources by pasting them and asking: *“What are the similarities and differences?”*
+
+---
+
+**Step 5: Check Source Credibility**
+
+* Ask AI: *“Is this source credible? Who published it?”*
+* Double-check on the site (is it from a journal, government, or random blog?).
+
+---
+
+**Step 6: Organize Your Findings**
+
+* Ask AI: *“Create an outline from my notes.”*
+* Structure:
+
+  1. Introduction (topic + purpose)
+  2. Key Findings (group by theme)
+  3. Comparison (different views)
+  4. Conclusion
+
+---
+
+**Step 7: Create Your Output**
+
+* Ask AI: *“Turn my notes into a 1-page summary / essay / report / slides.”*
+* Always **add your own words** so it’s personalized and authentic.
+
+---
+
+**Step 8: Review & Final Check**
+
+* Verify facts with at least 2 reliable sources.
+* Ask AI: *“What information might be missing from my research?”*
+* Revise your draft with your own analysis.
+
+---
+
+**Quick Prompts You Can Reuse**
+
+* *“Suggest keywords for researching [topic].”*
+* *“Summarize this article in bullet points.”*
+* *“Explain this text in simple language.”*
+* *“Compare the findings from these two sources.”*
+* *“Create a research outline on [topic].”*
+* *“Draft a short report using my notes.”*
+
+---
+
+**Tip for Beginners:** Start with short topics and practice until you feel comfortable moving to more complex ones.
+
+
 That's a great question! For a beginner in internet research, AI tools are game-changers because they can significantly speed up the process of finding, understanding, and summarizing information. You don't need any coding skills—most of these tools are designed to be used with simple, natural language questions (prompts).
 
 Here is a beginner's guide to using AI for online research, broken down into simple steps and essential tools:
