@@ -2239,3 +2239,212 @@ By the end of this module, students will be able to:
 **Instructor Tip:**
 Conclude the course with a **showcase session** where students present their AI-assisted research portfolios. Provide feedback on research quality, ethics, storytelling, and professional presentation — this helps learners transition confidently into real-world research practice.
 
+**AI-ASSISTED ACADEMIC RESEARCH: A STEP-BY-STEP FOLLOW-ALONG GUIDE**
+*(For Beginners and Students Writing APA-Style Papers)*
+
+---
+
+### **STEP 1: Choose a General Area of Interest**
+
+Start by selecting a broad topic that genuinely interests you.
+Examples: *Climate Change*, *Social Media Use*, *Mental Health in Schools*, *Artificial Intelligence in Education*, or *Gender Equality in the Workplace.*
+
+✅ **Action:** Write your chosen general topic in this format:
+
+> My general topic is: _______________________
+
+---
+
+### **STEP 2: Generate Specific Research Questions**
+
+Ask AI to narrow your topic into focused, researchable questions.
+Use this prompt:
+
+> “As an academic research assistant, provide 5 potential, specific research questions in the field of [Your General Topic] that are suitable for a [Your Paper Length/Level, e.g., 10-page undergraduate] paper. The questions should address a current gap in the literature.”
+
+✅ **Action:**
+
+* Review the AI’s list carefully.
+* Select one research question that you find most interesting and feasible.
+
+> I have chosen this research question: _______________________
+
+---
+
+### **STEP 3: Develop Your Thesis Statement**
+
+Once you have a question, state your preliminary answer (your opinion or hypothesis).
+Then, use AI to refine it into a strong thesis statement:
+
+> “I have chosen the research question: [Your Selected Question]. My preliminary answer/stance is that [Your Preliminary Answer]. Refine this into a strong, clear, and argumentative thesis statement suitable for an APA-style academic paper.”
+
+✅ **Action:**
+
+* Paste your thesis statement below after AI refinement.
+
+> My final thesis statement: _______________________
+
+---
+
+### **STEP 4: Create the APA-Style Paper Structure**
+
+Ask AI to help you build the skeleton of your research paper using the standard APA structure.
+Use this prompt:
+
+> “Generate a detailed, multi-level outline (using Roman numerals, capital letters, and Arabic numerals) for a research paper on the topic: [Your Thesis Statement]. The structure must follow the standard APA paper format: Title Page, Abstract, Introduction, Literature Review (with 3 key themes), Methodology (if applicable), Discussion, Conclusion, and References.”
+
+✅ **Action:**
+
+* Save the generated outline.
+* You’ll use this as your roadmap for the entire paper.
+
+---
+
+### **STEP 5: Generate Search Keywords for Academic Sources**
+
+Before searching databases, create a list of search terms that match your topic.
+Use this AI prompt:
+
+> “Based on my thesis: [Your Thesis Statement], generate a list of 10–15 key academic keywords and phrases I should use to search for scholarly articles and empirical studies.”
+
+✅ **Action:**
+
+* Use the suggested keywords to search in:
+
+  * Google Scholar ([https://scholar.google.com](https://scholar.google.com))
+  * Semantic Scholar ([https://www.semanticscholar.org](https://www.semanticscholar.org))
+  * Your university library databases
+
+Save or download at least **5–10 high-quality, peer-reviewed articles** in PDF format.
+
+---
+
+### **STEP 6: Understand and Summarize Each Source**
+
+When you read your sources, you may not fully understand every section. Use AI for clarification or summarization.
+Prompt:
+
+> “I am writing a literature review. Summarize the main argument and key findings of this text (or uploaded PDF) in 3–4 concise, academically toned sentences. Highlight how the findings relate to [Your Specific Research Question/Theme].”
+
+✅ **Action:**
+
+* Summarize each article in your own words.
+* Create a simple table or note sheet with: Author, Year, Key Findings, Relevance to Your Question.
+
+---
+
+### **STEP 7: Write the Literature Review Section**
+
+Use your summaries to build the Literature Review around 2–3 main themes.
+To make transitions smoother, use AI for synthesis.
+Prompt:
+
+> “I am drafting the section of my Literature Review on [Theme/Heading Name]. The main arguments I want to synthesize are: [List of 3–4 arguments from different sources]. Draft a cohesive, one-paragraph transition that synthesizes these points, maintains an academic tone, and uses appropriate APA-style signal phrases (e.g., ‘According to Smith,’ ‘Jones and Miller found’).”
+
+✅ **Action:**
+
+* Edit the AI’s output to match your voice.
+* Cite each source in APA in-text format (Author, Year).
+
+---
+
+### **STEP 8: Draft Each Major Section**
+
+Use your outline to build:
+
+* **Introduction:** Background, significance, and thesis at the end.
+* **Methodology:** (If applicable) Describe how you gathered data or analyzed sources.
+* **Discussion:** Explain what your findings mean in relation to existing literature.
+* **Conclusion:** Summarize and restate the thesis with final insights.
+
+Prompt example for checking your introduction:
+
+> “Critique my draft Introduction based on APA guidelines. Does it clearly state the topic, provide necessary background, and end with my exact thesis statement? [Paste your Introduction draft here].”
+
+✅ **Action:**
+Refine each section after AI feedback.
+
+---
+
+### **STEP 9: Write the Abstract**
+
+After finishing all sections, summarize your paper.
+Prompt:
+
+> “Using the content of my completed Introduction, Literature Review, Methodology, and Discussion/Conclusion sections (briefly describe key results if you conducted an actual study), draft a single-paragraph Abstract of no more than 250 words. The Abstract must be non-indented and follow all APA formatting rules for an abstract.”
+
+✅ **Action:**
+
+* Ensure it covers purpose, methods, results, and conclusion.
+* Keep it concise and formal.
+
+---
+
+### **STEP 10: Refine Sentence Clarity and Academic Tone**
+
+Use AI to rephrase unclear, informal, or overly complex sentences.
+Prompt:
+
+> “My sentence is: [Paste your sentence]. Rephrase this using a more concise and formal academic tone, while preserving the original meaning. Suggest a more appropriate scholarly word for [Casual Word, e.g., ‘stuff’].”
+
+✅ **Action:**
+
+* Review every paragraph for tone and clarity.
+* Replace weak verbs and informal expressions.
+
+---
+
+### **STEP 11: Format and Cite Sources (APA 7th Edition)**
+
+Create your reference entries using AI.
+Prompt:
+
+> “Generate an APA 7th edition reference list entry for a journal article with the following details: Authors: [List of Authors], Year: [Year], Title: [Article Title], Journal: [Journal Name], Volume: [Vol], Issue: [Issue], Pages: [Pages], DOI: [DOI number].”
+
+✅ **Action:**
+
+* Double-check capitalization, italics, and punctuation.
+* Ensure all in-text citations appear in your reference list.
+
+---
+
+### **STEP 12: Apply APA Formatting and Headings**
+
+Ensure your paper follows APA layout standards:
+
+* Font: Times New Roman 12pt or Arial 11pt
+* Margins: 1 inch all around
+* Spacing: Double-spaced throughout
+* Page numbers in the top right corner
+
+If unsure, ask AI:
+
+> “Explain the rules for the five levels of APA 7th edition headings (Level 1, Level 2, etc.), including formatting (bold, centered, left-aligned, italicization). I will compare this to my paper’s headings.”
+
+✅ **Action:**
+Adjust your heading styles according to the rules.
+
+---
+
+### **STEP 13: Final Editing and AI Usage Statement**
+
+Proofread your entire paper for grammar, punctuation, and sentence flow.
+Prompt:
+
+> “Review the following paragraph for grammatical errors, typos, and passive voice. Suggest any edits that will make the ideas clearer or more direct. [Paste a paragraph from your paper].”
+
+✅ **Action:**
+
+* Incorporate the suggestions.
+* End your paper or acknowledgment with an AI usage disclaimer, e.g.:
+
+> *“Portions of this paper were developed with assistance from an AI research tool for idea generation, editing, and formatting support.”*
+
+---
+
+### ✅ **Congratulations!**
+
+You have now completed a full academic research workflow using AI — from topic selection to a polished APA-formatted paper ready for submission.
+Be sure to keep copies of all AI interactions for transparency if your instructor requests them.
+
+
