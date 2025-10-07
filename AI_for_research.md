@@ -2349,10 +2349,10 @@ Use this AI prompt:
 > “Based on my thesis: [Your Thesis Statement], generate a list of 10–15 key academic keywords and phrases I should use to search for scholarly articles and empirical studies.”
 
 **List of Keywords Generated**
-> *
-> *
-> *
-> *
+> * 1st Keyword __________________
+> * 2nd Keyword __________________
+> * 3rd Keyword __________________
+> * 4th Keyword __________________
 
 
 ✅ **Action:**
@@ -2364,10 +2364,10 @@ Use this AI prompt:
   * Your university library databases
 
 Save or download at least **5–10 high-quality, peer-reviewed articles** in PDF format.
-* Source One: ....
-* Source Two: ....
-* Source Three: ....
-* Source Four: ....
+* Source One: ___________________________
+* Source Two: ___________________________
+* Source Three: _________________________
+* Source Four:  _________________________
 ---
 
 ### **STEP 6: Understand and Summarize Each Source**
