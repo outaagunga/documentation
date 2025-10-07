@@ -1,5 +1,7 @@
 My litle promp to help me read long contents with the help of AI  
-> Summarize this so that I understand the concept without having to read again
+```bash
+Summarize this so that I understand the concept without having to read again
+```
 
 **AI-Powered Online Research Workflow**
 
