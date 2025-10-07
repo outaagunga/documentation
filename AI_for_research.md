@@ -2391,12 +2391,110 @@ Use your outline to build:
 * **Discussion:** Explain what your findings mean in relation to existing literature.
 * **Conclusion:** Summarize and restate the thesis with final insights.
 
-Prompt example for checking your introduction:
+---
+### **HINT: For STEP 8**  
 
-> “Critique my draft Introduction based on APA guidelines. Does it clearly state the topic, provide necessary background, and end with my exact thesis statement? [Paste your Introduction draft here].”
+### **A. Writing the Introduction**
 
-✅ **Action:**
-Refine each section after AI feedback.
+**Purpose:**
+The introduction attracts the reader’s attention, provides context, and ends with your exact thesis statement.
+
+#### 🪜 Follow-along steps:
+
+1. **Open your outline** and look at the “Introduction” section.
+2. **Write a hook:** one sentence that shows why the topic matters.
+
+   * Example: “Climate change has become one of the greatest threats to global food systems.”
+3. **Add background information:** briefly explain key terms or the situation.
+
+   * Example: “In sub-Saharan Africa, millions depend on rain-fed agriculture that is highly sensitive to temperature and rainfall patterns.”
+4. **State why the topic is significant:** why should anyone care?
+
+   * Example: “Understanding this relationship is critical for developing sustainable agricultural policies.”
+5. **End with your thesis statement.**
+
+#### ✅ Use AI to check your introduction
+
+Prompt:
+
+> “Critique my Introduction based on APA guidelines. Does it clearly introduce the topic, give sufficient background, and end with my exact thesis statement? [Paste your Introduction here].”
+
+---
+
+### **B. Writing the Methodology (if applicable)**
+
+**Purpose:**
+To show how you gathered information or conducted your analysis.
+
+If your paper is based on *reading and comparing sources* (not an experiment), keep it simple.
+
+#### 🪜 Follow-along steps:
+
+1. **State what type of paper you are writing.**
+   Example: “This paper is a qualitative literature review analyzing recent studies on the relationship between climate change and food security.”
+2. **Explain how you selected your materials.**
+   Example: “Sources were identified using Google Scholar and Semantic Scholar with keywords such as ‘climate change,’ ‘food security,’ and ‘sub-Saharan Africa.’ Only peer-reviewed studies from 2015 to 2025 were included.”
+3. **Describe how you analyzed them.**
+   Example: “Each study was examined for evidence of climate impacts on crop yields, rainfall, and agricultural adaptation strategies.”
+
+#### ✅ Use AI to improve clarity
+
+Prompt:
+
+> “Review this Methodology section for clarity, conciseness, and APA tone. Suggest ways to make it sound more professional. [Paste text].”
+
+---
+
+### **C. Writing the Discussion Section**
+
+**Purpose:**
+To interpret what your sources (or data) show and connect them to your thesis.
+
+#### 🪜 Follow-along steps:
+
+1. **Group your findings or arguments by theme.**
+   Example themes: drought effects, rainfall changes, adaptation strategies.
+2. **For each theme:**
+
+   * Summarize what several authors found.
+   * Compare or contrast their conclusions.
+   * Explain what this means for your research question.
+     Example:
+
+   > “Several studies report a 20–30 % decline in maize yields due to droughts (Adeleke, 2020; Mwangi & Otieno, 2022). These findings suggest that inconsistent rainfall directly undermines smallholder productivity.”
+3. **Link every paragraph back to your thesis.**
+
+#### ✅ Use AI to refine flow and transitions
+
+Prompt:
+
+> “I’m drafting the Discussion section on [Theme]. The key points are: [list main arguments]. Write a cohesive paragraph that synthesizes these ideas in an academic tone and includes smooth transitions.”
+
+---
+
+### **D. Writing the Conclusion**
+
+**Purpose:**
+To wrap up your argument and leave the reader with a clear takeaway.
+
+#### 🪜 Follow-along steps:
+
+1. **Restate your thesis in new words.**
+   Example: “Overall, climate change poses a growing threat to food security in sub-Saharan Africa.”
+2. **Summarize your main findings or insights (2–3 sentences).**
+   Example: “The evidence shows that drought frequency and unpredictable rainfall reduce crop yields, while adaptation strategies remain underfunded.”
+3. **End with a forward-looking statement:**
+
+   * What should happen next?
+   * Why does this matter?
+     Example: “Future policies must prioritize sustainable irrigation systems and climate-resilient crops to secure regional food supplies.”
+
+#### ✅ Use AI for refinement
+
+Prompt:
+
+> “Check my Conclusion for clarity, impact, and alignment with my thesis. Suggest ways to make it stronger and more cohesive. [Paste text].”
+
 
 ---
 
