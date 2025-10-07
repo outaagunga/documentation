@@ -1,8 +1,9 @@
-My litle promp to help me read long contents with the help of AI  
+My litle prompt to help me read long contents with the help of AI  
 ```bash
 Summarize this so that I understand the concept without having to read again
 ```
 
+**For Doing Academic Research Paper from srcatch:**  ## Go To This Section
 **AI-Powered Online Research Workflow**
 
 **Step 1: Define Your Research Goal**
@@ -2248,6 +2249,7 @@ Conclude the course with a **showcase session** where students present their AI-
 ---
 
 # AI-ASSISTED ACADEMIC RESEARCH: A STEP-BY-STEP FOLLOW-ALONG GUIDE  
+go-to-this-section  
 *(For Beginners and Students Writing APA-Style Papers)*
 
 ---
