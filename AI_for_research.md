@@ -2348,6 +2348,13 @@ Use this AI prompt:
 
 > “Based on my thesis: [Your Thesis Statement], generate a list of 10–15 key academic keywords and phrases I should use to search for scholarly articles and empirical studies.”
 
+**List of Keywords Generated**
+> *
+> *
+> *
+> *
+
+
 ✅ **Action:**
 
 * Use the suggested keywords to search in:
@@ -2357,7 +2364,10 @@ Use this AI prompt:
   * Your university library databases
 
 Save or download at least **5–10 high-quality, peer-reviewed articles** in PDF format.
-
+* Source One: ....
+* Source Two: ....
+* Source Three: ....
+* Source Four: ....
 ---
 
 ### **STEP 6: Understand and Summarize Each Source**
@@ -2371,6 +2381,14 @@ Prompt:
 
 * Summarize each article in your own words.
 * Create a simple table or note sheet with: Author, Year, Key Findings, Relevance to Your Question.
+  
+| Name of Author(s) | Year | Key Findings | Relevance to Research Question |
+|--------------------|------|---------------|--------------------------------|
+|                    |      |               |                                |
+|                    |      |               |                                |
+|                    |      |               |                                |
+
+
 
 ---
 
