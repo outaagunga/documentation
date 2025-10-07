@@ -2274,10 +2274,41 @@ Use this prompt:
 
 ---
 
-### **STEP 3: Develop Your Thesis Statement**
+### **STEP 3: Develop Your Thesis Statement**  
+After Identifying Your Research Question  
+Example:
 
-Once you have a question, state your preliminary answer (your opinion or hypothesis).
-Then, use AI to refine it into a strong thesis statement:
+> “How is climate change affecting food security in sub-Saharan Africa?”
+
+---
+
+**Brainstorm What You Already Know**
+Imagine a friend just asked you this question in a conversation.
+
+* What comes to mind first?
+* What do you already know or think about it?
+
+**Hint:**
+If you know very little, do a quick Google search.
+
+* Copy and paste your research question into the search bar.
+* Read one or two credible summaries or short articles (avoid deep reports).
+* Find a clear, simple, and factual idea to start from.
+
+---
+
+**Write a Simple Answer using your own words**
+In your own words, write one or two sentences that express your first opinion or logical guess about the question.
+
+Example:
+
+> “I think climate change threatens food security in sub-Saharan Africa by reducing crop yields and making rainfall unpredictable.”
+
+This is your **preliminary answer or hypothesis**.
+
+---
+
+**Then, use AI to refine it into a strong thesis statement:**  
 
 > “I have chosen the research question: [Your Selected Question]. My preliminary answer/stance is that [Your Preliminary Answer]. Refine this into a strong, clear, and argumentative thesis statement suitable for an APA-style academic paper.”
 
