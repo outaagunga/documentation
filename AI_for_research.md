@@ -2349,10 +2349,10 @@ Use this AI prompt:
 > “Based on my thesis: [Your Thesis Statement], generate a list of 10–15 key academic keywords and phrases I should use to search for scholarly articles and empirical studies.”
 
 **List of Keywords Generated**
-> * 1st Keyword __________________
-> * 2nd Keyword __________________
-> * 3rd Keyword __________________
-> * 4th Keyword __________________
+> * 1st Keyword: __________________
+> * 2nd Keyword: __________________
+> * 3rd Keyword: __________________
+> * 4th Keyword: __________________
 
 
 ✅ **Action:**
@@ -2364,6 +2364,7 @@ Use this AI prompt:
   * Your university library databases
 
 Save or download at least **5–10 high-quality, peer-reviewed articles** in PDF format.
+**Hint: You can just save the link to each source instead of pdf**
 * Source One: ___________________________
 * Source Two: ___________________________
 * Source Three: _________________________
@@ -2398,7 +2399,7 @@ Use your summaries to build the Literature Review around 2–3 main themes.
 To make transitions smoother, use AI for synthesis.
 Prompt:
 
-> “I am drafting the section of my Literature Review on [Theme/Heading Name]. The main arguments I want to synthesize are: [List of 3–4 arguments from different sources]. Draft a cohesive, one-paragraph transition that synthesizes these points, maintains an academic tone, and uses appropriate APA-style signal phrases (e.g., ‘According to Smith,’ ‘Jones and Miller found’).”
+> “I am drafting the section of my Literature Review on [Heading of the section/Theme]. The main arguments I want to synthesize are: [List of 3–4 arguments from different sources- you can use summary table of sources]. Draft a cohesive, one-paragraph transition that synthesizes these points, maintains an academic tone, and uses appropriate APA-style signal phrases (e.g., ‘According to Smith,’ ‘Jones and Miller found’).”
 
 ✅ **Action:**
 
