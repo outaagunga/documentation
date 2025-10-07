@@ -2249,7 +2249,7 @@ Conclude the course with a **showcase session** where students present their AI-
 ---
 
 # AI-ASSISTED ACADEMIC RESEARCH: A STEP-BY-STEP FOLLOW-ALONG GUIDE  
-go-to-this-section  
+# go-to-this-section  
 *(For Beginners and Students Writing APA-Style Papers)*
 
 ---
