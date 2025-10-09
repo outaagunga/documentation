@@ -348,6 +348,7 @@ Perfect timing 😃 — now we get into the **heart of Power BI**: cleaning and 
 2. Go to **Home → Remove Rows → Remove Duplicates**.
 3. To remove blanks: **Home → Remove Rows → Remove Blank Rows**.
 
+--- 
 **Further Cleaning**
 
 If your dataset comes from an online source such as Google Forms, you may encounter mixed data types within columns. For example:
