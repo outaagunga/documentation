@@ -364,6 +364,7 @@ Here’s how to clean and standardize such data in **Power BI Desktop**:
 1. **Check column data types:**
 
    * Right-click the column header → **Change Type** → select the appropriate data type (e.g., Text, Number, Date).
+   * This step is crucial because you will not able to replace the values if the column contain different data types  
 
 2. **Standardize inconsistent values:**
 
