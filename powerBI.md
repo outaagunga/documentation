@@ -348,6 +348,38 @@ Perfect timing 😃 — now we get into the **heart of Power BI**: cleaning and 
 2. Go to **Home → Remove Rows → Remove Duplicates**.
 3. To remove blanks: **Home → Remove Rows → Remove Blank Rows**.
 
+**Further Cleaning**
+
+If your dataset comes from an online source such as Google Forms, you may encounter mixed data types within columns. For example:
+
+* **Column 1:** [KES. 1100], [KES. 1010], [I don’t know]
+* **Column 2:** [Yes, regularly], [Yes, occasionally], [No, never]
+* **Column 3:** [Yes, I consent], [No, I don’t consent], [Prefer not to say]
+
+To analyze your data correctly, each column must contain values of the **same data type** — for instance, all numbers, all text, or all dates. Mixed data types (e.g., text and numbers in the same column) prevent proper analysis.
+
+Here’s how to clean and standardize such data in **Power BI Desktop**:
+
+1. **Check column data types:**
+
+   * Right-click the column header → **Change Type** → select the appropriate data type (e.g., Text, Number, Date).
+
+2. **Standardize inconsistent values:**
+
+   * Right-click the same column → **Replace Values** → enter the old and new values.
+
+   **Examples:**
+
+   * *Column 1:* Convert to text and simplify values to **“Correct,” “Incorrect,” “I don’t know.”**
+   * *Column 2:* Simplify to **“Yes,” “Yes,” “No.”**
+   * *Column 3:* Standardize to **“Yes,” “No,” “Prefer not to say.”**
+
+3. **Validate your data:**
+
+   * Confirm all entries are now consistent and in the correct format before creating visuals.
+
+This ensures Power BI can correctly interpret and visualize your data without errors.
+
 ---
 
 ### 3.2.2 Handling missing values
