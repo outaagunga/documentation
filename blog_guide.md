@@ -114,7 +114,7 @@ Prompt:
 
 Prompt:
 
-> “Review the full blog post and ensure the tone is consistently [Your Desired Tone, e.g., upbeat, conversational, and expert]. Make minor adjustments for flow and clarity.”
+> “Review the full blog post and ensure the tone is consistently [Your Desired Tone, e.g., upbeat, conversational, and expert]. Make minor adjustments for flow and clarity. Ensure it sounds natural, engaging and not robotic”
 
 📝 *My final blog draft is:* _____________________________________________
 
