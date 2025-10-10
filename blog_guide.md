@@ -64,7 +64,7 @@ Prompt:
 
 **Prompt:**
 
-> “Create a detailed outline for a blog post on the topic: [Your Chosen Topic]. Use H2 and H3 headings for structure. Include an introduction, 4 actionable main points, and a strong conclusion.”
+> “Create a detailed outline for a blog post on the topic: [Your Chosen Topic]. Use H2 and H3 headings for structure. Include an introduction, 4 actionable main points, and a strong conclusion. Make sure each main point adds unique value — not just repeating the same idea in different words.”
 
 📝 *My blog outline is:* _________________________________________
 
@@ -114,7 +114,7 @@ Prompt:
 
 Prompt:
 
-> “Review the full blog post and ensure the tone is consistently [Your Desired Tone, e.g., upbeat, conversational, and expert]. Make minor adjustments for flow and clarity. Ensure it sounds natural, engaging and not robotic”
+> “Please review the entire blog post to ensure the tone remains consistently [your desired tone, e.g., upbeat, conversational, and expert]. Make light edits for flow, clarity, and readability. The final result should sound natural, engaging, and human—not robotic or overly formal”
 
 📝 *My final blog draft is:* _____________________________________________
 
