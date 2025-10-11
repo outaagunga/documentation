@@ -18,12 +18,13 @@ Help complete beginners quickly get started — even with no experience or idea 
 > Ask me one question at a time to help identify my skills and opportunities.”
 
 ✅ *Tip:* Let the AI ask you questions (like your skills, interests, and available hours). Answer honestly so it can give you personalized advice.
+Incase you already know your skills, then proceed to the next step:  
 
 ---
 
 ### Step 0.2 — Ask AI to Suggest Possible Online Job Categories
 **Prompt:**  
-> “Based on what I told you, list 5 beginner-friendly online job categories I can try with little or no experience. For each, briefly explain what it involves and what kind of tools or skills are needed.”
+> “Based on these skills: [List the skills you have e.g Ms Excel, PowerBI], list 5 beginner-friendly online job categories I can try with little or no experience. For each, briefly explain what it involves and what kind of tools or skills are needed.”
 
 **Suggested Job Categories (AI will fill in examples):**
 | # | Category | What It Involves | Typical Tools |
@@ -45,7 +46,7 @@ Write your chosen area below:
 
 ### Step 0.4 — Ask AI for a Simple Starting Plan
 **Prompt:**  
-> “Give me a simple 3-step beginner plan for getting started in [insert your focus area, e.g., ‘data entry’]. Include free resources to practice and one job platform where I can apply.”
+> “Give me a simple 3-step beginner plan for getting started in [insert your focus area, e.g., ‘data entry’]. Include free resources to practice and job platforms where I can apply.”
 
 **My 3-Step Starter Plan:**  
 1. _______________________  
