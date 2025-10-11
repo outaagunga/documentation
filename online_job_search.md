@@ -27,19 +27,16 @@ To move from curiosity (“I want to earn online”) to clarity (“I know my fo
 ### Step 2 — List Your Current Skills and Experience
 Note your main abilities and experience areas.
 
+My current skills are: 
+1. ______________________
+2. ______________________
+3. _______________________
+
 **Example:**
 - Typing speed: 60 WPM  
 - Fluent English (written & spoken)  
 - Microsoft Excel / Google Sheets (basic)  
 - Social Media Management (Instagram, Facebook)
-
-**Prompt:**
-> “Here’s a list of my current skills: [insert your list]. Please identify my top 3 most marketable skills for online or remote jobs.”
-
-**Top 3 Marketable Skills (AI Response):**
-1. _______________________
-2. _______________________
-3. _______________________
 
 ---
 
