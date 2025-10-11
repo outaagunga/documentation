@@ -121,7 +121,49 @@ Prompt:
 #### **B. Read Aloud Test**
 
 Read your post out loud. Does it sound like a real person talking to a friend?
-If anything sounds robotic or unnatural, rephrase it in simpler, more conversational language.
+If anything sounds robotic or unnatural, rephrase it in simpler, more conversational language.  
+
+---
+# AI Help
+
+## ✍️ Grammar and Flow Polishing
+
+**Prompt:**
+“You are an editor for online news blogs. Please correct grammar, spelling, and sentence flow in the following blog while keeping my original tone and writing style. Make it sound natural and conversational — not too formal, and avoid using complex words.”
+
+---
+
+## ✅ (Optional) Deep Grammar Check
+
+If you want to double-check your grammar and sentence clarity using another AI tool, use this prompt:
+
+**Prompt:**
+“Check this article for any remaining grammar or clarity issues. List specific corrections and suggestions for improvement without changing my tone or writing style.”
+
+---
+
+## 🔍 Check for Plagiarism (Using Free AI Tools)
+
+You can use AI to find repeated or overly common phrases that might sound copied.
+
+**Prompt:**
+“Act as a plagiarism reviewer. Scan the following text for any parts that sound copied or too similar to common online content. Highlight the sections that might need rewriting to make them more original. Do not quote or reference external sources — just identify what sounds reused.”
+
+---
+
+## 🔄 Rephrase Common or Repetitive Sentences
+
+**Prompt:**
+“Rephrase the sentences below to make them sound original and natural while keeping the same meaning.”
+
+---
+
+## 🏁 Phase 5: Final Review Before Upload
+
+**Prompt:**
+“You are an editor for [insert your blogging platform, e.g., Opera News Hub]. Review this article for clarity, flow, grammar, and originality. Suggest final improvements or adjustments in concise bullet points.”
+
+---
 
 #### **C. Final Edits**
 
