@@ -2396,16 +2396,25 @@ Prompt:
 
 ### **STEP 7: Write the Literature Review Section**
 
-Use your summaries to build the Literature Review around 2–3 main themes.
-To make transitions smoother, use AI for synthesis.
+Use your sources summaries to build the Literature Review on around 2–3 main themes. i.e.  
+Go to the paper outline (structure) you had generated and use the 1st theme with this prompt on AI  
+Do the same with other remaining theses.  
 Prompt:
 
 > “I am drafting the section of my Literature Review on [Heading of the section/Theme]. The main arguments I want to synthesize are: [List of 3–4 arguments from different sources- you can use summary table of sources]. Draft a cohesive, one-paragraph transition that synthesizes these points, maintains an academic tone, and uses appropriate APA-style signal phrases (e.g., ‘According to Smith,’ ‘Jones and Miller found’).”
 
+**Then combine the generated themes and Polish them**.   
+Also add a brief opening paragraph to introduce your Literature Review and a short ending paragraph.  
+Prompt:
+> "Combine my three literature review sections (themes) into one cohesive part with smooth transitions and a brief opening and closing paragraph. Maintain APA tone and logical flow. [Paste the 3 themes of your the literature review]."  
+
 ✅ **Action:**
 
-* Edit the AI’s output to match your voice.
-* Cite each source in APA in-text format (Author, Year).
+* Edit the AI’s output to match your voice.  
+* Cite each source in APA in-text format. Citations follow APA style:  
+      * One author: (Smith, 2023)  
+      * Two authors: (Jones & Miller, 2022)  
+      * Three or more authors: (Ngugi et al., 2024)  
 
 ---
 
