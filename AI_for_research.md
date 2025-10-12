@@ -2377,7 +2377,7 @@ Save or download at least **5–10 high-quality, peer-reviewed articles** in PDF
 When you read your sources, you may not fully understand every section. Use AI for clarification or summarization.
 Prompt:
 
-> “I am writing a literature review. Summarize the main argument and key findings of this text (or uploaded PDF) in 3–4 concise, academically toned sentences. Highlight how the findings relate to [Your Specific Research Question/Theme].”
+> “I am writing a literature review. Summarize the main argument and key findings of this text (or uploaded PDF) in 3–4 concise, academically toned sentences. Highlight how the findings relate to [Your Specific Research Question/Theme]. Your output should be: Name of Author, year, key findings and relevance to our research question or theme”
 
 ✅ **Action:**
 
