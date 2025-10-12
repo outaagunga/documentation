@@ -2416,7 +2416,7 @@ Prompt:
       - Two authors: (Jones & Miller, 2022)    
       - Three or more authors: (Ngugi et al., 2024)
 
-  My Literature review is: ____
+  My Literature review is: ________________________________
 
 ---
 
