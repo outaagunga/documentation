@@ -2412,9 +2412,11 @@ Prompt:
 
 * Edit the AI’s output to match your voice.  
 * Cite each source in APA in-text format. Citations follow APA style:  
-      * One author: (Smith, 2023)  
-      * Two authors: (Jones & Miller, 2022)  
-      * Three or more authors: (Ngugi et al., 2024)  
+      - One author: (Smith, 2023)  
+      - Two authors: (Jones & Miller, 2022)    
+      - Three or more authors: (Ngugi et al., 2024)
+
+  My Literature review is: ____
 
 ---
 
