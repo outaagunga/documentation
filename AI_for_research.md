@@ -2424,26 +2424,23 @@ Prompt:
 
 Use your outline to build:
 
-* **Introduction:** Background, significance, and thesis at the end.
-To do the introduction part, go to the paper outline (structure) you had made. The outline is your “blueprint.” 
-You will now expand each heading in the outline into full paragraphs. (i.e write 2-3 sentences for each heading).
+* **Introduction:** Background, significance, and thesis at the end.  
+To do the introduction part, go to the paper outline (structure) you had made. The outline is your `“blueprint.”`  
+You will now expand each heading in the outline into full paragraphs. (i.e write 2-3 sentences for each heading).   
 
 Prompt:
 > “I’m writing the Introduction for an APA-style paper on the topic: [Your research question]. Please write the **Background** of the Study (about 1–2 paragraphs) using my outline:  
-- [Paste Heading one under the background of the study]
-- [Paste Heading two under the background of the study]
-- [Paste Heading one under the background of the study]
-Maintain an academic tone, include in-text citations in APA format, and base it on these sources [Paste summary of your sources].”  
+>- [Paste Heading one under the background of the study]
+>- [Paste Heading two under the background of the study]
+>- [Paste Heading one under the background of the study]
+>Maintain an academic tone, include in-text citations in APA format, and base it on these sources [Paste summary of your sources].”  
 
 Then repeat similar prompts for the other parts i.e:
 >- Problem Statement
 >- Purpose of the Study
 >- Significance of the Study
 
-
-
-
-
+---
  
 * **Methodology:** (If applicable) Describe how you gathered data or analyzed sources.
 * **Discussion:** Explain what your findings mean in relation to existing literature.
