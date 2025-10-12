@@ -2362,6 +2362,7 @@ Use this AI prompt:
   * Google Scholar ([https://scholar.google.com](https://scholar.google.com))
   * Semantic Scholar ([https://www.semanticscholar.org](https://www.semanticscholar.org))
   * Your university library databases
+  * If you can't find the keyword in Google Scholar, use general Google but ensure source is reliable  
 
 Save or download at least **5–10 high-quality, peer-reviewed articles** in PDF format.
 **Hint: You can just save the link to each source instead of pdf**
