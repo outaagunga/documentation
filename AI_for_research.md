@@ -2467,7 +2467,7 @@ Prompt:
 
 Prompt:
 
-> “Write a concise Conclusion (about 1-2 paragraphs) that restates my thesis: [Your Thesis statement] in new words. Summarizes the main findings, and highlights why the issue is important for [Your Research Question]. [Paste the rest of completed parts here if using new AI]."  
+> “Write a concise Conclusion (about 1-2 paragraphs) that restates my thesis: [Your Thesis statement] in new words, summarizes the main findings, and highlights why the issue is important for [Your Research Question]. [Paste the rest of completed parts here if using new AI]."  
 
 ---
 ### **Further Reading: For STEP 8**  
