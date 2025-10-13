@@ -121,7 +121,7 @@ Prompt:
 
 Prompt:
 
-> “Please review the entire blog post to ensure the tone remains consistently [your desired tone, e.g., upbeat, conversational, and expert]. Make light edits for flow, clarity, and readability. The final result should sound natural, engaging, and human—not robotic or overly formal”
+> “Please review the entire blog post to ensure the tone remains consistently [your desired tone, e.g., upbeat, conversational, and expert]. Make light edits for flow, clarity, and readability. The final result should sound natural, engaging, and human—not robotic or overly formal. Avoid using complex words”
 
 📝 *My final blog draft is:* _____________________________________________
 
