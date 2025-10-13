@@ -128,8 +128,8 @@ Prompt:
 ## NB: 
 **To avoid your blog getting rejected:**  
 > Add links to the sources you got the information or news.
-> To add link in opera news hub, highlight the text you want to add link
-> Then with the text highlighted-- click add link and then paste your link  
+> To add link in opera news hub, highlight the text you want to add link  
+> Then with the text highlighted- click add link and then paste your link  
 
 #### **B. Read Aloud Test**
 
