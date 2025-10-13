@@ -80,7 +80,10 @@ Prompt:
 
 Prompt:
 
-> “Expand on this section, keeping the tone [Your Desired Tone, e.g., friendly and expert]: [First H2 Heading from Outline, e.g., ‘1. Start Small: The Kitchen Audit’].”
+> “Expand on this section, keeping the tone [Your Desired Tone, e.g., friendly and expert]: [First H2 Heading as given in the Outline] using my outline  
+> - [H3 heading as given on the outline]
+> - [H3 heading as given on the outline]
+> - [H3 heading as given on the outline] "  
 
 📝 *My first section is:* _______________________________________
 
@@ -88,7 +91,11 @@ Prompt:
 
 Prompt (for each section):
 
-> “Now, elaborate on the next section: [Next H2 Heading]. Keep it concise and include practical examples.”
+> “Now, elaborate on the next section: [Next H2 Heading]. using my outline  
+> - [H3 heading as given on the outline]
+> - [H3 heading as given on the outline]
+> - [H3 heading as given on the outline] " 
+> Keep it concise and include practical examples.”  
 
 📝 *My 2nd section is:* _______________________________________
 📝 *My 3rd section is:* _______________________________________
@@ -98,7 +105,7 @@ Prompt (for each section):
 
 Prompt:
 
-> “Write a concluding paragraph that summarizes the main points and includes a clear Call-to-Action (CTA), asking readers to share their thoughts or experiences in the comments.”
+> “Write a concluding paragraph that summarizes the main points and includes a clear Call-to-Action (CTA), asking readers to share their thoughts or experiences in the comments. [Paste the completed part here if using new AI].”
 
 📝 *My conclusion paragraph is:* ________________________________________
 
