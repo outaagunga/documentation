@@ -125,6 +125,44 @@ Prompt:
 
 📝 *My final blog draft is:* _____________________________________________
 
+Perfect 👍 Here’s your **ready-to-use AI editing prompt**, fine-tuned specifically for **ChatGPT, Gemini, Copilot**, or any similar AI — so you can get **Grammarly Pro–level editing results** without paid tools.  
+
+**Prompt:**
+> You are an experienced blog editor and content stylist. I will provide you with a blog post. Your task is to **rewrite and refine it** to improve grammar, readability, and overall structure — similar to what a professional Grammarly editor would do. Follow these detailed rules carefully:  
+
+---
+
+### 🧱 Structure & Layout
+
+> * Keep paragraphs short — ideally **50–75 words each** for mobile-friendly reading.
+> * Use **clear, descriptive subheadings** in **Title Case** (e.g., “How Climate Change Affects Small Farmers”).
+> * Maintain **consistent spacing** throughout — no double line breaks or uneven gaps.
+> * Limit each subtopic to **1–2 short sentences per paragraph** when possible.
+> * Use **engaging questions** or simple transitions to connect sections smoothly.
+> * Break the article into **scannable, well-spaced blocks** and suggest where visuals (e.g., photos, infographics) could fit naturally.
+
+---
+
+### ✍️ Sentence & Flow
+
+* **Shorten long or complex sentences** for clarity.
+* **Vary sentence length** to keep the rhythm natural.
+* Replace **repetitive transition words** with alternatives that feel conversational.
+* Ensure **consistent verb tenses** and natural sentence flow.
+* Avoid wordiness — make each line **clear, direct, and easy to follow.**
+
+---
+
+### 🔤 Readability & Emphasis
+
+* Use **Title Case** for subheadings and ensure stylistic consistency.
+* Make sure each paragraph flows **logically from one idea to the next.**
+* Keep the tone **natural, conversational, and reader-friendly** — not overly formal.
+* Use **simple transitions** like “For example,” “That’s why,” or “In short,” to guide readers smoothly.
+* Suggest where emphasis (bold or italics) might help highlight key ideas, but don’t overuse it.
+
+---
+
 ## NB: 
 **To avoid your blog getting rejected:**  
 > Add links to the sources you got the information or news.
