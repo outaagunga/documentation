@@ -2403,6 +2403,11 @@ Prompt:
 
 > “I am drafting the section of my Literature Review on [Heading of the section/Theme]. The main arguments I want to synthesize are: [List of 3–4 arguments from different sources- you can use summary table of sources]. Draft a cohesive, one-paragraph transition that synthesizes these points, maintains an academic tone, and uses appropriate APA-style signal phrases (e.g., ‘According to Smith,’ ‘Jones and Miller found’).”
 
+- Theme 1:- ____________________________________________________  
+- Theme 2:- ____________________________________________________  
+- Theme 3:- ____________________________________________________  
+
+
 **Then combine the generated themes and Polish them**.   
 Also add a brief opening paragraph to introduce your Literature Review and a short ending paragraph.  
 Prompt:
