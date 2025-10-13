@@ -94,12 +94,12 @@ Prompt (for each section):
 > “Now, elaborate on the next section: [Next H2 Heading]. using my outline  
 > - [H3 heading as given on the outline]
 > - [H3 heading as given on the outline]
-> - [H3 heading as given on the outline] " 
+> - [H3 heading as given on the outline] "  
 > Keep it concise and include practical examples.”  
 
-📝 *My 2nd section is:* _______________________________________
-📝 *My 3rd section is:* _______________________________________
-📝 *My 4th section is:* _______________________________________
+📝 *My 2nd section is:* _______________________________________  
+📝 *My 3rd section is:* _______________________________________  
+📝 *My 4th section is:* _______________________________________  
 
 #### **C. Write the Conclusion**
 
