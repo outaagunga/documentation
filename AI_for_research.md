@@ -2432,22 +2432,45 @@ Prompt:
 > “I’m writing the Introduction for an APA-style paper on the topic: [Your research question]. Please write the **Background** of the Study (about 1–2 paragraphs) using my outline:  
 >- [Paste Heading one under the background of the study]
 >- [Paste Heading two under the background of the study]
->- [Paste Heading one under the background of the study]
->Maintain an academic tone, include in-text citations in APA format, and base it on these sources [Paste summary of your sources].”  
+>- [Paste Heading one under the background of the study]  
+>  Maintain an academic tone, include in-text citations in APA format, and base it on these sources [Paste summary of your sources].”  
 
 Then repeat similar prompts for the other parts i.e:
 >- Problem Statement
 >- Purpose of the Study
 >- Significance of the Study
 
----
- 
-* **Methodology:** (If applicable) Describe how you gathered data or analyzed sources.
-* **Discussion:** Explain what your findings mean in relation to existing literature.
-* **Conclusion:** Summarize and restate the thesis with final insights.
 
 ---
-### **HINT: For STEP 8**  
+ 
+* **Methodology:** (If applicable) Describe how you gathered data or analyzed sources.  
+Because this is not an experiment (we are not conducting any experiement. we just use scholarly sources), our methodology will be short and descriptive.  
+
+Prompt:
+
+> “Write a short Methodology section (1-2 paragraphs) for a qualitative literature-based paper analyzing [Your research question]. Describe the search process, inclusion criteria, and analysis approach.”
+
+If your research is based on experiemnts, then follow the methodology for experiment- based research papers.  
+
+---
+
+* **Discussion:** Explain what your findings mean in relation to existing literature.  
+This section connects your literature findings back to your thesis statement.
+
+Prompt:
+
+> “Write the Discussion section for my paper titled [Your Research title- It is on the title page]. Summarize what the reviewed literature reveals about [Your Research Question]. Then explain how these findings support or complicate my thesis: [paste your thesis statement]. Use academic tone and APA citations.”  
+
+--- 
+
+* **Conclusion:** Summarize and restate the thesis with final insights.
+
+Prompt:
+
+> “Write a concise Conclusion (about 1-2 paragraphs) that restates my thesis: [Your Thesis statement] in new words. Summarizes the main findings, and highlights why the issue is important for [Your Research Question]. [Paste the rest of completed parts here if using new AI]."  
+
+---
+### **Further Reading: For STEP 8**  
 
 ### **A. Writing the Introduction**
 
@@ -2558,7 +2581,7 @@ Prompt:
 After finishing all sections, summarize your paper.
 Prompt:
 
-> “Using the content of my completed Introduction, Literature Review, Methodology, and Discussion/Conclusion sections (briefly describe key results if you conducted an actual study), draft a single-paragraph Abstract of no more than 250 words. The Abstract must be non-indented and follow all APA formatting rules for an abstract.”
+> “Using the content of my completed Introduction, Literature Review, Methodology, Discussion/ Conclusion sections, (briefly describe key results if you conducted an actual study). Draft a single-paragraph Abstract of no more than 250 words. The Abstract must be non-indented and follow all APA formatting rules for an abstract.”  
 
 ✅ **Action:**
 
