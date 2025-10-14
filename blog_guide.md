@@ -125,41 +125,16 @@ Prompt:
 
 📝 *My final blog draft is:* _____________________________________________
 
-Perfect 👍 Here’s your **ready-to-use AI editing prompt**, fine-tuned specifically for **ChatGPT, Gemini, Copilot**, or any similar AI — so you can get **Grammarly Pro–level editing results** without paid tools.  
-
-**Prompt:**
-> You are an experienced blog editor and content stylist. I will provide you with a blog post. Your task is to **rewrite and refine it** to improve grammar, readability, and overall structure — similar to what a professional Grammarly editor would do. Follow these detailed rules carefully:  
-
 ---
+**Getting Grammarly Pro–level editing results using AI**  
 
-### 🧱 Structure & Layout
-
-> * Keep paragraphs short — ideally **50–75 words each** for mobile-friendly reading.
-> * Use **clear, descriptive subheadings** in **Title Case** (e.g., “How Climate Change Affects Small Farmers”).
-> * Maintain **consistent spacing** throughout — no double line breaks or uneven gaps.
-> * Limit each subtopic to **1–2 short sentences per paragraph** when possible.
-> * Use **engaging questions** or simple transitions to connect sections smoothly.
-> * Break the article into **scannable, well-spaced blocks** and suggest where visuals (e.g., photos, infographics) could fit naturally.
-
----
-
-### ✍️ Sentence & Flow
-
-* **Shorten long or complex sentences** for clarity.
-* **Vary sentence length** to keep the rhythm natural.
-* Replace **repetitive transition words** with alternatives that feel conversational.
-* Ensure **consistent verb tenses** and natural sentence flow.
-* Avoid wordiness — make each line **clear, direct, and easy to follow.**
-
----
-
-### 🔤 Readability & Emphasis
-
-* Use **Title Case** for subheadings and ensure stylistic consistency.
-* Make sure each paragraph flows **logically from one idea to the next.**
-* Keep the tone **natural, conversational, and reader-friendly** — not overly formal.
-* Use **simple transitions** like “For example,” “That’s why,” or “In short,” to guide readers smoothly.
-* Suggest where emphasis (bold or italics) might help highlight key ideas, but don’t overuse it.
+**Prompt:**  
+>"Act as a professional, senior copy editor and writing coach with expertise in [e.g academic writing or blog writing]. Your goal is to refine the following text to achieve maximum clarity, impact, and professionalism. Perform a comprehensive multi-pass edit, specifically focusing on the following areas. Present your revisions first as a single, fully-edited final draft, and then provide a list of your top 5 most significant changes and the reasoning for each:  
+>1.	Clarity & Conciseness: Ruthlessly eliminate all wordiness, jargon, filler words, and clichés. Rephrase complex or tangled sentences to be direct and easy to understand.
+>2.	Engagement & Flow: Ensure smooth, logical transitions between paragraphs and sentences. Improve sentence variety (length and structure) to maintain reader interest and a natural rhythm.
+>3.	Tone & Style: Adjust the entire text to maintain a consistent, appropriate tone, which should be [Your desired tone]. Check that the style aligns with [Your desired style e.g APA, MLA, Chicago].
+>4.	Impact & Delivery: Convert passive voice to active voice wherever it makes the sentence stronger. Replace weak verbs and adjectives with strong, impactful alternatives.
+>5.	Correctness: Fix all grammatical, punctuation, and spelling errors, including advanced issues like misplaced modifiers and subject-verb disagreement in complex sentences.
 
 ---
 
@@ -175,61 +150,18 @@ Read your post out loud. Does it sound like a real person talking to a friend?
 If anything sounds robotic or unnatural, rephrase it in simpler, more conversational language.  
 
 ---
-# AI Help
 
-## ✍️ Grammar and Flow Polishing
+## 🔍 Check for Plagiarism (Using AI Tools)
+Prompt:
+>"Act as a critical content integrity specialist and academic reviewer. Your task is to perform an originality and similarity review of the following text before it is submitted. The goal is to identify any sentence structures, phrases, or conceptual presentations that bear a close resemblance to existing content. Critically review the text and perform the following checks, focusing on where the language might be flagged by a sophisticated plagiarism tool:
+>1.	High-Similarity Phrase Review: Identify and list five to ten specific sentences or long phrases that are highly generic, clichéd, or strongly echo existing published works. For each, provide a brief suggestion to rephrase or restructure the sentence to ensure originality.
+>2.	Uncited Knowledge Check: Point out any section or paragraph (particularly those covering statistics, facts, or niche concepts) where the information is not common knowledge and clearly requires an in-text citation or attribution.
+>3.	Self-Correction Assessment: Analyze the flow and structure. Does any section read as if it was paraphrased too closely from a single source, even if a dedicated tool can't find a direct match? If so, recommend a strategy to make the voice distinctly my own.
 
-**Prompt:**
-> “You are an editor for online news blogs. Please correct grammar, spelling, and sentence flow in the following blog while keeping my original tone and writing style. Make it sound natural and conversational — not too formal, and avoid using complex words.”
+--- 
+My ready to be submitted draft: _________________________________________________
 
----
+--- 
 
-## ✅ (Optional) Deep Grammar Check
 
-If you want to double-check your grammar and sentence clarity using another AI tool, use this prompt:
 
-**Prompt:**
-> “Check this article for any remaining grammar or clarity issues. List specific corrections and suggestions for improvement without changing my tone or writing style.”
-
----
-
-## 🔍 Check for Plagiarism (Using Free AI Tools)
-
-You can use AI to find repeated or overly common phrases that might sound copied.
-
-**Prompt:**
-> “Act as a plagiarism reviewer. Scan the following text for any parts that sound copied or too similar to common online content. Highlight the sections that might need rewriting to make them more original. Do not quote or reference external sources — just identify what sounds reused.”
-
----
-
-## 🔄 Rephrase Common or Repetitive Sentences
-
-**Prompt:**
-> “Rephrase the sentences below to make them sound original and natural while keeping the same meaning.”
-
----
-
-## 🏁 Phase 5: Final Review Before Upload
-
-**Prompt:**
-> “You are an editor for [insert your blogging platform, e.g., Opera News Hub]. Review this article for clarity, flow, grammar, and originality. Suggest final improvements or adjustments in concise bullet points.”
-
----
-
-#### **C. Final Edits**
-
-* ✅ Check for spelling and grammar.
-* ✅ Verify facts and data.
-* ✅ Use formatting (bold, bullet points, subheadings) for readability.
-* ✅ Ensure your intro and conclusion feel balanced.
-
-💡 *Tip:* You can also ask AI to proofread your final version:
-
-> “Proofread my blog post for clarity, grammar, and readability. Suggest improvements without changing my personal style.”
-
----
-
-### **YOU’RE DONE! 🎉**
-
-You’ve now written a full, engaging blog post — from idea to polished draft — using AI as your writing assistant.
-Each time you repeat the process, it gets easier and faster. Over time, you’ll develop your own unique voice and rhythm.
