@@ -163,6 +163,36 @@ Prompt:
 My ready to be submitted draft: _________________________________________________
 
 --- 
+## How to use AI to generate snippets/ meta desription to promote your blog on social media  
 
+Prompt:
+> “Act as a professional copywriter, social media strategist, and brand storyteller specializing in high-conversion, platform-optimized content.  
+> Your goal is to create [Number required e.g 3] distinct, scroll-stopping social media snippets to promote my new blog post on [Platform you want to use e.g twitter].  
+> Each snippet must be strategically written to:  
+> - Grab attention instantly (hook within first 1–2 lines)
+> - Build emotional or intellectual curiosity
+> - Encourage action (clicks, saves, comments, or shares)
+> - Match the platform’s native style and voice  
+
+> Snippet Requirements:
+> For each snippet, apply the AIDA or PAS copywriting model, whichever fits better:
+> - AIDA (Attention, Interest, Desire, Action) – for curiosity-based or promotional hooks
+> - PAS (Problem, Agitation, Solution) – for pain-point or solution-driven posts  
+
+> Make sure each snippet includes:
+> - A unique hook
+> - A value-driven insight or takeaway
+> - A compelling CTA (e.g., “Read more,” “Find out how,” “Discover the secret”)
+> - For Facebook & Instagram: Include emojis that match the tone
+> - 3 relevant hashtags (mix of niche + trending)
+
+> When writing:
+> - Use emotionally intelligent phrasing : avoid robotic or generic marketing tone.
+> - Vary sentence rhythm (mix short + medium sentences).
+> - Avoid em dashes (—): use appropriate punctuation e.g commas, colons, or short sentences instead.
+> - Front-load strong words (verbs, power adjectives, curiosity triggers).
+> - Write as if speaking directly to the reader : e.g use “you,” “your,” or “imagine.”  
+
+---
 
 
