@@ -135,6 +135,7 @@ Prompt:
 >3.	Tone & Style: Adjust the entire text to maintain a consistent, appropriate tone, which should be [Your desired tone]. Check that the style aligns with [Your desired style e.g APA, MLA, Chicago].
 >4.	Impact & Delivery: Convert passive voice to active voice wherever it makes the sentence stronger. Replace weak verbs and adjectives with strong, impactful alternatives.
 >5.	Correctness: Fix all grammatical, punctuation, and spelling errors, including advanced issues like misplaced modifiers and subject-verb disagreement in complex sentences.
+>6.	Formatting & Punctuation: Use standard punctuation only. Do not use em dashes (—), en dashes (–), or ellipses (...). Replace them with standard punctuation as appropriate. Ensure spacing and paragraph structure are consistent  
 
 ---
 
