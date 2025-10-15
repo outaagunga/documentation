@@ -48,7 +48,7 @@ Prompt:
 > 1. Ensure Flesch-Kincaid Grade Level is below 8.0.  
 > 2. Keep paragraphs to 2-3 lines maximum.
 > 3. Eliminate ALL passive voice and complex sentence structures.
-> 4. Do not use em-dashes, exclamation marks, or idioms.  
+> 4. Do not use em-dashes, exclamation marks, or idioms.
 > Return the final, publish-ready article FIRST (in bold and full text), and then provide a succinct, bulleted list of the 5 most significant editorial changes you made.”  
 
 ## STEP 6: SOCIAL MEDIA PROMOTION  
