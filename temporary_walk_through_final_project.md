@@ -337,19 +337,64 @@ CREATE TABLE orders (
   customer_id INT REFERENCES customers(customer_id) ON DELETE CASCADE,
   product_id INT REFERENCES products(product_id) ON DELETE CASCADE,
   quantity INT NOT NULL,
-  total_amount DECIMAL(10,2) GENERATED ALWAYS AS (quantity * (
-      SELECT price FROM products WHERE products.product_id = orders.product_id
-  )) STORED,
+  total_amount DECIMAL(10,2),
   order_date TIMESTAMP DEFAULT NOW()
 );
 ```
 
-✅ **Explanation:**
+---
 
-* `SERIAL` automatically generates IDs.
-* `REFERENCES` defines foreign keys.
-* The `total_amount` column calculates order cost automatically.
-* `ON DELETE CASCADE` means if a customer or product is deleted, related orders are removed too.
+### Then Create a trigger function to calculate `total_amount`
+
+This function automatically sets `total_amount` based on the `quantity` × `price` from the `products` table.
+
+```sql
+CREATE OR REPLACE FUNCTION set_total_amount()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Calculate total_amount from the product price
+  SELECT price INTO NEW.total_amount
+  FROM products
+  WHERE product_id = NEW.product_id;
+
+  NEW.total_amount := NEW.total_amount * NEW.quantity;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+---
+
+### Create a trigger to call this function
+
+Attach the function to the `orders` table so it runs **before every insert or update**.
+
+```sql
+CREATE TRIGGER trg_set_total_amount
+BEFORE INSERT OR UPDATE ON orders
+FOR EACH ROW
+EXECUTE FUNCTION set_total_amount();
+```
+
+---
+
+### Test it
+
+```sql
+-- Insert a sample order
+INSERT INTO orders (customer_id, product_id, quantity)
+VALUES (1, 2, 3);
+
+-- Check that total_amount is auto-calculated
+SELECT * FROM orders;
+```
+
+**Expected Output:**
+
+| order_id | customer_id | product_id | quantity | total_amount | order_date          |
+| -------- | ----------- | ---------- | -------- | ------------ | ------------------- |
+| 1        | 1           | 2          | 3        | 149.97       | 2025-10-12 15:34:21 |
+
 
 ---
 
