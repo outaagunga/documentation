@@ -611,6 +611,184 @@ ORDER BY order_id;
 ```
 
 ---
+## Additional things you can do  
+
+## 🧱 1️⃣ Add an **Order Status System**
+
+Right now, every order is assumed to be “complete,” but in reality, orders go through stages.
+Add a `status` column:
+
+```sql
+ALTER TABLE orders
+ADD COLUMN status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'shipped', 'cancelled', 'completed'));
+```
+
+### Why:
+
+* You can now update order progress.
+* Useful for dashboards, automation, or API endpoints.
+
+---
+
+## 💳 2️⃣ Add a **Payments Table**
+
+To record when and how an order was paid for:
+
+```sql
+CREATE TABLE payments (
+  payment_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  order_id INT NOT NULL REFERENCES orders(order_id) ON DELETE CASCADE,
+  payment_method VARCHAR(50),
+  amount DECIMAL(10,2) NOT NULL,
+  payment_date TIMESTAMP DEFAULT NOW() NOT NULL
+);
+```
+
+### Optional automation:
+
+Add a trigger that **marks an order as “paid”** when a payment is inserted:
+
+```sql
+CREATE OR REPLACE FUNCTION mark_order_paid()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE orders
+  SET status = 'paid'
+  WHERE order_id = NEW.order_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_payment
+AFTER INSERT ON payments
+FOR EACH ROW
+EXECUTE FUNCTION mark_order_paid();
+```
+
+---
+
+## 📦 3️⃣ Add a **Restock Mechanism**
+
+Right now, stock only decreases. Add a way to **increase stock** (when adding inventory or cancelling an order).
+
+### Option A — Manual restock table
+
+```sql
+CREATE TABLE restocks (
+  restock_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  product_id INT NOT NULL REFERENCES products(product_id) ON DELETE CASCADE,
+  quantity_added INT NOT NULL CHECK (quantity_added > 0),
+  restock_date TIMESTAMP DEFAULT NOW()
+);
+```
+
+### Option B — Auto-restock on cancelled order
+
+If an order is cancelled, add a trigger to restore stock:
+
+```sql
+CREATE OR REPLACE FUNCTION restore_stock_on_cancel()
+RETURNS TRIGGER AS $$
+DECLARE
+  old_quantity INT;
+BEGIN
+  IF NEW.status = 'cancelled' AND OLD.status <> 'cancelled' THEN
+    SELECT quantity INTO old_quantity FROM orders WHERE order_id = NEW.order_id;
+    UPDATE products
+    SET stock_quantity = stock_quantity + old_quantity
+    WHERE product_id = NEW.product_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER restore_stock
+AFTER UPDATE ON orders
+FOR EACH ROW
+EXECUTE FUNCTION restore_stock_on_cancel();
+```
+
+---
+
+## 📊 4️⃣ Create a **View for Reports**
+
+So you can easily query full order info without writing long joins every time.
+
+```sql
+CREATE OR REPLACE VIEW order_summary AS
+SELECT
+  o.order_id,
+  c.full_name AS customer,
+  p.product_name,
+  o.quantity,
+  p.price,
+  o.total_amount,
+  o.status,
+  o.order_date
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+JOIN products p ON o.product_id = p.product_id;
+```
+
+Then you can:
+
+```sql
+SELECT * FROM order_summary ORDER BY order_date DESC;
+```
+
+---
+
+## 🧠 5️⃣ Data Integrity Enhancements
+
+| Goal                                | SQL                                                                                                       |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Prevent negative stock              | `ALTER TABLE products ADD CONSTRAINT stock_nonnegative CHECK (stock_quantity >= 0);`                      |
+| Ensure unique product names         | `ALTER TABLE products ADD CONSTRAINT unique_product_name UNIQUE (product_name);`                          |
+| Prevent duplicate orders (optional) | `ALTER TABLE orders ADD CONSTRAINT unique_customer_product UNIQUE (customer_id, product_id, order_date);` |
+
+---
+
+## 🔐 6️⃣ Supabase-specific Enhancements
+
+Supabase lets you set **Row Level Security (RLS)** and **Policies** to control who can read/write data.
+
+### Example — Only authenticated users can view their own orders:
+
+```sql
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view their own orders"
+ON orders
+FOR SELECT
+USING (auth.uid() = customer_id);
+```
+
+*(You’ll need Supabase Auth enabled for this.)*
+
+---
+
+## 💡 7️⃣ Optional — Analytics Add-ons
+
+You can easily create materialized views for dashboards:
+
+```sql
+CREATE MATERIALIZED VIEW sales_summary AS
+SELECT
+  p.category,
+  SUM(o.total_amount) AS total_sales,
+  COUNT(o.order_id) AS total_orders
+FROM orders o
+JOIN products p ON o.product_id = p.product_id
+GROUP BY p.category;
+```
+
+Then refresh periodically:
+
+```sql
+REFRESH MATERIALIZED VIEW sales_summary;
+```
+
+---
 
 ## 💾 **1.7 Export Schema**
 
