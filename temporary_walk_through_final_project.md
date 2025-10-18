@@ -410,8 +410,8 @@ GROUP BY c.full_name;
 ```
 
 ---
-
-### Then Create a trigger function to calculate `total_amount`
+### You will realized at times totals do not calcualte automatically. To solve that we use a triger  
+### Create a trigger function to calculate `total_amount`
 
 This function automatically sets `total_amount` based on the `quantity` × `price` from the `products` table.
 
