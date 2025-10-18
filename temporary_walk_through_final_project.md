@@ -416,6 +416,11 @@ GROUP BY c.full_name;
 This function automatically sets `total_amount` based on the `quantity` × `price` from the `products` table.
 
 ```sql
+-- Drop the old trigger and function first (optional but recommended)
+DROP TRIGGER IF EXISTS set_total_amount ON orders;
+DROP FUNCTION IF EXISTS update_total_amount();
+
+-- Create a new trigger
 CREATE OR REPLACE FUNCTION set_total_amount()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -462,8 +467,37 @@ SELECT * FROM orders;
 | -------- | ----------- | ---------- | -------- | ------------ | ------------------- |
 | 1        | 1           | 2          | 3        | 149.97       | 2025-10-12 15:34:21 |
 
-
 --- 
+## Reduce stock when new order is placed  
+```sql
+-- Function: Reduce stock quantity after order is placed
+CREATE OR REPLACE FUNCTION reduce_stock()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Check stock availability
+  IF (SELECT stock_quantity FROM products WHERE product_id = NEW.product_id) < NEW.quantity THEN
+    RAISE EXCEPTION 'Not enough stock available for product_id %', NEW.product_id;
+  END IF;
+
+  -- Deduct stock
+  UPDATE products
+  SET stock_quantity = stock_quantity - NEW.quantity
+  WHERE product_id = NEW.product_id;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger: after insert on orders
+CREATE TRIGGER update_stock_after_order
+AFTER INSERT ON orders
+FOR EACH ROW
+EXECUTE FUNCTION reduce_stock();
+```
+
+
+
+
 ## Troubleshouting Triggers if there are not working  
 
 ### 1️⃣ **Check if the trigger function exists**
