@@ -342,62 +342,6 @@ CREATE TABLE orders (
 );
 ```
 
----
-
-### Then Create a trigger function to calculate `total_amount`
-
-This function automatically sets `total_amount` based on the `quantity` × `price` from the `products` table.
-
-```sql
-CREATE OR REPLACE FUNCTION set_total_amount()
-RETURNS TRIGGER AS $$
-BEGIN
-  -- Calculate total_amount from the product price
-  SELECT price INTO NEW.total_amount
-  FROM products
-  WHERE product_id = NEW.product_id;
-
-  NEW.total_amount := NEW.total_amount * NEW.quantity;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-```
-
----
-
-### Create a trigger to call this function
-
-Attach the function to the `orders` table so it runs **before every insert or update**.
-
-```sql
-CREATE TRIGGER trg_set_total_amount
-BEFORE INSERT OR UPDATE ON orders
-FOR EACH ROW
-EXECUTE FUNCTION set_total_amount();
-```
-
----
-
-### Test it
-
-```sql
--- Insert a sample order
-INSERT INTO orders (customer_id, product_id, quantity)
-VALUES (1, 2, 3);
-
--- Check that total_amount is auto-calculated
-SELECT * FROM orders;
-```
-
-**Expected Output:**
-
-| order_id | customer_id | product_id | quantity | total_amount | order_date          |
-| -------- | ----------- | ---------- | -------- | ------------ | ------------------- |
-| 1        | 1           | 2          | 3        | 149.97       | 2025-10-12 15:34:21 |
-
-
----
-
 ## 🧩 **1.5 Insert Sample Data**
 
 Each table needs at least **5 rows** of sample data.
@@ -463,6 +407,173 @@ SELECT c.full_name, COUNT(o.order_id) AS total_orders
 FROM customers c
 LEFT JOIN orders o ON c.customer_id = o.customer_id
 GROUP BY c.full_name;
+```
+
+---
+
+### Then Create a trigger function to calculate `total_amount`
+
+This function automatically sets `total_amount` based on the `quantity` × `price` from the `products` table.
+
+```sql
+CREATE OR REPLACE FUNCTION set_total_amount()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Calculate total_amount from the product price
+  SELECT price INTO NEW.total_amount
+  FROM products
+  WHERE product_id = NEW.product_id;
+
+  NEW.total_amount := NEW.total_amount * NEW.quantity;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+---
+
+### Create a trigger to call this function
+
+Attach the function to the `orders` table so it runs **before every insert or update**.
+
+```sql
+CREATE TRIGGER trg_set_total_amount
+BEFORE INSERT OR UPDATE ON orders
+FOR EACH ROW
+EXECUTE FUNCTION set_total_amount();
+```
+
+---
+
+### Test it
+
+```sql
+-- Insert a sample order
+INSERT INTO orders (customer_id, product_id, quantity)
+VALUES (1, 2, 3);
+
+-- Check that total_amount is auto-calculated
+SELECT * FROM orders;
+```
+
+**Expected Output:**
+
+| order_id | customer_id | product_id | quantity | total_amount | order_date          |
+| -------- | ----------- | ---------- | -------- | ------------ | ------------------- |
+| 1        | 1           | 2          | 3        | 149.97       | 2025-10-12 15:34:21 |
+
+
+--- 
+## Troubleshouting Triggers if there are not working  
+
+### 1️⃣ **Check if the trigger function exists**
+
+```sql
+SELECT routine_name, routine_type, data_type
+FROM information_schema.routines
+WHERE routine_name = 'update_total_amount';
+```
+
+→ You should see one row returned if the function exists.
+
+---
+
+### 2️⃣ **Check if the trigger is attached to your orders table**
+
+```sql
+SELECT trigger_name, event_manipulation, action_timing, action_statement
+FROM information_schema.triggers
+WHERE event_object_table = 'orders';
+```
+
+You should see:
+
+```
+trigger_name    | event_manipulation | action_timing | action_statement
+----------------+--------------------+----------------+---------------------------------------------
+set_total_amount| INSERT             | BEFORE         | EXECUTE FUNCTION update_total_amount()
+set_total_amount| UPDATE             | BEFORE         | EXECUTE FUNCTION update_total_amount()
+```
+
+✅ If it shows up, your trigger is **attached correctly**.
+
+---
+
+### 3️⃣ **Check if it fires**
+
+After inserting a test order:
+
+```sql
+INSERT INTO orders (customer_id, product_id, quantity)
+VALUES (1, 2, 2)
+RETURNING *;
+```
+
+Then confirm:
+
+```sql
+SELECT order_id, product_id, quantity, total_amount
+FROM orders
+ORDER BY order_id DESC
+LIMIT 1;
+```
+
+✅ If `total_amount` is **not-null**, your trigger is working.
+
+---
+
+### 4️⃣ **Optional: list all triggers in your database**
+
+```sql
+SELECT event_object_table AS table_name, trigger_name, action_timing, event_manipulation
+FROM information_schema.triggers
+ORDER BY table_name;
+```
+
+This will show all triggers on all tables.
+
+---
+
+You can also calculate `total_amount`** for all the orders that were inserted before the trigger was fixed (so they’re all filled in automatically)  
+
+---
+
+## 🧩 Step-by-Step Fix for Old `NULL` Totals
+
+### 🧠 1️⃣ Check what’s currently missing
+
+Run this to confirm which orders are missing totals:
+
+```sql
+SELECT order_id, customer_id, product_id, quantity, total_amount
+FROM orders
+WHERE total_amount IS NULL;
+```
+
+You’ll see rows where `total_amount` is `NULL`.
+
+---
+
+### ⚙️ 2️⃣ Update all missing totals
+
+This command computes totals directly from product prices and updates all affected rows:
+
+```sql
+UPDATE orders AS o
+SET total_amount = p.price * o.quantity
+FROM products AS p
+WHERE o.product_id = p.product_id
+  AND o.total_amount IS NULL;
+```
+
+### 🔍 3️⃣ Verify results
+
+After the update, check again:
+
+```sql
+SELECT order_id, customer_id, product_id, quantity, total_amount
+FROM orders
+ORDER BY order_id;
 ```
 
 ---
