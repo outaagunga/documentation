@@ -5014,6 +5014,256 @@ This helps confirm that your session identity matches your test case.
 
 ---
 
+## 🧱 **E-Commerce Database — Final Script**
+
+```sql
+-- =============================================================
+-- 📘 E-Commerce Database Schema (Supabase Compatible)
+-- =============================================================
+
+-- 1️⃣ Create Customers Table
+CREATE TABLE IF NOT EXISTS customers (
+  customer_id SERIAL PRIMARY KEY,
+  user_id uuid REFERENCES auth.users (id) ON DELETE CASCADE,
+  full_name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  phone VARCHAR(20),
+  city VARCHAR(50),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 2️⃣ Create Products Table
+CREATE TABLE IF NOT EXISTS products (
+  product_id SERIAL PRIMARY KEY,
+  product_name VARCHAR(100) NOT NULL,
+  category VARCHAR(50),
+  price DECIMAL(10,2) NOT NULL,
+  stock_quantity INT DEFAULT 0 CHECK (stock_quantity >= 0),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- 3️⃣ Create Orders Table
+CREATE TABLE IF NOT EXISTS orders (
+  order_id SERIAL PRIMARY KEY,
+  customer_id INT REFERENCES customers (customer_id) ON DELETE CASCADE,
+  product_id INT REFERENCES products (product_id) ON DELETE CASCADE,
+  user_id uuid REFERENCES auth.users (id) ON DELETE CASCADE,
+  quantity INT NOT NULL CHECK (quantity > 0),
+  total_amount DECIMAL(10,2),
+  order_date TIMESTAMP DEFAULT NOW()
+);
+
+-- 4️⃣ Create Users Table (mirror of auth.users)
+CREATE TABLE IF NOT EXISTS users (
+  id uuid PRIMARY KEY REFERENCES auth.users (id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  role TEXT CHECK (role IN ('admin', 'user')) DEFAULT 'user'
+);
+
+-- =============================================================
+-- ⚙️ TRIGGERS
+-- =============================================================
+
+-- (a) Auto-calculate total_amount for orders
+CREATE OR REPLACE FUNCTION calculate_total_amount()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.total_amount := (
+    SELECT price FROM products WHERE product_id = NEW.product_id
+  ) * NEW.quantity;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER before_insert_orders
+BEFORE INSERT ON orders
+FOR EACH ROW
+EXECUTE FUNCTION calculate_total_amount();
+
+
+-- (b) Automatically add a customer when a new auth user is created
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  INSERT INTO customers (user_id, full_name, email)
+  VALUES (NEW.id, NEW.email, NEW.email);
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION handle_new_user();
+
+
+-- =============================================================
+-- 🧾 SAMPLE DATA
+-- =============================================================
+
+-- Customers
+INSERT INTO customers (full_name, email, phone, city)
+VALUES
+('Alice Mwangi', 'alice@example.com', '0712345678', 'Nairobi'),
+('Brian Otieno', 'brian@example.com', '0723456789', 'Mombasa'),
+('Cynthia Njeri', 'cynthia@example.com', '0734567890', 'Kisumu'),
+('David Kimani', 'david@example.com', '0745678901', 'Nakuru'),
+('Eva Wambui', 'eva@example.com', '0756789012', 'Eldoret');
+
+-- Products
+INSERT INTO products (product_name, category, price, stock_quantity)
+VALUES
+('Wireless Mouse', 'Electronics', 1200.00, 50),
+('Laptop Backpack', 'Accessories', 2500.00, 30),
+('USB Flash Drive 64GB', 'Storage', 1500.00, 40),
+('Bluetooth Speaker', 'Electronics', 4500.00, 20),
+('Laptop Stand', 'Accessories', 3000.00, 25);
+
+-- Orders (auto-calculated total_amount)
+INSERT INTO orders (customer_id, product_id, quantity, user_id)
+VALUES
+(1, 2, 1, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
+(2, 1, 2, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
+(3, 4, 1, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
+(4, 5, 1, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
+(5, 3, 3, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8');
+
+-- Users
+INSERT INTO users (id, email, role)
+VALUES
+('24f29f59-89c1-4f1d-97e9-554029e6a3f3', 'outa.agunga@mail.admi.ac.ke', 'admin'),
+('b5fa48df-c568-4d73-b42c-e19896d9cfa8', 'typingpool.astu@gmail.com', 'user');
+
+
+-- =============================================================
+-- 🔒 ENABLE RLS (Row-Level Security)
+-- =============================================================
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
+-- =============================================================
+-- 🔐 RLS POLICIES
+-- =============================================================
+
+-- 🧍 Customers Policies
+-- Admins: View all customers
+CREATE POLICY "Admins can view all customers"
+ON customers
+FOR SELECT
+USING (
+  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+);
+
+-- Users: View & update own profile
+CREATE POLICY "Users can view their own profile"
+ON customers
+FOR SELECT
+USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own profile"
+ON customers
+FOR UPDATE
+USING (auth.uid() = user_id);
+
+
+-- 🛒 Products Policies
+-- Admins: Manage all
+CREATE POLICY "Admins can manage all products"
+ON products
+FOR ALL
+USING (
+  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+);
+
+-- Users: View only
+CREATE POLICY "Users can view products"
+ON products
+FOR SELECT
+USING (TRUE);
+
+
+-- 📦 Orders Policies
+-- Users: View & create their own
+CREATE POLICY "Users can view their own orders"
+ON orders
+FOR SELECT
+USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create their own orders"
+ON orders
+FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+
+-- Admins: Manage all orders
+CREATE POLICY "Admins can manage all orders"
+ON orders
+FOR ALL
+USING (
+  EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin')
+);
+
+
+-- =============================================================
+-- 🧰 ADMIN-ONLY FUNCTIONS
+-- =============================================================
+
+-- Delete a product (admin only)
+CREATE OR REPLACE FUNCTION admin_delete_product(prod_id INT)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin'
+  ) THEN
+    DELETE FROM products WHERE product_id = prod_id;
+  ELSE
+    RAISE EXCEPTION 'Permission denied: admin access required.';
+  END IF;
+END;
+$$;
+
+-- View all orders (admin only)
+CREATE OR REPLACE FUNCTION admin_view_all_orders()
+RETURNS TABLE (
+  order_id INT,
+  customer_id INT,
+  total_amount NUMERIC,
+  order_date TIMESTAMP
+)
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+  SELECT order_id, customer_id, total_amount, order_date
+  FROM orders
+  WHERE EXISTS (
+    SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin'
+  );
+$$;
+
+
+-- =============================================================
+-- 🧩 Verification Queries
+-- =============================================================
+
+-- Check if RLS is enabled
+SELECT schemaname, tablename, rowsecurity
+FROM pg_tables
+WHERE schemaname = 'public';
+
+-- See all active policies
+SELECT schemaname, tablename, policyname, cmd, roles
+FROM pg_policies
+ORDER BY schemaname, tablename;
+```
+
+---
 
 
 
