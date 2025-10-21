@@ -4455,3 +4455,376 @@ supabase-ecommerce-security/
 Would you like me to generate a **GitHub repository layout + recommended README badges and commit message template** next, so your repo looks polished and easy to grade (like a real portfolio project)?
 
 
+# Project 2 updated- User Roles and Policies on Supabase
+
+## 📘 Overview
+
+In this part, you’ll implement **user authentication**, **roles**, and **row-level security (RLS)** in your **E-commerce Supabase database** created in the *Data Fundamentals* project.
+
+You’ll also:
+
+* Create **role-based access policies** (Admin vs. User)
+* Add **Supabase Auth integration**
+* Define **secure database functions**
+* Document your security setup
+
+---
+
+## 🪜 Step 1 — Create Core Tables
+
+Let’s start by defining the core e-commerce tables:
+`customers`, `products`, and `orders`.
+
+Run these SQL statements in your **Supabase SQL Editor**.
+
+### 🧱 1.1 Create `customers` table
+
+```sql
+CREATE TABLE customers (
+  customer_id SERIAL PRIMARY KEY,
+  full_name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  phone VARCHAR(20),
+  city VARCHAR(50),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+---
+
+### 🧱 1.2 Create `products` table
+
+```sql
+CREATE TABLE products (
+  product_id SERIAL PRIMARY KEY,
+  product_name VARCHAR(100) NOT NULL,
+  category VARCHAR(50),
+  price DECIMAL(10,2) NOT NULL,
+  stock_quantity INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+---
+
+### 🧱 1.3 Create `orders` table
+
+Use a normal column for `total_amount`, then we’ll calculate it later with a trigger.
+
+```sql
+CREATE TABLE orders (
+  order_id SERIAL PRIMARY KEY,
+  customer_id INT REFERENCES customers(customer_id) ON DELETE CASCADE,
+  product_id INT REFERENCES products(product_id) ON DELETE CASCADE,
+  quantity INT NOT NULL,
+  total_amount DECIMAL(10,2),
+  order_date TIMESTAMP DEFAULT NOW()
+);
+```
+
+---
+
+## 🧩 Step 2 — Insert Sample Data
+
+Add example customers, products, and orders for testing.
+
+### 👥 Customers
+
+```sql
+INSERT INTO customers (full_name, email, phone, city) VALUES
+('Alice Mwangi', 'alice@example.com', '0712345678', 'Nairobi'),
+('Brian Otieno', 'brian@example.com', '0723456789', 'Mombasa'),
+('Cynthia Njeri', 'cynthia@example.com', '0734567890', 'Kisumu'),
+('David Kimani', 'david@example.com', '0745678901', 'Nakuru'),
+('Eva Wambui', 'eva@example.com', '0756789012', 'Eldoret');
+```
+
+### 📦 Products
+
+```sql
+INSERT INTO products (product_name, category, price, stock_quantity) VALUES
+('Wireless Mouse', 'Electronics', 1200.00, 50),
+('Laptop Backpack', 'Accessories', 2500.00, 30),
+('USB Flash Drive 64GB', 'Storage', 1500.00, 40),
+('Bluetooth Speaker', 'Electronics', 4500.00, 20),
+('Laptop Stand', 'Accessories', 3000.00, 25);
+```
+
+### 🧾 Orders
+
+```sql
+INSERT INTO orders (customer_id, product_id, quantity) VALUES
+(1, 2, 1),
+(2, 1, 2),
+(3, 4, 1),
+(4, 5, 1),
+(5, 3, 3);
+```
+
+---
+
+## ⚙️ Step 3 — Auto-Calculate Total Amounts
+
+If totals didn’t auto-calculate yet, update them manually:
+
+```sql
+UPDATE orders AS o
+SET total_amount = p.price * o.quantity
+FROM products AS p
+WHERE o.product_id = p.product_id
+  AND o.total_amount IS NULL;
+```
+
+Then confirm:
+
+```sql
+SELECT order_id, customer_id, product_id, quantity, total_amount
+FROM orders
+ORDER BY order_id;
+```
+
+---
+
+## 🔐 Step 4 — Enable Row Level Security (RLS)
+
+Enable RLS for all your core tables.
+
+```sql
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+```
+
+Check status:
+
+```sql
+SELECT schemaname, tablename, rowsecurity
+FROM pg_tables
+WHERE schemaname = 'public';
+```
+
+---
+
+## 👥 Step 5 — Supabase Authentication & Users Table
+
+Create a `users` table linked to Supabase’s `auth.users`.
+
+```sql
+CREATE TABLE IF NOT EXISTS users (
+  id uuid REFERENCES auth.users ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  role TEXT CHECK (role IN ('admin', 'user')) DEFAULT 'user',
+  PRIMARY KEY (id)
+);
+```
+
+---
+
+### 🧩 Add Sample Users (linked to real Auth accounts)
+
+> ⚠️ Replace the UUIDs with actual IDs from your Supabase `auth.users` table.
+
+```sql
+INSERT INTO users (id, email, role)
+VALUES
+  ('24f29f59-89c1-4f1d-97e9-554029e6a3f3', 'outa.agunga@mail.admi.ac.ke', 'admin'),
+  ('b5fa48df-c568-4d73-b42c-e19896d9cfa8', 'typingpool.astu@gmail.com', 'user');
+```
+
+---
+
+## 🧾 Step 6 — Link Users to Customer and Orders Tables
+
+Add `user_id` reference columns:
+
+```sql
+ALTER TABLE customers ADD COLUMN user_id uuid REFERENCES auth.users (id);
+ALTER TABLE orders ADD COLUMN user_id uuid REFERENCES auth.users (id);
+```
+
+Backfill for testing:
+
+```sql
+UPDATE orders
+SET user_id = 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'
+WHERE order_id IS NOT NULL;
+```
+
+---
+
+## 🧱 Step 7 — Define Roles & Policies
+
+### 🧑‍💼 Admin Policy — Customers Table
+
+Admins can view all customers:
+
+```sql
+CREATE POLICY "Admins can view all customers"
+ON customers
+FOR SELECT
+USING (EXISTS (
+  SELECT 1 FROM customers WHERE user_id = auth.uid() AND role = 'admin'
+));
+```
+
+### 👤 User Policies — Customers Table
+
+```sql
+-- View own profile
+CREATE POLICY "Users can view their own profile"
+ON customers
+FOR SELECT
+USING (auth.uid() = user_id);
+
+-- Update own profile
+CREATE POLICY "Users can update their own profile"
+ON customers
+FOR UPDATE
+USING (auth.uid() = user_id);
+```
+
+---
+
+### 🛒 Product Policies
+
+```sql
+-- Admin: full access
+CREATE POLICY "Admins can manage all products"
+ON products
+FOR ALL
+USING (EXISTS (
+  SELECT 1 FROM customers WHERE user_id = auth.uid() AND role = 'admin'
+));
+
+-- User: view only
+CREATE POLICY "Users can view products"
+ON products
+FOR SELECT
+USING (TRUE);
+```
+
+---
+
+### 📦 Order Policies
+
+```sql
+-- User: view and create own orders
+CREATE POLICY "Users can view their own orders"
+ON orders
+FOR SELECT
+USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create their own orders"
+ON orders
+FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+
+-- Admin: manage all orders
+CREATE POLICY "Admins can manage all orders"
+ON orders
+FOR ALL
+USING (EXISTS (
+  SELECT 1 FROM customers WHERE user_id = auth.uid() AND role = 'admin'
+));
+```
+
+---
+
+## 🧰 Step 8 — Sync Auth Users with Customers Automatically
+
+Auto-create a customer record when a new user signs up.
+
+```sql
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  INSERT INTO customers (user_id, full_name, email, role)
+  VALUES (NEW.id, NEW.email, NEW.email, 'user');
+  RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION handle_new_user();
+```
+
+---
+
+## 🧮 Step 9 — Admin-only Secure Functions
+
+### 🗑️ Delete a Product (Admin Only)
+
+```sql
+CREATE OR REPLACE FUNCTION admin_delete_product(prod_id INT)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM customers WHERE user_id = auth.uid() AND role = 'admin'
+  ) THEN
+    DELETE FROM products WHERE product_id = prod_id;
+  ELSE
+    RAISE EXCEPTION 'Permission denied: admin access required.';
+  END IF;
+END;
+$$;
+```
+
+---
+
+### 📋 View All Orders (Admin Only)
+
+```sql
+CREATE OR REPLACE FUNCTION admin_view_all_orders()
+RETURNS TABLE (
+  order_id INT,
+  customer_id INT,
+  total_amount NUMERIC,
+  order_date TIMESTAMP
+)
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+  SELECT order_id, customer_id, total_amount, order_date
+  FROM orders
+  WHERE EXISTS (
+    SELECT 1 FROM customers WHERE user_id = auth.uid() AND role = 'admin'
+  );
+$$;
+```
+
+---
+
+## 🧪 Step 10 — Test Your Setup
+
+| Action                             | Expected Result     |
+| ---------------------------------- | ------------------- |
+| Select all customers (normal user) | ❌ Permission denied |
+| Select all products (normal user)  | ✅ Works             |
+| Insert order for another user      | ❌ Denied            |
+| Admin user selects all orders      | ✅ Works             |
+| Admin deletes product              | ✅ Works             |
+
+Test each using SQL queries or the Supabase Dashboard.
+
+---
+
+✅ **At this point, your E-commerce Supabase database now supports:**
+
+* Admin & User roles
+* Row Level Security
+* Role-based policies
+* Automatic customer sync
+* Secure admin-only functions
+
+---
+
+
+
