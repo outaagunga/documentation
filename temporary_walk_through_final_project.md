@@ -4743,8 +4743,8 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-  INSERT INTO customers (user_id, full_name, email, role)
-  VALUES (NEW.id, NEW.email, NEW.email, 'user');
+  INSERT INTO customers (user_id, full_name, email)
+  VALUES (NEW.id, NEW.email, NEW.email);
   RETURN NEW;
 END;
 $$;
@@ -4753,6 +4753,7 @@ CREATE TRIGGER on_auth_user_created
 AFTER INSERT ON auth.users
 FOR EACH ROW
 EXECUTE FUNCTION handle_new_user();
+
 ```
 
 ---
@@ -4769,7 +4770,7 @@ SECURITY DEFINER
 AS $$
 BEGIN
   IF EXISTS (
-    SELECT 1 FROM customers WHERE user_id = auth.uid() AND role = 'admin'
+    SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin'
   ) THEN
     DELETE FROM products WHERE product_id = prod_id;
   ELSE
@@ -4777,6 +4778,7 @@ BEGIN
   END IF;
 END;
 $$;
+
 ```
 
 ---
@@ -4797,9 +4799,11 @@ AS $$
   SELECT order_id, customer_id, total_amount, order_date
   FROM orders
   WHERE EXISTS (
-    SELECT 1 FROM customers WHERE user_id = auth.uid() AND role = 'admin'
+    SELECT 1 FROM users WHERE id = auth.uid() AND role = 'admin'
   );
 $$;
+
+
 ```
 
 ---
