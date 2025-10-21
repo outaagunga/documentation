@@ -4805,6 +4805,37 @@ $$;
 
 ```
 
+--- 
+✅ To **list or display all Row-Level Security (RLS) policies** in your PostgreSQL (or Supabase) database, you can use one of these SQL queries depending on what you want to see.
+
+---
+
+### 🧾 **Option 1: List All Policies in the Database**
+
+```sql
+SELECT schemaname,
+       tablename,
+       policyname,
+       permissive,
+       roles,
+       cmd,
+       qual,
+       with_check
+FROM pg_policies
+ORDER BY schemaname, tablename;
+```
+---
+
+### 🧩 **Option 2: Show Policies for a Specific Table**
+
+Replace `customers` with your target table name:
+
+```sql
+SELECT *
+FROM pg_policies
+WHERE tablename = 'customers';
+```
+
 ---
 
 ## 🧪 Step 10 — Test Your Setup
