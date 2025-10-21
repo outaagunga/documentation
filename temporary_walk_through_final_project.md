@@ -4695,7 +4695,7 @@ CREATE POLICY "Admins can manage all products"
 ON products
 FOR ALL
 USING (EXISTS (
-  SELECT 1 FROM customers WHERE user_id = auth.uid() AND role = 'admin'
+  SELECT 1 FROM users WHERE users.id = auth.uid() AND role = 'admin'
 ));
 
 -- User: view only
@@ -4726,7 +4726,7 @@ CREATE POLICY "Admins can manage all orders"
 ON orders
 FOR ALL
 USING (EXISTS (
-  SELECT 1 FROM customers WHERE user_id = auth.uid() AND role = 'admin'
+  SELECT 1 FROM users WHERE users.id = auth.uid() AND role = 'admin'
 ));
 ```
 
