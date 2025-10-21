@@ -4663,8 +4663,10 @@ CREATE POLICY "Admins can view all customers"
 ON customers
 FOR SELECT
 USING (EXISTS (
-  SELECT 1 FROM customers WHERE user_id = auth.uid() AND role = 'admin'
+  SELECT 1 FROM users 
+  WHERE id = auth.uid() AND role = 'admin'
 ));
+
 ```
 
 ### 👤 User Policies — Customers Table
