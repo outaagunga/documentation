@@ -4810,27 +4810,180 @@ $$;
 
 ## 🧪 Step 10 — Test Your Setup
 
-| Action                             | Expected Result     |
-| ---------------------------------- | ------------------- |
-| Select all customers (normal user) | ❌ Permission denied |
-| Select all products (normal user)  | ✅ Works             |
-| Insert order for another user      | ❌ Denied            |
-| Admin user selects all orders      | ✅ Works             |
-| Admin deletes product              | ✅ Works             |
 
-Test each using SQL queries or the Supabase Dashboard.
+## ✅ Step 1 — Confirm RLS Is Enabled
+
+Check if all your main tables (`customers`, `products`, `orders`) have RLS turned on.
+
+```sql
+SELECT schemaname, tablename, rowsecurity
+FROM pg_tables
+WHERE schemaname = 'public'
+  AND tablename IN ('customers', 'products', 'orders');
+```
+
+You should see:
+
+```
+ customers | t
+ products  | t
+ orders    | t
+```
+
+If any table shows `f`, enable RLS:
+
+```sql
+ALTER TABLE table_name ENABLE ROW LEVEL SECURITY;
+```
 
 ---
 
-✅ **At this point, your E-commerce Supabase database now supports:**
+## ✅ Step 2 — Verify Users and Roles
 
-* Admin & User roles
-* Row Level Security
-* Role-based policies
-* Automatic customer sync
-* Secure admin-only functions
+Confirm you have both an admin and a user in your `users` table.
+
+```sql
+SELECT id, email, role FROM users;
+```
+
+Example expected result:
+
+| id (uuid)                            | email                                                             | role  |
+| ------------------------------------ | ----------------------------------------------------------------- | ----- |
+| 24f29f59-89c1-4f1d-97e9-554029e6a3f3 | [outa.agunga@mail.admi.ac.ke](mailto:outa.agunga@mail.admi.ac.ke) | admin |
+| b5fa48df-c568-4d73-b42c-e19896d9cfa8 | [typingpool.astu@gmail.com](mailto:typingpool.astu@gmail.com)     | user  |
+
+Keep note of the `id` values — you’ll use them in the next steps to **simulate logins**.
 
 ---
+
+## ✅ Step 3 — Simulate Acting as a Specific User
+
+Supabase allows you to **simulate** a logged-in user in the SQL Editor using the `SET` command.
+This helps test what each user can or can’t do.
+
+### 🔹 Test as Regular User
+
+```sql
+-- Simulate regular user session
+SET LOCAL ROLE authenticated;
+SET LOCAL "request.jwt.claim.sub" = 'b5fa48df-c568-4d73-b42c-e19896d9cfa8';
+```
+
+Now test policies step by step.
+
+#### 3.1 Try viewing all customers
+
+```sql
+SELECT * FROM customers;
+```
+
+🧩 Expected: Should return only the customer record where `user_id = auth.uid()`.
+
+#### 3.2 Try viewing products
+
+```sql
+SELECT * FROM products;
+```
+
+🧩 Expected: Should succeed — all authenticated users can view products.
+
+#### 3.3 Try inserting a new order (own order)
+
+```sql
+INSERT INTO orders (customer_id, product_id, quantity, user_id)
+VALUES (1, 2, 1, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8');
+```
+
+🧩 Expected: Should succeed if your insert policy allows users to create their own orders.
+
+#### 3.4 Try inserting an order for someone else
+
+```sql
+INSERT INTO orders (customer_id, product_id, quantity, user_id)
+VALUES (1, 3, 2, '24f29f59-89c1-4f1d-97e9-554029e6a3f3');
+```
+
+🧩 Expected: Should fail (permission denied).
+
+---
+
+### 🔹 Test as Admin
+
+```sql
+-- Simulate admin session
+SET LOCAL ROLE authenticated;
+SET LOCAL "request.jwt.claim.sub" = '24f29f59-89c1-4f1d-97e9-554029e6a3f3';
+```
+
+#### 3.5 Try viewing all customers
+
+```sql
+SELECT * FROM customers;
+```
+
+🧩 Expected: Should return **all customers** (admin has full access).
+
+#### 3.6 Try updating or deleting a product
+
+```sql
+UPDATE products
+SET price = 1999.99
+WHERE product_id = 1;
+
+DELETE FROM products
+WHERE product_id = 2;
+```
+
+🧩 Expected: Should succeed — admin can manage all products.
+
+#### 3.7 Try running the admin-only function
+
+```sql
+SELECT admin_view_all_orders();
+```
+
+🧩 Expected: Should return all orders in the database.
+
+---
+
+## ✅ Step 4 — Reset Session After Testing
+
+When you’re done testing, reset your simulated user session:
+
+```sql
+RESET ALL;
+```
+
+---
+
+## ✅ Step 5 — Troubleshoot if Something Fails
+
+If a test fails unexpectedly:
+
+1. Check if the policy exists:
+
+   ```sql
+   SELECT * FROM pg_policies WHERE tablename = 'orders';
+   ```
+2. Verify `auth.uid()` matches your simulated user ID.
+3. Re-check that your roles exist in the `users` table.
+4. Make sure the table’s `user_id` column actually stores the same UUID from `auth.users`.
+
+---
+
+## ✅ Optional: Quick Debug Helper Query
+
+Run this anytime to see **which user** your SQL editor is currently simulating:
+
+```sql
+SELECT auth.uid(), auth.role();
+```
+
+This helps confirm that your session identity matches your test case.
+
+---
+
 
 
 
