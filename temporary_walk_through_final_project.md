@@ -4638,7 +4638,6 @@ VALUES
 Add `user_id` reference columns:
 
 ```sql
-ALTER TABLE customers ADD COLUMN user_id uuid REFERENCES auth.users (id);
 ALTER TABLE orders ADD COLUMN user_id uuid REFERENCES auth.users (id);
 ```
 
