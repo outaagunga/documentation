@@ -5265,5 +5265,44 @@ ORDER BY schemaname, tablename;
 
 ---
 
+**If you want your data to replicate the previuos project**
+
+```sql
+-- 🧱 1️⃣ Reset previous data (optional for clean testing)
+TRUNCATE TABLE orders, products, customers, users RESTART IDENTITY CASCADE;
+
+-- 🧱 2️⃣ Create sample users (simulating Supabase Auth)
+INSERT INTO users (id, email, role)	
+VALUES
+  ('24f29f59-89c1-4f1d-97e9-554029e6a3f3', 'alice@example.com', 'user'),
+  ('b5fa48df-c568-4d73-b42c-e19896d9cfa8', 'brian@example.com', 'user'),
+  ('c7ca3a2a-d5de-43b2-95f5-5529b5c9cfe1', 'cynthia@example.com', 'user'),
+  ('d9b5a214-12c8-4f52-8835-05f05e5b95af', 'david@example.com', 'user'),
+  ('e1d2c897-5678-4eaa-94ad-77dcd97a7e2b', 'eva@example.com', 'user'),
+  ('f0a2b6e9-aaaa-bbbb-cccc-111111111111', 'admin@example.com', 'admin');
+
+
+
+-- Customers
+INSERT INTO customers (full_name, email, phone, city)
+VALUES
+('Alice Mwangi', 'alice@example.com', '0712345678', 'Nairobi'),
+('Brian Otieno', 'brian@example.com', '0723456789', 'Mombasa'),
+('Cynthia Njeri', 'cynthia@example.com', '0734567890', 'Kisumu'),
+('David Kimani', 'david@example.com', '0745678901', 'Nakuru'),
+('Eva Wambui', 'eva@example.com', '0756789012', 'Eldoret');
+(‘Jec Agunga’, 'admin@example.com', '0756789545', 'Eldoret');
+
+
+UPDATE customers
+SET user_id = u.id
+FROM auth.users u
+WHERE customers.email = u.email;
+
+```
+
+
+
+
 
 
