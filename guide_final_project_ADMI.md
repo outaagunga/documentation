@@ -1,22 +1,63 @@
-step-by-step **follow-along** workflow (best practices + ready-to-run SQL) for a Supabase / Postgres project with Row Level Security (RLS), Admin vs User roles, sample data, triggers, and explicit policies for read/insert/update/delete on each table.
 
-Work through the numbered steps in order. Copy/paste each SQL block into Supabase SQL editor (or psql) and run it before moving to the next step.
-
----
-
-# Part 0 — assumptions & best practices (quick)
-
-1. Supabase will put `jwt` claims into `request.jwt.claims`. Use `request.jwt.claims.role` to detect `admin` vs `user`. Example values: `'admin'`, `'user'`.
-2. Use `auth.uid()` to get the currently authenticated user's UUID. (Supabase exposes this in the DB environment.)
-3. Keep client apps using the **anon** key (subject to RLS) and only use the **service_role** key on server backends (it bypasses RLS — don't use it in client code).
-4. Enable RLS for all tables and use `USING` and `WITH CHECK` clauses in policies to control read vs insert/update/delete semantics.
-5. Use triggers for derived/calculated values (e.g., `total_amount`) so clients don’t have to compute them.
-6. Revoke broad public access and grant required privileges to the `authenticated` role so RLS policies can take effect.
+# PROJECT 2:- SECURITY  
+> Data Fundamentals Project: Admin Roles & Security in Supabase  
 
 ---
 
-# Part 1 — Schema + sample data + helper trigger
+# 🧩 **Part 1 — Database Setup & Enabling Row-Level Security**  
 
+Set up your existing **E-commerce Database** (The database we created earlier in Data Tools project) in Supabase for role-based access and data security which is a PostgreSQL feature that restricts access to specific rows based on user identity.
+
+---
+
+## ⚙️ **1.2 Open Your Supabase Project**
+
+1. Go to [https://app.supabase.com](https://app.supabase.com).
+2. Open your **E-commerce** project.
+3. In the **left sidebar**, click **Table Editor** to confirm your data is present.
+4. You should see the same tables and sample rows from your previous project.
+
+---
+
+## 🧑‍💻 **1.5 Prepare for Roles and Authentication**
+
+Before we can test “admin” and “user” access, we need **authenticated users**.
+
+### Step-by-Step:
+
+1. Go to **Authentication → Users** in your Supabase dashboard.
+2. Click **Add User** → choose **“Invite user”** or **“Add manually”**.
+3. Create two accounts:
+
+   * **Admin User:** `admin@shop.com`
+   * **Regular User:** `user@shop.com`
+
+You can use your own email if needed, just make sure you note the roles.
+
+---
+
+## 🧩 **1.6 Simulate real user on supabase  
+since supabase requires users to signup through the supabase platform, we are going to simulate real users who have signed up through supabase platform by:  
+
+Creating a users table to store users and their roles  
+
+```sql
+CREATE TABLE IF NOT EXISTS app_users (
+  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email text UNIQUE,
+  role text NOT NULL CHECK (role IN ('admin','user','readonly')),
+  created_at timestamptz DEFAULT now()
+);
+
+-- sample app_users rows (you can use the auth.users id values)
+INSERT INTO app_users (id, email, role) VALUES
+('24f29f59-89c1-4f1d-97e9-554029e6a3f3', 'outa.agunga@mail.admi.ac.ke', 'admin'),
+('b5fa48df-c568-4d73-b42c-e19896d9cfa8', 'typingpool.astu@gmail.com', 'user');
+-- Note: Supabase also allows role in JWT claims. Keep both in sync if you use app_users.
+```
+> 💡 To find your `auth.uid`, go to **Authentication → Users → Click a user → Copy UUID**.
+
+---
 ### 1. Create tables
 
 ```sql
@@ -158,6 +199,119 @@ CREATE TABLE IF NOT EXISTS app_users (
 INSERT INTO app_users (id, email, role) VALUES
 ('24f29f59-89c1-4f1d-97e9-554029e6a3f3', 'outa.agunga@mail.admi.ac.ke', 'admin'),
 ('b5fa48df-c568-4d73-b42c-e19896d9cfa8', 'typingpool.astu@gmail.com', 'user');
+```
+
+> Note: Supabase also allows role in JWT claims. Keep both in sync if you use `app_users`.
+
+### 6. Link customers table to auth.users
+we are going to use `where email matches customer and user`  
+
+```sql
+UPDATE customers
+SET user_id = u.id
+FROM auth.users u
+WHERE customers.email = u.email
+  AND customers.user_id IS NULL;
+```
+Then run this code to check if the `user_id` if filled or is null.  
+```sql
+SELECT *
+FROM customers;
+```
+
+If null, run this code to check if there is matching data between the users table and custumers table  
+```sql
+-- Find which customers have matching auth.users
+SELECT c.email AS customer_email,
+       u.email AS auth_email,
+       u.id AS auth_user_id
+FROM customers c
+LEFT JOIN auth.users u ON c.email = u.email;
+```
+If you get NULL under `auth_email`, then it means no there is no entry that matches `auth.users`.  
+To fix this: create those users manually via `INSERT INTO auth.users (...)` e.g.:  
+
+```sql
+-- Create users to simulate as if they signed up on the supabase
+INSERT INTO users (id, email, role)	
+VALUES
+  ('24f29f59-89c1-4f1d-97e9-554029e6a3f3', 'alice@example.com', 'user'),
+  ('b5fa48df-c568-4d73-b42c-e19896d9cfa8', 'brian@example.com', 'user'),
+  ('c7ca3a2a-d5de-43b2-95f5-5529b5c9cfe1', 'cynthia@example.com', 'user'),
+  ('d9b5a214-12c8-4f52-8835-05f05e5b95af', 'david@example.com', 'user'),
+  ('e1d2c897-5678-4eaa-94ad-77dcd97a7e2b', 'eva@example.com', 'user'),
+
+```
+Try updating again to see if it works now  
+```sql
+UPDATE customers AS c
+SET user_id = u.id
+FROM auth.users AS u
+WHERE LOWER(TRIM(c.email)) = LOWER(TRIM(u.email))
+  AND c.user_id IS NULL;
+
+-- LOWER(TRIM(...)) ensures that even if your customers.email has upper/lowercase or spaces, it still matches correctly.
+```
+
+Add a trigger so that next time if insert customers by email, the `user_id` does not display null  
+```sql
+CREATE OR REPLACE FUNCTION link_customer_to_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE customers
+  SET user_id = u.id
+  FROM auth.users u
+  WHERE LOWER(TRIM(customers.email)) = LOWER(TRIM(u.email))
+  AND customers.customer_id = NEW.customer_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_link_customer_user
+AFTER INSERT ON customers
+FOR EACH ROW
+EXECUTE FUNCTION link_customer_to_user();
+```
+
+---
+
+
+## 🧾 **1.3 Enable Row Level Security (RLS)**
+
+1. In the Supabase sidebar, go to **Database → Table Editor**.
+2. Click on your first table, e.g. **customers**.
+3. Go to the **“RLS” (Row Level Security)** tab.
+4. Click **“Enable RLS”** for the table.
+
+Repeat this for all your main tables  
+or  
+Use code:  
+```sql
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+```
+Check if RLS are successfully enabled using this code  
+
+```sql
+-- Check if RLS is enabled for all your tables
+select schemaname, tablename, rowsecurity
+from pg_tables
+where schemaname = 'public';
+```
+
+✅ Output Example:
+
+| schemaname | tablename | rowsecurity |
+| ---------- | --------- | ----------- |
+| public     | customers | true        |
+| public     | products  | true        |
+| public     | orders    | true        |
+
+This means RLS is active for those tables.
+
+---
+
 ```
 
 > Note: Supabase also allows role in JWT claims. Keep both in sync if you use `app_users`.
