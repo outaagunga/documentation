@@ -52,6 +52,14 @@ CREATE TABLE IF NOT EXISTS orders (
   order_date TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 ```
+### Update total amount on orders table incase it didn't auto calculate  or
+```sql
+UPDATE orders AS o
+SET total_amount = p.price * o.quantity
+FROM products AS p
+WHERE o.product_id = p.product_id
+  AND o.total_amount IS NULL;
+```
 
 ### 2. Trigger to auto-calc total_amount (best practice)
 
