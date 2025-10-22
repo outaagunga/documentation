@@ -129,6 +129,18 @@ VALUES
 (4, 5, 1),
 (5, 3, 3);
 ```
+still trying this out --
+```sql
+TRUNCATE TABLE orders RESTART IDENTITY CASCADE;
+
+INSERT INTO orders (customer_id, product_id, quantity, user_id)
+VALUES
+(1, 2, 1, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
+(2, 1, 2, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
+(3, 4, 1, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
+(4, 5, 1, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
+(5, 3, 3, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8');
+```
 
 ### 5. Create an *app users* table (optional but useful to store role)
 
