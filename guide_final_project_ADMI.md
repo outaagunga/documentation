@@ -170,35 +170,11 @@ VALUES
 (4, 5, 1),
 (5, 3, 3);
 ```
-still trying this out --
+If you want to delete rows with a table, you can use:  
 ```sql
+--e.g delete all rows on orders column  
 TRUNCATE TABLE orders RESTART IDENTITY CASCADE;
 
-INSERT INTO orders (customer_id, product_id, quantity, user_id)
-VALUES
-(1, 2, 1, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
-(2, 1, 2, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
-(3, 4, 1, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
-(4, 5, 1, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8'),
-(5, 3, 3, 'b5fa48df-c568-4d73-b42c-e19896d9cfa8');
-```
-
-### 5. Create an *app users* table (optional but useful to store role)
-
-If you prefer a separate table to mirror roles (in addition to auth.users claims):
-
-```sql
-CREATE TABLE IF NOT EXISTS app_users (
-  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  email text UNIQUE,
-  role text NOT NULL CHECK (role IN ('admin','user','readonly')),
-  created_at timestamptz DEFAULT now()
-);
-
--- sample app_users rows (you can use the auth.users id values)
-INSERT INTO app_users (id, email, role) VALUES
-('24f29f59-89c1-4f1d-97e9-554029e6a3f3', 'outa.agunga@mail.admi.ac.ke', 'admin'),
-('b5fa48df-c568-4d73-b42c-e19896d9cfa8', 'typingpool.astu@gmail.com', 'user');
 ```
 
 > Note: Supabase also allows role in JWT claims. Keep both in sync if you use `app_users`.
