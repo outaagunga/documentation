@@ -5269,6 +5269,7 @@ ORDER BY schemaname, tablename;
 
 ```sql
 -- 🧱 1️⃣ Reset previous data (optional for clean testing)
+--we use truncate command which removes all the rows in a table
 TRUNCATE TABLE orders, products, customers, users RESTART IDENTITY CASCADE;
 
 -- 🧱 2️⃣ Create sample users (simulating Supabase Auth)
