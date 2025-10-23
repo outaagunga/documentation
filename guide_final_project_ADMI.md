@@ -238,11 +238,11 @@ VALUES
 or  
 insert from the customers table to the app_users  
 ```sql
-INSERT INTO public.app_users (id, email, role)
+INSERT INTO app_users (id, email, role)
 SELECT u.id, u.email, 'user'
 FROM auth.users u
 WHERE u.email IN (
-  SELECT email FROM public.customers
+  SELECT email FROM customers
 )
 ON CONFLICT (id) DO NOTHING;
 ```
