@@ -55,7 +55,15 @@ INSERT INTO app_users (id, email, role) VALUES
 ('b5fa48df-c568-4d73-b42c-e19896d9cfa8', 'typingpool.astu@gmail.com', 'user');
 -- Note: Supabase also allows role in JWT claims. Keep both in sync if you use app_users.
 ```
-> 💡 To find your `auth.uid`, go to **Authentication → Users → Click a user → Copy UUID**.
+> 💡 To find your `auth.uid`, go to **Authentication → Users → Click a user → Copy UUID-> Paste It**.
+> -- Example:
+```sql
+insert into users (id, email, role)
+values
+  ('<paste_admin_auth_uid>', 'admin@shop.com', 'admin'),
+  ('<paste_user_auth_uid>', 'user@shop.com', 'user');
+```
+
 
 ---
 ### 1. Create tables
