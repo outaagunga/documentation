@@ -44,8 +44,8 @@ Creating a users table to store users and their roles
 ```sql
 CREATE TABLE IF NOT EXISTS app_users (
   id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  email text UNIQUE,
-  role text NOT NULL CHECK (role IN ('admin','user','readonly')),
+  email text NOT NULL UNIQUE,
+  role text NOT NULL DEFAULT 'user' CHECK (role IN ('admin','user','readonly')),
   created_at timestamptz DEFAULT now()
 );
 
