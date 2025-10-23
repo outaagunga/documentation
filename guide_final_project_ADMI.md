@@ -191,11 +191,11 @@ TRUNCATE TABLE orders RESTART IDENTITY CASCADE;
 we are going to use `where email matches customer and user`  
 
 ```sql
-UPDATE customers
-SET user_id = u.id
-FROM auth.users u
-WHERE customers.email = u.email
-  AND customers.user_id IS NULL;
+UPDATE customers AS c
+SET user_id = au.id
+FROM app_users AS au
+WHERE LOWER(TRIM(c.email)) = LOWER(TRIM(au.email))
+  AND c.user_id IS NULL;
 ```
 Then run this code to check if the `user_id` if filled or is null.  
 ```sql
@@ -212,6 +212,15 @@ SELECT c.email AS customer_email,
 FROM customers c
 LEFT JOIN auth.users u ON c.email = u.email;
 ```
+or   
+this to show any customers whose email isn’t in app_users.
+```sql
+SELECT c.email AS customer_email
+FROM customers c
+LEFT JOIN app_users au ON LOWER(TRIM(c.email)) = LOWER(TRIM(au.email))
+WHERE au.id IS NULL;
+```
+
 If you get NULL under `auth_email`, then it means no there is no entry that matches `auth.users`.  
 To fix this: create those users manually via `INSERT INTO auth.users (...)` e.g.:  
 
@@ -226,6 +235,18 @@ VALUES
   ('e1d2c897-5678-4eaa-94ad-77dcd97a7e2b', 'eva@example.com', 'user'),
 
 ```
+or  
+insert from the customers table to the app_users  
+```sql
+INSERT INTO public.app_users (id, email, role)
+SELECT u.id, u.email, 'user'
+FROM auth.users u
+WHERE u.email IN (
+  SELECT email FROM public.customers
+)
+ON CONFLICT (id) DO NOTHING;
+```
+
 Try updating again to see if it works now  
 ```sql
 UPDATE customers AS c
