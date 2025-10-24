@@ -17,7 +17,7 @@
 **AI Prompt Example:**
 
 > “List today’s high-impact Forex news events and explain how they might affect EUR/USD and GBP/USD.”
-Or
+Or  
 > “List today’s Tier 1 economic events and explain the immediate directional bias those events are expected to cause on EUR/USD and USD/JPY.”  
 
 ✅ *AI Output should tell you which sessions or times to be cautious (e.g., avoid trading 30 minutes before/after NFP).*
@@ -35,7 +35,7 @@ Or
 **AI Prompt Example:**
 
 > “Based on current price trends for EUR/USD and GBP/JPY, summarize the overall market bias (bullish, bearish, or ranging).”
-Or
+Or  
 > Based on current price action on the 4H chart for GBP/USD, is the structure currently exhibiting higher highs/higher lows or lower highs/lower lows? State the current key support and resistance levels  
 
 ✅ *AI Output helps you focus only on pairs with clear direction.*
@@ -54,7 +54,7 @@ Or
 **AI Prompt Example:**
 
 > I'm looking for a long trade on AUD/USD because it's at major support (0.6550) and the 4H trend is up. Challenge this bias by listing the top three bearish factors based on recent market data or sentiment.”  
-Or
+Or  
 > “Here’s what I see: EUR/USD is near 1.0800 support and trending up. Does that suggest a buy zone or possible reversal area?”
 
 ✅ *AI confirms or challenges your chart reading.*
@@ -75,7 +75,7 @@ Or
 **AI Prompt Example:**
 
 > “Review my plan: Buy EUR/USD above 1.0830, Stop Loss 1.0800, Take Profit 1.0900. Risk = 1%. Does this plan align with a bullish continuation setup?”
-Or
+Or  
 > “My strategy is: Buy EUR/USD at 1.0830, SL at 1.0800 (30 pips), TP at 1.0900 (70 pips). Calculate the Risk-Reward Ratio (R:R) and verify that this setup aligns with a valid chart pattern (e.g., continuation pattern).”
 
 ✅ *AI checks your plan logic and reminds you of potential risk issues.*
@@ -91,7 +91,7 @@ Or
 **AI Prompt Example:**
 
 > “My account equity is $5,000. I risk 1.5% per trade. My Stop Loss is 25 pips on USD/CAD. Calculate the exact lot size I need to open.”
-Or 
+Or  
 > “I have a $100 account, risk 2% per trade, stop loss 30 pips on EUR/USD. What’s my lot size?”
 
 ✅ *AI helps maintain discipline and consistency in your risk management.*
@@ -110,7 +110,7 @@ Or
 **AI Prompt Example:**
 
 > “Trade executed: Buy USD/CAD at 1.3750. Rationale: Break of minor resistance following a central bank announcement. What are the next two psychological price barriers this trade must overcome to reach the TP?”  
-Or 
+Or  
 >“I just placed a buy on EUR/USD at 1.0835. Summarize my rationale and list what conditions would invalidate this setup.”
 
 ✅ *AI helps you build trading accountability and emotional control.*
