@@ -1,10 +1,4 @@
 
-Perfect ✅ — here’s your **ready-to-use “Daily Forex Trading Routine with AI Personal Assistant”** — a practical follow-along checklist showing exactly **what to do and what to ask AI at each step** of your trading day.
-
-This format helps you trade with structure, discipline, and clarity — *just like a professional using an AI co-pilot.*
-
----
-
 # 🕘 **Daily Forex + AI Trading Routine Checklist**
 
 > 🎯 Goal: Trade with clarity, reduce emotion, and use AI for analysis, discipline, and reflection.
@@ -13,7 +7,7 @@ This format helps you trade with structure, discipline, and clarity — *just li
 
 ## 🌅 **PHASE 1: Morning Preparation (Before Market Activity)**
 
-### Step 1️⃣ — Review the Economic Calendar
+### Step 1️⃣ — Review the Economic Calendar Volatility Check  
 
 **Action:**
 
@@ -23,6 +17,8 @@ This format helps you trade with structure, discipline, and clarity — *just li
 **AI Prompt Example:**
 
 > “List today’s high-impact Forex news events and explain how they might affect EUR/USD and GBP/USD.”
+Or
+> “List today’s Tier 1 economic events and explain the immediate directional bias those events are expected to cause on EUR/USD and USD/JPY.”  
 
 ✅ *AI Output should tell you which sessions or times to be cautious (e.g., avoid trading 30 minutes before/after NFP).*
 
@@ -34,10 +30,13 @@ This format helps you trade with structure, discipline, and clarity — *just li
 
 * Open **TradingView** or your broker’s charting tool.
 * Review higher timeframes (Daily → 4H → 1H) to find market direction.
+* Identify major Supply and Demand zones and the last swing point.  
 
 **AI Prompt Example:**
 
 > “Based on current price trends for EUR/USD and GBP/JPY, summarize the overall market bias (bullish, bearish, or ranging).”
+Or
+> Based on current price action on the 4H chart for GBP/USD, is the structure currently exhibiting higher highs/higher lows or lower highs/lower lows? State the current key support and resistance levels  
 
 ✅ *AI Output helps you focus only on pairs with clear direction.*
 
@@ -47,11 +46,15 @@ This format helps you trade with structure, discipline, and clarity — *just li
 
 **Action:**
 
+* Compare your manual structure analysis (Step 2) with the economic outlook (Step 1).
+* Identify 1-2 scenarios that align with your strategy (e.g., a pullback to a key level in an overall uptrend).
 * Mark **support**, **resistance**, and **trendlines** on your charts.
 * Note zones where price has reacted multiple times.
 
 **AI Prompt Example:**
 
+> I'm looking for a long trade on AUD/USD because it's at major support (0.6550) and the 4H trend is up. Challenge this bias by listing the top three bearish factors based on recent market data or sentiment.”  
+Or
 > “Here’s what I see: EUR/USD is near 1.0800 support and trending up. Does that suggest a buy zone or possible reversal area?”
 
 ✅ *AI confirms or challenges your chart reading.*
@@ -64,12 +67,16 @@ This format helps you trade with structure, discipline, and clarity — *just li
 
 **Action:**
 
+* Pinpoint the exact Entry, Stop Loss (SL), and Take Profit (TP) based on your strategy's criteria (e.g., candlestick confirmation, indicator cross).
+* Define the reason why the trade should work and the condition that proves it was wrong (SL).
 * Identify 1–2 best trade setups that match your rules.
 * Confirm entries, stop loss, and take profit zones.
 
 **AI Prompt Example:**
 
 > “Review my plan: Buy EUR/USD above 1.0830, Stop Loss 1.0800, Take Profit 1.0900. Risk = 1%. Does this plan align with a bullish continuation setup?”
+Or
+> “My strategy is: Buy EUR/USD at 1.0830, SL at 1.0800 (30 pips), TP at 1.0900 (70 pips). Calculate the Risk-Reward Ratio (R:R) and verify that this setup aligns with a valid chart pattern (e.g., continuation pattern).”
 
 ✅ *AI checks your plan logic and reminds you of potential risk issues.*
 
@@ -83,6 +90,8 @@ This format helps you trade with structure, discipline, and clarity — *just li
 
 **AI Prompt Example:**
 
+> “My account equity is $5,000. I risk 1.5% per trade. My Stop Loss is 25 pips on USD/CAD. Calculate the exact lot size I need to open.”
+Or 
 > “I have a $100 account, risk 2% per trade, stop loss 30 pips on EUR/USD. What’s my lot size?”
 
 ✅ *AI helps maintain discipline and consistency in your risk management.*
@@ -100,7 +109,9 @@ This format helps you trade with structure, discipline, and clarity — *just li
 
 **AI Prompt Example:**
 
-> “I just placed a buy on EUR/USD at 1.0835. Summarize my rationale and list what conditions would invalidate this setup.”
+> “Trade executed: Buy USD/CAD at 1.3750. Rationale: Break of minor resistance following a central bank announcement. What are the next two psychological price barriers this trade must overcome to reach the TP?”  
+Or 
+>“I just placed a buy on EUR/USD at 1.0835. Summarize my rationale and list what conditions would invalidate this setup.”
 
 ✅ *AI helps you build trading accountability and emotional control.*
 
@@ -113,7 +124,7 @@ This format helps you trade with structure, discipline, and clarity — *just li
 **Action:**
 
 * Avoid watching every candle. Review your trade hourly.
-* Adjust only if your plan says so.
+* Use the AI to evaluate protective actions like trailing the stop loss or taking partial profits.
 
 **AI Prompt Example:**
 
@@ -209,17 +220,7 @@ WEEKEND → Analyze Patterns + Adjust Strategy
 
 ---
 
-Would you like me to turn this checklist into a **printable daily trading planner (PDF or Notion template)** — with spaces to record AI responses, trade notes, and emotional state each day?
-It would make your AI-guided trading completely structured and trackable.
 
-
-
-
-Perfect 👌 — you’re asking for a **clear, code-free, follow-along guide** that combines **realistic Forex trading steps** with **AI personal assistance**.
-
-Here’s a structured **“Forex Trading with AI Personal Assistant”** guide — written in a practical, follow-along way like a trader’s manual (no coding required).
-
----
 
 # 🧭 Forex Trading with an AI Personal Assistant
 
