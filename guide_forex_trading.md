@@ -17,6 +17,7 @@
 **AI Prompt Example:**
 
 > “List today’s high-impact Forex news events and explain how they might affect EUR/USD and GBP/USD.”  
+
 Or  
 > “List today’s Tier 1 economic events and explain the immediate directional bias those events are expected to cause on EUR/USD and USD/JPY.”  
 
