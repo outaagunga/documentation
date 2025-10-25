@@ -847,7 +847,8 @@ All `customers`, `orders`, and `products` policies appear.
 ## **9️⃣ — Clean Up (Optional)**
 
 Check the currently active simulated user
-```SELECT current_app_user_id();
+```sql
+SELECT current_app_user_id();
 ```
 
 When you’re done testing:
