@@ -194,6 +194,41 @@ VALUES
 (4, 5, 1),
 (5, 3, 3);
 ```
+
+Instead of manually inserting into `customers`, you can use a trigger to automatically create a customer entry when an `app_user` first places an order.  
+```sql
+CREATE OR REPLACE FUNCTION ensure_customer_exists()
+RETURNS TRIGGER AS $$
+DECLARE
+  new_customer_id INT;
+BEGIN
+  -- check if customer already exists for this user_id
+  SELECT customer_id INTO new_customer_id
+  FROM customers
+  WHERE user_id = NEW.user_id;
+
+  -- if not found, create new customer profile from app_users
+  IF new_customer_id IS NULL THEN
+    INSERT INTO customers (user_id, full_name, email)
+    SELECT id, split_part(email, '@', 1), email
+    FROM app_users
+    WHERE id = NEW.user_id
+    RETURNING customer_id INTO new_customer_id;
+  END IF;
+
+  -- set customer_id on the order
+  NEW.customer_id := new_customer_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_ensure_customer
+BEFORE INSERT ON orders
+FOR EACH ROW
+EXECUTE FUNCTION ensure_customer_exists();
+
+```
+
 If you want to delete rows with a table, you can use:  
 ```sql
 --e.g delete all rows on orders column  
