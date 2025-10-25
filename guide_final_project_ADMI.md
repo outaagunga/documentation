@@ -537,6 +537,13 @@ USING (user_id = auth.uid());
 
 ---
 
+**List all policies you've created**  
+```sql
+SELECT tablename, policyname, permissive, roles, cmd
+FROM pg_policies
+WHERE schemaname = 'public';
+```
+
 ## **Step 4 — Test and Validate Policies**
 
 ### 🧑‍💼 Test as Admin
