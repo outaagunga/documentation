@@ -723,7 +723,7 @@ $$ LANGUAGE plpgsql;
 
 ```sql
 -- 🧑‍💼 Simulate admin login
-SELECT set_local_user('11111111-1111-1111-1111-111111111111');
+SELECT set_app_user('11111111-1111-1111-1111-111111111111');
 
 -- ✅ Admin should see all customers
 SELECT * FROM customers;
@@ -732,12 +732,17 @@ SELECT * FROM customers;
 SELECT * FROM orders;
 
 -- ✅ Admin can update anyone’s order
-UPDATE orders SET quantity = 10 WHERE order_id = 1 RETURNING *;
+UPDATE orders
+SET quantity = 10
+WHERE order_id = 1
+RETURNING *;
 
 -- ✅ Admin can insert new products
 INSERT INTO products (product_name, category, price)
 VALUES ('Tablet', 'Electronics', 40000)
 RETURNING *;
+
+
 ```
 
 **Expected:**
@@ -749,7 +754,7 @@ Admin can **see and modify everything**.
 
 ```sql
 -- 👤 Simulate user1 login
-SELECT set_local_user('22222222-2222-2222-2222-222222222222');
+SELECT set_app_user('22222222-2222-2222-2222-222222222222');
 
 -- ✅ Should only see their own customer record
 SELECT * FROM customers;
@@ -763,10 +768,15 @@ VALUES (1, 3, 1, '22222222-2222-2222-2222-222222222222')
 RETURNING *;
 
 -- ❌ Should NOT see other users' orders
-SELECT * FROM orders WHERE user_id = '33333333-3333-3333-3333-333333333333';
+SELECT * FROM orders
+WHERE user_id = '33333333-3333-3333-3333-333333333333';
 
 -- ❌ Should NOT update another user’s order
-UPDATE orders SET quantity = 5 WHERE user_id = '33333333-3333-3333-3333-333333333333';
+UPDATE orders
+SET quantity = 5
+WHERE user_id = '33333333-3333-3333-3333-333333333333';
+
+
 ```
 
 **Expected:**
@@ -781,7 +791,7 @@ UPDATE orders SET quantity = 5 WHERE user_id = '33333333-3333-3333-3333-33333333
 
 ```sql
 -- 👤 Simulate user2 login
-SELECT set_local_user('33333333-3333-3333-3333-333333333333');
+SELECT set_app_user('33333333-3333-3333-3333-333333333333');
 
 -- ✅ Should only see their own record in customers
 SELECT * FROM customers;
@@ -790,7 +800,12 @@ SELECT * FROM customers;
 SELECT * FROM orders;
 
 -- ❌ Should not see or update User1’s order
-UPDATE orders SET quantity = 99 WHERE user_id = '22222222-2222-2222-2222-222222222222';
+UPDATE orders
+SET quantity = 99
+WHERE user_id = '22222222-2222-2222-2222-222222222222';
+
+
+
 ```
 
 ---
@@ -798,8 +813,16 @@ UPDATE orders SET quantity = 99 WHERE user_id = '22222222-2222-2222-2222-2222222
 ## **7️⃣ — Check that Products Are Shared (Viewable by All)**
 
 ```sql
--- 👤 Still as user2
+-- 👤 Still as User2
 SELECT * FROM products;
+
+-- ❌ Try to modify a product (should fail)
+UPDATE products SET price = 99999 WHERE product_id = 1;
+
+-- ❌ Try to insert a new product (should fail)
+INSERT INTO products (product_name, category, price)
+VALUES ('Fake Product', 'Test', 100);
+
 ```
 
 **Expected:**
@@ -807,7 +830,7 @@ All products are visible, but **only admin** can modify or insert them.
 
 ---
 
-## **8️⃣ — Validate Policy Enforcement**
+## **8️⃣ — Check which policies are being enforced**
 
 ```sql
 SELECT tablename, policyname, cmd, roles, permissive
@@ -823,6 +846,10 @@ All `customers`, `orders`, and `products` policies appear.
 
 ## **9️⃣ — Clean Up (Optional)**
 
+Check the currently active simulated user
+```SELECT current_app_user_id();
+```
+
 When you’re done testing:
 
 ```sql
@@ -831,6 +858,24 @@ DROP FUNCTION IF EXISTS set_local_user(uuid);
 DROP FUNCTION IF EXISTS current_local_user_id();
 
 ```
+
+If you don't know which role this user has (admin/user/etc.), you can also:
+```sql
+-- Create a debug view for developers/testers
+CREATE OR REPLACE VIEW debug_current_user AS
+SELECT
+  current_app_user_id() AS simulated_user_id,
+  au.full_name AS simulated_user_name,
+  au.role AS simulated_user_role,
+  au.email AS simulated_user_email
+FROM app_users au
+WHERE au.id = current_app_user_id();
+```
+Now anyone can simply type:
+```
+SELECT * FROM debug_current_user;
+```
+This shows the full record for the currently active simulated user — including their role and email.
 
 ---
 
