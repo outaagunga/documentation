@@ -39,22 +39,34 @@ You can use your own email if needed, just make sure you note the roles.
 ## 🧩 **1.6 Simulate real user on supabase  
 since supabase requires users to signup through the supabase platform, we are going to simulate real users who have signed up through supabase platform by:  
 
-Creating a users table to store users and their roles  
+Creating a app_users table to store users and their roles  
+Using gen_random_uuid() makes it behave just like Supabase’s Auth system, where every user gets a UUID automatically.  
 
 ```sql
-CREATE TABLE IF NOT EXISTS app_users (
-  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+CREATE TABLE app_users (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),  -- auto-generate UUIDs automatically for development use
   email text NOT NULL UNIQUE,
-  role text NOT NULL DEFAULT 'user' CHECK (role IN ('admin','user','readonly')),
+  role text NOT NULL DEFAULT 'user'
+    CHECK (role IN ('admin', 'user', 'readonly')),
   created_at timestamptz DEFAULT now()
 );
 
--- sample app_users rows (you can use the auth.users id values)
-INSERT INTO app_users (id, email, role) VALUES
-('24f29f59-89c1-4f1d-97e9-554029e6a3f3', 'outa.agunga@mail.admi.ac.ke', 'admin'),
-('b5fa48df-c568-4d73-b42c-e19896d9cfa8', 'typingpool.astu@gmail.com', 'user');
--- Note: Supabase also allows role in JWT claims. Keep both in sync if you use app_users.
+
+-- inserting sample data to the created app_users table  
+INSERT INTO app_users (email, role)
+VALUES
+('outa.agunga@mail.admi.ac.ke', 'admin'),
+('typingpool.astu@gmail.com', 'user'),
+('alice@example.com', 'user'),
+('brian@example.com', 'user'),
+('cynthia@example.com', 'user'),
+('david@example.com', 'user'),
+('eva@example.com', 'user');
+
 ```
+This is for development and testing purposes. If you want to deploy the project to realworld scenario- then change `REFERENCES app_users(id)` on the app_users to `REFERENCES auth.users(id)`.  
+
+
 > 💡 To find your `auth.uid`, go to **Authentication → Users → Click a user → Copy UUID-> Paste It**.
 > -- Example:
 ```sql
@@ -70,15 +82,16 @@ values
 
 ```sql
 -- 1️⃣ Create customers table
-CREATE TABLE IF NOT EXISTS customers (
+CREATE TABLE customers (
   customer_id SERIAL PRIMARY KEY,
-  user_id uuid REFERENCES auth.users (id) ON DELETE CASCADE,
+  user_id uuid REFERENCES app_users(id) ON DELETE CASCADE,
   full_name VARCHAR(100) NOT NULL,
   email VARCHAR(100) UNIQUE NOT NULL,
   phone VARCHAR(20),
   city VARCHAR(50),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
+
 
 -- 2️⃣ Create products table
 CREATE TABLE IF NOT EXISTS products (
@@ -91,15 +104,16 @@ CREATE TABLE IF NOT EXISTS products (
 );
 
 -- 3️⃣ Create orders table
-CREATE TABLE IF NOT EXISTS orders (
+CREATE TABLE orders (
   order_id SERIAL PRIMARY KEY,
-  customer_id INT NOT NULL REFERENCES customers (customer_id) ON DELETE CASCADE,
-  product_id INT NOT NULL REFERENCES products (product_id) ON DELETE CASCADE,
-  user_id uuid REFERENCES auth.users (id) ON DELETE CASCADE,
+  customer_id INT NOT NULL REFERENCES customers(customer_id) ON DELETE CASCADE,
+  product_id INT NOT NULL REFERENCES products(product_id) ON DELETE CASCADE,
+  user_id uuid REFERENCES app_users(id) ON DELETE CASCADE,
   quantity INT NOT NULL CHECK (quantity > 0),
   total_amount NUMERIC(12,2),
   order_date TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
+
 ```
 ### Update total amount on orders table incase it didn't auto calculate  or
 ```sql
