@@ -89,8 +89,10 @@ Once you feel comfortable with:
 
 ---
 
-
-
+.
+.
+.
+.
 .
 # 🕘 **Daily Forex + AI Trading Routine Checklist**
 
