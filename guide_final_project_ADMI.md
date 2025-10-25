@@ -415,61 +415,56 @@ The following examples assume JWT claims include a `role` (e.g., `'admin'` or `'
 ### 🧍‍♂️ **Customers Table Policies**
 
 ```sql
+
 -- 1️⃣ Admin: full visibility and control
 CREATE POLICY customers_admin_all ON customers
 FOR ALL
 USING (
-  EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = auth.uid() AND au.role = 'admin'
+  )
 )
 WITH CHECK (
-  EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = auth.uid() AND au.role = 'admin'
+  )
 );
 
--- 2️⃣ Users: view only their own customer profile
+
+-- 2️⃣ Users: view only their own profile
 CREATE POLICY customers_user_select_own ON customers
 FOR SELECT
 USING (
-  EXISTS (
-    SELECT 1 FROM app_users au
-    WHERE au.id = customers.user_id
-  )
+  user_id = auth.uid()
 );
+
 
 -- 3️⃣ Users: insert only their own record
 CREATE POLICY customers_user_insert_own ON customers
 FOR INSERT
-USING (true)
 WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM app_users au
-    WHERE au.id = customers.user_id
-  )
+  user_id = auth.uid()
 );
+
 
 -- 4️⃣ Users: update their own record
 CREATE POLICY customers_user_update_own ON customers
 FOR UPDATE
 USING (
-  EXISTS (
-    SELECT 1 FROM app_users au
-    WHERE au.id = customers.user_id
-  )
+  user_id = auth.uid()
 )
 WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM app_users au
-    WHERE au.id = customers.user_id
-  )
+  user_id = auth.uid()
 );
+
 
 -- 5️⃣ Users: delete their own profile
 CREATE POLICY customers_user_delete_own ON customers
 FOR DELETE
 USING (
-  EXISTS (
-    SELECT 1 FROM app_users au
-    WHERE au.id = customers.user_id
-  )
+  user_id = auth.uid()
 );
 
 
