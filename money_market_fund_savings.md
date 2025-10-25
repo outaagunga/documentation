@@ -131,7 +131,121 @@ Check your MMF's Net Yield quarterly. If a competitor offers a significantly bet
 
 ---  
 
-Step-by-Step Guide to Saving and Earning with a Money Market Fund
+## The kind of thinking that separates **savers** from **investors**.
+Let’s walk through scenarios side by side where:
+> Sceanrio 1: we put 50,000/- in money market fund
+> Sceanario 2: we put 50,000/- to stand second hand clothes business (mitumba)  
+
+
+---
+
+### 💰 **Scenario 1: Money Market Fund (MMF)**
+
+**Assumptions (realistic for Kenya, 2025):**
+
+* Starting capital: **KSh 50,000**
+* Average annual yield: **11% per year (before fees)**
+* Period: **6 months**
+* Compounding: **Monthly**
+
+🧮 **Calculation**
+
+[
+Return = Principal × (1 + Rate)^{Time} - Principal
+]
+[
+Return = 50,000 × (1 + 0.11)^{0.5} - 50,000 ≈ 50,000 × 1.0536 - 50,000 = 2,680
+]
+
+✅ **Estimated earnings in 6 months:** **≈ KSh 2,700**
+✅ **Total balance after 6 months:** **≈ KSh 52,700**
+
+💡 **Pros**
+
+* **Zero effort** (completely passive income)
+* **Low risk** — principal protected
+* **Predictable** returns
+
+ ⚠️ **Cons**
+
+* Growth is **steady but slow**
+* Inflation may reduce real gains if it’s above ~8%
+
+---
+
+### 🛍️ **Scenario 2: Second-Hand Clothes (Mitumba) Business**
+
+**Assumptions (typical small market setup):**
+
+* Starting capital: **KSh 50,000** (used to buy one small bale or mixed stock)
+* Average profit margin: **30–50% per sales cycle** (every 2–3 weeks)
+* You reinvest profits after each cycle
+
+Let’s assume you achieve **35% profit every 3 weeks** (a cautious but realistic number if you manage your stock well).
+That’s **8 cycles** in 6 months.
+
+🧮 **Compounding Growth**
+
+If you reinvest all profits:
+[
+Final = 50,000 × (1 + 0.35)^8
+]
+[
+Final ≈ 50,000 × 11.15 = 557,500
+]
+
+✅ **Potential profit after 6 months:** **≈ KSh 507,500**
+
+---
+
+⚖️ **Side-by-Side Comparison**
+
+| Factor                          | Money Market Fund | Mitumba Business                                            |
+| ------------------------------- | ----------------- | ----------------------------------------------------------- |
+| **Capital required**            | KSh 50,000        | KSh 50,000                                                  |
+| **Effort**                      | None (passive)    | High (active selling)                                       |
+| **Risk level**                  | Very low          | Moderate to high                                            |
+| **Potential return (6 months)** | ~KSh 2,700        | ~KSh 500,000 (if fully reinvested & business runs smoothly) |
+| **Liquidity**                   | 1–3 days          | Depends on stock turnover                                   |
+| **Skill needed**                | None              | Marketing, customer relations, stock management             |
+
+---
+
+🧠 **Interpretation**
+
+* **If your goal** is *safe, effortless, and guaranteed returns*, go with the **Money Market Fund**.
+  → You protect your capital and learn financial discipline.
+
+* **If your goal** is *growth and you can handle risk, effort, and uncertainty*, the **Mitumba business** can yield *massively* more — but:
+
+  * Stock might not sell every cycle.
+  * You might lose money if stock is poor quality or damaged.
+  * Requires time and consistency.
+
+---
+
+### 🤖 AI Support Tip
+
+You can use AI to support either choice:
+
+ 🪙 **For MMF:**
+
+> “Calculate my projected MMF earnings over 6 months at 11% yield and show monthly compounding.”
+
+👕 **For Mitumba:**
+
+> “Help me create a simple profit and reinvestment tracker for my mitumba business.”
+> “Suggest a 6-month reinvestment strategy starting with KSh 50,000 capital for used clothes resale in Kenya.”
+
+---
+
+
+
+
+
+
+
+## Step-by-Step Guide to Saving and Earning with a Money Market Fund  
 
 Phase 1: Preparation and Research
 1. Define Your Savings Goal:
