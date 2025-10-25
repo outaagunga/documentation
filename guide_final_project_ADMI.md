@@ -168,7 +168,9 @@ CREATE INDEX IF NOT EXISTS idx_orders_product_id ON orders(product_id);
 -- Customers
 INSERT INTO customers (full_name, email, phone, city)
 VALUES
-('Alice Mwangi', 'alice@example.com', '0712345678', 'Nairobi'),
+('Outa Agunga', 'outa.agunga@mail.admi.ac.ke', '0724907275', 'Nairobi'),
+('Typing Pool', 'typingpool.astu@gmail.com', '0703645678', 'Machakos'),
+('Alice Mwangi', 'alice@example.com', '0712345678', 'Turkana'),
 ('Brian Otieno', 'brian@example.com', '0723456789', 'Mombasa'),
 ('Cynthia Njeri', 'cynthia@example.com', '0734567890', 'Kisumu'),
 ('David Kimani', 'david@example.com', '0745678901', 'Nakuru'),
