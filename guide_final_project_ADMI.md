@@ -418,36 +418,63 @@ The following examples assume JWT claims include a `role` (e.g., `'admin'` or `'
 -- 1️⃣ Admin: full visibility and control
 CREATE POLICY customers_admin_all ON customers
 FOR ALL
-USING (request.jwt.claims.role = 'admin')
-WITH CHECK (request.jwt.claims.role = 'admin');
+USING (
+  EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
+)
+WITH CHECK (
+  EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
+);
+
 
 -- 2️⃣ Users: view only their own customer profile
 CREATE POLICY customers_user_select_own ON customers
 FOR SELECT
-USING (user_id = auth.uid());
+USING (
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = customers.user_id
+  )
+);
+
 
 -- 3️⃣ Users: insert only their own record
 CREATE POLICY customers_user_insert_own ON customers
-FOR INSERT
-USING (auth.uid() IS NOT NULL)
-WITH CHECK (user_id = auth.uid());
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = customers.user_id
+  )
+);
+
 
 -- 4️⃣ Users: update their own record
 CREATE POLICY customers_user_update_own ON customers
-FOR UPDATE
-USING (user_id = auth.uid())
-WITH CHECK (user_id = auth.uid());
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = customers.user_id
+  )
+);
+
 
 -- 5️⃣ Users: (optional) delete only their own profile
 CREATE POLICY customers_user_delete_own ON customers
-FOR DELETE
-USING (user_id = auth.uid());
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = customers.user_id
+  )
+);
+
+
 ```
 
 **Explanation:**
 
 * `USING` defines which rows are visible for SELECT, UPDATE, DELETE.
-* `WITH CHECK` controls which rows the user is allowed to create or modify.
 * Admins override all restrictions based on their role.
 
 ---
@@ -460,13 +487,13 @@ USING (user_id = auth.uid());
 -- Admin can manage all products
 CREATE POLICY products_admin_all ON products
 FOR ALL
-USING (request.jwt.claims.role = 'admin')
-WITH CHECK (request.jwt.claims.role = 'admin');
+USING (
+  EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
+)
+WITH CHECK (
+  EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
+);
 
--- Regular users can view all products
-CREATE POLICY products_user_select_all ON products
-FOR SELECT
-USING (true);
 ```
 
 Users can browse but cannot modify products.
@@ -507,34 +534,83 @@ USING (true);
 -- 1️⃣ Admin: full access
 CREATE POLICY orders_admin_all ON orders
 FOR ALL
-USING (request.jwt.claims.role = 'admin')
-WITH CHECK (request.jwt.claims.role = 'admin');
+USING (
+  EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
+)
+WITH CHECK (
+  EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
+);
+
 
 -- 2️⃣ Users: view only their own orders
 CREATE POLICY orders_user_select_own ON orders
 FOR SELECT
-USING (user_id = auth.uid());
+USING (
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = orders.user_id
+  )
+);
+
 
 -- 3️⃣ Users: insert orders only for themselves
 CREATE POLICY orders_user_insert_own ON orders
-FOR INSERT
-USING (auth.uid() IS NOT NULL)
-WITH CHECK (user_id = auth.uid());
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = orders.user_id
+  )
+);
+
 
 -- 4️⃣ Users: update their own orders
 CREATE POLICY orders_user_update_own ON orders
-FOR UPDATE
-USING (user_id = auth.uid())
-WITH CHECK (user_id = auth.uid());
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = orders.user_id
+  )
+);
+
 
 -- 5️⃣ Users: (optional) delete their own orders
 CREATE POLICY orders_user_delete_own ON orders
-FOR DELETE
-USING (user_id = auth.uid());
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = orders.user_id
+  )
+);
+
 ```
 
 > 💡 You can later restrict updates based on order status (e.g., prevent editing after shipment) using additional conditions.
 
+## NB//:
+**OPTIONAL — ROLE-BASED SHORTCUT**
+If you want to centralize the admin check and make your policies cleaner,
+you can define a view or a helper function:
+
+```sql
+CREATE OR REPLACE FUNCTION is_admin(uid uuid)
+RETURNS boolean AS $$
+BEGIN
+  RETURN EXISTS (SELECT 1 FROM app_users WHERE id = uid AND role = 'admin');
+END;
+$$ LANGUAGE plpgsql STABLE;
+```
+
+Then your policies become shorter and more readable:
+
+```sql
+CREATE POLICY orders_admin_all ON orders
+FOR ALL
+USING (is_admin(orders.user_id))
+WITH CHECK (is_admin(orders.user_id));
+```
 ---
 
 **List all policies you've created**  
@@ -542,6 +618,24 @@ USING (user_id = auth.uid());
 SELECT tablename, policyname, permissive, roles, cmd
 FROM pg_policies
 WHERE schemaname = 'public';
+```
+
+WHEN YOU LATER ADD REAL SUPABASE AUTH users, you will simply change:  
+
+```
+EXISTS (SELECT 1 FROM app_users au WHERE au.id = customers.user_id)
+```
+⬅️ to:
+```
+user_id = auth.uid()
+```
+And:
+```
+EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
+```
+⬅️ to:
+```
+request.jwt.claims.role = 'admin'
 ```
 
 ## **Step 4 — Test and Validate Policies**
