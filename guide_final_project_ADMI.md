@@ -534,64 +534,47 @@ FOR ALL
 USING (
   EXISTS (
     SELECT 1 FROM app_users au
-    WHERE au.role = 'admin'
+    WHERE au.id = current_app_user_id()
+      AND au.role = 'admin'
   )
 )
 WITH CHECK (
   EXISTS (
     SELECT 1 FROM app_users au
-    WHERE au.role = 'admin'
+    WHERE au.id = current_app_user_id()
+      AND au.role = 'admin'
   )
 );
-
 
 -- 2️⃣ Users: view only their own orders
 CREATE POLICY orders_user_select_own ON orders
 FOR SELECT
 USING (
-  EXISTS (
-    SELECT 1 FROM app_users au
-    WHERE au.id = orders.user_id
-  )
+  user_id = current_app_user_id()
 );
-
 
 -- 3️⃣ Users: insert orders only for themselves
 CREATE POLICY orders_user_insert_own ON orders
 FOR INSERT
 WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM app_users au
-    WHERE au.id = orders.user_id
-  )
+  user_id = current_app_user_id()
 );
-
 
 -- 4️⃣ Users: update their own orders
 CREATE POLICY orders_user_update_own ON orders
 FOR UPDATE
 USING (
-  EXISTS (
-    SELECT 1 FROM app_users au
-    WHERE au.id = orders.user_id
-  )
+  user_id = current_app_user_id()
 )
 WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM app_users au
-    WHERE au.id = orders.user_id
-  )
+  user_id = current_app_user_id()
 );
-
 
 -- 5️⃣ Users: delete their own orders
 CREATE POLICY orders_user_delete_own ON orders
 FOR DELETE
 USING (
-  EXISTS (
-    SELECT 1 FROM app_users au
-    WHERE au.id = orders.user_id
-  )
+  user_id = current_app_user_id()
 );
 
 
@@ -844,6 +827,9 @@ When you’re done testing:
 
 ```sql
 DROP FUNCTION IF EXISTS set_local_user;
+DROP FUNCTION IF EXISTS set_local_user(uuid);
+DROP FUNCTION IF EXISTS current_local_user_id();
+
 ```
 
 ---
