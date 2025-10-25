@@ -129,9 +129,13 @@ Check your MMF's Net Yield quarterly. If a competitor offers a significantly bet
 | **Professional Management** | Experts handle the investments for you.             |
 
 
+
+
 ---  
 
-## The kind of thinking that separates **savers** from **investors**.
+
+
+# The kind of thinking that separates **savers** from **investors**.
 Let’s walk through scenarios side by side where:
 > Sceanrio 1: we put 50,000/- in money market fund
 > Sceanario 2: we put 50,000/- to stand second hand clothes business (mitumba)  
