@@ -89,11 +89,12 @@ Once you feel comfortable with:
 
 ---
 
-.
-.
-.
-.
-.
+.  
+.  
+.  
+.  
+.  
+
 # 🕘 **Daily Forex + AI Trading Routine Checklist**
 
 > 🎯 Goal: Trade with clarity, reduce emotion, and use AI for analysis, discipline, and reflection.
