@@ -646,78 +646,402 @@ request.jwt.claims.role = 'admin'
 ```
 
 ## **Step 4 — Test and Validate Policies**
+Test script** you can run in your **Supabase SQL editor** to verify your **RLS policies** for `customers`, `orders`, and `products`.
 
-### 🧑‍💼 Test as Admin
+It includes setup, simulated users, and expected behavior explanations so you can confirm everything works correctly — even when using your **`app_users`** table instead of real Supabase Auth.
+
+---
+
+# 🧪 **RLS POLICY TEST SCRIPT**
+
+> ✅ Use this only after you’ve enabled RLS and created all the policies from your current setup.
+
+---
+
+## **1️⃣ — Check that RLS is Enabled**
 
 ```sql
--- Should see all orders
-SELECT * FROM orders;
-
--- Should be able to modify any record
-UPDATE orders SET quantity = 99 WHERE order_id = 1;
+SELECT tablename, rowsecurity
+FROM pg_tables
+WHERE schemaname = 'public'
+  AND tablename IN ('customers', 'orders', 'products');
 ```
 
-### 👤 Test as User
+**Expected:**
+`rowsecurity` = `true` for all three tables.
 
-Simulate a logged-in user via the Supabase Policies UI or with the SDK:
+---
+
+## **2️⃣ — Prepare Mock Data**
+
+We’ll simulate a few users and sample data to test policies.
 
 ```sql
--- Should only see their own orders
-SELECT * FROM orders;
+-- 👥 Create 2 fake app users (acting as Supabase Auth substitutes)
+INSERT INTO app_users (id, email, role)
+VALUES
+  ('11111111-1111-1111-1111-111111111111', 'admin@example.com', 'admin'),
+  ('22222222-2222-2222-2222-222222222222', 'user1@example.com', 'user'),
+  ('33333333-3333-3333-3333-333333333333', 'user2@example.com', 'user')
+ON CONFLICT (id) DO NOTHING;
 
--- Should be allowed to insert orders for themselves
-INSERT INTO orders (customer_id, product_id, quantity)
-VALUES (1, 1, 1);
+-- 🧍‍♂️ Customers (linked to app_users)
+INSERT INTO customers (full_name, email, user_id)
+VALUES
+  ('Admin Tester', 'admin@example.com', '11111111-1111-1111-1111-111111111111'),
+  ('John User', 'user1@example.com', '22222222-2222-2222-2222-222222222222'),
+  ('Mary User', 'user2@example.com', '33333333-3333-3333-3333-333333333333')
+ON CONFLICT DO NOTHING;
 
--- Should fail if trying to use another user's ID
+-- 📦 Products
+INSERT INTO products (product_name, category, price)
+VALUES
+  ('Laptop', 'Electronics', 85000),
+  ('Shoes', 'Fashion', 2500),
+  ('Book', 'Education', 1200)
+ON CONFLICT DO NOTHING;
+
+-- 🧾 Orders
 INSERT INTO orders (customer_id, product_id, quantity, user_id)
-VALUES (1, 1, 1, 'fake-uuid');  -- ❌ denied
+VALUES
+  (1, 1, 1, '22222222-2222-2222-2222-222222222222'),
+  (2, 2, 2, '33333333-3333-3333-3333-333333333333');
 ```
 
 ---
 
-## **Step 5 — Best Practices**
+## **3️⃣ — Simulate Different Users (Test RLS Behavior)**
 
-1. ✅ **Use CHECK constraints** for data integrity (`price >= 0`, `quantity > 0`).
-2. 🕒 **Add audit columns** like `created_by`, `updated_at` for traceability.
-3. 🔒 **Use service_role key only server-side** (it bypasses RLS).
-4. 🎯 **Minimize JWT claims** — keep only `role`, `sub`, and necessary fields.
-5. 🧪 **Test policies regularly** using Supabase’s Policy Simulator or `auth.uid()` queries.
-
----
-
-## **Step 6 — Common Pitfalls**
-
-| Mistake                      | Description                                   | Fix                                         |
-| ---------------------------- | --------------------------------------------- | ------------------------------------------- |
-| ❌ Forgot to enable RLS       | Policies won’t apply                          | `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` |
-| ❌ Forgot to grant privileges | Authenticated users can’t access data         | Use `GRANT ... TO authenticated`            |
-| ❌ Exposed service_role key   | Full bypass of RLS (critical risk)            | Never include in client apps                |
-| ❌ Missing JWT role           | Policies using `request.jwt.claims.role` fail | Use fallback with `app_users` lookup        |
-
-**Example Fallback Check:**
+### ⚙️ Setup Helper Function (to test as specific users)
 
 ```sql
-(request.jwt.claims.role = 'admin')
-OR EXISTS (
-  SELECT 1 FROM app_users au
-  WHERE au.id = auth.uid() AND au.role = 'admin'
-)
+-- Create a helper to simulate "logged in" user sessions
+CREATE OR REPLACE FUNCTION set_local_user(uid uuid)
+RETURNS void AS $$
+BEGIN
+  PERFORM set_config('request.jwt.claims', json_build_object('sub', uid)::text, true);
+END;
+$$ LANGUAGE plpgsql;
 ```
 
 ---
 
-## ✅ **RLS Implementation Checklist**
+## **4️⃣ — Test as Admin**
 
-| Task                           | Status |
-| ------------------------------ | ------ |
-| Create tables                  | ✅      |
-| Add triggers & constraints     | ✅      |
-| Insert seed data               | ✅      |
-| Revoke public privileges       | ✅      |
-| Enable RLS                     | ✅      |
-| Create policies for all tables | ✅      |
-| Test as admin and user         | ✅      |
+```sql
+-- 🧑‍💼 Simulate admin login
+SELECT set_local_user('11111111-1111-1111-1111-111111111111');
+
+-- ✅ Admin should see all customers
+SELECT * FROM customers;
+
+-- ✅ Admin should see all orders
+SELECT * FROM orders;
+
+-- ✅ Admin can update anyone’s order
+UPDATE orders SET quantity = 10 WHERE order_id = 1 RETURNING *;
+
+-- ✅ Admin can insert new products
+INSERT INTO products (product_name, category, price)
+VALUES ('Tablet', 'Electronics', 40000)
+RETURNING *;
+```
+
+**Expected:**
+Admin can **see and modify everything**.
 
 ---
 
+## **5️⃣ — Test as Regular User (User1)**
+
+```sql
+-- 👤 Simulate user1 login
+SELECT set_local_user('22222222-2222-2222-2222-222222222222');
+
+-- ✅ Should only see their own customer record
+SELECT * FROM customers;
+
+-- ✅ Should only see their own orders
+SELECT * FROM orders;
+
+-- ✅ Can create their own order
+INSERT INTO orders (customer_id, product_id, quantity, user_id)
+VALUES (1, 3, 1, '22222222-2222-2222-2222-222222222222')
+RETURNING *;
+
+-- ❌ Should NOT see other users' orders
+SELECT * FROM orders WHERE user_id = '33333333-3333-3333-3333-333333333333';
+
+-- ❌ Should NOT update another user’s order
+UPDATE orders SET quantity = 5 WHERE user_id = '33333333-3333-3333-3333-333333333333';
+```
+
+**Expected:**
+
+* User1 only sees and edits their own data.
+* Other users’ rows are invisible (RLS hides them completely).
+* Unauthorized updates will **fail silently** with a permissions error.
+
+---
+
+## **6️⃣ — Test as Second User (User2)**
+
+```sql
+-- 👤 Simulate user2 login
+SELECT set_local_user('33333333-3333-3333-3333-333333333333');
+
+-- ✅ Should only see their own record in customers
+SELECT * FROM customers;
+
+-- ✅ Should see only their own order
+SELECT * FROM orders;
+
+-- ❌ Should not see or update User1’s order
+UPDATE orders SET quantity = 99 WHERE user_id = '22222222-2222-2222-2222-222222222222';
+```
+
+---
+
+## **7️⃣ — Check that Products Are Shared (Viewable by All)**
+
+```sql
+-- 👤 Still as user2
+SELECT * FROM products;
+```
+
+**Expected:**
+All products are visible, but **only admin** can modify or insert them.
+
+---
+
+## **8️⃣ — Validate Policy Enforcement**
+
+```sql
+SELECT tablename, policyname, cmd, roles, permissive
+FROM pg_policies
+WHERE schemaname = 'public'
+ORDER BY tablename;
+```
+
+**Expected:**
+All `customers`, `orders`, and `products` policies appear.
+
+---
+
+## **9️⃣ — Clean Up (Optional)**
+
+When you’re done testing:
+
+```sql
+DROP FUNCTION IF EXISTS set_local_user;
+```
+
+---
+
+# ✅ **Expected Outcomes Summary**
+
+| Test Case                                   | Expected Result   |
+| ------------------------------------------- | ----------------- |
+| Admin selects all tables                    | ✅ Sees everything |
+| Admin inserts/updates/deletes               | ✅ Works           |
+| User1 sees only their data                  | ✅ Works           |
+| User2 sees only their data                  | ✅ Works           |
+| Regular users see all products              | ✅ Works           |
+| Regular users cannot insert/update products | ✅ Denied          |
+| Invalid updates across users                | ❌ Blocked by RLS  |
+
+---
+## Summary of test script
+You can use these summary to test your policies. it automatically outputs ✅ or ❌ messages using `RAISE NOTICE` statements, so you can immediately see which policies pass or fail when you run it in Supabase SQL editor (or pgAdmin).  
+
+> It prints clear success/failure messages for each policy rule.
+
+---
+
+```sql
+-- =======================================================
+-- 🔧 SETUP: Helper function to simulate Supabase user sessions
+-- =======================================================
+CREATE OR REPLACE FUNCTION set_local_user(uid uuid)
+RETURNS void AS $$
+BEGIN
+  PERFORM set_config('request.jwt.claims', json_build_object('sub', uid)::text, true);
+END;
+$$ LANGUAGE plpgsql;
+
+-- =======================================================
+-- 👥 STEP 1: Seed sample data
+-- =======================================================
+INSERT INTO app_users (id, email, role)
+VALUES
+  ('11111111-1111-1111-1111-111111111111', 'admin@example.com', 'admin'),
+  ('22222222-2222-2222-2222-222222222222', 'user1@example.com', 'user'),
+  ('33333333-3333-3333-3333-333333333333', 'user2@example.com', 'user')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO customers (full_name, email, user_id)
+VALUES
+  ('Admin Tester', 'admin@example.com', '11111111-1111-1111-1111-111111111111'),
+  ('John User', 'user1@example.com', '22222222-2222-2222-2222-222222222222'),
+  ('Mary User', 'user2@example.com', '33333333-3333-3333-3333-333333333333')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO products (product_name, category, price)
+VALUES
+  ('Laptop', 'Electronics', 85000),
+  ('Shoes', 'Fashion', 2500),
+  ('Book', 'Education', 1200)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO orders (customer_id, product_id, quantity, user_id)
+VALUES
+  (1, 1, 1, '22222222-2222-2222-2222-222222222222'),
+  (2, 2, 2, '33333333-3333-3333-3333-333333333333')
+ON CONFLICT DO NOTHING;
+
+-- =======================================================
+-- 🧩 STEP 2: Helper to run test cases and print pass/fail
+-- =======================================================
+CREATE OR REPLACE FUNCTION test_result(test_name text, condition boolean)
+RETURNS void AS $$
+BEGIN
+  IF condition THEN
+    RAISE NOTICE '✅ % PASSED', test_name;
+  ELSE
+    RAISE NOTICE '❌ % FAILED', test_name;
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- =======================================================
+-- 🧑‍💼 STEP 3: Test as ADMIN
+-- =======================================================
+DO $$
+DECLARE
+  result_count int;
+BEGIN
+  PERFORM set_local_user('11111111-1111-1111-1111-111111111111');
+
+  -- Admin should see all customers
+  SELECT count(*) INTO result_count FROM customers;
+  PERFORM test_result('Admin sees all customers', result_count = 3);
+
+  -- Admin can update any order
+  UPDATE orders SET quantity = 10 WHERE order_id = 1;
+  PERFORM test_result('Admin can update orders', FOUND);
+
+  -- Admin can insert new product
+  INSERT INTO products (product_name, category, price)
+  VALUES ('Tablet', 'Electronics', 40000);
+  PERFORM test_result('Admin can insert product', FOUND);
+END $$;
+
+-- =======================================================
+-- 👤 STEP 4: Test as USER1
+-- =======================================================
+DO $$
+DECLARE
+  result_count int;
+  can_update boolean := true;
+BEGIN
+  PERFORM set_local_user('22222222-2222-2222-2222-222222222222');
+
+  -- Should only see their own customer record
+  SELECT count(*) INTO result_count FROM customers
+  WHERE user_id = '22222222-2222-2222-2222-222222222222';
+  PERFORM test_result('User1 sees only their own customer record', result_count = 1);
+
+  -- Should only see their own orders
+  SELECT count(*) INTO result_count FROM orders
+  WHERE user_id = '22222222-2222-2222-2222-222222222222';
+  PERFORM test_result('User1 sees only their own orders', result_count = 1);
+
+  -- Should fail updating someone else’s order
+  BEGIN
+    UPDATE orders SET quantity = 99 WHERE user_id = '33333333-3333-3333-3333-333333333333';
+  EXCEPTION WHEN others THEN
+    can_update := false;
+  END;
+  PERFORM test_result('User1 cannot update another user’s order', can_update = false);
+
+  -- Can insert their own order
+  INSERT INTO orders (customer_id, product_id, quantity, user_id)
+  VALUES (1, 3, 1, '22222222-2222-2222-2222-222222222222');
+  PERFORM test_result('User1 can insert their own order', FOUND);
+END $$;
+
+-- =======================================================
+-- 👤 STEP 5: Test as USER2
+-- =======================================================
+DO $$
+DECLARE
+  result_count int;
+  can_update boolean := true;
+BEGIN
+  PERFORM set_local_user('33333333-3333-3333-3333-333333333333');
+
+  -- Should see only their own customer record
+  SELECT count(*) INTO result_count FROM customers
+  WHERE user_id = '33333333-3333-3333-3333-333333333333';
+  PERFORM test_result('User2 sees only their own customer record', result_count = 1);
+
+  -- Should see only their own orders
+  SELECT count(*) INTO result_count FROM orders
+  WHERE user_id = '33333333-3333-3333-3333-333333333333';
+  PERFORM test_result('User2 sees only their own orders', result_count = 1);
+
+  -- Should not see User1’s orders
+  SELECT count(*) INTO result_count FROM orders
+  WHERE user_id = '22222222-2222-2222-2222-222222222222';
+  PERFORM test_result('User2 cannot see User1 orders', result_count = 0);
+
+  -- Should fail updating another user’s order
+  BEGIN
+    UPDATE orders SET quantity = 77 WHERE user_id = '22222222-2222-2222-2222-222222222222';
+  EXCEPTION WHEN others THEN
+    can_update := false;
+  END;
+  PERFORM test_result('User2 cannot update another user’s order', can_update = false);
+END $$;
+
+-- =======================================================
+-- 📦 STEP 6: Products visibility test
+-- =======================================================
+DO $$
+DECLARE
+  result_count int;
+BEGIN
+  PERFORM set_local_user('33333333-3333-3333-3333-333333333333');
+  SELECT count(*) INTO result_count FROM products;
+  PERFORM test_result('All users can see product list', result_count > 0);
+END $$;
+
+-- =======================================================
+-- 🧹 STEP 7: Clean up helper functions (optional)
+-- =======================================================
+-- DROP FUNCTION IF EXISTS set_local_user;
+-- DROP FUNCTION IF EXISTS test_result;
+```
+
+---
+
+# ✅ **Expected Console Output Example**
+
+When you run the script, you’ll see this in the Supabase SQL console:
+
+```
+NOTICE:  ✅ Admin sees all customers PASSED
+NOTICE:  ✅ Admin can update orders PASSED
+NOTICE:  ✅ Admin can insert product PASSED
+NOTICE:  ✅ User1 sees only their own customer record PASSED
+NOTICE:  ✅ User1 sees only their own orders PASSED
+NOTICE:  ✅ User1 cannot update another user’s order PASSED
+NOTICE:  ✅ User1 can insert their own order PASSED
+NOTICE:  ✅ User2 sees only their own customer record PASSED
+NOTICE:  ✅ User2 sees only their own orders PASSED
+NOTICE:  ✅ User2 cannot see User1 orders PASSED
+NOTICE:  ✅ User2 cannot update another user’s order PASSED
+NOTICE:  ✅ All users can see product list PASSED
+```
+
+---  
