@@ -529,15 +529,23 @@ USING (true);
 ### 🧾 **Orders Table Policies**
 
 ```sql
+
 -- 1️⃣ Admin: full access
 CREATE POLICY orders_admin_all ON orders
 FOR ALL
 USING (
-  EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.role = 'admin'
+  )
 )
 WITH CHECK (
-  EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.role = 'admin'
+  )
 );
+
 
 -- 2️⃣ Users: view only their own orders
 CREATE POLICY orders_user_select_own ON orders
@@ -549,16 +557,17 @@ USING (
   )
 );
 
+
 -- 3️⃣ Users: insert orders only for themselves
 CREATE POLICY orders_user_insert_own ON orders
 FOR INSERT
-USING (true)
 WITH CHECK (
   EXISTS (
     SELECT 1 FROM app_users au
     WHERE au.id = orders.user_id
   )
 );
+
 
 -- 4️⃣ Users: update their own orders
 CREATE POLICY orders_user_update_own ON orders
@@ -575,6 +584,7 @@ WITH CHECK (
     WHERE au.id = orders.user_id
   )
 );
+
 
 -- 5️⃣ Users: delete their own orders
 CREATE POLICY orders_user_delete_own ON orders
