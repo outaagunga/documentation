@@ -415,57 +415,55 @@ The following examples assume JWT claims include a `role` (e.g., `'admin'` or `'
 ### 🧍‍♂️ **Customers Table Policies**
 
 ```sql
-
 -- 1️⃣ Admin: full visibility and control
 CREATE POLICY customers_admin_all ON customers
 FOR ALL
 USING (
   EXISTS (
     SELECT 1 FROM app_users au
-    WHERE au.id = auth.uid() AND au.role = 'admin'
+    WHERE au.id = current_app_user_id()
+      AND au.role = 'admin'
   )
 )
 WITH CHECK (
   EXISTS (
     SELECT 1 FROM app_users au
-    WHERE au.id = auth.uid() AND au.role = 'admin'
+    WHERE au.id = current_app_user_id()
+      AND au.role = 'admin'
   )
 );
-
 
 -- 2️⃣ Users: view only their own profile
 CREATE POLICY customers_user_select_own ON customers
 FOR SELECT
 USING (
-  user_id = auth.uid()
+  user_id = current_app_user_id()
 );
-
 
 -- 3️⃣ Users: insert only their own record
 CREATE POLICY customers_user_insert_own ON customers
 FOR INSERT
 WITH CHECK (
-  user_id = auth.uid()
+  user_id = current_app_user_id()
 );
-
 
 -- 4️⃣ Users: update their own record
 CREATE POLICY customers_user_update_own ON customers
 FOR UPDATE
 USING (
-  user_id = auth.uid()
+  user_id = current_app_user_id()
 )
 WITH CHECK (
-  user_id = auth.uid()
+  user_id = current_app_user_id()
 );
-
 
 -- 5️⃣ Users: delete their own profile
 CREATE POLICY customers_user_delete_own ON customers
 FOR DELETE
 USING (
-  user_id = auth.uid()
+  user_id = current_app_user_id()
 );
+
 
 
 ```
