@@ -720,13 +720,20 @@ VALUES
 ### ⚙️ Setup Helper Function (to test as specific users)
 
 ```sql
--- Create a helper to simulate "logged in" user sessions
-CREATE OR REPLACE FUNCTION set_local_user(uid uuid)
+-- Create a helper to simulate logged-in user
+CREATE OR REPLACE FUNCTION current_app_user_id()
+RETURNS uuid AS $$
+  SELECT current_setting('app.current_user', true)::uuid;
+$$ LANGUAGE sql STABLE;
+
+-- Helper to set the simulated user id
+CREATE OR REPLACE FUNCTION set_app_user(uid uuid)
 RETURNS void AS $$
 BEGIN
-  PERFORM set_config('request.jwt.claims', json_build_object('sub', uid)::text, true);
+  PERFORM set_config('app.current_user', uid::text, false);
 END;
 $$ LANGUAGE plpgsql;
+
 ```
 
 ---
