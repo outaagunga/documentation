@@ -1,4 +1,95 @@
 
+# 🧩 **Beginner Setup Pack: Start Here Before the Main Routine**
+
+> 🎯 Goal: Make forex trading + AI assistance simple, clear, and safe for a total beginner.
+
+---
+
+**1️⃣ Forex 101 — Quick Glossary (Plain English)**
+
+| Term                    | Meaning                                                                    | Example                                               |
+| ----------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------- |
+| **Currency Pair**       | Two currencies you trade (base / quote).                                   | EUR/USD = Euro vs US Dollar                           |
+| **Pip**                 | The smallest price change (≈ 0.0001).                                      | If EUR/USD moves 1.0800 → 1.0810 = 10 pips            |
+| **Lot / Position Size** | The trade volume. 1 lot = 100,000 units; mini = 0.1 lot; micro = 0.01 lot. | Small accounts use 0.01 lots                          |
+| **Leverage**            | Broker-loaned capital to open larger trades.                               | 1:500 means $10 controls $5,000 — use with caution    |
+| **Stop Loss (SL)**      | Price where your trade closes automatically to limit loss.                 | “Sell EUR/USD, SL 1.0830”                             |
+| **Take Profit (TP)**    | Price where your trade auto-closes in profit.                              | “TP 1.0750”                                           |
+| **Risk % per Trade**    | How much of your account you can lose on one trade.                        | 1 % risk = $10 on a $1,000 account                    |
+| **Spread**              | Broker fee (difference between buy/sell price).                            | Small spread = cheaper trades                         |
+| **Trend**               | Overall market direction.                                                  | Higher highs = uptrend 📈 ; lower lows = downtrend 📉 |
+| **Demo Account**        | Practice account using fake money.                                         | Learn safely before real trading                      |
+
+---
+
+
+**2️⃣ Setup — Tools You Need**
+
+| Tool                               | What It Does                                | Beginner Steps                                                                                                                                  |
+| ---------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Trading Platform (MT5)**         | Place trades and monitor price.             | 1. Download MT5 from your broker.<br>2. Log in with demo credentials.<br>3. Right-click chart → Indicators → Moving Average.                    |
+| **Chart Analysis (TradingView)**   | Beautiful charts & drawing tools.           | 1. Sign up free on [tradingview.com](https://tradingview.com).<br>2. Search pair (e.g., EUR/USD).<br>3. Add indicators: EMA 50 + EMA 200 + RSI. |
+| **Economic Calendar**              | Shows high-impact news.                     | Visit [forexfactory.com](https://www.forexfactory.com/calendar). Mark red news times.                                                           |
+| **AI Assistant (ChatGPT / GPT-5)** | Your daily analyst, coach & journal helper. | Ask it the sample prompts from the main guide each day.                                                                                         |
+
+---
+
+**3️⃣ First-Week Simplified Routine**
+
+> Keep it light — focus on habit + understanding.
+> Spend 30–60 minutes daily.
+
+
+| Day     | Focus        | What to Do                                            | Example AI Prompt                                          |
+| ------- | ------------ | ----------------------------------------------------- | ---------------------------------------------------------- |
+| **Mon** | Learn Basics | Watch 1 video on “how forex works”; open TradingView. | “Explain what a pip and lot mean in simple terms.”         |
+| **Tue** | Charts       | Add EMA 50/200 on EUR/USD; spot up vs down trend.     | “Based on today’s EUR/USD, what’s the market bias?”        |
+| **Wed** | Demo Trade   | Place 1 demo trade (0.01 lot) with SL/TP.             | “Is my EUR/USD buy at 1.0830 a good trend trade?”          |
+| **Thu** | Journal      | Write down entry, exit, result, lesson.               | “Summarize what I did well in my last trade.”              |
+| **Fri** | Review       | Read journal + AI feedback; plan next week.           | “Based on this week’s demo trades, what should I improve?” |
+
+---
+
+🧮 **4️⃣ Simple Risk Example**
+
+**Scenario:**
+Account = $500 Risk = 1 % Stop Loss = 25 pips Pair = EUR/USD
+
+**Step 1:** Amount to risk = $500 × 0.01 = $5
+**Step 2:** Value per pip = $5 ÷ 25 = $0.20 / pip
+**Step 3:** In MT5, choose lot size ≈ 0.02 lots (micro)
+
+💡 *Use this formula anytime:*
+
+> Lot Size ≈ ( Account × Risk% ) ÷ ( Stop Loss pips × Pip Value per Lot )
+
+---
+
+🧭 **5️⃣ The “5-Step Beginner Flow”**
+
+> Use this for your first month before adopting the full checklist.
+
+1️⃣ **Check News:** Open Forex Factory → avoid high-impact times.
+2️⃣ **Pick One Pair:** Start with EUR/USD on 1H chart.
+3️⃣ **Ask AI Analysis:** “What’s the current bias for EUR/USD?”
+4️⃣ **Plan 1 Trade:** Find trend entry → place demo trade (0.01 lot).
+5️⃣ **Journal & Review:** Ask AI “Did I follow my plan?”
+
+---
+
+✅ **Next Step**
+
+Once you feel comfortable with:
+
+* Describing charts to AI
+* Placing demo trades on MT5
+* Recording results in your journal
+
+👉 Move on to live trading. **use trading Routine Checklist below”** for complete day-to-day guidance.
+
+---
+
+
 # 🕘 **Daily Forex + AI Trading Routine Checklist**
 
 > 🎯 Goal: Trade with clarity, reduce emotion, and use AI for analysis, discipline, and reflection.
