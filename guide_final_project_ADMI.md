@@ -425,7 +425,6 @@ WITH CHECK (
   EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
 );
 
-
 -- 2️⃣ Users: view only their own customer profile
 CREATE POLICY customers_user_select_own ON customers
 FOR SELECT
@@ -436,32 +435,36 @@ USING (
   )
 );
 
-
 -- 3️⃣ Users: insert only their own record
 CREATE POLICY customers_user_insert_own ON customers
-FOR SELECT
-USING (
+FOR INSERT
+USING (true)
+WITH CHECK (
   EXISTS (
     SELECT 1 FROM app_users au
     WHERE au.id = customers.user_id
   )
 );
-
 
 -- 4️⃣ Users: update their own record
 CREATE POLICY customers_user_update_own ON customers
-FOR SELECT
+FOR UPDATE
 USING (
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = customers.user_id
+  )
+)
+WITH CHECK (
   EXISTS (
     SELECT 1 FROM app_users au
     WHERE au.id = customers.user_id
   )
 );
 
-
--- 5️⃣ Users: (optional) delete only their own profile
+-- 5️⃣ Users: delete their own profile
 CREATE POLICY customers_user_delete_own ON customers
-FOR SELECT
+FOR DELETE
 USING (
   EXISTS (
     SELECT 1 FROM app_users au
@@ -541,7 +544,6 @@ WITH CHECK (
   EXISTS (SELECT 1 FROM app_users au WHERE au.role = 'admin')
 );
 
-
 -- 2️⃣ Users: view only their own orders
 CREATE POLICY orders_user_select_own ON orders
 FOR SELECT
@@ -552,38 +554,43 @@ USING (
   )
 );
 
-
 -- 3️⃣ Users: insert orders only for themselves
 CREATE POLICY orders_user_insert_own ON orders
-FOR SELECT
-USING (
+FOR INSERT
+USING (true)
+WITH CHECK (
   EXISTS (
     SELECT 1 FROM app_users au
     WHERE au.id = orders.user_id
   )
 );
-
 
 -- 4️⃣ Users: update their own orders
 CREATE POLICY orders_user_update_own ON orders
-FOR SELECT
+FOR UPDATE
 USING (
+  EXISTS (
+    SELECT 1 FROM app_users au
+    WHERE au.id = orders.user_id
+  )
+)
+WITH CHECK (
   EXISTS (
     SELECT 1 FROM app_users au
     WHERE au.id = orders.user_id
   )
 );
 
-
--- 5️⃣ Users: (optional) delete their own orders
+-- 5️⃣ Users: delete their own orders
 CREATE POLICY orders_user_delete_own ON orders
-FOR SELECT
+FOR DELETE
 USING (
   EXISTS (
     SELECT 1 FROM app_users au
     WHERE au.id = orders.user_id
   )
 );
+
 
 ```
 
