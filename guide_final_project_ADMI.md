@@ -369,9 +369,6 @@ This means RLS is active for those tables.
 
 ---
 
-# Part 2 — Security: enable RLS, grants, policy templates
-
-> Run these steps **after** schema & sample data.
 
 ### 1. Revoke default public access & grant to `authenticated` (so RLS is enforced)
 
@@ -387,17 +384,7 @@ REVOKE ALL ON orders FROM PUBLIC;
 GRANT SELECT, INSERT, UPDATE, DELETE ON orders TO authenticated;
 ```
 
-### 2. Enable RLS on all tables
-
-```sql
-ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
-```
-
----
-
-# Part 3 — Row Level Security Policies (complete set)
+### complete Policy set
 
 > Policies use `request.jwt.claims.role` to detect `admin`. Non-admin users are constrained to `auth.uid()`.
 
