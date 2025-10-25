@@ -226,13 +226,13 @@ To fix this: create those users manually via `INSERT INTO auth.users (...)` e.g.
 
 ```sql
 -- Create users to simulate as if they signed up on the supabase
-INSERT INTO users (id, email, role)	
+INSERT INTO app_users (id, email, role)	
 VALUES
   ('24f29f59-89c1-4f1d-97e9-554029e6a3f3', 'alice@example.com', 'user'),
   ('b5fa48df-c568-4d73-b42c-e19896d9cfa8', 'brian@example.com', 'user'),
   ('c7ca3a2a-d5de-43b2-95f5-5529b5c9cfe1', 'cynthia@example.com', 'user'),
   ('d9b5a214-12c8-4f52-8835-05f05e5b95af', 'david@example.com', 'user'),
-  ('e1d2c897-5678-4eaa-94ad-77dcd97a7e2b', 'eva@example.com', 'user'),
+  ('e1d2c897-5678-4eaa-94ad-77dcd97a7e2b', 'eva@example.com', 'user');
 
 ```
 or  
