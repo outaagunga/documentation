@@ -207,11 +207,20 @@ TRUNCATE TABLE orders RESTART IDENTITY CASCADE;
 we are going to use `where email matches customer and user`  
 
 ```sql
+--Customers table
 UPDATE customers AS c
 SET user_id = au.id
 FROM app_users AS au
 WHERE LOWER(TRIM(c.email)) = LOWER(TRIM(au.email))
   AND c.user_id IS NULL;
+
+--Orders table
+UPDATE orders AS o
+SET user_id = c.user_id
+FROM customers AS c
+WHERE o.customer_id = c.customer_id
+  AND o.user_id IS NULL;
+
 ```
 Then run this code to check if the `user_id` if filled or is null.  
 ```sql
@@ -242,25 +251,14 @@ To fix this: create those users manually via `INSERT INTO auth.users (...)` e.g.
 
 ```sql
 -- Create users to simulate as if they signed up on the supabase
-INSERT INTO app_users (id, email, role)	
+INSERT INTO app_users (email, role)	
 VALUES
-  ('24f29f59-89c1-4f1d-97e9-554029e6a3f3', 'alice@example.com', 'user'),
-  ('b5fa48df-c568-4d73-b42c-e19896d9cfa8', 'brian@example.com', 'user'),
-  ('c7ca3a2a-d5de-43b2-95f5-5529b5c9cfe1', 'cynthia@example.com', 'user'),
-  ('d9b5a214-12c8-4f52-8835-05f05e5b95af', 'david@example.com', 'user'),
-  ('e1d2c897-5678-4eaa-94ad-77dcd97a7e2b', 'eva@example.com', 'user');
+  ('alice@example.com', 'user'),
+  ('brian@example.com', 'user'),
+  ('cynthia@example.com', 'user'),
+  ('david@example.com', 'user'),
+  ('eva@example.com', 'user');
 
-```
-or  
-insert from the customers table to the app_users  
-```sql
-INSERT INTO app_users (id, email, role)
-SELECT u.id, u.email, 'user'
-FROM auth.users u
-WHERE u.email IN (
-  SELECT email FROM customers
-)
-ON CONFLICT (id) DO NOTHING;
 ```
 
 Try updating again to see if it works now  
