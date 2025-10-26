@@ -618,7 +618,7 @@ SELECT tablename, policyname, permissive, roles, cmd
 FROM pg_policies
 WHERE schemaname = 'public';
 ```
-
+To check if the current user is bypassing the the session roles on RLS policy 
 ```sql
 --replace customers, orders with your actaul table names 
 SELECT tablename, policyname, permissive, roles, cmd, qual
