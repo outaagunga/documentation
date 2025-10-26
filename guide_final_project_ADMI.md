@@ -360,6 +360,12 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ```
 
+Or you can force it, e.g  
+```sql
+ALTER TABLE customers FORCE ROW LEVEL SECURITY;
+ALTER TABLE orders FORCE ROW LEVEL SECURITY;
+```
+
 ✅ **Verify RLS Status:**
 
 ```sql
@@ -611,6 +617,13 @@ WITH CHECK (is_admin(orders.user_id));
 SELECT tablename, policyname, permissive, roles, cmd
 FROM pg_policies
 WHERE schemaname = 'public';
+```
+
+```sql
+--replace customers, orders with your actaul table names 
+SELECT tablename, policyname, permissive, roles, cmd, qual
+FROM pg_policies
+WHERE tablename IN ('customers', 'orders');
 ```
 
 WHEN YOU LATER ADD REAL SUPABASE AUTH users, you will simply change:  
@@ -949,9 +962,189 @@ VALUES (1, 2, 1, '33333333-3333-3333-3333-333333333333');  -- should fail
 
 
 ---
+# Troubleshouting- if policy is not working 
 
-Would you like me to rewrite your **customers + orders policies** so they’re fully compatible with this “simulated app_users login” method (using `current_app_user_id()`)?
-That version will let you **see real denials directly in SQL**.
+Thanks — that’s actually *really* valuable feedback.
+If you’ve done everything right (enabled RLS, forced RLS, recreated policies, set `current_app_user_id()`), and **still no denials**, then we’re down to **two possible root causes** inside Postgres itself.
+
+Let’s methodically isolate which one it is — step by step.
+
+---
+
+## 🧩 Step 1 — Verify if your current session can bypass RLS
+
+Run this **exact command**:
+
+```sql
+SELECT current_user,
+       rolsuper AS is_superuser,
+       rolbypassrls AS bypasses_rls
+FROM pg_roles
+WHERE rolname = current_user;
+```
+
+### ✅ Expected Output
+
+| current_user      | is_superuser | bypasses_rls |
+| ----------------- | ------------ | ------------ |
+| service_role_XXXX | f            | f            |
+
+If you see:
+
+* `is_superuser = t` **or**
+* `bypasses_rls = t`
+
+👉 That’s why you can’t get denials.
+Your current role **ignores RLS globally**.
+
+---
+
+### 🛠️ Fix (for testing)
+
+If `bypasses_rls = t`, create a **normal non-bypass role**:
+
+```sql
+CREATE ROLE test_user LOGIN PASSWORD '12345' NOSUPERUSER NOCREATEDB NOCREATEROLE;
+GRANT USAGE ON SCHEMA public TO test_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON customers, orders TO test_user;
+```
+
+Then switch into that role:
+
+```sql
+SET ROLE test_user;
+```
+
+Now run your query again:
+
+```sql
+SELECT * FROM orders;
+```
+
+➡️ If RLS is truly active, you’ll now see either an **empty set** or a **permission denied** error.
+
+If you *still* see everything, continue 👇
+
+---
+
+## 🧩 Step 2 — Confirm that RLS is actually being applied at query time
+
+Run this diagnostic query:
+
+```sql
+EXPLAIN (COSTS OFF)
+SELECT * FROM orders;
+```
+
+If RLS is active, you should see a plan that contains something like:
+
+```
+Seq Scan on orders  (filter: ((user_id = current_app_user_id()) OR ...))
+```
+
+If you see **no filter at all**, then RLS truly isn’t being applied — meaning something is off at table-level settings.
+
+---
+
+## 🧩 Step 3 — Confirm the table’s RLS flags directly from Postgres
+
+Run:
+
+```sql
+SELECT relname, relrowsecurity, relforcerowsecurity
+FROM pg_class
+WHERE relname IN ('orders', 'customers');
+```
+
+You must see:
+
+| relname   | relrowsecurity | relforcerowsecurity |
+| --------- | -------------- | ------------------- |
+| orders    | t              | t                   |
+| customers | t              | t                   |
+
+If `relrowsecurity = f`, RLS is not enabled at all.
+
+Enable it:
+
+```sql
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders FORCE ROW LEVEL SECURITY;
+```
+
+---
+
+## 🧩 Step 4 — Manually simulate the restriction condition
+
+Try this exact sequence:
+
+```sql
+RESET ALL;  -- clear old session vars
+
+SELECT set_app_user('22222222-2222-2222-2222-222222222222');
+SELECT current_app_user_id();
+
+SELECT * FROM orders WHERE user_id = current_app_user_id();
+```
+
+Then try:
+
+```sql
+SELECT * FROM orders;  -- without filter
+```
+
+If both return the same result, RLS still isn’t being applied.
+
+If the first returns fewer rows, then the filter is working — but your connection can read anyway (bypassing).
+
+---
+
+## 🧩 Step 5 — Confirm Postgres Version Behavior
+
+Run:
+
+```sql
+SHOW server_version;
+```
+
+If you’re on PostgreSQL 15+ (Supabase default), everything above should behave normally.
+
+If you’re on a local test server (like Supabase CLI / Docker), check that your database actually has `row_security = on` globally:
+
+```sql
+SHOW row_security;
+```
+
+It should say:
+
+```
+on
+```
+
+If it says `off`, enable it:
+
+```sql
+SET row_security = on;
+```
+
+---
+
+## ✅ TL;DR — What This Will Tell You
+
+| Check                  | Command                                                | What It Means                          |
+| ---------------------- | ------------------------------------------------------ | -------------------------------------- |
+| Can role bypass RLS?   | `SELECT ... FROM pg_roles WHERE rolname=current_user;` | If `bypasses_rls = t` → RLS ignored    |
+| Table has RLS enabled? | `SELECT relrowsecurity FROM pg_class;`                 | If `f` → RLS not enabled               |
+| Forced RLS active?     | `SELECT relforcerowsecurity FROM pg_class;`            | If `t` → even service roles restricted |
+| Query filtered?        | `EXPLAIN SELECT * FROM orders;`                        | If no filter → RLS not in effect       |
+| Global RLS setting     | `SHOW row_security;`                                   | Must be `on`                           |
+
+---
+
+If you run **just Step 1 and Step 3** and paste me your outputs (the three columns: `is_superuser`, `bypasses_rls`, and `relrowsecurity`),
+I can tell you *exactly* why your denials never appear — in one look.
+
+Would you like to paste those two outputs here?
 
 
 ---  
