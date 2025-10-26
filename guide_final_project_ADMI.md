@@ -964,187 +964,173 @@ VALUES (1, 2, 1, '33333333-3333-3333-3333-333333333333');  -- should fail
 ---
 # Troubleshouting- if policy is not working 
 
-Thanks — that’s actually *really* valuable feedback.
-If you’ve done everything right (enabled RLS, forced RLS, recreated policies, set `current_app_user_id()`), and **still no denials**, then we’re down to **two possible root causes** inside Postgres itself.
-
-Let’s methodically isolate which one it is — step by step.
+Perfect 👏 — this is the **correct** way to test your Row Level Security (RLS) policies as Supabase intended.
+Let’s walk you through it **step by step**, no assumptions — so you can go from zero to seeing real RLS enforcement live.
 
 ---
 
-## 🧩 Step 1 — Verify if your current session can bypass RLS
+## 🧭 Goal
 
-Run this **exact command**:
+You’ll:
 
-```sql
-SELECT current_user,
-       rolsuper AS is_superuser,
-       rolbypassrls AS bypasses_rls
-FROM pg_roles
-WHERE rolname = current_user;
-```
-
-### ✅ Expected Output
-
-| current_user      | is_superuser | bypasses_rls |
-| ----------------- | ------------ | ------------ |
-| service_role_XXXX | f            | f            |
-
-If you see:
-
-* `is_superuser = t` **or**
-* `bypasses_rls = t`
-
-👉 That’s why you can’t get denials.
-Your current role **ignores RLS globally**.
+1. Log in as a real Supabase user (not service role).
+2. Run a query via the Supabase API.
+3. See how RLS filters rows automatically per user.
 
 ---
 
-### 🛠️ Fix (for testing)
+## 🧩 Step-by-Step Setup
 
-If `bypasses_rls = t`, create a **normal non-bypass role**:
+### **Step 1 — Get your project credentials**
 
-```sql
-CREATE ROLE test_user LOGIN PASSWORD '12345' NOSUPERUSER NOCREATEDB NOCREATEROLE;
-GRANT USAGE ON SCHEMA public TO test_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON customers, orders TO test_user;
-```
+Go to your Supabase dashboard:
 
-Then switch into that role:
+* Navigate to **Project Settings → API**
+* Copy these two values:
 
-```sql
-SET ROLE test_user;
-```
+  * **Project URL** (looks like `https://abcdxyz.supabase.co`)
+  * **anon public key** (do *not* use the service key)
 
-Now run your query again:
-
-```sql
-SELECT * FROM orders;
-```
-
-➡️ If RLS is truly active, you’ll now see either an **empty set** or a **permission denied** error.
-
-If you *still* see everything, continue 👇
+You’ll need them in the next step.
 
 ---
 
-## 🧩 Step 2 — Confirm that RLS is actually being applied at query time
+### **Step 2 — Create a test user**
 
-Run this diagnostic query:
+In the Supabase dashboard:
 
-```sql
-EXPLAIN (COSTS OFF)
-SELECT * FROM orders;
-```
+* Go to **Authentication → Users**
+* Click **“Add user”**
+* Enter an email and password, e.g.
 
-If RLS is active, you should see a plan that contains something like:
+  ```
+  email: test1@example.com
+  password: password123
+  ```
+* ✅ Make sure to **confirm the user** (if confirmation emails are required, you can disable that temporarily under *Authentication → Providers → Email → Disable email confirmations*).
 
-```
-Seq Scan on orders  (filter: ((user_id = current_app_user_id()) OR ...))
-```
-
-If you see **no filter at all**, then RLS truly isn’t being applied — meaning something is off at table-level settings.
+You can repeat this later for multiple users if you want to test more RLS behavior.
 
 ---
 
-## 🧩 Step 3 — Confirm the table’s RLS flags directly from Postgres
+### **Step 3 — Create a test script**
 
-Run:
+Create a file named **`testRLS.js`** (or use an online Node playground like Replit).
 
-```sql
-SELECT relname, relrowsecurity, relforcerowsecurity
-FROM pg_class
-WHERE relname IN ('orders', 'customers');
-```
+Paste this:
 
-You must see:
+```js
+import { createClient } from '@supabase/supabase-js'
 
-| relname   | relrowsecurity | relforcerowsecurity |
-| --------- | -------------- | ------------------- |
-| orders    | t              | t                   |
-| customers | t              | t                   |
+// 🔹 Replace with your project URL and anon key
+const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co'
+const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY'
 
-If `relrowsecurity = f`, RLS is not enabled at all.
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-Enable it:
+async function testRLS() {
+  // 1️⃣ Log in as a real user (not the service role)
+  const { data: session, error: loginError } = await supabase.auth.signInWithPassword({
+    email: 'test1@example.com',
+    password: 'password123',
+  })
+  if (loginError) {
+    console.error('❌ Login failed:', loginError.message)
+    return
+  }
 
-```sql
-ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
-ALTER TABLE orders FORCE ROW LEVEL SECURITY;
+  console.log('✅ Logged in as:', session.user.id)
+
+  // 2️⃣ Run a query on your RLS-protected table
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+
+  if (error) {
+    console.error('❌ Query error:', error.message)
+  } else {
+    console.log('✅ Orders visible to this user:')
+    console.table(data)
+  }
+}
+
+testRLS()
 ```
 
 ---
 
-## 🧩 Step 4 — Manually simulate the restriction condition
+### **Step 4 — Run it**
 
-Try this exact sequence:
+If you have Node.js:
 
-```sql
-RESET ALL;  -- clear old session vars
-
-SELECT set_app_user('22222222-2222-2222-2222-222222222222');
-SELECT current_app_user_id();
-
-SELECT * FROM orders WHERE user_id = current_app_user_id();
+```bash
+npm install @supabase/supabase-js
+node testRLS.js
 ```
 
-Then try:
-
-```sql
-SELECT * FROM orders;  -- without filter
-```
-
-If both return the same result, RLS still isn’t being applied.
-
-If the first returns fewer rows, then the filter is working — but your connection can read anyway (bypassing).
+Or use Replit.com (choose a “Node.js” project, paste, and hit “Run”).
 
 ---
 
-## 🧩 Step 5 — Confirm Postgres Version Behavior
+### **Step 5 — Observe the result**
 
-Run:
-
-```sql
-SHOW server_version;
-```
-
-If you’re on PostgreSQL 15+ (Supabase default), everything above should behave normally.
-
-If you’re on a local test server (like Supabase CLI / Docker), check that your database actually has `row_security = on` globally:
-
-```sql
-SHOW row_security;
-```
-
-It should say:
-
-```
-on
-```
-
-If it says `off`, enable it:
-
-```sql
-SET row_security = on;
-```
+| Situation           | What You’ll See                                             |
+| ------------------- | ----------------------------------------------------------- |
+| ✅ RLS works         | Only rows where `user_id = auth.uid()` (the logged-in user) |
+| 🚫 Policy denies    | `Query error: permission denied for table orders`           |
+| ⚠️ You see all rows | Means RLS not enabled or you’re still using the service key |
 
 ---
 
-## ✅ TL;DR — What This Will Tell You
+## 🧩 Step 6 — Test with multiple users
 
-| Check                  | Command                                                | What It Means                          |
-| ---------------------- | ------------------------------------------------------ | -------------------------------------- |
-| Can role bypass RLS?   | `SELECT ... FROM pg_roles WHERE rolname=current_user;` | If `bypasses_rls = t` → RLS ignored    |
-| Table has RLS enabled? | `SELECT relrowsecurity FROM pg_class;`                 | If `f` → RLS not enabled               |
-| Forced RLS active?     | `SELECT relforcerowsecurity FROM pg_class;`            | If `t` → even service roles restricted |
-| Query filtered?        | `EXPLAIN SELECT * FROM orders;`                        | If no filter → RLS not in effect       |
-| Global RLS setting     | `SHOW row_security;`                                   | Must be `on`                           |
+Repeat the test with another account:
+
+```js
+email: 'admin@example.com'
+password: 'password123'
+```
+
+If your RLS policy allows admins (based on role in `app_users`),
+this user should see all records — while normal users see only their own.
 
 ---
 
-If you run **just Step 1 and Step 3** and paste me your outputs (the three columns: `is_superuser`, `bypasses_rls`, and `relrowsecurity`),
-I can tell you *exactly* why your denials never appear — in one look.
+## 🧠 Bonus: Check the Auth Token Directly
 
-Would you like to paste those two outputs here?
+If you want to see what’s going on internally:
+
+```js
+const token = (await supabase.auth.getSession()).data.session.access_token
+console.log('Access token (JWT):', token)
+```
+
+That JWT is what Supabase uses to resolve:
+
+```sql
+auth.uid()
+```
+
+inside your RLS policies.
+
+---
+
+## ✅ Summary
+
+| Step | What to Do                        | Purpose                          |
+| ---- | --------------------------------- | -------------------------------- |
+| 1    | Get project URL + anon key        | Connect securely                 |
+| 2    | Create test users                 | Simulate real auth               |
+| 3    | Use `supabase-js` to sign in      | Get user token                   |
+| 4    | Run `.from('orders').select('*')` | Trigger RLS                      |
+| 5    | Observe results                   | Verify per-user filtering        |
+| 6    | Repeat for multiple users         | Confirm roles and admin behavior |
+
+---
+
+Would you like me to modify that script so it **runs two users back-to-back (admin + normal)** and prints side-by-side comparison of what each can see in `orders`?
+That’s the easiest way to *prove* your RLS setup visually.
+
 
 
 ---  
