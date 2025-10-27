@@ -962,175 +962,359 @@ VALUES (1, 2, 1, '33333333-3333-3333-3333-333333333333');  -- should fail
 
 
 ---
-# Troubleshouting- if policy is not working 
+# Incase of real supabase users - No simulation - Real world project 
 
-Perfect 👏 — this is the **correct** way to test your Row Level Security (RLS) policies as Supabase intended.
-Let’s walk you through it **step by step**, no assumptions — so you can go from zero to seeing real RLS enforcement live.
-
----
-
-## 🧭 Goal
-
-You’ll:
-
-1. Log in as a real Supabase user (not service role).
-2. Run a query via the Supabase API.
-3. See how RLS filters rows automatically per user.
-
----
-
-## 🧩 Step-by-Step Setup
-
-### **Step 1 — Get your project credentials**
-
-Go to your Supabase dashboard:
-
-* Navigate to **Project Settings → API**
-* Copy these two values:
-
-  * **Project URL** (looks like `https://abcdxyz.supabase.co`)
-  * **anon public key** (do *not* use the service key)
-
-You’ll need them in the next step.
-
----
-
-### **Step 2 — Create a test user**
-
-In the Supabase dashboard:
-
-* Go to **Authentication → Users**
-* Click **“Add user”**
-* Enter an email and password, e.g.
-
-  ```
-  email: test1@example.com
-  password: password123
-  ```
-* ✅ Make sure to **confirm the user** (if confirmation emails are required, you can disable that temporarily under *Authentication → Providers → Email → Disable email confirmations*).
-
-You can repeat this later for multiple users if you want to test more RLS behavior.
-
----
-
-### **Step 3 — Create a test script**
-
-Create a file named **`testRLS.js`** (or use an online Node playground like Replit).
-
-Paste this:
-
-```js
-import { createClient } from '@supabase/supabase-js'
-
-// 🔹 Replace with your project URL and anon key
-const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co'
-const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY'
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-async function testRLS() {
-  // 1️⃣ Log in as a real user (not the service role)
-  const { data: session, error: loginError } = await supabase.auth.signInWithPassword({
-    email: 'test1@example.com',
-    password: 'password123',
-  })
-  if (loginError) {
-    console.error('❌ Login failed:', loginError.message)
-    return
-  }
-
-  console.log('✅ Logged in as:', session.user.id)
-
-  // 2️⃣ Run a query on your RLS-protected table
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-
-  if (error) {
-    console.error('❌ Query error:', error.message)
-  } else {
-    console.log('✅ Orders visible to this user:')
-    console.table(data)
-  }
-}
-
-testRLS()
-```
-
----
-
-### **Step 4 — Run it**
-
-If you have Node.js:
-
-```bash
-npm install @supabase/supabase-js
-node testRLS.js
-```
-
-Or use Replit.com (choose a “Node.js” project, paste, and hit “Run”).
-
----
-
-### **Step 5 — Observe the result**
-
-| Situation           | What You’ll See                                             |
-| ------------------- | ----------------------------------------------------------- |
-| ✅ RLS works         | Only rows where `user_id = auth.uid()` (the logged-in user) |
-| 🚫 Policy denies    | `Query error: permission denied for table orders`           |
-| ⚠️ You see all rows | Means RLS not enabled or you’re still using the service key |
-
----
-
-## 🧩 Step 6 — Test with multiple users
-
-Repeat the test with another account:
-
-```js
-email: 'admin@example.com'
-password: 'password123'
-```
-
-If your RLS policy allows admins (based on role in `app_users`),
-this user should see all records — while normal users see only their own.
-
----
-
-## 🧠 Bonus: Check the Auth Token Directly
-
-If you want to see what’s going on internally:
-
-```js
-const token = (await supabase.auth.getSession()).data.session.access_token
-console.log('Access token (JWT):', token)
-```
-
-That JWT is what Supabase uses to resolve:
+You want your custom `app_users.id` to **match** the real Supabase Auth user’s `id` (UUID).  
 
 ```sql
-auth.uid()
+CREATE TABLE app_users (
+  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email text NOT NULL UNIQUE,
+  role text NOT NULL DEFAULT 'user'
+    CHECK (role IN ('admin', 'user', 'readonly')),
+  created_at timestamptz DEFAULT now()
+);
 ```
 
-inside your RLS policies.
+🔹 `REFERENCES auth.users(id)` — links your app user record to the real Supabase Auth user.
+🔹 `ON DELETE CASCADE` — ensures if a user is deleted from Auth, their record here is also removed.
+
+---
+If you want to auto-create `app_users` entries when someone signs up via Supabase Auth, use this trigger:
+
+```sql
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO app_users (id, email)
+  VALUES (NEW.id, NEW.email);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION handle_new_user();
+```
+
+Now every new signup will automatically create an `app_users` record.  
+
+
+---
+**Manually insert users directly via SQL for testing**
+Step 1- Disable verification temporarily  
+
+1️⃣ Go to your **Supabase Dashboard → Authentication → Providers → Email**
+2️⃣ Toggle **“Enable Email Confirmations”** → **OFF**
+
+> This means new signups via API or dashboard don’t need to confirm their email before being active.
+
+3️⃣ You can now use the Supabase SQL Editor or Auth API to create users manually.
+
+Example via SQL:
+
+```sql
+INSERT INTO auth.users (id, email, encrypted_password)
+VALUES (
+  '22222222-2222-2222-2222-222222222222',
+  'typingpool.astu@gmail.com',
+  crypt('test1234', gen_salt('bf'))
+);
+```
+
+## 🔁 **Re-enable email verification after testing**
+
+Once you finish your RLS or data setup tests:
+
+1️⃣ Go back to `Authentication → Providers → Email`
+2️⃣ Re-enable **“Email Confirmations”**
+
+That ensures your production signup flow is secure again.
+---
+
+### **2️⃣ Get real UUIDs from Supabase Auth**
+
+Run this query to see your real Supabase user IDs (the ones used by `auth.uid()`):
+
+```sql
+SELECT id, email FROM auth.users;
+```
+
+You’ll see output like:
+
+| id                                   | email                                                             |
+| ------------------------------------ | ----------------------------------------------------------------- |
+| 11111111-1111-1111-1111-111111111111 | [outa.agunga@mail.admi.ac.ke](mailto:outa.agunga@mail.admi.ac.ke) |
+| 22222222-2222-2222-2222-222222222222 | [typingpool.astu@gmail.com](mailto:typingpool.astu@gmail.com)     |
+| ...                                  | ...                                                               |
 
 ---
 
-## ✅ Summary
+### **3️⃣ The trigger you created previosly above inserts the users into `app_users`. if it fails, then Insert them into `app_users` manually**
 
-| Step | What to Do                        | Purpose                          |
-| ---- | --------------------------------- | -------------------------------- |
-| 1    | Get project URL + anon key        | Connect securely                 |
-| 2    | Create test users                 | Simulate real auth               |
-| 3    | Use `supabase-js` to sign in      | Get user token                   |
-| 4    | Run `.from('orders').select('*')` | Trigger RLS                      |
-| 5    | Observe results                   | Verify per-user filtering        |
-| 6    | Repeat for multiple users         | Confirm roles and admin behavior |
+
+```sql
+INSERT INTO app_users (id, email, role)
+VALUES
+('11111111-1111-1111-1111-111111111111', 'outa.agunga@mail.admi.ac.ke', 'admin'),
+('22222222-2222-2222-2222-222222222222', 'typingpool.astu@gmail.com', 'user'),
+('33333333-3333-3333-3333-333333333333', 'alice@example.com', 'user'),
+('44444444-4444-4444-4444-444444444444', 'brian@example.com', 'user');
+```
 
 ---
 
-Would you like me to modify that script so it **runs two users back-to-back (admin + normal)** and prints side-by-side comparison of what each can see in `orders`?
-That’s the easiest way to *prove* your RLS setup visually.
+### **4️⃣ Optional — automated sync trigger**
+
+If you want to auto-create `app_users` entries when someone signs up via Supabase Auth, use this trigger:
+
+```sql
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO app_users (id, email)
+  VALUES (NEW.id, NEW.email);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION handle_new_user();
+```
+
+Now every new signup will automatically create an `app_users` record.  
+
+## Create other tables
+> paste your tables schema here   
+
+---
+###👍 — since you manually inserted that test user directly into the **`auth.users`** table
+
+You can delete them after running your tests.   
+if any **foreign key constraints** exist (for example, `app_users.id → auth.users.id`), you’ll need to delete related rows first.
+
+```sql
+-- 1️⃣ Delete linked record in app_users first (if exists)
+DELETE FROM app_users
+WHERE id = '22222222-2222-2222-2222-222222222222';
+
+-- 2️⃣ Then delete from auth.users
+DELETE FROM auth.users
+WHERE id = '22222222-2222-2222-2222-222222222222';
+```
+---
 
 
+---
+## 🔒 **2️⃣ Enable RLS on your data tables**
 
----  
+You’ll usually have tables like `customers`, `orders`, etc.
+Turn RLS on for each one:
+
+```sql
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+
+```
+
+## 🧩 **3️⃣ Create helper function to check user role**
+
+This makes your policies cleaner:
+
+```sql
+CREATE OR REPLACE FUNCTION auth_role()
+RETURNS text AS $$
+  SELECT role FROM app_users WHERE id = auth.uid();
+$$ LANGUAGE sql SECURITY DEFINER;
+```
+
+✅ This lets you call `auth_role()` anywhere inside RLS policies.
+
+---
+
+## 🧠 **4️⃣ Define RLS policies**
+
+**Policy on customers table**
+```sql
+-- ✅ 1️⃣ Admin: full visibility and control
+CREATE POLICY customers_admin_all
+ON customers
+FOR ALL
+USING (
+  auth_role() = 'admin'
+)
+WITH CHECK (
+  auth_role() = 'admin'
+);
+
+-- ✅ 2️⃣ Users: view only their own records
+CREATE POLICY customers_user_select_own
+ON customers
+FOR SELECT
+USING (
+  user_id = auth.uid()
+);
+
+-- ✅ 3️⃣ Users: insert only their own records
+CREATE POLICY customers_user_insert_own
+ON customers
+FOR INSERT
+WITH CHECK (
+  user_id = auth.uid()
+);
+
+-- ✅ 4️⃣ Users: update only their own records
+CREATE POLICY customers_user_update_own
+ON customers
+FOR UPDATE
+USING (
+  user_id = auth.uid()
+)
+WITH CHECK (
+  user_id = auth.uid()
+);
+
+-- ✅ 5️⃣ Users: delete only their own records
+CREATE POLICY customers_user_delete_own
+ON customers
+FOR DELETE
+USING (
+  user_id = auth.uid()
+);
+```
+
+**Policy on orders tables**
+```sql
+-- ✅ 1️⃣ Admin: full access to all orders
+CREATE POLICY orders_admin_all
+ON orders
+FOR ALL
+USING (
+  auth_role() = 'admin'
+)
+WITH CHECK (
+  auth_role() = 'admin'
+);
+
+-- ✅ 2️⃣ Users: view only their own orders
+CREATE POLICY orders_user_select_own
+ON orders
+FOR SELECT
+USING (
+  user_id = auth.uid()
+);
+
+-- ✅ 3️⃣ Users: insert orders only for themselves
+CREATE POLICY orders_user_insert_own
+ON orders
+FOR INSERT
+WITH CHECK (
+  user_id = auth.uid()
+);
+
+-- ✅ 4️⃣ Users: update only their own orders
+CREATE POLICY orders_user_update_own
+ON orders
+FOR UPDATE
+USING (
+  user_id = auth.uid()
+)
+WITH CHECK (
+  user_id = auth.uid()
+);
+
+-- ✅ 5️⃣ Users: delete only their own orders
+CREATE POLICY orders_user_delete_own
+ON orders
+FOR DELETE
+USING (
+  user_id = auth.uid()
+);
+```
+
+---
+
+### 🧰 **Test manually (simulate user in SQL Editor)**
+
+**Test as Admin**
+```sql
+-- 🧑‍💼 Simulate admin login (sets the current authenticated user)
+SELECT set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', true);
+
+-- 🧾 Check current simulated user and role
+SELECT auth.uid() AS current_user_id, auth_role() AS current_user_role;
+
+-- ✅ Admin should see all customers
+SELECT * FROM customers;
+
+-- ✅ Admin should see all orders
+SELECT * FROM orders;
+
+-- ✅ Admin can update anyone’s order
+UPDATE orders
+SET quantity = 10
+WHERE order_id = 1
+RETURNING *;
+
+-- ✅ Admin can insert new products
+INSERT INTO products (product_name, category, price)
+VALUES ('Tablet', 'Electronics', 40000)
+RETURNING *;
+```
+**Test as regular user**
+```sql
+-- 👤 Simulate user1 login (real Supabase Auth UUID)
+SELECT set_config('request.jwt.claim.sub', '22222222-2222-2222-2222-222222222222', true);
+
+-- 🧾 Verify the simulated user context
+SELECT auth.uid() AS current_user_id, auth_role() AS current_user_role;
+
+-- ✅ Should only see their own customer record
+SELECT * FROM customers;
+
+-- ✅ Should only see their own orders
+SELECT * FROM orders;
+
+-- ✅ Can create their own order
+INSERT INTO orders (customer_id, product_id, quantity, user_id)
+VALUES (
+  1,               -- must belong to this user's customer_id
+  3,               -- any valid product_id
+  1,               -- quantity
+  auth.uid()       -- ensures correct ownership under RLS
+)
+RETURNING *;
+
+-- ❌ Should NOT see other users' orders (should return zero rows)
+SELECT * FROM orders
+WHERE user_id = '33333333-3333-3333-3333-333333333333';
+
+-- ❌ Should NOT update another user’s order (should be denied)
+UPDATE orders
+SET quantity = 5
+WHERE user_id = '33333333-3333-3333-3333-333333333333';
+
+```
+
+---
+
+## 🧭 **6️⃣ Optional — make admin bypass RLS**
+
+If you want admins to skip all restrictions, use a global policy check:
+
+```sql
+ALTER TABLE customers FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins bypass all restrictions"
+ON customers
+USING (auth_role() = 'admin');
+```
+Then place this first (Supabase evaluates policies in OR logic).
+
+---
+
+
