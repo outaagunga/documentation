@@ -1317,4 +1317,304 @@ Then place this first (Supabase evaluates policies in OR logic).
 
 ---
 
+# Incase of real supabase - real world scenario option 3 mar adek
+
+Goal → Mirror the Supabase Auth user ID in your own `app_users` table, auto-sync on signup, and apply secure Row-Level Security (RLS) policies.
+
+---
+
+## ⚙️ **1️⃣ Create `app_users` Table**
+
+You’ll use the same UUIDs as in `auth.users`.
+Skip the direct foreign-key constraint (since the `auth` schema is protected).
+
+```sql
+CREATE TABLE public.app_users (
+  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email text NOT NULL UNIQUE,
+  role text NOT NULL DEFAULT 'user'
+    CHECK (role IN ('admin', 'user', 'readonly')),
+  created_at timestamptz DEFAULT now()
+);
+```
+
+✅ **Why:** avoids `permission denied for schema auth` while keeping a perfect ID match with Auth.
+
+---
+
+## 🔁 **2️⃣ Auto-Create `app_users` When New User Signs Up**
+
+Define a trigger function inside the `auth` schema that inserts a linked record in `public.app_users`.
+
+```sql
+CREATE OR REPLACE FUNCTION auth.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.app_users (id, email)
+  VALUES (NEW.id, NEW.email)
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public, auth;
+
+CREATE TRIGGER on_auth_user_created
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION auth.handle_new_user();
+```
+
+✅ **`SET search_path`:** ensures proper schema resolution.
+
+---
+
+## 🧪 **3️⃣ Create your test Users data**
+
+Run as the database owner in SQL Editor:
+
+```sql
+SELECT auth.create_user(
+  email := 'admin@example.com',
+  password := 'Admin123!',
+  email_confirmed := true
+);
+
+SELECT auth.create_user(
+  email := 'user@example.com',
+  password := 'User123!',
+  email_confirmed := true
+);
+```
+
+Each call creates an `auth.users` record → triggers `app_users` auto-insert.
+
+Confirm:
+
+```sql
+SELECT id, email FROM auth.users;
+SELECT * FROM app_users;
+```
+
+---
+
+## 🧩 **4️⃣ Create Helper Function `auth_role()`**
+
+This returns the current user’s role (with fallback).
+
+```sql
+CREATE OR REPLACE FUNCTION public.auth_role()
+RETURNS text AS $$
+  SELECT COALESCE(
+    (SELECT role FROM public.app_users WHERE id = auth.uid()),
+    'readonly'
+  );
+$$ LANGUAGE sql SECURITY DEFINER;
+```
+
+✅ Returns `'readonly'` if no match in `app_users`.
+
+---
+
+## 🧱 **5️⃣ Create Your Data Tables**
+
+```sql
+-- 1️⃣ Create customers table
+CREATE TABLE customers (
+  customer_id SERIAL PRIMARY KEY,
+  user_id uuid REFERENCES app_users(id) ON DELETE CASCADE,
+  full_name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  phone VARCHAR(20),
+  city VARCHAR(50),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+
+-- 2️⃣ Create products table
+CREATE TABLE IF NOT EXISTS products (
+  product_id SERIAL PRIMARY KEY,
+  product_name VARCHAR(100) NOT NULL,
+  category VARCHAR(50),
+  price NUMERIC(12,2) NOT NULL CHECK (price >= 0),
+  stock_quantity INT DEFAULT 0 CHECK (stock_quantity >= 0),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- 3️⃣ Create orders table
+CREATE TABLE orders (
+  order_id SERIAL PRIMARY KEY,
+  customer_id INT NOT NULL REFERENCES customers(customer_id) ON DELETE CASCADE,
+  product_id INT NOT NULL REFERENCES products(product_id) ON DELETE CASCADE,
+  user_id uuid REFERENCES app_users(id) ON DELETE CASCADE,
+  quantity INT NOT NULL CHECK (quantity > 0),
+  total_amount NUMERIC(12,2),
+  order_date TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+```
+---
+### Run this trigger to populate `user_id` when inserting data into out created tables.
+
+```sql
+CREATE OR REPLACE FUNCTION set_user_id()
+RETURNS trigger AS $$
+BEGIN
+  IF NEW.user_id IS NULL THEN
+    NEW.user_id := auth.uid();
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER set_customer_user
+BEFORE INSERT ON customers
+FOR EACH ROW
+EXECUTE FUNCTION set_user_id();
+
+CREATE TRIGGER set_order_user
+BEFORE INSERT ON orders
+FOR EACH ROW
+EXECUTE FUNCTION set_user_id();
+```
+---
+### Insert your data now into the tables
+
+```sql
+-- Customers
+INSERT INTO customers (full_name, email, phone, city)
+VALUES
+('Outa Agunga', 'outa.agunga@mail.admi.ac.ke', '0724907275', 'Nairobi'),
+('Typing Pool', 'typingpool.astu@gmail.com', '0703645678', 'Machakos'),
+('Alice Mwangi', 'alice@example.com', '0712345678', 'Turkana'),
+('Brian Otieno', 'brian@example.com', '0723456789', 'Mombasa'),
+('Cynthia Njeri', 'cynthia@example.com', '0734567890', 'Kisumu'),
+('David Kimani', 'david@example.com', '0745678901', 'Nakuru'),
+('Eva Wambui', 'eva@example.com', '0756789012', 'Eldoret');
+
+-- Products
+INSERT INTO products (product_name, category, price, stock_quantity)
+VALUES
+('Wireless Mouse', 'Electronics', 1200.00, 50),
+('Laptop Backpack', 'Accessories', 2500.00, 30),
+('USB Flash Drive 64GB', 'Storage', 1500.00, 40),
+('Bluetooth Speaker', 'Electronics', 4500.00, 20),
+('Laptop Stand', 'Accessories', 3000.00, 25);
+
+-- Orders (note total_amount will be auto-calculated by trigger)
+INSERT INTO orders (customer_id, product_id, quantity)
+VALUES
+(1, 2, 1),
+(2, 1, 2),
+(3, 4, 1),
+(4, 5, 1),
+(5, 3, 3);
+
+```
+---
+
+## 🔒 **6️⃣ Enable RLS**
+
+```sql
+ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+```
+
+---
+
+## 📜 **7️⃣ Define Simplified RLS Policies**
+
+### 🧍 For `customers` table
+
+```sql
+-- Admins: full access
+CREATE POLICY customers_admin_all
+ON public.customers
+FOR ALL
+USING (auth_role() = 'admin')
+WITH CHECK (auth_role() = 'admin');
+
+-- Regular users: manage only own records
+CREATE POLICY customers_user_manage_own
+ON public.customers
+FOR ALL
+USING (user_id = auth.uid())
+WITH CHECK (user_id = auth.uid());
+```
+
+### 📦 For `orders` table
+
+```sql
+-- Admins: full access
+CREATE POLICY orders_admin_all
+ON public.orders
+FOR ALL
+USING (auth_role() = 'admin')
+WITH CHECK (auth_role() = 'admin');
+
+-- Regular users: manage only own orders
+CREATE POLICY orders_user_manage_own
+ON public.orders
+FOR ALL
+USING (user_id = auth.uid())
+WITH CHECK (user_id = auth.uid());
+```
+
+✅ Cleaner and easier than multiple single-purpose policies.
+
+---
+
+## 🧰 **8️⃣ Test Manually in SQL Editor**
+
+### 👑 Simulate Admin
+
+```sql
+-- Pretend to be an authenticated admin
+SELECT set_config('role', 'authenticated', true);
+SELECT set_config('request.jwt.claim.sub', '<ADMIN_UUID>', true);
+
+-- Verify
+SELECT auth.uid(), auth_role();
+
+-- Test queries
+SELECT * FROM public.customers;
+SELECT * FROM public.orders;
+
+UPDATE public.orders
+SET quantity = 10
+WHERE id = 1
+RETURNING *;
+```
+
+### 👤 Simulate Regular User
+
+```sql
+SELECT set_config('role', 'authenticated', true);
+SELECT set_config('request.jwt.claim.sub', '<USER_UUID>', true);
+
+SELECT auth.uid(), auth_role();
+
+-- User should only see their own data
+SELECT * FROM public.customers;
+SELECT * FROM public.orders;
+
+-- Create a new order
+INSERT INTO public.orders (user_id, product, quantity)
+VALUES (auth.uid(), 'Book', 2)
+RETURNING *;
+```
+
+---
+
+## 🧹 **9️⃣ Clean Up Test Data**
+
+```sql
+DELETE FROM public.app_users WHERE email = 'user@example.com';
+DELETE FROM auth.users WHERE email = 'user@example.com';
+```
+
+If you used foreign keys → delete in order: `orders` → `customers` → `app_users` → `auth.users`.
+
+
+---
+
 
