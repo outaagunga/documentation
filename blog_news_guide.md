@@ -64,6 +64,10 @@ Prompt:
 
 My final polished blog is ____________________  
 
+## Images to use  
+Go to AI and give this prompt:  
+> suggest suitable images for this blog  
+
 ## STEP 6: SOCIAL MEDIA PROMOTION  
 **Goal:** Create platform-specific promotional copy to drive traffic and maximize reach.  
 
