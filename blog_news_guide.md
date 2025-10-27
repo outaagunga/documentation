@@ -8,6 +8,8 @@ Prompt:
 >  1. Short Headline Idea,
 >  2. Summary (2-3 sentences),
 >  3. Audience Value Proposition (Why it matters to them).”  
+
+My chosen topic is ____________________  
 	
 ## STEP 2: STORY VALIDATION & FACT CHECKING  
 **Goal:** Confirm topic credibility, isolate verified facts, and understand the information landscape.  
@@ -18,8 +20,11 @@ Prompt:
 > 1. Key Confirmed Facts (cite source type, e.g., 'Official Gov Report'),
 > 2. Disputed Claims/Misinformation to AVOID,
 > 3. Unconfirmed/ Developing Angles,
-> 4. Direct Official Statements/Quotes (with speaker and context).”  
-	
+> 4. Direct Official Statements/Quotes (with speaker and context).”
+> 5. Quick reporting guidance  
+
+AI response is ____________________  
+
 ## STEP 3: STORY OUTLINE CREATION  
 **Goal:** Create a journalistic, SEO-friendly outline that ensures a logical, factual narrative.  
 
@@ -29,7 +34,10 @@ Prompt:
 > 1. Clickable Headline Options (one must be SEO-optimized with the target keyword: [Insert Keyword]),
 > 2. 5-7 H2 Subheadings (must be descriptive and SEO-friendly),
 > 3. Logical Flow of Sections (Background -> Main Event -> Impact/Reactions -> Expert Analysis -> Conclusion/Outlook),
-> 4. Key Takeaway Points (3-5 bullet points to summarize the article's core message).”  
+> 4. Key Takeaway Points (3-5 bullet points to summarize the article's core message).”
+> [paste AI response here]  
+
+My Outline is  ____________________  
 
 ## STEP 4: WRITING THE NEWS STORY  
 **Goal:** Produce a clean, objective, full-length news draft based strictly on the provided outline.  
@@ -37,7 +45,10 @@ Prompt:
 Prompt:
 > “Act as a senior news writer for a fast-paced, digital-first publication. Using only the facts and structure from the outline below, write a full news article of approximately [word count] words.
 > Use a professional, objective, and inverted pyramid structure. Maintain simple, direct English (max 15 words per sentence) suitable for mobile readers. Start with the most critical information.
-> Do not use rhetorical questions, passive voice, or jargon. Prioritize confirmed facts and direct quotes. [paste your outline here]”  
+> Do not use rhetorical questions, passive voice, or jargon. Prioritize confirmed facts and direct quotes.
+> [paste your outline here]”  
+
+My rough draft blog is ____________________  
 
 ## STEP 5: AI-ASSISTED EDITING & POLISHING  
 **Goal:** Perform a final, high-level editorial pass for clarity, consistency, and professional news standards.  
@@ -51,6 +62,8 @@ Prompt:
 > 4. Do not use em-dashes, exclamation marks, or idioms.  
 > Return the final, publish-ready article FIRST (in bold and full text), and then provide a succinct, bulleted list of the 5 most significant editorial changes you made.”  
 
+My final polished blog is ____________________  
+
 ## STEP 6: SOCIAL MEDIA PROMOTION  
 **Goal:** Create platform-specific promotional copy to drive traffic and maximize reach.  
 
@@ -62,4 +75,4 @@ Prompt:
 > 4. Short, punchy email/push notification subject line.
 > Each must include a strong hook, be factual yet engaging, and end with a clear Call to Action (e.g., ‘Read the full story: [link]’).”
 
-
+My promotional copy on social media is ____________________  
