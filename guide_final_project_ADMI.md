@@ -1386,7 +1386,7 @@ SELECT auth.create_user(
 );
 ```
 
-Each call creates an `auth.users` record → triggers `app_users` auto-insert.
+### Each call creates an `auth.users` record → triggers `app_users` auto-insert.
 
 Confirm:
 
@@ -1475,6 +1475,23 @@ CREATE TRIGGER set_order_user
 BEFORE INSERT ON orders
 FOR EACH ROW
 EXECUTE FUNCTION set_user_id();
+```
+---
+### Trigger to autocalculate total amount on orders
+```sql
+CREATE OR REPLACE FUNCTION calculate_total_amount()
+RETURNS trigger AS $$
+BEGIN
+  NEW.total_amount := (SELECT price FROM products WHERE product_id = NEW.product_id) * NEW.quantity;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER before_order_insert
+BEFORE INSERT ON orders
+FOR EACH ROW
+EXECUTE FUNCTION calculate_total_amount();
+
 ```
 ---
 ### Insert your data now into the tables
@@ -1569,7 +1586,6 @@ WITH CHECK (user_id = auth.uid());
 
 ```sql
 -- Pretend to be an authenticated admin
-SELECT set_config('role', 'authenticated', true);
 SELECT set_config('request.jwt.claim.sub', '<ADMIN_UUID>', true);
 
 -- Verify
@@ -1588,7 +1604,6 @@ RETURNING *;
 ### 👤 Simulate Regular User
 
 ```sql
-SELECT set_config('role', 'authenticated', true);
 SELECT set_config('request.jwt.claim.sub', '<USER_UUID>', true);
 
 SELECT auth.uid(), auth_role();
@@ -1598,9 +1613,10 @@ SELECT * FROM public.customers;
 SELECT * FROM public.orders;
 
 -- Create a new order
-INSERT INTO public.orders (user_id, product, quantity)
-VALUES (auth.uid(), 'Book', 2)
+INSERT INTO public.orders (customer_id, product_id, quantity)
+VALUES (1, 2, 1)
 RETURNING *;
+
 ```
 
 ---
