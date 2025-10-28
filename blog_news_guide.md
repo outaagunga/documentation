@@ -18,7 +18,7 @@ My chosen topic is ____________________
 Prompt:
 > “Fact-check and summarize the information landscape for [Specific Topic, Event, or Claim]. Use only reputable, non-partisan news sources, academic institutions, or official government pages.    
 > Present the findings in four distinct bulleted sections:  
-> 1. Key Confirmed Facts (cite source type, e.g., 'Official Gov Report'),
+> 1. Key Confirmed Facts (cite source type, e.g., 'Official Gov Report'. Provide working URL link to access the source or extract),
 > 2. Disputed Claims/Misinformation to AVOID,
 > 3. Unconfirmed/ Developing Angles,
 > 4. Direct Official Statements/Quotes (with speaker and context).”
