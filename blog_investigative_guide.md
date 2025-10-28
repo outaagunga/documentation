@@ -64,6 +64,18 @@ Organize your information sources:
 My credible sources are  _____________________  
 
 ---
+### Getting Intelligence  
+Use AI to collect background context and identify credible leads before fieldwork  
+
+Fact Gathering Prompt:  
+> What are the key organizations, policies, and public reports linked to [e.g illegal logging in Mau Forest]
+
+Source Identification Prompt:  
+> List Kenyan government officials, NGOs, and local activists working on [e.g forest conservation in Narok County]  
+
+Market / Systemic Analysis Prompt:  
+> What are the main economic and policy factors driving [e.g deforestation in Kenya over the past 5 years] 
+
 
 ### 5. Gather Evidence
 
