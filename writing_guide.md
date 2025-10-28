@@ -279,6 +279,19 @@ Show significance or what comes next.
 > Write a single-sentence closing line that clearly explains the immediate significance or potential future impact of [EVENT] on [AFFECTED GROUP, e.g., smallholders]  
 ```
 
+Final polishing prompt:  
+```markdown
+> Review the complete news article draft below based on the following criteria. Please ensure:
+>
+> 1.  **Flow and Readability:** The transitions between the Lead Sentence, Key Facts, Quote, Context, and Ending Line are smooth and logical. The article must read like a cohesive, professional news story.
+> 2.  **Tone and Style:** The tone is **objective, neutral, and journalistic**, adhering to a standard hard-news style. The language should be concise and impactful.
+> 3.  **Grammar and Mechanics:** All spelling, punctuation, and grammar are correct.
+> 4.  **Consistency:** All facts, names, and details mentioned across the sections (especially the key facts and the context/impact) are consistent and logically aligned with the main topic.
+> 5.  **Adherence to Template Constraints:** Each section strictly adheres to the requested length constraints (e.g., lead under 30 words, 2-3 short key facts, 2-sentence context).
+>
+> [**INSERT YOUR FULL DRAFT HERE**]  
+```
+
 ✅ *Keep under 300 words, use short paragraphs, avoid adjectives, follow AP style.*
 
 ---
