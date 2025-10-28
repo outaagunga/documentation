@@ -1,4 +1,5 @@
 
+**This guide is good for `Freelance News Writing` / `Investigative Blogging`**
 ## STEP 1: STORY DISCOVERY
 **Goal:** Identify under exposed or breaking story ideas within your niche that have high audience relevance (e.g., politics, tech, local, lifestyle).  
 
