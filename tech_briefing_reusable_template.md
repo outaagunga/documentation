@@ -249,14 +249,14 @@
 
 **1️⃣ Blog Outline Prompt**
 
-```
+```sql
 You are an SEO content strategist. Create a detailed outline for a [topic] blog targeting the keyword “[keyword]”.  
 Include H2 and H3 headings, a brief intro, and a conclusion with a CTA.
 ```
 
 **2️⃣ Blog Draft Prompt**
 
-```
+```sql
 Write a 1,500-word SEO blog based on this outline: [paste outline].  
 Target the keyword “[keyword]”. Maintain a professional yet conversational tone.  
 Include short paragraphs, bullet points, and a clear TL;DR at the top.
@@ -264,21 +264,21 @@ Include short paragraphs, bullet points, and a clear TL;DR at the top.
 
 **3️⃣ Meta Description Prompt**
 
-```
+```sql
 Write an engaging meta description (under 160 characters) for a blog post titled “[title]”.  
 Include the keyword “[keyword]” and a strong call to action.
 ```
 
 **4️⃣ Image Prompt**
 
-```
+```sql
 Create a feature image concept for a blog post about “[topic]”.  
 Style: clean, modern, editorial. Avoid text on image.
 ```
 
 **5️⃣ Title Optimization Prompt**
 
-```
+```sql
 Generate 10 SEO-optimized blog titles targeting “[keyword]”.  
 Each title should be under 60 characters and include a power word.
 ```
