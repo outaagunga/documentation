@@ -1,5 +1,6 @@
 
-**This guide is best for `SEO Blog Writing` / `Feature Story Writing`**
+**This guide is best for `SEO Blog Writing` / `Feature Story Writing`**  
+
 **FOLLOW-ALONG GUIDE: How to Write Catchy and Compelling Blog Posts Using AI**
 
 This guide walks you step-by-step through the process of writing an engaging blog post using AI as your personal assistant — even if you’ve never written one before.
