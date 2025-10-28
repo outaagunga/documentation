@@ -79,6 +79,9 @@ Use AI for:
 > “Summarize this 60-page audit report into key red flags of corruption. Highlight any inconsistencies.”
 
 ⚠️ **Caution:** Always verify — AI can hallucinate. Cross-check every claim with official data or credible media.
+Use AI to structure interviews that uncover both personal experiences and systemic accountability:  
+> Draft 8 investigative questions for a local chief about irregular land allocation in Turkana
+> Write 5 tough accountability questions for a ministry official about stalled water projects  
 
 My gathered evidences are  _____________________  
 
@@ -89,7 +92,7 @@ My gathered evidences are  _____________________
 * Use **web search** and **fact-checking tools** (Africa Check, PesaCheck, Google Fact Check Explorer).
 * Ask AI to compare multiple sources:
 
-  > “Compare how Nation.Africa and Standard Digital reported on the Kenya Medical Supplies Authority (KEMSA) scandal. Highlight discrepancies.”
+  > “Compare how Nation.Africa and Standard Digital reported on the Kenya Medical Supplies Authority (KEMSA) scandal. Highlight discrepancies and unexplored angles.”
 
 My comparison is _____________________  
 
@@ -110,7 +113,7 @@ A compelling structure often follows this pattern:
 
 **AI prompt:**
 
-> “Create a narrative outline for an investigative blog on ghost teachers in public payrolls. Include section titles and suggested visuals.”
+> Using the structure Hook → Context → Investigation → Evidence → Human Impact → Accountability → Call to Action, create a 1,500-word outline with suggested visuals  
 
 My outline is _____________________  
 ---
