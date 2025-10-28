@@ -125,7 +125,7 @@ Open with a striking fact, quote, or mystery.
 Explain why this issue matters nationally or locally.  
 > Mention past efforts, laws, or promises related to transparency or accountability.
 .
->  
+>  Write a 3-4 sentence paragraph that defines the core issue, explains its national/local relevance, and mentions any related past efforts, laws, or promises (e.g., a specific anti-corruption law or government transparency pledge)  
 
 ## 3. The Evidence
 Present your findings using **data, documents, or interviews**.  
@@ -148,6 +148,8 @@ Interpret the findings—connect dots and show systemic issues.
 ## 6. Conclusion & Call to Action
 Summarize the impact and invite accountability.  
 > “If your county faces similar data gaps, share your experience in the comments below.”
+.
+> Write a final paragraph that summarizes the impact of [e.g the data gap on **governance and citizens**] and concludes with a clear call to action, urging readers to seek accountability or share similar experiences.
 ```
 
 ---
@@ -168,6 +170,8 @@ Use target keywords early and set clear value for the reader.
 ## Promise / Overview
 Explain what they’ll learn.  
 > “Here are 10 easy ways to save time, improve marketing, and increase profits.”
+.
+> Write a short, bulleted list or a brief paragraph that explicitly promises the reader [e.g **X number of actionable tips/strategies**] they will learn to achieve [MAIN BENEFIT, e.g., save time and increase profits].  
 
 ## [1. Strategy or Tool #1]
 Explain what it is + quick how-to + example link.
@@ -209,12 +213,16 @@ Begin with a vivid description or personal moment.
 ## Context
 Explain the broader movement or issue.  
 > “Across rural Kenya, youth innovators are finding creative tech solutions.”
+.
+> Following the lead, write a 2-3 sentence paragraph that broadens the scope, explaining the wider movement, societal issue, or trend (e.g., rural tech innovation) that the main character represents.  
 
 ## Main Character / Profile 1
 Who they are, what drives them, what they built.
+> Write a 4-5 sentence mini-profile detailing [MAIN CHARACTER'S NAME]: their background, their motivation for tackling [ISSUE], and a brief description of their specific innovation or project.  
 
 ## Supporting Character / Profile 2
 Add diversity of experience or voice.
+> Introduce [SUPPORTING CHARACTER'S NAME/TITLE] with a 3-4 sentence paragraph that highlights how their experience or perspective either complements or contrasts with the main character’s journey.  
 
 ## Conflict or Challenge
 What obstacle do they face (funding, access, policy, etc.)?
@@ -223,6 +231,7 @@ What obstacle do they face (funding, access, policy, etc.)?
 
 ## Turning Point or Resolution
 How they overcome it or find hope.
+> Describe a moment or action where the characters either **successfully overcame** their primary challenge or found a significant source of **hope and direction**. Use a short anecdote or quote to illustrate this turning point.  
 
 ## Reflective Ending
 Wrap with a quote or insight that lingers.  
@@ -260,6 +269,8 @@ Add credibility.
 ## Context
 Brief background or link to related policy/event.  
 > “Kenya’s meteorological department has issued drought warnings through December.”
+.
+> Write a 2-sentence paragraph providing essential background context, such as a related policy, previous event, or official warning (e.g., government report or a meteorological alert) that gives the story depth.  
 
 ## Ending / Impact Line
 Show significance or what comes next.  
