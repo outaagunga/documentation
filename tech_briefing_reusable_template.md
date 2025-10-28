@@ -110,3 +110,147 @@
 ☐ Draft reviewed before submission
 
 ---
+---
+---
+---
+Perfect ✅ Here's a **reusable Markdown template** for the **SEO Blog Content & Publishing Specialist** role — structured for clarity, easy tracking, and daily use.
+
+---
+
+```markdown
+# 📰 SEO Blog Content & Publishing Template
+
+## 🧭 Article Overview
+- **Post Title:**  
+- **Assigned Keyword(s):**  
+- **Target Audience:**  
+- **Word Count Goal:**  
+- **Content Type:** (How-To / Listicle / Guide / Review / Case Study)
+- **Date Assigned:**  
+- **Scheduled Publish Date:**  
+
+---
+
+## ✍️ Step 1: Content Generation
+**Tools:** ChatGPT / Claude / Gemini / Jasper  
+**Goal:** Generate SEO-optimized long-form article using provided prompt.
+
+**Tasks:**
+- [ ] Use assigned keyword(s) in AI prompt  
+- [ ] Generate headline variations (H1)  
+- [ ] Outline with logical H2/H3 structure  
+- [ ] Create draft content (1,500+ words)  
+- [ ] Add TL;DR or summary section at top  
+
+**Notes / Prompt Used:**  
+```
+
+<Insert your AI writing prompt or framework here>
+```
+
+---
+
+## 🔍 Step 2: SEO Optimization
+
+**Tools:** Yoast / RankMath / SurferSEO / NeuronWriter
+
+**Checklist:**
+
+* [ ] Primary keyword in title (H1)
+* [ ] Keywords in first 100 words
+* [ ] Secondary keywords placed naturally
+* [ ] Meta Title & Description optimized
+* [ ] URL slug includes keyword
+* [ ] Internal links added
+* [ ] External authoritative links added
+* [ ] Schema markup added (if applicable)
+* [ ] Keyword density: ~1–1.5%
+
+**SEO Fields Example:**
+
+* **Meta Title:**
+* **Meta Description:**
+* **Slug:**
+
+---
+
+## 🖼️ Step 3: Image Creation & Upload
+
+**Tools:** DALL·E / Midjourney / Leonardo / Canva
+
+**Tasks:**
+
+* [ ] Create featured image
+* [ ] Create 2–4 inline images
+* [ ] Resize and compress images
+* [ ] Add ALT text (with keywords)
+* [ ] Rename files (use descriptive SEO filenames)
+
+**Image Log Example:**
+
+| Image Type | Filename           | ALT Text                  | Source / Tool |
+| ---------- | ------------------ | ------------------------- | ------------- |
+| Featured   | ai-trends-2025.png | "AI Trends 2025"          | Midjourney    |
+| Inline     | chatgpt-usage.png  | "ChatGPT for SEO Writing" | DALL·E        |
+
+---
+
+## 🧱 Step 4: Upload & Publish
+
+**Platform:** WordPress
+
+**Checklist:**
+
+* [ ] Upload article
+* [ ] Apply heading structure (H1 → H3)
+* [ ] Embed internal/external links
+* [ ] Insert featured & inline images
+* [ ] Optimize Yoast / RankMath fields
+* [ ] Check readability score (Flesch 60+)
+* [ ] Schedule or publish post
+* [ ] Double-check formatting and links
+
+**Final URL:**
+**Status:** Draft / Scheduled / Published
+
+---
+
+## 📊 Step 5: Review & Performance
+
+**Tools:** Google Search Console / Google Analytics
+
+**Metrics to Track:**
+
+* [ ] CTR (%)
+* [ ] Average Position
+* [ ] Impressions
+* [ ] Organic Visits
+* [ ] Conversions (if any)
+
+**Next Optimization Date:**
+
+---
+
+## 🧩 Notes & References
+
+* **Sources / Research Links:**
+
+  * [ ]
+  * [ ]
+* **Brand Voice Notes:**
+
+  * Tone:
+  * Style:
+  * CTA:
+
+---
+
+✅ **End of Template**
+
+```
+
+---
+
+Would you like me to add a **short section for AI prompt examples** (for generating blog outlines, intros, or titles) at the bottom of this Markdown file? It would make it easier to start each post faster.
+```
+
