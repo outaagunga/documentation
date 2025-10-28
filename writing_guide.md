@@ -289,7 +289,7 @@ Refine the following article for maximum clarity, brevity, and adherence to prof
 5. Consistency: All facts, names, and details mentioned across the sections (especially the key facts and the context/impact) are consistent and logically aligned with the main topic.
 6. Adherence to Template Constraints: Each section strictly adheres to the requested length constraints (e.g.lead under 30 words,Keep paragraphs to 2-3 lines maximum, 2-3 short key facts, 3-4sentence context)
 7. Do not use em-dashes, exclamation marks, or idioms
-8. Add SEO freindly topic and sub-topics to all relevant parts [INSERT YOUR FULL DRAFT HERE]  
+8. Add one relevant SEO-friendly Topic and Sub-topics that reflect the article's core content [INSERT YOUR FULL DRAFT HERE]  
 ```
 
 ✅ *Keep under 300 words, use short paragraphs, avoid adjectives, follow AP style.*
