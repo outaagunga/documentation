@@ -10,7 +10,7 @@ Use AI to brainstorm angles.
 
 > “List 10 underreported investigative story ideas in Kenya related to corruption, environment, or digital privacy.”
 
-💡 **Tip:** Filter for public interest, potential impact, and available data sources.
+💡 **Tip:** Filter for public interest, potential impact, and available data sources.  
 My chosen topic is _____________________  
 
 ---
