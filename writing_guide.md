@@ -281,12 +281,15 @@ Show significance or what comes next.
 
 Final polishing prompt:  
 ```markdown
-Review the complete news article draft below based on the following criteria. Please ensure:  
-1. **Flow and Readability:** The transitions between the Lead Sentence, Key Facts, Quote, Context, and Ending Line are smooth and logical. The article must read like a cohesive, professional news story.
-2. **Tone and Style:** The tone is **objective, neutral, and journalistic**, adhering to a standard hard-news style. The language should be concise and impactful.
-3. **Grammar and Mechanics:** All spelling, punctuation, and grammar are correct.
-4. **Consistency:** All facts, names, and details mentioned across the sections (especially the key facts and the context/impact) are consistent and logically aligned with the main topic.
-5. **Adherence to Template Constraints:** Each section strictly adheres to the requested length constraints (e.g., lead under 30 words, 2-3 short key facts, 2-sentence context).[**INSERT YOUR FULL DRAFT HERE**]  
+Refine the following article for maximum clarity, brevity, and adherence to professional news standards. Please ensure:  
+1. Ensure Flesch-Kincaid Grade Level is below 8.0
+2. Flow and Readability: The transitions between the Lead Sentence, Key Facts, Quote, Context, and Ending Line are smooth and logical. The article must read like a cohesive, professional news story.
+3. Tone and Style: The tone is objective, neutral, and journalistic, adhering to a standard hard-news style. The language should be concise and impactful.
+4. Grammar and Mechanics: All spelling, punctuation, and grammar are correct. Eliminate ALL passive voice and complex sentence structures
+5. Consistency: All facts, names, and details mentioned across the sections (especially the key facts and the context/impact) are consistent and logically aligned with the main topic.
+6. Adherence to Template Constraints: Each section strictly adheres to the requested length constraints (e.g.lead under 30 words,Keep paragraphs to 2-3 lines maximum, 2-3 short key facts, 3-4sentence context)
+7. Do not use em-dashes, exclamation marks, or idioms
+8. Add SEO freindly topic and sub-topics to all relevant parts [INSERT YOUR FULL DRAFT HERE]  
 ```
 
 ✅ *Keep under 300 words, use short paragraphs, avoid adjectives, follow AP style.*
