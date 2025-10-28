@@ -33,7 +33,7 @@ Prompt:
 > The outline must include:
 > 1. Clickable Headline Options (one must be SEO-optimized with the target keyword: [Insert Keyword]),
 > 2. 5-7 H2 Subheadings (must be descriptive and SEO-friendly),
-> 3. Logical Flow of Sections (Background -> Main Event -> Impact/Reactions -> Expert Analysis -> Conclusion/Outlook),
+> 3. Logical Flow of Sections (The hook  -> Background -> Main Event -> Impact/Reactions -> Expert Analysis -> Conclusion/Outlook),
 > 4. Key Takeaway Points (3-5 bullet points to summarize the article's core message).”
 > [paste AI response here]  
 
