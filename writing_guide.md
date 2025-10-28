@@ -118,23 +118,32 @@
 ## 1. The Hook
 Open with a striking fact, quote, or mystery.  
 > Example: “In Machakos County, KSh 4 billion vanished from records—and no one can explain how.”
+.  
+> Draft a compelling, two-sentence investigative hook about the systemic issue of [TOPIC/ISSUE]. Start with a striking, verifiable fact or a jaw-dropping quote, like: [EXAMPLE FACT OR QUOTE]  
 
 ## 2. Background & Context
 Explain why this issue matters nationally or locally.  
 > Mention past efforts, laws, or promises related to transparency or accountability.
+.
+>  
 
 ## 3. The Evidence
 Present your findings using **data, documents, or interviews**.  
 - Statistics, reports, and public records  
 - Visuals or charts (if possible)
+> Analyze the following raw data/report summary: [PASTE KEY DATA, STATISTIC, OR FINDING]. Write a concise paragraph that translates this finding into an accessible, non-jargon statement for a general audience, emphasizing the discovery  
 
 ## 4. The Human Angle
 Show how the issue affects real people.  
 > Include quotes from citizens, experts, or victims.
+.
+> Based on the story of [PERSON'S NAME] and their experience with [ISSUE], write a powerful, 50-word profile quote. The quote should capture their central struggle or a moment of realization  
 
 ## 5. Analysis
 Interpret the findings—connect dots and show systemic issues.  
 > “Experts say weak enforcement of data laws allows corruption to thrive.”
+.  
+> Interpret the connection between [EVIDENCE/FINDING] and [BROADER SYSTEMIC ISSUE]. Write a 3-sentence analysis section that explains the deeper cause and effect, using the expert's view that [EXPERT QUOTE/SUMMARY]  
 
 ## 6. Conclusion & Call to Action
 Summarize the impact and invite accountability.  
@@ -153,6 +162,8 @@ Summarize the impact and invite accountability.
 ## Introduction
 Use target keywords early and set clear value for the reader.  
 > “Digital tools for small businesses are transforming how entrepreneurs grow in 2025.”
+.
+> Write an engaging, SEO-optimized introductory paragraph for a blog post titled [TITLE] (e.g., '10 Ways Small Businesses Can Leverage Digital Tools in 2025'). The introduction must naturally include the primary keyword [TARGET KEYWORD] and clearly state the value the reader will gain  
 
 ## Promise / Overview
 Explain what they’ll learn.  
@@ -160,6 +171,7 @@ Explain what they’ll learn.
 
 ## [1. Strategy or Tool #1]
 Explain what it is + quick how-to + example link.
+> For the subheading [SUBHEADING TITLE/TOOL NAME], write a concise section (under 100 words) that explains: 1) What it is, 2) The main benefit, and 3) A quick, actionable tip on how to use it for [TARGET AUDIENCE]  
 
 ## [2. Strategy or Tool #2]
 Same structure—keep each section under 100 words.
@@ -173,6 +185,8 @@ Briefly restate value.
 ## Call to Action
 Encourage readers to act or comment.  
 > “Which tool will you try first? Tell us below.”
+.
+> Write a brief summary paragraph that restates the main value of the article on [TARGET KEYWORD]. Follow it with a strong call to action that encourages readers to start one tool today and share their progress in the comments  
 ```
 
 ✅ *SEO Tip:* Include keywords in title, intro, subheadings (H2/H3), and meta description.
@@ -189,6 +203,8 @@ Encourage readers to act or comment.
 ## Scene-Setting Lead
 Begin with a vivid description or personal moment.  
 > “At sunrise in Nyeri, 17-year-old Amina powers up her handmade solar charger.”
+.
+> Write a vivid, sensory-rich opening paragraph (the 'Scene-Setting Lead') that immediately drops the reader into the world of [MAIN CHARACTER'S NAME] in [LOCATION] as they are performing the action of [KEY ACTION/MOMENT]. Focus on sights, sounds, or the atmosphere.  
 
 ## Context
 Explain the broader movement or issue.  
@@ -202,6 +218,8 @@ Add diversity of experience or voice.
 
 ## Conflict or Challenge
 What obstacle do they face (funding, access, policy, etc.)?
+.
+> Detail the primary obstacle faced by the innovators profiled in this story, which is [CHALLENGE, e.g., lack of policy support]. Write a 3-4 sentence paragraph that clearly defines this conflict and explains why it's the biggest threat to their success  
 
 ## Turning Point or Resolution
 How they overcome it or find hope.
@@ -209,6 +227,8 @@ How they overcome it or find hope.
 ## Reflective Ending
 Wrap with a quote or insight that lingers.  
 > “Their resilience proves that innovation isn’t just urban—it’s everywhere.”
+.
+> Given the main theme of the story—[THEME, e.g., resilience of rural youth]—and the main character's journey, write a memorable closing quote or a final reflective insight that leaves the reader with a lasting thought about the future of [TOPIC]  
 ```
 
 ---
@@ -222,14 +242,20 @@ Wrap with a quote or insight that lingers.
 
 **Location — Date** — Lead sentence summarizing who, what, where, and why.  
 > “BARINGO, Kenya — Farmers are turning to AI-powered weather apps to survive a worsening drought.”
+.
+> Using the key facts ([WHO], [WHAT], [WHERE], [WHEN], [WHY]), write a single, hard-news lead sentence (under 30 words) that summarizes the entire story about [EVENT/TOPIC]. Format it as: LOCATION — Date — Lead sentence...  
 
 ## Key Facts
 Provide the most important updates first.  
 > “Over 2,000 farmers downloaded the app this week, developers said Tuesday.”
+.
+> The most important update is [MAIN FACT/STATISTIC]. Write a bullet-point section of 2-3 short sentences that presents the key facts and updates, beginning with the most critical piece of information  
 
 ## Quote / Source
 Add credibility.  
 > “‘It helps us plan planting schedules,’ said farmer John Kibet.”
+.
+> Generate a direct, impactful quote for [SOURCE NAME/TITLE] that speaks to the immediate impact of [EVENT]. The quote should be brief and add credibility to the main finding.  
 
 ## Context
 Brief background or link to related policy/event.  
@@ -238,6 +264,8 @@ Brief background or link to related policy/event.
 ## Ending / Impact Line
 Show significance or what comes next.  
 > “Experts say such AI tools could reshape how smallholders cope with climate shocks.”
+.
+> Write a single-sentence closing line that clearly explains the immediate significance or potential future impact of [EVENT] on [AFFECTED GROUP, e.g., smallholders]  
 ```
 
 ✅ *Keep under 300 words, use short paragraphs, avoid adjectives, follow AP style.*
