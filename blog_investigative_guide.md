@@ -11,6 +11,7 @@ Use AI to brainstorm angles.
 > “List 10 underreported investigative story ideas in Kenya related to corruption, environment, or digital privacy.”
 
 💡 **Tip:** Filter for public interest, potential impact, and available data sources.
+My chosen topic is _____________________  
 
 ---
 
@@ -26,6 +27,8 @@ Every investigation starts with a guiding question:
 
 > “Help me refine this question for an investigative story so it’s specific, evidence-driven, and engaging.”
 
+My guiding question is _____________________  
+
 ---
 
 ### 3. Set Clear Objectives
@@ -37,6 +40,8 @@ Every investigation starts with a guiding question:
 **AI prompt:**
 
 > “Help me outline objectives and key questions for my story on illegal sand mining in Machakos.”
+
+My chosen objectives are  _____________________  
 
 ---
 
@@ -56,6 +61,8 @@ Structure your sources:
 
 > “Create a research plan with 3 credible sources per category for a story on school funding misuse in Kenya.”
 
+My credible sources are  _____________________  
+
 ---
 
 ### 5. Gather Evidence
@@ -73,6 +80,8 @@ Use AI for:
 
 ⚠️ **Caution:** Always verify — AI can hallucinate. Cross-check every claim with official data or credible media.
 
+My gathered evidences are  _____________________  
+
 ---
 
 ### 6. Verify and Cross-check
@@ -81,6 +90,8 @@ Use AI for:
 * Ask AI to compare multiple sources:
 
   > “Compare how Nation.Africa and Standard Digital reported on the Kenya Medical Supplies Authority (KEMSA) scandal. Highlight discrepancies.”
+
+My comparison is _____________________  
 
 ---
 
@@ -101,6 +112,7 @@ A compelling structure often follows this pattern:
 
 > “Create a narrative outline for an investigative blog on ghost teachers in public payrolls. Include section titles and suggested visuals.”
 
+My outline is _____________________  
 ---
 
 ### 8. Build the Narrative Voice
@@ -132,6 +144,8 @@ You can co-write efficiently by alternating:
 > “Here’s my paragraph on toxic waste dumping in Nairobi River. Suggest a rewrite that increases tension and clarity but keeps the facts intact.”
 
 💡 **Tip:** Use ChatGPT to test readability:
+
+My story draft is _____________________  
 
 > “Check this paragraph’s Flesch-Kincaid grade level and make it below 8.0.”
 
