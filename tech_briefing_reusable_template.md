@@ -113,11 +113,9 @@
 ---
 ---
 ---
-Perfect ✅ Here's a **reusable Markdown template** for the **SEO Blog Content & Publishing Specialist** role — structured for clarity, easy tracking, and daily use.
 
----
 
-```markdown
+
 # 📰 SEO Blog Content & Publishing Template
 
 ## 🧭 Article Overview
@@ -143,10 +141,8 @@ Perfect ✅ Here's a **reusable Markdown template** for the **SEO Blog Content &
 - [ ] Add TL;DR or summary section at top  
 
 **Notes / Prompt Used:**  
-```
+> [Insert your AI writing prompt or framework here]
 
-<Insert your AI writing prompt or framework here>
-```
 
 ---
 
@@ -247,10 +243,49 @@ Perfect ✅ Here's a **reusable Markdown template** for the **SEO Blog Content &
 
 ✅ **End of Template**
 
+---
+
+## 💡 Bonus: AI Prompt Examples for SEO Blogging
+
+**1️⃣ Blog Outline Prompt**
+
+```
+You are an SEO content strategist. Create a detailed outline for a [topic] blog targeting the keyword “[keyword]”.  
+Include H2 and H3 headings, a brief intro, and a conclusion with a CTA.
+```
+
+**2️⃣ Blog Draft Prompt**
+
+```
+Write a 1,500-word SEO blog based on this outline: [paste outline].  
+Target the keyword “[keyword]”. Maintain a professional yet conversational tone.  
+Include short paragraphs, bullet points, and a clear TL;DR at the top.
+```
+
+**3️⃣ Meta Description Prompt**
+
+```
+Write an engaging meta description (under 160 characters) for a blog post titled “[title]”.  
+Include the keyword “[keyword]” and a strong call to action.
+```
+
+**4️⃣ Image Prompt**
+
+```
+Create a feature image concept for a blog post about “[topic]”.  
+Style: clean, modern, editorial. Avoid text on image.
+```
+
+**5️⃣ Title Optimization Prompt**
+
+```
+Generate 10 SEO-optimized blog titles targeting “[keyword]”.  
+Each title should be under 60 characters and include a power word.
 ```
 
 ---
 
-Would you like me to add a **short section for AI prompt examples** (for generating blog outlines, intros, or titles) at the bottom of this Markdown file? It would make it easier to start each post faster.
-```
+✅ **End of Template**
+
+
 
