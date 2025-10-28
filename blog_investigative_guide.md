@@ -21,7 +21,7 @@ Every investigation starts with a guiding question:
 
 > “What’s really happening behind X?”
 > “Who benefits from Y?”
-> “Why are communities in Z still facing this issue despite government funding?”
+> “Why does Z persist despite government funding?”
 
 **Ask AI:**
 
@@ -35,7 +35,7 @@ My guiding question is _____________________
 
 * **What do you want to prove or reveal?**
 * **Who is affected and why should readers care?**
-* **What change might this investigation inspire?**
+* **What change or awareness should this story inspire?**
 
 **AI prompt:**
 
@@ -49,13 +49,13 @@ My chosen objectives are  _____________________
 
 ### 4. Build a Research Map
 
-Structure your sources:
+Organize your information sources:
 
-* Government reports
-* Public data (Open Data portals, World Bank, county budgets)
+* Government and audit reports
+* Public datasets (Open Data portals, World Bank, county budgets) 
 * Eyewitness accounts or whistleblowers
-* Expert interviews
-* On-ground verification
+* Expert opinion 
+* On-site verification
 
 **AI prompt:**
 
@@ -69,9 +69,9 @@ My credible sources are  _____________________
 
 Use AI for:
 
-* **Summarizing long reports**
-* **Extracting patterns** (like budget trends or procurement data)
-* **Translating documents**
+* **Summarizing long documents**
+* **Detect data patterns (budgets, procurement, etc.)
+* **Translate reports**
 * **Drafting interview questions**
 
 **Prompt Example:**
@@ -101,12 +101,12 @@ My comparison is _____________________
 
 A compelling structure often follows this pattern:
 
-1. **Hook / Lead:** A gripping anecdote, scene, or revelation.
-2. **Problem:** The issue and its public significance.
-3. **Evidence:** Data, documents, interviews.
-4. **Impact:** Who suffers or benefits.
-5. **Response:** Official reactions or denials.
-6. **Call to Action:** What needs to happen next.
+1. Hook / Lead: A striking scene or revelation.
+2. Problem: Define the issue and its public importance.
+3. Evidence: Present documents, data, and testimonies.
+4. Impact: Show who gains or suffers.
+5. Response: Present official reactions or denials.
+6. Call-to-Action: End with what should happen next.  
 
 **AI prompt:**
 
@@ -117,12 +117,10 @@ My outline is _____________________
 
 ### 8. Build the Narrative Voice
 
-Keep it factual but vivid. Use storytelling techniques:
-
-* Short, punchy sentences
-* Real quotes
-* Human-centered scenes
-* Verified stats
+Stay factual but vivid. Mix storytelling with verification:  
+- Short, direct sentences
+- Real quotes and human scenes
+- Verified statistics  
 
 **Ask AI:**
 
@@ -151,15 +149,14 @@ My story draft is _____________________
 
 ---
 
-### 10. Maintain Ethical & Legal Standards
+### 10. Follow Ethical and Legal Standards 
 
-* **Never invent quotes or facts.**
-* **Anonymize vulnerable sources.**
-* **Avoid bias — let evidence lead.**
-* **Cite your data clearly.**
+* Never fabricate quotes or data.
+* Protect anonymous or vulnerable sources.
+* Let evidence lead your conclusions.
+* Cite every source clearly.  
 
 Ask AI:
-
 > “Generate a source citation list for these materials using AP or APA style.”
 
 ---
