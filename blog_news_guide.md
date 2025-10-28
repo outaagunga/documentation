@@ -44,7 +44,7 @@ My Outline is  ____________________
 
 Prompt:
 > “Act as a senior news writer for a fast-paced, digital-first publication. Using only the facts and structure from the outline below, write a full news article of approximately [word count] words.
-> Use a professional, objective, and inverted pyramid structure. Maintain simple, direct English (max 15 words per sentence) suitable for mobile readers. Start with the most critical information.
+> Use a professional, objective, and inverted pyramid structure. Maintain simple, direct English (max 15 words per sentence) suitable for mobile readers. Start with a short compelling hook, then the most critical information.
 > Do not use rhetorical questions, passive voice, or jargon. Prioritize confirmed facts and direct quotes.
 > include a clear Call-to-Action (CTA), asking readers to share their thoughts or experiences in the comments  
 > [paste your outline here]”  
