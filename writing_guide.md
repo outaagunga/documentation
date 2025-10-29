@@ -228,11 +228,34 @@ Use these as needed depending on your story type:
 | **Analysis/Explainer** | Charts, comparisons, expert commentary, implications.             |
 
 ```
-Prompt to generate the news based on the outline:  
-```
-Act as a senior news writer for a fast-paced, digital-first publication. Your task is to produce a comprehensive news article using the facts and structure provided in the outline below. The article should be approximately [e.g 400 words]. Use elements of [insert elements] and a logical flow of [e.g  Lead (who/what/where/when) → Key facts (how/why) → Official statements → Context/background → Next steps or conclusion]. Maintain simple, direct English (max 15 words per sentence) suitable for mobile readers. Start with a short compelling hook, then the most critical information. Do not use rhetorical questions, passive voice, or jargon. Prioritize confirmed facts and direct quotes. Replace all vague or generic attributions (e.g., "sources say," "it is believed") with the proper sources for full credibility. Include a clear Call-to-Action (CTA), asking readers to share their thoughts or experiences in the comments
-[paste your outline here]
-```
+## Fact checking & story validation    
+Prompt:
+> “Fact-check and summarize the information landscape for [Specific Topic, Event, or Claim]. Use only reputable, non-partisan news sources, academic institutions, or official government pages.    
+> Present the findings in four distinct bulleted sections:  
+> 1. Key Confirmed Facts (cite source type, e.g., 'Official Gov Report'. Provide working URL link to access the source or extract),
+> 2. Disputed Claims/Misinformation to AVOID,
+> 3. Unconfirmed/ Developing Angles,
+> 4. Direct Official Statements/Quotes (with speaker and context).”
+> 5. Quick reporting guidance  
+
+AI response is ____________________  
+
+## Outline Generation    
+Prompt:
+> “Act as a professional news editor specializing in digital content and SEO. Create a detailed, journalistic story outline for a [type of story: breaking/feature/analysis] on [topic].
+> The outline must include:
+> 1. Clickable Headline Options (one must be SEO-optimized with the target keyword: [Insert Keyword]),
+> 2. 5-7 H2 Subheadings (must be descriptive and SEO-friendly),
+> 3. Logical Flow of Sections (The hook  -> Background -> Main Event -> Impact/Reactions -> Expert Analysis -> Conclusion/Outlook),
+> 4. Key Takeaway Points (3-5 bullet points to summarize the article's core message).”
+> [paste AI response here]  
+
+My Outline is  ____________________  
+
+## Prompt to generate the news based on the outline:  
+
+> Act as a senior news writer for a fast-paced, digital-first publication. Your task is to produce a comprehensive news article using the facts and structure provided in the outline below. The article should be approximately [e.g 400 words]. Use elements of [insert elements] and a logical flow of [e.g  Lead (who/what/where/when) → Key facts (how/why) → Official statements → Context/background → Next steps or conclusion]. Maintain simple, direct English (max 15 words per sentence) suitable for mobile readers. Start with a short compelling hook, then the most critical information. Do not use rhetorical questions, passive voice, or jargon. Prioritize confirmed facts and direct quotes. Replace all vague or generic attributions (e.g., "sources say," "it is believed") with the proper sources for full credibility. Include a clear Call-to-Action (CTA), asking readers to share their thoughts or experiences in the comments
+[paste your outline here]  
 
 ---
 
