@@ -141,6 +141,7 @@ Here’s a clear step-by-step breakdown of the process — from idea generation 
 * **Example:**
 
   * *The City Council voted Tuesday night to approve a $10 million flood protection plan aimed at preventing future damage along the riverfront.*
+[Insert the lead that hook the reader and summarize the story]  
 
 ---
 
@@ -155,7 +156,7 @@ Here’s a clear step-by-step breakdown of the process — from idea generation 
 * **Example:**
 
   * *The decision follows years of debate after record flooding devastated hundreds of homes in 2022.*
-
+[Insert nut graph explaining why this story matters]
 ---
 
 ### **Body Paragraphs (Details & Development)**
@@ -167,39 +168,51 @@ Use the **inverted pyramid**: most important → least important.
    * Add verified facts, figures, and direct quotes.
    * Attribute information clearly: *according to officials / witnesses / experts.*
 
+[Insert Fact 1 with source/attribution]
+[Insert Fact 2 with source/attribution]
+[Insert Fact 3 with source/attribution]
+
 2. **Supporting Quotes**
 
    * Include voices from multiple perspectives.
    * Example:
-
      * *“This plan finally gives our community some peace of mind,” said resident Sarah Lopez.*
 
-3. **Background & Context**
+[Insert Quote 1, name and role]
+[Insert Quote 2, name and role]
+[Insert Quote 3, name and role]
 
+3. **Background & Context**
    * Brief history or previous events related to the story.
    * Mention any controversies, delays, or relevant data.
 
-4. **Opposing Viewpoints or Reactions**
+[Insert Brief history or previous events]
+[Insert Relevant statistics, previous controversies, delays, or policies]
 
+4. **Opposing Viewpoints or Reactions**
    * Balance the story by showing multiple sides.
    * Example:
-
      * *However, some business owners worry the new plan could increase property taxes.*
 
-5. **Additional Details / Broader Impact**
+[Insert Viewpoint 1, including quote or paraphrase]
+[Insert Viewpoint 2, including quote or paraphrase]
 
+5. **Additional Details / Broader Impact**
    * Explain how it affects readers or connects to larger trends.
    * Add expert analysis if relevant.
 
+[Insert Implications for the community, region, or industry]
+[Insert Expert analysis or commentary if available]
 ---
 
 ### **Ending / Wrap-Up**
-
 * **Purpose:** Give closure, next steps, or a look ahead.
 * **Examples:**
-
   * *Construction is set to begin in January and finish by 2027.*
   * *The next council meeting will address how to fund the project.*
+
+[Insert Next action/event]
+[Insert Potential future developments or outcomes]
 
 ### **Optional Elements**
 
