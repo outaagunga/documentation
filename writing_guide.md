@@ -228,8 +228,98 @@ Use these as needed depending on your story type:
 | **Analysis/Explainer** | Charts, comparisons, expert commentary, implications.             |
 
 ```
+Prompt to generate the news:  
+```
+
+```
+
 ---
 
+# Logical flow patterns for major news types:
+
+---
+
+### 🧭 1. **Hard News / Straight News**
+**Purpose:** Report fresh facts quickly and objectively.
+**Logical Flow:**
+```
+> Lead (who/what/where/when) → Key facts (how/why) → Official statements → Context/background → Next steps or conclusion
+```
+**Example Flow:**
+Breaking: “Police confirm flood damage” → Details of the incident → Quote from officials → Historical flood pattern → Ongoing response.
+
+---
+
+### 🧩 2. **Feature / Human-Interest Story**
+**Purpose:** Engage emotions, tell stories behind the facts.
+**Logical Flow:**
+```
+> Narrative lead → Character/story introduction → Broader theme or issue → Expert insight → Wider implications → Reflective or emotional ending
+```
+**Example Flow:**
+Farmer’s struggle → Drought impact → Expert on climate → Community adaptation → Hopeful closing scene.
+
+---
+
+### 📊 3. **Trend or Data-Driven Story**
+**Purpose:** Highlight emerging patterns or social shifts.
+**Logical Flow:**
+```
+> Trend statement → Supporting data/evidence → Expert explanation → Counterpoint or alternative view → Broader social/economic context → Concluding insight
+```
+---
+
+### 🧠 4. **Explainer / Backgrounder**
+**Purpose:** Simplify complex topics for readers.
+**Logical Flow:**
+```
+> Question or problem → Historical background → How it works / key terms → Expert input → Implications → What happens next / takeaway
+```
+**Example Flow:**
+Why fuel prices rise → History of subsidy → Supply chain explained → Expert analysis → Future projections → Summary takeaway.
+
+---
+
+### 🕵️‍♀️ 5. **Investigative Story**
+**Purpose:** Expose hidden facts or wrongdoing.
+**Logical Flow:**
+```
+> Hook or revelation → Evidence and data → Testimonies/interviews → Denials or counterpoints → Wider systemic pattern → Call for accountability / resolution
+```
+**Example Flow:**
+Leak reveals misuse → Supporting documents → Victim accounts → Official response → Larger corruption trend → Public demand for action.
+
+---
+
+### 🌍 6. **Analytical / Policy News**
+**Purpose:** Interpret the significance of events or decisions.
+**Logical Flow:**
+```
+> Event summary → Expert or analyst insights → Supporting data → Counter-argument → Policy implications → Broader conclusion
+```
+**Example Flow:**
+New education policy → Expert on implications → Data on schools → Critic perspectives → Economic or social effect → Balanced ending.
+
+---
+
+### 💬 7. **Opinion / Editorial Piece**
+**Purpose:** Persuade or comment.
+**Logical Flow:**
+```
+> Strong position → Supporting arguments → Evidence/examples → Address opposing views → Reaffirm argument → Call to action / takeaway
+```
+**Example Flow:**
+“AI regulation is urgent” → Explain risks → Case studies → Respond to critics → Restate urgency → Call for policy action.
+
+---
+
+### 🔔 8. **Follow-up / Update Story**
+**Purpose:** Advance or deepen a previous news item.
+**Logical Flow:**
+```
+> Reference to earlier event → New development → Reactions → Updated data or consequences → Expert analysis → Outlook or what’s next
+```
+---
 
 # How to differentiate structure, tone, and purpose of different writings  
 
