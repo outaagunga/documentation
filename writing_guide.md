@@ -117,6 +117,7 @@ Here’s a clear step-by-step breakdown of the process — from idea generation 
 
 ## 📰 **Universal News Story Template**
 ```markdown
+# Reusable Template
 ### **Headline**
 
 * **[Write a short, specific, and engaging headline.]**
