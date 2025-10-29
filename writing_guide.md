@@ -158,6 +158,19 @@ Prompt:
 [paste your outline here]  
 
 My draft is  ____________________  
+
+## 4. Editing like Grammarly Pro
+Prompt:
+> “Act as a senior news editor and AP Style (or [Your Style Guide]) expert. Refine the following article for maximum clarity, brevity, and adherence to professional news standards.
+> Crucial Constraints:
+> 1. Ensure Flesch-Kincaid Grade Level is below 8.0.  
+> 2. Keep paragraphs to 2-3 lines maximum.
+> 3. Eliminate ALL passive voice and complex sentence structures.
+> 4. Do not use em-dashes, exclamation marks, or idioms.  
+> Return the final, publish-ready article FIRST (in bold and full text), and then provide a succinct, bulleted list of the 5 most significant editorial changes you made.”  
+
+My final polished blog is ____________________  
+
 ---
 
 # Logical flow patterns for major news types:
