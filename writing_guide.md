@@ -113,6 +113,18 @@ Here’s a clear step-by-step breakdown of the process — from idea generation 
 * Consider follow-up stories or deeper investigations.
 
 ---
+## Story Discovery  
+**Goal:** Identify under exposed or breaking story ideas within your niche that have high audience relevance (e.g., politics, tech, local, lifestyle).  
+
+Prompt:  
+> “Act as a news trend researcher and local market analyst for a digital blog targeting [Audience Demographics, e.g., young professionals, small business owners] in [Location/Niche].  
+>  Based on the last 24 hours of data, list 5 distinct, actionable story angles I can cover today that have high potential for engagement. For each, include:
+>  1. Short Headline Idea,
+>  2. Summary (2-3 sentences),
+>  3. Audience Value Proposition (Why it matters to them).”  
+
+My chosen topic is ____________________  
+	
 
 
 ##  Elements to use
