@@ -159,6 +159,17 @@ Prompt:
 
 My draft is  ____________________  
 
+## Or  
+Prompt:
+
+> “No Expand on this section, keeping the tone [Your Desired Tone, e.g., friendly and expert]: [First H2 Heading as given in the Outline] using my outline  
+> - [H3 heading as given on the outline]
+> - [H3 heading as given on the outline]
+> - [H3 heading as given on the outline]    
+
+📝 *My first section is:* _______________________________________
+Do the same for other preceding sections  
+
 ## 4. Editing like Grammarly Pro
 Prompt:
 > “Act as a senior news editor and AP Style (or [Your Style Guide]) expert. Refine the following article for maximum clarity, brevity, and adherence to professional news standards.
