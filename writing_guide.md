@@ -148,6 +148,19 @@ Prompt:
 
 > List Kenyan government officials, NGOs, and local activists working on [e.g forest conservation in Narok County]
 
+My Sources are _____________________________
+
+**Then run this prompt to summarize**  
+> Fact-check and summarize the information landscape for “The Rising Voices of Rural Kenya’s Tech Innovators”. Use sources provided below.
+> Present the findings in five distinct bulleted sections:
+> 1.	Key Confirmed Facts (cite source type and provide working URL link to access the source or source extract),
+> 2.	Disputed Claims/Misinformation to AVOID,
+> 3.	Unconfirmed/ Developing Angles,
+> 4.	Direct Official Statements/Quotes (with speaker and context).”
+> 5.	Quick reporting guidance
+
+My Summary of the ideas are _____________________________
+
 ## 1: Fact checking & story validation    
 Prompt:
 > “Fact-check and summarize the information landscape for [Specific Topic, Event, or Claim]. Use only reputable, non-partisan news sources, academic institutions, or official government pages.    
