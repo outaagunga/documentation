@@ -450,3 +450,90 @@ This way, the model adapts edits to match your *intent* — not just fix errors.
 | `/seo-audit /content-optimizer`           | Full page-level SEO improvement workflow.       |
 
 ---  
+
+**complete Grammarly Premium checklist** — the same points Grammarly Premium uses to refine and professionalize your writing. You can use it as a manual editing guide or to create your own “Grammarly-like” AI prompts 👇
+
+---
+## 🧩 1. **Basic Grammar & Mechanics**
+
+* [ ] Correct subject–verb agreement
+* [ ] Proper use of articles (a, an, the)
+* [ ] Correct use of prepositions (in, on, at, for, etc.)
+* [ ] Proper punctuation (commas, semicolons, colons, etc.)
+* [ ] Eliminate sentence fragments and run-ons
+* [ ] Fix verb tense consistency
+* [ ] Use correct pronoun case and agreement
+* [ ] Correct capitalization throughout
+
+---
+
+## 💬 2. **Clarity & Conciseness**
+
+* [ ] Remove redundant or wordy phrases
+* [ ] Replace vague words with precise alternatives
+* [ ] Simplify overly complex or long sentences
+* [ ] Use the active voice instead of passive (where appropriate)
+* [ ] Avoid filler words (e.g., really, very, actually, just)
+* [ ] Ensure each sentence expresses one clear idea
+
+---
+
+## 🎯 3. **Readability & Flow**
+
+* [ ] Maintain logical transitions between sentences and paragraphs
+* [ ] Ensure smooth flow using linking words (however, therefore, additionally, etc.)
+* [ ] Adjust sentence length variety for rhythm
+* [ ] Keep paragraphs focused on one main idea
+* [ ] Maintain consistent tone and pace
+
+---
+
+## ✍️ 4. **Word Choice & Style**
+
+* [ ] Use contextually appropriate vocabulary
+* [ ] Replace clichés and overused expressions
+* [ ] Use formal or informal tone according to audience
+* [ ] Replace weak verbs (e.g., “do,” “get”) with stronger, specific verbs
+* [ ] Avoid repetition of the same words too close together
+
+---
+
+## 🧠 5. **Engagement & Tone Detection**
+
+* [ ] Match tone to purpose (informative, persuasive, narrative, etc.)
+* [ ] Keep tone consistent across sections
+* [ ] Check if tone is confident, polite, and respectful
+* [ ] Avoid monotony — vary sentence openings and structure
+
+---
+
+## 🧾 6. **Formatting & Structure**
+
+* [ ] Consistent use of bullet points or numbering (where needed)
+* [ ] Proper paragraph spacing and indentation
+* [ ] Correct heading hierarchy (H1, H2, H3)
+* [ ] Consistent font and style if in a document
+
+---
+
+## 📊 7. **Advanced Premium Checks (AI-Level Features)**
+
+* [ ] **Readability Score:** Ensure Flesch-Kincaid level matches target audience
+* [ ] **Intent Alignment:** Verify tone matches intent (e.g., formal email vs. blog post)
+* [ ] **Plagiarism Check:** Verify originality
+* [ ] **Consistency Check:** Ensure consistent spelling (US vs. UK), hyphenation, and capitalization
+* [ ] **Rewrite Suggestions:** Reword unclear or lengthy sentences for natural flow
+* [ ] **Word Variety:** Avoid overuse of transition words or pronouns
+
+---
+
+## 💡 8. **Optional for Polished Writing**
+
+* [ ] Use parallel structure in lists
+* [ ] Check for misplaced modifiers
+* [ ] Adjust pacing — not too abrupt or too slow
+* [ ] Verify quote formatting and attribution
+* [ ] Ensure closing statements reinforce main message
+
+---
+
