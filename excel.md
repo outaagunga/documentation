@@ -8,7 +8,7 @@
 | James Sammy    | 56,325        | 2,253                         | 1,126.5                          | 59,704.5                                   | -7,322.25                | -14,926.125          | 37,456.125                         |
 
 ### Formular:  
-> - Bonuses = Basic × 4%                             .Example:  `=B2 X 4%`  
+> - Bonuses = Basic × 4%                              Example:  `=B2 X 4%`  
 > - Commission = Basic × 2%                          Example:  `=B2 X 2%`  
 > - Gross Salary = Basic + Bonuses + Commission      Example:  `=B2 + C2 + D2`  
 > - Savings = Basic × -13%                           Example:  `=B2 X -13%`  
