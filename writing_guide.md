@@ -142,8 +142,10 @@ Use these as needed depending on your story type:
 ```
 ## 0: Getting sources/ Inteligence/ Information
 Prompt:
-> What are the key organizations, policies, NGOs, community groups, local activists and public reports linked to [e.g illegal logging in Mau Forest]  
+> What are the key organizations, policies, NGOs, community groups, local activists and public reports linked to [e.g illegal logging in Mau Forest]
+
 **Or**  
+
 > List Kenyan government officials, NGOs, and local activists working on [e.g forest conservation in Narok County]
 
 ## 1: Fact checking & story validation    
