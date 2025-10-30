@@ -1,3 +1,15 @@
+
+# Simple way to calculate employees salary using Excel  
+
+| Staff Name     | Basic Salary | Bonuses (4% of Basic Salary) | Commission (2% of Basic Salary) | Gross Salary (Basic + Bonus + Commission) | Savings (-13% of Basic) | Tax (-25% of Gross) | Net Salary (Gross - Savings - Tax) |
+|----------------|---------------|-------------------------------|----------------------------------|--------------------------------------------|--------------------------|----------------------|------------------------------------|
+| John Doe       | 24,000        | 960                           | 480                              | 25,440                                     | -3,120                   | -6,360               | 15,960                             |
+| Jemimah Ndiu   | 33,400        | 1,336                         | 668                              | 35,404                                     | -4,342                   | -8,851               | 22,211                             |
+| James Sammy    | 56,325        | 2,253                         | 1,126.5                          | 59,704.5                                   | -7,322.25                | -14,926.125          | 37,456.125                         |
+
+
+
+
 Perfect 👍 Thanks for sharing your dataset (`Employee Sample Data`). We’ll use this file step by step as your learning project, following the modules in your Excel course outline. I’ll act like your instructor: for each topic, I’ll give you **a task** and then **exact step-by-step instructions** you can follow directly in Excel using your file.
 
 Let’s begin with **Module 1: Introduction to Microsoft Excel** 🚀
