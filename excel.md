@@ -9,12 +9,17 @@
 
 ### Formular:  
  - Bonuses = Basic × 4%
-   > `Example`:  `=B2 X 4%`  
- - Commission = Basic × 2%                          `Example`:  `=B2 X 2%`  
- - Gross Salary = Basic + Bonuses + Commission      `Example`:  `=B2 + C2 + D2`  
- - Savings = Basic × -13%                           `Example`:  `=B2 X -13%`  
- - Tax = Gross × -25%                               `Example`:  `=B2 X -25%`  
- - Net Salary = Gross + Savings + Tax               `Example`:  `=E2 + F2 + G2`  
+> `=B2 X 4%`  
+ - Commission = Basic × 2%
+> `=B2 X 2%`  
+ - Gross Salary = Basic + Bonuses + Commission
+> `=B2 + C2 + D2`  
+ - Savings = Basic × -13%
+> `=B2 X -13%`  
+ - Tax = Gross × -25%
+> `=B2 X -25%`  
+ - Net Salary = Gross + Savings + Tax
+> `=E2 + F2 + G2`  
 
 Short cut for Auto Sum, select the range you want to sum then, press on the keyboard  `ALT + =`  
 
