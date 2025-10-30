@@ -227,18 +227,19 @@ Copy and use this whenever you want ChatGPT to act like Grammarly Premium 👇
 > 6. Use the active voice where possible.
 > 7. Ensure the Flesch-Kincaid readability score stays below 8.0 unless specified otherwise.
 > 8. Preserve the writer’s intent and meaning — avoid over-rewriting.
-> 9. Provide a short summary of key edits made at the end (like Grammarly’s “suggestions overview”).
-> [Paste your text here]
+> 9. Do not use em dashes (—). Replace them with commas, parentheses, or periods instead.
+> 10. Provide a short summary of key edits made at the end (like Grammarly’s “suggestions overview”).  
+> [Paste your text here]  
 
 ---
 
 ### ✨ Optional Add-ons
-If you want **different styles**, add one of these lines:
+If you want **different styles**, add one of these lines:  
 
-* **For academic tone:** “Ensure tone is formal, objective, and scholarly.”
-* **For business writing:** “Ensure tone is clear, polite, and professional.”
-* **For blog/article:** “Make the tone conversational, engaging, and SEO-friendly.”
-* **For storytelling:** “Enhance emotional flow and narrative rhythm while maintaining grammatical correctness.”
+> * **For academic tone:** “Ensure tone is formal, objective, and scholarly.”
+> * **For business writing:** “Ensure tone is clear, polite, and professional.”
+> * **For blog/article:** “Make the tone conversational, engaging, and SEO-friendly.”
+> * **For storytelling:** “Enhance emotional flow and narrative rhythm while maintaining grammatical correctness.”  
 
 Or  
 
