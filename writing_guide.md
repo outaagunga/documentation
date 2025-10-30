@@ -203,13 +203,8 @@ Prompt:
 📝 *My first section is:* _______________________________________
 Do the same for other preceding sections  
 
-## 4. Editing like Grammarly Pro
-
-Perfect ✅ Here’s a **Grammarly Premium–style editing prompt** you can paste directly into ChatGPT (or save as your go-to refinement prompt). It reproduces the *depth and tone* of Grammarly Premium suggestions — clarity, conciseness, tone, engagement, and correctness all in one.
-
----
-
-### 🧠 Grammarly Premium–Style Editing Prompt
+## 4. Editing like Grammarly Pro  
+🧠 Grammarly Premium–Style Editing Prompt  
 
 Copy and use this whenever you want ChatGPT to act like Grammarly Premium 👇
 
