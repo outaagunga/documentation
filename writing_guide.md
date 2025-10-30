@@ -204,6 +204,44 @@ Prompt:
 Do the same for other preceding sections  
 
 ## 4. Editing like Grammarly Pro
+
+Perfect ✅ Here’s a **Grammarly Premium–style editing prompt** you can paste directly into ChatGPT (or save as your go-to refinement prompt). It reproduces the *depth and tone* of Grammarly Premium suggestions — clarity, conciseness, tone, engagement, and correctness all in one.
+
+---
+
+### 🧠 Grammarly Premium–Style Editing Prompt
+
+Copy and use this whenever you want ChatGPT to act like Grammarly Premium 👇
+
+---
+
+**Prompt:**
+
+> Act as a professional Grammarly Premium editor. Refine the following text for correctness, clarity, conciseness, engagement, and tone.
+> **Editing goals:**
+> 1. Fix all grammar, punctuation, and spelling issues.
+> 2. Improve clarity by simplifying complex sentences and removing redundancy.
+> 3. Maintain natural flow and logical transitions between ideas.
+> 4. Adjust word choice for precision and professionalism.
+> 5. Ensure the tone is [Insert Required tone].
+> 6. Use the active voice where possible.
+> 7. Ensure the Flesch-Kincaid readability score stays below 8.0 unless specified otherwise.
+> 8. Preserve the writer’s intent and meaning — avoid over-rewriting.
+> 9. Provide a short summary of key edits made at the end (like Grammarly’s “suggestions overview”).
+> [Paste your text here]
+
+---
+
+### ✨ Optional Add-ons
+If you want **different styles**, add one of these lines:
+
+* **For academic tone:** “Ensure tone is formal, objective, and scholarly.”
+* **For business writing:** “Ensure tone is clear, polite, and professional.”
+* **For blog/article:** “Make the tone conversational, engaging, and SEO-friendly.”
+* **For storytelling:** “Enhance emotional flow and narrative rhythm while maintaining grammatical correctness.”
+
+Or  
+
 Prompt:
 > “Act as a senior news editor and AP Style (or [Your Style Guide]) expert. Refine the following article for maximum clarity, brevity, and adherence to professional news standards.
 > Crucial Constraints:
