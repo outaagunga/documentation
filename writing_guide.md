@@ -151,7 +151,7 @@ Prompt:
 My Sources are _____________________________
 
 **Then run this prompt to summarize**  
-> Fact-check and summarize the information landscape for “The Rising Voices of Rural Kenya’s Tech Innovators”. Use sources provided below.
+> Fact-check and summarize the information landscape for [Insert search topic]. Use sources provided below.
 > Present the findings in five distinct bulleted sections:
 > 1.	Key Confirmed Facts (cite source type and provide working URL link to access the source or source extract),
 > 2.	Disputed Claims/Misinformation to AVOID,
