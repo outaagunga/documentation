@@ -1,3 +1,100 @@
+
+## 💼 **Preparation Before and During the Interview**
+
+### 🕓 **Before the Interview**
+
+#### 1. **Research the Company**
+
+* Learn what they do, their products, clients, and values.
+* Check their website, social media, and any recent news.
+* Know their **mission** and **how your skills fit** into it.
+
+> 🧠 Tip: Prepare one sentence like —
+> “I admire how your company uses [X strategy] to achieve [Y goal]. I’d love to contribute through [your skill].”
+
+---
+
+#### 2. **Understand the Role**
+
+* Read the job description carefully.
+* Identify the **skills**, **tools**, and **responsibilities** they emphasize.
+* Prepare examples from your past experience showing you can do each.
+
+---
+
+#### 3. **Practice Common Questions**
+
+* “Tell me about yourself.”
+* “Why should we hire you?”
+* “Describe a challenge you faced and how you solved it.”
+* “Where do you see yourself in 3–5 years?”
+
+✅ Use the **STAR Method** (Situation → Task → Action → Result) for clear answers.
+
+---
+
+#### 4. **Prepare Your Own Questions**
+
+At the end, they’ll often ask: *“Do you have any questions for us?”*
+Good examples:
+
+* “What does success in this role look like in the first 3 months?”
+* “Can you describe the team I’d be working with?”
+
+---
+
+#### 5. **Plan Your Look and Logistics**
+
+* Dress appropriately for the company culture (neat and professional).
+* Know your route, or test your internet and camera for online interviews.
+* Bring a copy of your CV/portfolio and a notebook.
+
+---
+
+### 🎤 **During the Interview**
+
+#### 1. **First Impressions Matter**
+
+* Greet confidently: firm handshake or friendly smile.
+* Maintain eye contact.
+* Sit upright and be calm — body language says a lot.
+
+---
+
+#### 2. **Communicate Clearly**
+
+* Listen carefully and don’t rush to answer.
+* Keep answers focused — avoid long tangents.
+* Show enthusiasm and genuine interest.
+
+---
+
+#### 3. **Show Proof of Skill**
+
+* When possible, **refer to real examples** from your portfolio or past projects.
+
+> Example: “In my last role, I used Excel dashboards to reduce reporting time by 30%.”
+
+---
+
+#### 4. **End Strong**
+
+* Thank them for their time.
+* Reaffirm your interest:
+
+  > “I’m really excited about this role and believe my skills in [X] would add value to your team.”
+
+---
+
+### ✅ **After the Interview**
+
+* Send a short **thank-you email** within 24 hours.
+
+  > Example: “Thank you for the opportunity to discuss the [position] role. I’m enthusiastic about contributing to [company name].”
+
+---
+
+
 📈## General / Introductory Questions
 
 ### 1. Tell us about yourself and your background in auditing.  
