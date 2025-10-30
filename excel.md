@@ -9,7 +9,7 @@
 
 ### Formular:  
  - Bonuses = Basic × 4%
-     ```=B2 X 4%```  
+     > `=B2 X 4%`  
  - Commission = Basic × 2%
 > `=B2 X 2%`  
  - Gross Salary = Basic + Bonuses + Commission
