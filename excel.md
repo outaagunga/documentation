@@ -7,6 +7,15 @@
 | Jemimah Ndiu   | 33,400        | 1,336                         | 668                              | 35,404                                     | -4,342                   | -8,851               | 22,211                             |
 | James Sammy    | 56,325        | 2,253                         | 1,126.5                          | 59,704.5                                   | -7,322.25                | -14,926.125          | 37,456.125                         |
 
+E.g:  
+> Bonuses = Basic × 4%                             Example:  `=B2 X 4%`
+> Commission = Basic × 2%                          Example:  `=B2 X 2%`
+> Gross Salary = Basic + Bonuses + Commission      Example:  `=B2 + C2 + D2`
+> Savings = Basic × -13%                           Example:  `=B2 X -13%`
+> Tax = Gross × -25%                               Example:  `=B2 X -25%`
+> Net Salary = Gross + Savings + Tax               Example:  `=E2 + F2 + G2`
+
+Short cut for Auto Sum, select the range you want to sum then, press on the keyboard  `ALT + =`  
 
 
 
