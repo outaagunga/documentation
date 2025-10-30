@@ -175,7 +175,7 @@ AI response is ____________________
 
 ## 2: Outline Generation    
 Prompt:
-> “Act as a professional news editor specializing in digital content and SEO. Create a detailed, journalistic story outline for a [type of story: breaking/feature/analysis] on [topic].
+> “Act as a professional news editor specializing in digital content and SEO. Create a detailed, journalistic story outline for a [type of story: breaking/feature/analysis] on [topic] with key elements of [Insert your elements].
 > The outline must include:
 > 1. Clickable Headline Options (one must be SEO-optimized with the target keyword: [Insert Keyword]),
 > 2. 5-7 H2 Subheadings (must be descriptive and SEO-friendly),
