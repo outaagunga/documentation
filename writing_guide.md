@@ -226,6 +226,9 @@ Copy and use this whenever you want ChatGPT to act like Grammarly Premium 👇
 > 10. Provide a short summary of key edits made at the end (like Grammarly’s “suggestions overview”).  
 > [Paste your text here]  
 
+**Removing redundancy in paragraph:**  
+> Rewrite this paragraph to remove redundancy, use active voice, and preserve the original meaning and intent  
+
 ---
 
 ### ✨ Optional Add-ons
