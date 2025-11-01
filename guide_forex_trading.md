@@ -863,5 +863,293 @@ Crash 1000, Boom 1000, Crash 500, Boom 500, and Crash/Boom 300.
 * Always follow your **plan, not your emotions.**
 
 ---
+Mar Adek  
+# Trading Plan — Step by Step (Daily-candle entry method)
+
+Below is a compact, practical trading plan you can follow every day. It converts the classroom transcript into a repeatable process: **mark the daily candle close → use lower-timeframe structure (imbalances / break & retest) → enter, size, and manage the trade**.
+
+---
+
+## 1) Daily routine (what you do once per day)
+
+1. At daily candle close (your platform/timezone) **mark the previous daily candle’s close** (draw a horizontal line at the close price).
+2. Note whether that daily candle was **bullish** or **bearish**.
+
+   * **Bullish daily candle** → expect moves **above** the close to be sell zones and **below** the close to be buy zones (per the instructor’s rule: bullish candle forms low → high).
+   * **Bearish daily candle** → expect moves **above** the close to be sell zones and **below** the close to be buy zones (bearish opens, creates high, then low).
+     *(Short version: mark the daily close — then look for lower-TF confirmation above/below that level depending on candle direction.)*
+3. Switch to a lower timeframe (5-min or 15-min). Look for **structure** around the daily-close line:
+
+   * Break of Structure (BOS) + retest
+   * Imbalance (unfilled wick / gap of candles) — open of imbalance is a high-probability entry area
+   * A clear 1-2-3 reversal pattern or higher-timeframe aligned retest
+
+---
+
+## 2) Entry rules (exact conditions to take a trade)
+
+Follow **all** of these before taking a trade:
+
+1. **Daily filter** — Marked daily candle close. Identify direction (bull / bear).
+2. **Trade direction rule**:
+
+   * If daily candle closed **bullish** → look to **buy** on **retrace below** that daily close (price must form a buy structure below the close).
+   * If daily candle closed **bearish** → look to **sell** on **move above** that daily close (price must form a sell structure above the close).
+3. **Lower-TF confirmation (required)** — one of:
+
+   * BOS on lower TF followed by a retest and rejection (wick + bearish/bullish rejection candle).
+   * Open-of-imbalance entry (price returns to the imbalance/open then shows rejection).
+   * 1-2-3 reversal with clear S/R and structure alignment.
+4. **Entry candle confirmation** — enter on the first clean candle showing directional conviction (e.g., engulfing, bullish/bearish close with momentum) after the retest/rejection.
+5. **No entry if**: structure contradicts the daily filter, or price is inside a congested zone without a clear imbalance or retest.
+
+---
+
+## 3) Stop loss and take profit rules
+
+1. **Stop Loss (SL)**: place SL logically — one of:
+
+   * Above/below the swing high/low used for the BOS/retest.
+   * Above/below the imbalance zone that you used for entry (a few pips beyond the zone).
+   * **Never** set SL arbitrarily — it must match structure.
+2. **Targets / Take Profit (TP)**:
+
+   * **TP1 = 1R** (risk amount) — take partial profits (for example 50%) at 1R.
+   * **TP2 = 2R or 3R** — trail the rest, or use a running ATR-based trailing stop.
+   * Alternatively, use the next logical S/R on a higher TF as TP.
+3. **Minimum accepted R:R**: aim for at least **1:1** and prefer **1:2+** setups. If the setup only gives <1:1, skip.
+
+---
+
+## 4) Position sizing (exact formula + worked example)
+
+**Position size formula (USD example):**
+
+1. `Account Risk $ = Account Balance × Risk%`
+2. `Dollar risk per unit = StopLoss (pips) × PipValue (per 1.00 lots)`
+3. `Lots to trade = Account Risk $ ÷ Dollar risk per unit`
+
+**Worked example — compute step by step (digit-by-digit arithmetic shown):**
+
+* Account balance = **$1,000**.
+* Risk per trade = **1%** → `Account Risk $ = 1000 × 0.01 = 10`.
+
+  * (1000 × 0.01: 1000 × 0.01 = 10)
+* Stop Loss = **25 pips**.
+* Assume pip value for **0.01 lot** (micro-lot) = **$0.10** (common for USD-quoted pairs). Then:
+
+  * Dollar risk per **0.01 lot** = `25 pips × $0.10 = $2.50`.
+
+    * (25 × 0.10 = 2.50)
+  * How many 0.01 lots? `Account Risk $ ÷ Dollar risk per 0.01 lot = 10 ÷ 2.5 = 4`.
+
+    * (10 ÷ 2.5 = 4)
+  * So 4 × 0.01 lot = **0.04 standard lots**.
+* **Result:** trade **0.04 lots** to risk $10 with a 25-pip SL.
+
+> ⚠️ Notes: pip value depends on instrument and broker. Use your broker’s lot→pip calculator or spreadsheet to compute exact sizing for that instrument. The formula above is universal.
+
+---
+
+## 5) Trade management rules (after entry)
+
+1. Take **partial profit at TP1 (1R)** — e.g., close 50% of position. Move SL to breakeven + 1–2 pips.
+2. Let the remainder run to TP2 (2R/3R) or trail with ATR (e.g., trail when price moves 1R by using 0.5×ATR as stop).
+3. If price hits breakeven after partial take, consider moving SL to a level that secures a small profit for the remaining size (e.g., +0.5R).
+4. If price action invalidates the trade structure (unexpected BOS against you), exit immediately even before SL.
+
+---
+
+## 6) Risk & money management rules (daily/monthly limits)
+
+1. **Max risk per trade:** 1% of account (adjust to 0.5% for conservative approach).
+2. **Max daily drawdown stop:** 3% of account (if reached, stop trading for the day).
+3. **Max open trades:** 2–3 (avoid overleveraging).
+4. **Max correlated exposure:** If trades are correlated (same pair direction), reduce combined risk.
+
+---
+
+## 7) Examples (concise)
+
+### Bullish daily candle example (buy setup)
+
+1. Daily candle closed **bullish** — mark close at 1.2500.
+2. On 5-min, price retraces **below** 1.2500 and forms BOS on 15-min, then retests and shows bullish rejection.
+3. Entry: buy at 1.2470 (retest rejection). SL: 1.2430 (40 pips below entry). TP1: 1.2510 (40 pips → 1R). TP2: 1.2590 (2R).
+4. Size per position sizing rules.
+
+### Bearish daily candle example (sell setup)
+
+1. Daily candle closed **bearish** — mark close at 1.3500.
+2. On 5-min, price rallies **above** 1.3500 then forms a market structure top and fails a retest.
+3. Entry: sell at 1.3520. SL: 1.3560 (40 pips). TP1: 1.3480 (40 pips → 1R). TP2: 1.3400 (2R).
+
+---
+
+## 8) Pre-market checklist (quick before taking any trade)
+
+* [ ] Daily candle close marked.
+* [ ] Direction: bullish / bearish (daily).
+* [ ] Lower-TF structure aligned (BOS + retest, imbalance, or 1-2-3).
+* [ ] Entry candle shows rejection/conviction.
+* [ ] SL placed logically (swing/imbalance).
+* [ ] Position size computed per risk rules.
+* [ ] TP1 and TP2 defined.
+* [ ] Journal fields ready (see template below).
+
+---
+
+## 9) Trade journal template (fields to record each trade)
+
+* Date / Time
+* Instrument / Pair
+* Daily candle direction (Bull/Bear)
+* Daily close price (level)
+* Lower TF used (5m / 15m)
+* Entry price
+* Stop loss price & pips
+* Position size (lots)
+* Risk $ / % of account
+* TP1 / TP2 (prices & pips)
+* Result (TP1, TP2, SL, manual exit)
+* R:R achieved
+* Notes: reason for entry, what went right/wrong
+
+---
+
+## 10) Weekly review process
+
+* Each week, review **all trades** in the journal.
+* Calculate win rate, average R:R, expectancy: `Expectancy = (Win% × AvgWin) − (Loss% × AvgLoss)`.
+* If expectancy < 0, lower risk, tighten rules, and backtest the method again.
+
+---
+
+## 11) Quick rules summary (TL;DR)
+
+1. **Mark daily close** every day.
+2. **Trade direction**: bullish daily → look to buy **below** the close; bearish daily → look to sell **above** the close.
+3. **Confirm on lower TF** with BOS + retest, imbalance open, or 1-2-3.
+4. **SL** must be logical (swing/imbalance). **Risk ≤ 1%** per trade.
+5. **TP1 at 1R**, take partial, trail remainder to 2R+.
+6. **Journal every trade** and review weekly.
+
+---
+
+If you want, I can:
+
+* Turn this into a one-page printable checklist/PDF, or
+* Produce a filled example trade (with chart sketches) to show the exact markings and entry/SL/TP placements.
+
+Which would you like next?
+
+Mar Angwen  
+Alright — that was a **lot** of information to process, so let’s break it down clearly.
+This teacher was explaining a **daily candle trading method** — basically, how to use the daily candlestick to plan intraday entries (usually on the 5-minute chart).
+
+---
+
+## 🔹 Step 1: Understand Candle Structure
+
+Every candlestick — no matter the timeframe — has four key points:
+
+* **Open** – where the candle starts.
+* **High** – the highest price reached during the candle.
+* **Low** – the lowest price reached during the candle.
+* **Close** – where the candle ends.
+
+The order in which these are created depends on whether the candle ends up bullish or bearish:
+
+| Type               | Order of Formation                                                                                            | Meaning                                |
+| ------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| **Bullish candle** | 1️⃣ Opens → 2️⃣ Moves down to make the **Low** → 3️⃣ Moves up to make the **High** → 4️⃣ Closes at the top    | Candle ends green (price rose overall) |
+| **Bearish candle** | 1️⃣ Opens → 2️⃣ Moves up to make the **High** → 3️⃣ Moves down to make the **Low** → 4️⃣ Closes at the bottom | Candle ends red (price fell overall)   |
+
+---
+
+## 🔹 Step 2: Why This Matters for Daily Candles
+
+When the **daily candle closes at midnight (or 1 AM for synthetic indices)**, a new daily candle begins.
+The idea is that the new daily candle will **first move in the opposite direction** to create its wick (low or high), **then go in its true direction** for the day.
+
+So:
+
+* If the new day will be **bullish**, price usually dips first → creates the **low of the day** → then moves upward.
+* If the new day will be **bearish**, price usually spikes up first → creates the **high of the day** → then drops.
+
+This “first move opposite the final direction” helps you time early entries.
+
+---
+
+## 🔹 Step 3: Mark the Daily Candle’s **Closing Price**
+
+When the daily candle closes:
+
+* Draw a horizontal line at the **closing price**.
+
+That line is your **reference point** for the next day.
+
+---
+
+## 🔹 Step 4: The Core Trading Rule
+
+Once you’ve marked the **previous day’s closing price**, watch how the new daily candle behaves:
+
+| Previous Candle | What to Look For                                                        | Trade Zone                               |
+| --------------- | ----------------------------------------------------------------------- | ---------------------------------------- |
+| **Bullish**     | The next candle will likely dip below the close to form the day’s low   | Look for **buy setups below** the close  |
+| **Bearish**     | The next candle will likely rise above the close to form the day’s high | Look for **sell setups above** the close |
+
+This works because the market tends to “wick” in the opposite direction before continuing the main move.
+
+---
+
+## 🔹 Step 5: Drop to a Lower Timeframe (like 5 min)
+
+On the 5-minute chart, you look for confirmation patterns (“model formations”) **around the daily close level**:
+
+* **Break of structure (BoS)**
+* **Liquidity sweep**
+* **Imbalance fill**
+* **Retest of order block / fair value gap**, etc.
+
+These small-timeframe confirmations give you a tight entry with a small stop loss (maybe 4–6 pips).
+
+---
+
+## 🔹 Step 6: Trade Management
+
+Once your entry is confirmed:
+
+* Place stop loss just above/below the structure.
+* Aim for a **1:3 risk-to-reward ratio** (risk 1 unit to make 3 units).
+
+You don’t need to hold all day — the method is designed to catch the “wick” or main leg of the daily candle.
+
+---
+
+## 🔹 Step 7: Practical Example
+
+Let’s say yesterday’s daily candle was **bullish** and closed at 1.2500.
+
+* At 1 AM, a new candle opens at 1.2500.
+* Price dips to 1.2480 (below the close) → forms the low of the day.
+* On 5-minute chart, you spot a **break of structure upward** and a small **imbalance** around 1.2480.
+* You **buy at 1.2485**, stop loss 1.2475, target 1.2520 (1:3 R:R).
+* Price rallies → your trade rides the daily candle’s bullish move.
+
+---
+
+## 🔹 Step 8: Key Takeaways
+
+✅ Every candle has open, high, low, close — formation order matters.
+✅ The daily candle often starts by moving *opposite* the final direction.
+✅ Mark the **daily close** line to guide your intraday bias.
+✅ Use 5-minute confirmations to enter precisely.
+✅ Aim for clean 1:3 trades — no need to chase every candle.
+
+---
+
+Would you like me to make a **simple diagram** that visually shows how the bullish and bearish daily candle form and how the entries are taken (so it’s easier to remember)?
 
 
