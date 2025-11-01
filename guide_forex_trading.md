@@ -748,82 +748,120 @@ Would you like me to turn this plan into a **visual trading checklist** or **PDF
 It would include sample charts, step summaries, and space for notes/journals.
 
 
-```
-### 📈 Step 1: Analyze the Market Structure
+Mar Ariyo  
 
-First, let’s move to the **weekly timeframe** to understand the *overall market direction.*
-As you can see, Crash 1000 has been in a **bearish trend** for quite some time — since around April 2021.
+## 🧠 “Previous Two-Day Low” Reversal Trading Plan
 
-But what’s more important is the **current structure**.
-Right now, the market is forming what looks like a **bearish flag pattern**, which usually signals a possible breakout or change in direction.
+### 🎯 Goal
 
-Let’s mark out this structure using **two trendlines** — one on the resistance side (top) and one on the support side (bottom).
-This helps us visualize where the price has been bouncing between.
+Trade market reversals on Crash/Boom indices using daily structure levels and 15-minute confirmation patterns for high-probability, low-stress setups.
 
 ---
 
-### 🧭 Step 2: Focus on the Daily Timeframe
+### 🪜 Step 1: Determine Overall Market Bias (Weekly Timeframe)
 
-Now, let’s switch to the **daily timeframe** — this is where our main strategy lives.
+**Objective:** Identify the dominant trend and potential reversal zones.
 
-What we’re interested in is the **low of the previous two daily candlesticks.**
-These lows often act as **support zones** on lower timeframes — especially around the candle wicks.
+**Checklist:**
 
-Here’s the logic:
+* Switch to **Weekly timeframe (W1)**.
+* Observe if price is in a **bullish trend**, **bearish trend**, or **range**.
+* Identify any **flag, channel, or wedge pattern** forming.
+* Draw **two trendlines** (one on resistance, one on support) to define the channel.
+* Mark potential **reversal zones** where price might react next.
 
-* The *low of the previous two days* marks where buyers previously stepped in.
-* When price revisits that level, it often reacts again — either bouncing up or breaking through.
-
-So, we simply **draw a horizontal line** at that previous two-day low, and wait for price to come back and test it.
-
----
-
-### ⏳ Step 3: Wait for Confirmation on the 15-Minute Chart
-
-This part is key.
-Once price approaches your marked level, move down to the **15-minute timeframe** and watch for a **reversal confirmation pattern.**
-
-Look for:
-
-* A **pin bar** (rejection candle)
-* A **bearish or bullish engulfing pattern**
-* A **double top or head-and-shoulders formation**
-
-These are your signals that the market might be reversing from that zone.
-
-For example, in one of our setups, the daily candle hit the previous two-day low and, on the 15-minute chart, formed a **bullish pin bar**.
-Immediately after that, price spiked up strongly — confirming the buy setup.
+**Rule:** Trade only in the direction of potential reversals near major support/resistance.
 
 ---
 
-### 💡 Step 4: Execute the Trade
+### 🪜 Step 2: Mark Key Levels (Daily Timeframe)
 
-Once you see the confirmation:
+**Objective:** Locate the “Previous Two-Day Low” — the foundation of this strategy.
 
-* Enter your trade in the direction of the reversal (Buy or Sell).
-* Place your **stop loss** just below the rejection wick (for buys) or above it (for sells).
-* Set your **take profit** around the next major high or low.
+**Checklist:**
 
-You’ll notice this setup repeats itself on **Crash 1000, Boom 1000, Crash 500, Boom 500**, and even **Crash/Boom 300**.
-You don’t have to trade every day — just wait for clean setups.
+* Switch to **Daily timeframe (D1)**.
+* Identify and mark the **lows of the previous two candles**.
+* Draw a **horizontal line** at the lowest of those two points.
+* Note that this level acts as a **potential support or resistance** zone.
 
-Two solid trades per week using this strategy can give you *steady, low-stress profits.*
+**Logic:**
+
+> These previous lows often mark where institutional buyers or sellers were active — meaning price may react again when revisiting the zone.
 
 ---
 
-### 💭 Step 5: Practice and Mastery
+### 🪜 Step 3: Drop to Lower Timeframe for Confirmation (15-Minute Chart)
 
-Trading doesn’t have to be complicated.
-This strategy is **simple, repeatable, and beginner-friendly.**
-But you’ll only master it through **practice and patience.**
+**Objective:** Wait for price action confirmation before entering any trade.
 
-Spend time every morning checking your charts:
+**Checklist:**
 
-* Mark the previous two-day low
-* Wait for price to reach it
-* Watch for confirmation on the 15-minute chart
-* Execute with discipline
+* Switch to **15-Minute (M15)** timeframe once price reaches your daily level.
+* Look for **reversal patterns**, such as:
 
-That’s it. No fancy indicators — just pure market structure and price action.
-```
+  * ✅ Pin Bar (rejection wick)
+  * ✅ Bullish/Bearish Engulfing
+  * ✅ Double Top/Bottom
+  * ✅ Head-and-Shoulders or Inverted H&S
+* Confirm that **momentum slows** and **price rejects** the zone.
+
+**Rule:**
+Do **not** enter immediately when price touches the level — always wait for a clear reversal signal.
+
 ---
+
+### 🪜 Step 4: Execute the Trade
+
+**Objective:** Enter with discipline, manage risk, and lock in profits.
+
+**Execution Steps:**
+
+* **Entry:** Place a buy/sell order after confirmation candle closes.
+* **Stop Loss (SL):**
+
+  * For Buys → below the rejection wick.
+  * For Sells → above the rejection wick.
+* **Take Profit (TP):**
+
+  * At the next **key swing high/low** or **1:2 risk-reward** level.
+* **Risk:** Limit each trade to **1–2% of account balance.**
+* **Optional:** Move SL to breakeven once price moves 1:1 in your favor.
+
+**Pairs/Markets:**
+Crash 1000, Boom 1000, Crash 500, Boom 500, and Crash/Boom 300.
+
+---
+
+### 🪜 Step 5: Review, Journal, and Improve
+
+**Objective:** Build confidence and consistency through reflection.
+
+**After Each Trade:**
+
+* Record the trade details:
+
+  * Pair/Asset traded
+  * Entry and exit price
+  * Reason for entry (pattern, structure)
+  * Result (+/– pips or %)
+* Take screenshots of the setup.
+* Note what worked and what didn’t.
+
+**Weekly Routine:**
+
+* Review all trades for patterns or repeated mistakes.
+* Refine entry confirmations and timing.
+
+---
+
+### 💡 Pro Tips
+
+* Trade **quality, not quantity** — two clean trades per week are enough.
+* Avoid high-volatility periods (major news events).
+* Stick to the **same assets** to understand their behavior.
+* Always follow your **plan, not your emotions.**
+
+---
+
+
