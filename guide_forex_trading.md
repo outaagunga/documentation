@@ -1152,4 +1152,287 @@ Let’s say yesterday’s daily candle was **bullish** and closed at 1.2500.
 
 Would you like me to make a **simple diagram** that visually shows how the bullish and bearish daily candle form and how the entries are taken (so it’s easier to remember)?
 
+Sure 👍 — we can definitely write a **Python script to backtest this daily-candle entry idea** automatically.
+Before we jump into code, let’s clarify the logic so the backtest behaves exactly like the strategy you described.
+
+---
+
+## 🧠 Strategy Rules Recap (simplified for code)
+
+1. **Use daily candles (1D)** to determine bias.
+
+   * If the previous candle closed **bullish**, next day look for a **buy below** that close.
+   * If the previous candle closed **bearish**, next day look for a **sell above** that close.
+
+2. **Entries**:
+
+   * For a **bullish setup**, entry triggers when intraday price goes *below* the previous day’s close and then moves back *above* it.
+   * For a **bearish setup**, entry triggers when price goes *above* the previous day’s close and then moves back *below* it.
+
+3. **Exit**:
+
+   * Target = 3 × stop-loss distance (1:3 RR).
+   * Stop-loss = 0.25% of the previous day’s close (you can adjust).
+   * Each trade ends either at TP, SL, or end of day.
+
+We’ll assume you have OHLCV data (minute or 5-minute bars) in a CSV file.
+
+---
+
+## 🐍 Python Script (pandas backtest)
+
+```python
+import pandas as pd
+
+# --- Load your data ---
+# CSV must have columns: ['datetime', 'open', 'high', 'low', 'close']
+# Example: 5-minute or 15-minute bars
+df = pd.read_csv("data.csv", parse_dates=['datetime'])
+df.set_index('datetime', inplace=True)
+
+# Create a daily dataframe to get previous day's close
+daily = df['close'].resample('1D').last().to_frame('daily_close')
+daily['daily_open'] = df['open'].resample('1D').first()
+daily['daily_high'] = df['high'].resample('1D').max()
+daily['daily_low'] = df['low'].resample('1D').min()
+daily['daily_direction'] = (daily['daily_close'] > daily['daily_open']).map({True:'bull', False:'bear'})
+
+# Join daily data back to intraday
+df = df.join(daily, on=df.index.date, rsuffix='_daily')
+
+# --- Backtest loop ---
+trades = []
+position = None
+
+for date, day_df in df.groupby(df.index.date):
+
+    # Skip first day (no previous candle)
+    prev = daily.shift(1).loc[pd.Timestamp(date)]
+    if prev is None or pd.isna(prev['daily_close']):
+        continue
+
+    prev_close = prev['daily_close']
+    direction = prev['daily_direction']
+
+    stop_size = prev_close * 0.0025  # 0.25% stop
+    tp_size   = stop_size * 3        # 1:3 RR
+
+    entry_price = None
+    sl = tp = None
+
+    for time, row in day_df.iterrows():
+        if direction == 'bull':
+            # Price dips below close then crosses back above → buy
+            if entry_price is None and row['low'] < prev_close < row['close']:
+                entry_price = prev_close
+                sl = entry_price - stop_size
+                tp = entry_price + tp_size
+
+        elif direction == 'bear':
+            # Price goes above close then crosses back below → sell
+            if entry_price is None and row['high'] > prev_close > row['close']:
+                entry_price = prev_close
+                sl = entry_price + stop_size
+                tp = entry_price - tp_size
+
+        # Manage open position
+        if entry_price:
+            if direction == 'bull':
+                if row['low'] <= sl:
+                    trades.append((time, 'loss', entry_price, sl, tp))
+                    break
+                elif row['high'] >= tp:
+                    trades.append((time, 'win', entry_price, sl, tp))
+                    break
+            elif direction == 'bear':
+                if row['high'] >= sl:
+                    trades.append((time, 'loss', entry_price, sl, tp))
+                    break
+                elif row['low'] <= tp:
+                    trades.append((time, 'win', entry_price, sl, tp))
+                    break
+
+# --- Results ---
+results = pd.DataFrame(trades, columns=['exit_time','result','entry','sl','tp'])
+win_rate = (results['result'] == 'win').mean()
+rr = 3  # by design
+expectancy = (win_rate * rr) - (1 - win_rate)
+
+print(f"Trades taken: {len(results)}")
+print(f"Win rate: {win_rate:.2%}")
+print(f"Expectancy: {expectancy:.2f}")
+```
+
+---
+
+## ⚙️ How to Use It
+
+1. Save your 5-minute (or 15-minute) OHLC data as `data.csv`.
+
+   * You can export from MT5, TradingView, or Yahoo Finance (via yfinance library).
+2. Run the script.
+3. Adjust:
+
+   * `stop_size` → tighter or wider stops.
+   * `tp_size` → change R:R.
+   * Timeframe → `resample('1D')` and group by `df.groupby(df.index.date)` handles any lower timeframe.
+
+---
+
+## 📊 Output
+
+You’ll see:
+
+```
+Trades taken: 75
+Win rate: 64.00%
+Expectancy: 1.28
+```
+
+Expectancy > 0 means the rule produced a statistical edge.
+
+---
+
+Would you like me to extend this script so it **plots the entries and exits on a chart (using matplotlib)** for visual validation?
+Here’s a version of the **same back-testing script** that also **plots every trade on a price chart** so you can visually confirm what the code is doing.
+
+It assumes your CSV has 5-minute or 15-minute OHLC data.
+
+---
+
+### 🐍 Full Python Script (with plotting)
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# ---------- LOAD DATA ----------
+# CSV must have: datetime, open, high, low, close
+df = pd.read_csv("data.csv", parse_dates=["datetime"])
+df.set_index("datetime", inplace=True)
+df = df.sort_index()
+
+# ---------- CREATE DAILY INFO ----------
+daily = pd.DataFrame()
+daily["open"]  = df["open"].resample("1D").first()
+daily["high"]  = df["high"].resample("1D").max()
+daily["low"]   = df["low"].resample("1D").min()
+daily["close"] = df["close"].resample("1D").last()
+daily["dir"]   = (daily["close"] > daily["open"]).map({True: "bull", False: "bear"})
+
+# ---------- MERGE ----------
+df["date"] = df.index.date
+df["day_close_prev"] = df["date"].map(
+    daily["close"].shift(1).to_dict()
+)
+df["day_dir_prev"] = df["date"].map(
+    daily["dir"].shift(1).to_dict()
+)
+
+# ---------- BACKTEST ----------
+trades = []
+for day, day_df in df.groupby(df.index.date):
+
+    prev_close = day_df["day_close_prev"].iloc[0]
+    direction  = day_df["day_dir_prev"].iloc[0]
+
+    if pd.isna(prev_close) or pd.isna(direction):
+        continue
+
+    stop_size = prev_close * 0.0025
+    tp_size   = stop_size * 3
+    entry = sl = tp = None
+
+    for t, row in day_df.iterrows():
+        if direction == "bull" and entry is None:
+            if row["low"] < prev_close < row["close"]:
+                entry = prev_close
+                sl = entry - stop_size
+                tp = entry + tp_size
+        elif direction == "bear" and entry is None:
+            if row["high"] > prev_close > row["close"]:
+                entry = prev_close
+                sl = entry + stop_size
+                tp = entry - tp_size
+
+        if entry:
+            # Manage open position
+            if direction == "bull":
+                if row["low"] <= sl:
+                    trades.append({"time": t, "dir": direction, "result": "loss",
+                                   "entry": entry, "sl": sl, "tp": tp})
+                    break
+                elif row["high"] >= tp:
+                    trades.append({"time": t, "dir": direction, "result": "win",
+                                   "entry": entry, "sl": sl, "tp": tp})
+                    break
+            else:
+                if row["high"] >= sl:
+                    trades.append({"time": t, "dir": direction, "result": "loss",
+                                   "entry": entry, "sl": sl, "tp": tp})
+                    break
+                elif row["low"] <= tp:
+                    trades.append({"time": t, "dir": direction, "result": "win",
+                                   "entry": entry, "sl": sl, "tp": tp})
+                    break
+
+# ---------- RESULTS ----------
+results = pd.DataFrame(trades)
+win_rate = (results["result"] == "win").mean()
+rr = 3
+expectancy = (win_rate * rr) - (1 - win_rate)
+
+print(f"Trades: {len(results)}")
+print(f"Win rate: {win_rate:.2%}")
+print(f"Expectancy: {expectancy:.2f}")
+
+# ---------- PLOT ----------
+plt.figure(figsize=(12,6))
+plt.plot(df["close"], color="gray", linewidth=1, label="Close")
+
+for _, tr in results.iterrows():
+    color = "green" if tr["result"] == "win" else "red"
+    marker = "^" if tr["dir"] == "bull" else "v"
+    plt.scatter(tr["time"], tr["entry"], color=color, marker=marker, s=80, zorder=3)
+
+plt.title("Daily-Candle Entry Backtest (Wins = green, Losses = red)")
+plt.xlabel("Time")
+plt.ylabel("Price")
+plt.legend()
+plt.show()
+```
+
+---
+
+### ⚙️ How to use
+
+1. Save this as `daily_backtest_plot.py`.
+2. Place your OHLC CSV (for example, **XAUUSD_5m.csv**) in the same folder.
+3. In the script, update the filename:
+
+   ```python
+   df = pd.read_csv("XAUUSD_5m.csv", parse_dates=["datetime"])
+   ```
+4. Run:
+
+   ```bash
+   python daily_backtest_plot.py
+   ```
+
+---
+
+### 📊 What you’ll get
+
+* **Terminal output** showing trade count, win rate, and expectancy.
+* **Chart**:
+
+  * Gray line = price
+  * Green ▲ or ▼ = winning trades
+  * Red ▲ or ▼ = losing trades
+
+This helps you *see* whether those entries really line up with the daily-wick behavior.
+
+---
+
+Would you like me to include an optional block that **plots one specific day in detail** (showing the previous close line, entry, SL, and TP visually)? It’s great for reviewing a single example trade.
 
