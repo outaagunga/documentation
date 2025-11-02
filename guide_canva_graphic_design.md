@@ -106,4 +106,9 @@
 * Google Image FX = Backup Images
   By following these steps, you can create professional short videos — educational, storytelling, or promotional — in just a few hours.
 
+---  
+**Prompt to Generate passport size photo using AI**
+> "Passport-style headshot of a Kenyan middle-aged man (approximately 40–55 years old), dark brown skin, short well-groomed hair, neutral expression, eyes open and looking straight at camera, natural skin texture, no facial hair or light trimmed moustache allowed, wearing a plain collared shirt. Plain, even, light background (soft off-white or light grey), no shadows on face or background, soft frontal lighting, even exposure. Head and shoulders visible, head centered and upright, natural skin tones, high resolution, photorealistic, studio-quality, 3:4 aspect ratio, minimal retouching — keep realistic details. Negative: no glasses, no hats, no jewelry, no heavy makeup, no props, no background objects, no artistic filters, no dramatic lighting."  
+
 ---
+
