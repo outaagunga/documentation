@@ -130,16 +130,7 @@ Prompt:
 ---
 **Getting Grammarly Pro–level editing results using AI**  
 
-Perfect — here’s a **universal, flexible refinement prompt** you can use for *any* type of writing (feature, blog, report, story, essay, etc.) while meeting all your goals.
-
-You can copy-paste it directly before your text whenever you want top-tier results 👇
-
----
-
-### 🌟 **Universal AI Writing Refinement Prompt**
-
-**Prompt:**
-
+**Prompt:**  
 > Act as a professional editor and writing coach. Refine the following text for **grammar, fluency, clarity, engagement, and delivery**, while maintaining the original intent and voice.
 > **Editing Guidelines:**  
 > 1. Correct all grammar, punctuation, and spelling issues.
