@@ -130,6 +130,31 @@ Prompt:
 ---
 **Getting Grammarly Pro–level editing results using AI**  
 
+Perfect — here’s a **universal, flexible refinement prompt** you can use for *any* type of writing (feature, blog, report, story, essay, etc.) while meeting all your goals.
+
+You can copy-paste it directly before your text whenever you want top-tier results 👇
+
+---
+
+### 🌟 **Universal AI Writing Refinement Prompt**
+
+**Prompt:**
+
+> Act as a professional editor and writing coach. Refine the following text for **grammar, fluency, clarity, engagement, and delivery**, while maintaining the original intent and voice.
+> **Editing Guidelines:**  
+> 1. Correct all grammar, punctuation, and spelling issues.
+> 2. Use **active voice** and ensure sentences flow naturally.
+> 3. Simplify wording for a **Flesch-Kincaid Grade Level of 8.0 or below** (clear, easy-to-read language).
+> 4. Keep paragraphs **no longer than 2–3 lines each**.
+> 5. **Avoid em dashes (—)**; replace them with commas, semicolons, or periods for smoother flow.
+> 6. Improve tone, rhythm, and readability for **better engagement and impact**.
+> 7. Adapt tone and structure naturally to fit the **context and goal** of the writing (feature, blog, academic, report, narrative, etc.) with the following elements [insert your elements].
+> 8. Preserve factual accuracy and key details—only improve presentation and readability.  
+> [Paste your text here]
+
+
+Or  
+
 **Prompt:**  
 >"Act as a professional, senior copy editor and writing coach with expertise in [e.g academic writing or blog writing]. Your goal is to refine the following text to achieve maximum clarity, impact, and professionalism. Perform a comprehensive multi-pass edit, specifically focusing on the following areas. Present your revisions first as a single, fully-edited final draft, and then provide a list of your top 5 most significant changes and the reasoning for each:  
 >1.	Clarity & Conciseness: Ruthlessly eliminate all wordiness, jargon, filler words, and clichés. Rephrase complex or tangled sentences to be direct and easy to understand.
