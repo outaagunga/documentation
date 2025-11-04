@@ -3,35 +3,51 @@
 ### My Writing **Outline** Template    
 - Topic ______________  
 - Target Audience _______________  
-- Geography (e.g Kenya or Global) _____________  
+- Geography (e.g Kenya or Global) _____________
+- Search Intent (e.g why do people search this .... it is for Information/ Transaction e.tc) _______________  
+- My Goal/ Purpose is to (e.g educate, sell, entertain) _____________ 
   
 Title (Primary Keyword)
 Introduction
 - Hook (analogy/anecdotal, question, statistics)
-- Pain point
-- Promise/value
+- Pain point (define the problem)
+- Show empathy
+- Promise/value (what will they gain after reading this)
 - Transition
 
-H2 #1 (Semantic keyword)
+H2 #1 Understanding (Semantic keyword)
 - 2–3 paragraphs
 - H3: Supporting example
 - H3: Data or expert reference
+- Key takeaway  
 
-H2 #2 (Semantic keyword variation)
+H2 #2 How to/ Steps (Semantic keyword variation)
 - Bullets, visuals, practical insights
+- Key takeaway
 
-H2 #3 (User intent questions)
-- Structured answers
+H2 #3 (User intent questions/ Common Challenges)
+- Structured answers (QA format)
+- Key takeaway  
 
-H2 #4 Case studies / Local relevance / Tools / Steps
+H2 #4 Case studies / Local relevance / Tools / Implementations
+- Real Examples
+- Key takeaway  
 
-Conclusion
-- Short recap
+Conclusion  
+- Recap key insights
+- Reaffirm reader benefit
+- Optional reflective question
 - CTA
 
 FAQs (schema-friendly)
 - Q1…
 - Q2…
+
+SEO Final Touches  
+- Meta title:
+- Meta description:
+- Internal links:
+- External links:
 ```
 
 
