@@ -649,3 +649,27 @@ Refine the following article for maximum clarity, brevity, and adherence to prof
 ---
 
 
+## Prompt to search for any information related to a new topic | Topic Mawendo | Manyien    
+
+**1. Role and Objective Setting (Establish the Mission)**  
+
+> Act as a **forensic information archaeologist** tasked with uncovering all possible, even tangential, data related to the topic: **`[Insert your new/obscure topic here]`**.  
+> My goal is to gather a comprehensive, multi-faceted body of information, regardless of initial source credibility, for later personal verification and synthesis.  
+> Perform a broad-spectrum search for information related to the topic, categorizing the findings into the following buckets. If direct results are non-existent, search for the **closest related concepts, precursors, or parallel developments**.  
+> * **Associated People/Groups:** Who are the key individuals, founding members, or organizations/communities associated with this topic?
+> * **Terminology/Jargon:** What are the specialized terms, acronyms, or unique phrases used in relation to this topic?
+> * **Conceptual Relatives:** What existing theories, older technologies, or well-established concepts are most similar to or could be considered precursors to this topic?
+> * **Controversies/Debate:** Are there any known disputes, skepticism, or competing theories/alternatives? (Even fringe or unverified claims).  
+> "Since reputable sources may not exist, deliberately search beyond academic or mainstream news. Include information that originates from less-vetted channels. Provide examples/summaries from the following source types:  
+> * **Community/Social Platforms:** (e.g., Reddit threads, niche forums, social media discussions, YouTube comments/descriptions). What are the *unfiltered, grassroots* discussions saying?
+> * **Patents/Technical Specs (if applicable):** Are there any related patent filings, white papers, or technical specification documents that mention concepts close to this topic?
+> * **Historical/Anecdotal:** Are there any obscure historical references, forgotten figures, or anecdotal accounts that seem to align with the core idea?
+> * **Hypothetical Scenarios:** What are the most common *predictions* or *speculations* about the topic's future, adoption, or failure?  
+> "Present the findings in a clear, easy-to-read, structured format. For **every piece of information** provided, you must include a **Source Credibility Rating** on a scale of **1 (Highly Unverified/Speculative)** to **5 (Established/Reputable)**.  
+> **Output Sections:**
+> * **Summary of Core Concept** (1-2 paragraphs based on the aggregate data).
+> * **Table of Key Concepts & Terms** (Term | Closest Analogy/Meaning | Credibility Rating)
+> * **Table of Related Information** (Finding/Claim | Source Type & Location | Credibility Rating)
+> * **Next Steps for Verification:** Suggest 3 specific, targeted search engine queries I should use to try and cross-verify the lowest-rated claims."  
+---  
+
