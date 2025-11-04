@@ -1,4 +1,8 @@
 # Writing  
+**How to use it**  
+> This is the [insert topic or question].  
+> Help me come up with outline based on this my template [insert your outline template]  
+
 ```
 ### My Writing **Outline** Template    
 - Topic ______________  
