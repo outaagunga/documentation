@@ -1,4 +1,40 @@
 
+```
+### My Writing **Outline** Template    
+- Topic ______________  
+- Target Audience _______________  
+- Geography (e.g Kenya or Global) _____________  
+  
+Title (Primary Keyword)
+Introduction
+- Hook
+- Pain point
+- Promise/value
+- Transition
+
+H2 #1 (Semantic keyword)
+- 2–3 paragraphs
+- H3: Supporting example
+- H3: Data or expert reference
+
+H2 #2 (Semantic keyword variation)
+- Bullets, visuals, practical insights
+
+H2 #3 (User intent questions)
+- Structured answers
+
+H2 #4 Case studies / Local relevance / Tools / Steps
+
+Conclusion
+- Short recap
+- CTA
+
+FAQs (schema-friendly)
+- Q1…
+- Q2…
+```
+
+
 # Writing a news story  
 Here’s a clear step-by-step breakdown of the process — from idea generation to publication:  
 
