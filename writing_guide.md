@@ -7,7 +7,7 @@
   
 Title (Primary Keyword)
 Introduction
-- Hook
+- Hook (analogy/anecdotal, question, statistics)
 - Pain point
 - Promise/value
 - Transition
