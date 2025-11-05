@@ -116,7 +116,7 @@ def create_bankdata(num_bankdata):
     # Let's create an empty list to add our bankdata dictionaries
     bankdata_list = []
 
-    # Helper for transaction duration (e,g start and end) 
+    # Helper for transaction duration (e,g start and end)
     transaction_start = datetime(2025, 8, 1, 8, 0, 0)
     transaction_end = datetime(2025, 11, 1, 8, 0, 0)
 
@@ -124,17 +124,22 @@ def create_bankdata(num_bankdata):
     current_time = transaction_start
 
     # helper for generated email to look realistic
-    domains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", 
+    domains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com",
            "safaricom.co.ke", "kmail.co.ke"]
 
     # Let's create an bankdata dictionary
     for i in range(num_bankdata):   # ensures we get exactly num_bankdata
         bankdata = {}
-        
-       
+
+
         # Increment time by a random duration (1 to 10 minutes)
-        time_increment = timedelta(minutes=random.randint(1, 1380))
+        time_increment = timedelta(minutes=random.randint(1, 60))
         current_time += time_increment
+
+        # If the next time goes beyond the end date, stop increasing
+        if current_time > transaction_end:
+            current_time = transaction_end
+
 
         bankdata['timestamp'] = current_time.strftime("%d-%m-%Y %H:%M:%S")
         bankdata['trxn_id'] = fake.uuid4() # to generate transaction id
@@ -153,9 +158,9 @@ def create_bankdata(num_bankdata):
         bankdata['trxn_type'] = random.choice(["POS", "ATM", "MOBILE", "ONLINE"])
 
 
-               
+
         bankdata_list.append(bankdata)
-    
+
     return pd.DataFrame(bankdata_list)
 
 # Generate fake survey data
