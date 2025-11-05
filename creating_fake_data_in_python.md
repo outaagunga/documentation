@@ -111,21 +111,22 @@ import pandas as pd
 # create an instance of Faker
 fake = Faker(locale='en_KE')
 
-
 # Let's create a function
 def create_bankdata(num_bankdata):
     # Let's create an empty list to add our bankdata dictionaries
     bankdata_list = []
 
-
-    # Start time for the survey
+    # Helper for transaction duration (e,g start and end) 
     transaction_start = datetime(2025, 8, 1, 8, 0, 0)
     transaction_end = datetime(2025, 11, 1, 8, 0, 0)
 
     # Current timestamp for each response
     current_time = transaction_start
 
-    
+    # helper for generated email to look realistic
+    domains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", 
+           "safaricom.co.ke", "kmail.co.ke"]
+
     # Let's create an bankdata dictionary
     for i in range(num_bankdata):   # ensures we get exactly num_bankdata
         bankdata = {}
@@ -139,10 +140,10 @@ def create_bankdata(num_bankdata):
         bankdata['trxn_id'] = fake.uuid4() # to generate transaction id
         bankdata['acct_id'] = fake.bban() # to gerate account id
         bankdata['name'] = fake.name()
-        bankdata['email'] = fake.safe_email()
-        bankdata['phone'] = fake.phone_number()
+        bankdata['email'] = f"{bankdata['name'].replace(' ', '.').replace("'", '').lower()}@{random.choice(domains)}"
+        bankdata['phone'] = '+2547' + ''.join([str(random.randint(0, 9)) for _ in range(8)]) # to ensure phone number is in +254 format
         bankdata['ip'] = fake.ipv4_private() if random.random() < 0.05 else fake.ipv4()
-        bankdata['card'] = fake.credit_card_number(card_type=None)
+        bankdata['card'] = str(fake.random_number(digits=13, fix_len=True)) # to ensure 13 digits number is generated
         bankdata['amount'] = round(random.uniform(1.0, 5000.0), 2)
         bankdata['currency'] = random.choice(["KES", "USD", "EUR"])
         bankdata['place'] = random.choice(["Nairobi", "Thika", "Kiambu", "Kisumu",
