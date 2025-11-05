@@ -100,7 +100,69 @@ data = create_surveydata(2000)
 data.to_csv("surveydata.csv", index=False)
 
 ```
+## Code to Generate fake bank transaction data 
+```
+# import the libraries we need
+from faker import Faker
+from datetime import datetime, timedelta
+import random  # Needed to randomize time intervals
+import pandas as pd
 
+# create an instance of Faker
+fake = Faker(locale='en_KE')
+
+# Let's create a function
+def create_surveydata(num_surveydata):
+    # Let's create an empty list to add our surveydata dictionaries
+    surveydata_list = []
+
+
+    # Start time for the survey
+    survey_start = datetime(2025, 8, 1, 8, 0, 0)
+    survey_end = datetime(2025, 11, 1, 8, 0, 0)
+
+    # Current timestamp for each response
+    current_time = survey_start
+
+    
+    # Let's create an surveydata dictionary
+    for i in range(num_surveydata):   # ensures we get exactly num_surveydata
+        surveydata = {}
+        
+       
+        # Increment time by a random duration (1 to 10 minutes)
+        time_increment = timedelta(minutes=random.randint(1, 1380))
+        current_time += time_increment
+
+        surveydata['timestamp'] = current_time.strftime("%d-%m-%Y %H:%M:%S")
+        surveydata['trxn_id'] = fake.uuid4() # to generate transaction id
+        surveydata['acct_id'] = fake.fake.bban() # to gerate account id
+        surveydata['name'] = fake.name()
+        surveydata['email'] = fake.safe_email()
+        surveydata['phone'] = fake.phone_number()
+        surveydata['ip'] = fake.ipv4_private() if random.random() < 0.05 else fake.ipv4()
+        surveydata['card'] = fake.credit_card_number(card_type=None)
+        surveydata['amount'] = round(random,random.uniform(1.0, 5000.0), 2)
+        surveydata['currency'] = random.choice(["KES", "USD", "EUR"])
+        surveydata['place'] = random.choice(["Nairobi", "Thika", "Kiambu", "Kisumu",
+                                             "Nakuru", "Eldoret", "Nyeri", "Muranga",
+                                             "Machakos", "Mombasa", "Homa Bay", "Migori",
+                                             "Kilgoris", "Kitui", "Malindi"])
+        surveydata['trxn_type'] = random.choice(["POS", "ATM", "MOBILE", "ONLINE"])
+
+
+               
+        surveydata_list.append(surveydata)
+    
+    return pd.DataFrame(surveydata_list)
+
+# Generate fake survey data
+data = create_surveydata(2000)
+
+# Save to CSV
+data.to_csv("surveydata.csv", index=False)
+
+```
 
 
 ---
