@@ -101,7 +101,7 @@ data.to_csv("surveydata.csv", index=False)
 
 ```
 ## Code to Generate fake bank transaction data 
-```
+```python
 # import the libraries we need
 from faker import Faker
 from datetime import datetime, timedelta
@@ -111,56 +111,57 @@ import pandas as pd
 # create an instance of Faker
 fake = Faker(locale='en_KE')
 
+
 # Let's create a function
-def create_surveydata(num_surveydata):
-    # Let's create an empty list to add our surveydata dictionaries
-    surveydata_list = []
+def create_bankdata(num_bankdata):
+    # Let's create an empty list to add our bankdata dictionaries
+    bankdata_list = []
 
 
     # Start time for the survey
-    survey_start = datetime(2025, 8, 1, 8, 0, 0)
-    survey_end = datetime(2025, 11, 1, 8, 0, 0)
+    transaction_start = datetime(2025, 8, 1, 8, 0, 0)
+    transaction_end = datetime(2025, 11, 1, 8, 0, 0)
 
     # Current timestamp for each response
-    current_time = survey_start
+    current_time = transaction_start
 
     
-    # Let's create an surveydata dictionary
-    for i in range(num_surveydata):   # ensures we get exactly num_surveydata
-        surveydata = {}
+    # Let's create an bankdata dictionary
+    for i in range(num_bankdata):   # ensures we get exactly num_bankdata
+        bankdata = {}
         
        
         # Increment time by a random duration (1 to 10 minutes)
         time_increment = timedelta(minutes=random.randint(1, 1380))
         current_time += time_increment
 
-        surveydata['timestamp'] = current_time.strftime("%d-%m-%Y %H:%M:%S")
-        surveydata['trxn_id'] = fake.uuid4() # to generate transaction id
-        surveydata['acct_id'] = fake.fake.bban() # to gerate account id
-        surveydata['name'] = fake.name()
-        surveydata['email'] = fake.safe_email()
-        surveydata['phone'] = fake.phone_number()
-        surveydata['ip'] = fake.ipv4_private() if random.random() < 0.05 else fake.ipv4()
-        surveydata['card'] = fake.credit_card_number(card_type=None)
-        surveydata['amount'] = round(random,random.uniform(1.0, 5000.0), 2)
-        surveydata['currency'] = random.choice(["KES", "USD", "EUR"])
-        surveydata['place'] = random.choice(["Nairobi", "Thika", "Kiambu", "Kisumu",
+        bankdata['timestamp'] = current_time.strftime("%d-%m-%Y %H:%M:%S")
+        bankdata['trxn_id'] = fake.uuid4() # to generate transaction id
+        bankdata['acct_id'] = fake.bban() # to gerate account id
+        bankdata['name'] = fake.name()
+        bankdata['email'] = fake.safe_email()
+        bankdata['phone'] = fake.phone_number()
+        bankdata['ip'] = fake.ipv4_private() if random.random() < 0.05 else fake.ipv4()
+        bankdata['card'] = fake.credit_card_number(card_type=None)
+        bankdata['amount'] = round(random.uniform(1.0, 5000.0), 2)
+        bankdata['currency'] = random.choice(["KES", "USD", "EUR"])
+        bankdata['place'] = random.choice(["Nairobi", "Thika", "Kiambu", "Kisumu",
                                              "Nakuru", "Eldoret", "Nyeri", "Muranga",
                                              "Machakos", "Mombasa", "Homa Bay", "Migori",
                                              "Kilgoris", "Kitui", "Malindi"])
-        surveydata['trxn_type'] = random.choice(["POS", "ATM", "MOBILE", "ONLINE"])
+        bankdata['trxn_type'] = random.choice(["POS", "ATM", "MOBILE", "ONLINE"])
 
 
                
-        surveydata_list.append(surveydata)
+        bankdata_list.append(bankdata)
     
-    return pd.DataFrame(surveydata_list)
+    return pd.DataFrame(bankdata_list)
 
 # Generate fake survey data
-data = create_surveydata(2000)
+data = create_bankdata(2000)
 
 # Save to CSV
-data.to_csv("surveydata.csv", index=False)
+data.to_csv("bankdata.csv", index=False)
 
 ```
 
