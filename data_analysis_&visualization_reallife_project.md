@@ -577,4 +577,194 @@ Here’s a suggested **presentation script flow** you can follow:
 
 Your report sections can be:
 
---- 
+---
+
+````markdown
+# 🏦 DATA ANALYSIS PROJECT REPORT  
+## Equity Bank — Detecting Fraudulent Transactions Using Data Analytics  
+### Unit: Data Analysis (Practical Project) — CDAV 102  
+### Cohort: September 2025  
+### Instructor: Samuel Mungai  
+### Deadline: 07/11/2025  
+
+---
+
+## 📄 **Page 1: Cover Page**
+
+**Group Name:** Group 2  
+**Project Title:** Equity Bank — Detecting Fraudulent Transactions Using Data Analytics  
+**Group Members:**  
+- [Member 1 Name]  
+- [Member 2 Name]  
+- [Member 3 Name]  
+- [Member 4 Name]  
+
+**Institution:** [Your Institution Name]  
+**Submission Date:** [Insert Date]  
+
+---
+
+## 🧩 **Page 2: Problem Definition, Objectives & Dataset Summary**
+
+### 🧠 Problem Definition
+Equity Bank faces occasional cases of fraudulent mobile and ATM transactions.  
+These incidents lead to financial losses and erode customer trust.  
+The goal of this project is to design a **data-driven fraud detection system** capable of identifying unusual or suspicious transaction patterns early.
+
+### 🎯 Objectives
+1. Analyze transaction datasets to detect anomalies.  
+2. Develop an early-warning fraud detection model.  
+3. Visualize key risk areas through interactive dashboards.  
+4. Present actionable insights for non-technical stakeholders.
+
+### 📊 Dataset Summary
+**Dataset Name:** `bankdata.xlsx`  
+**Records:** 1,908 transactions  
+**Key Columns:** `timestamp`, `acct_id`, `amount`, `currency`, `place`, `trxn_type`, `ip`  
+**Data Source:** Simulated bank transactions generated for analysis  
+
+**Sample Structure:**
+| Column | Description |
+|--------|--------------|
+| timestamp | Date & time of transaction |
+| acct_id | Customer account identifier |
+| amount | Transaction amount |
+| currency | Currency type (KES, USD, EUR) |
+| trxn_type | Channel used (ATM, MOBILE, POS) |
+| place | Transaction location |
+
+---
+
+## ⚙️ **Page 3: Tools & Skills Used**
+
+### 🧰 Tools & Technologies
+| Tool | Purpose |
+|------|----------|
+| **Python (Pandas, Matplotlib, Seaborn)** | Data cleaning, transformation & visualization |
+| **SQL** | Querying and summarizing transaction records |
+| **Power BI** | Building interactive dashboards and KPI visuals |
+
+### 💻 Technical Skills
+- Data Cleaning & Transformation  
+- Data Visualization & Storytelling  
+- Anomaly Detection using Python  
+- Dashboard Design with Power BI  
+
+### 🤝 Soft Skills
+- Team Collaboration  
+- Problem Solving  
+- Critical Thinking  
+- Presentation & Communication  
+
+---
+
+## 🧮 **Page 4: Data Cleaning & Analysis Process**
+
+### 🔹 Step 1: Data Cleaning
+Performed using Python and Pandas to:
+- Remove duplicates based on `trxn_id`
+- Handle missing values
+- Standardize timestamp format
+- Convert all currencies to KES
+
+```python
+# [Insert your Python cleaning code here]
+````
+
+**Example Screenshot:**
+![Insert data cleaning output screenshot here](path/to/cleaning_screenshot.png)
+
+---
+
+### 🔹 Step 2: Anomaly Detection
+
+Criteria used:
+
+* Transactions > 3× customer’s average amount
+* Transactions between 00:00–05:00 hours
+
+```python
+# [Insert your anomaly detection code here]
+```
+
+**Example Output:**
+
+| acct_id | amount_kes | avg_amount | hour | is_suspicious |
+| ------- | ---------- | ---------- | ---- | ------------- |
+| C123    | 45,000     | 12,000     | 01   | TRUE          |
+
+---
+
+### 🔹 Step 3: Visualizations (Python)
+
+1. Histogram of transaction amounts
+2. Boxplot per transaction type
+3. Bar chart of suspicious transactions by hour or location
+
+![Insert Python visualization image here](path/to/visualization1.png)
+
+---
+
+## 📈 **Page 5: Power BI Insights**
+
+### 🧮 KPI Card
+
+**Metric:** Number of suspicious transactions detected
+🟥 *Example: 152 suspicious transactions out of 1,908 (7.97%)*
+
+### 🗺️ Map Visualization
+
+Highlights regional hotspots for fraud — e.g. Nairobi, Nakuru, Eldoret.
+
+### 📊 Bar Chart (Hour of Day)
+
+Reveals spikes in fraudulent activity between **midnight and 4 AM**.
+
+### 🍩 Donut Chart
+
+Shows distribution of fraud by **transaction type** (Mobile, POS, ATM).
+
+**Dashboard Screenshot:**
+![Insert Power BI dashboard screenshot here](path/to/dashboard.png)
+
+### 💡 Key Insights
+
+* Most anomalies occurred in **mobile transactions**.
+* Fraudulent transactions were concentrated in **urban centers**.
+* Off-hour transactions (00:00–05:00) are strong red flags.
+
+---
+
+## 🧠 **Page 6: Challenges & Lessons Learned**
+
+### 🚧 Challenges
+
+1. Inconsistent currency formats and timestamps.
+2. Handling large datasets efficiently in Python.
+3. Creating clean, interactive Power BI visuals.
+
+### 📚 Lessons Learned
+
+* Importance of data preprocessing before analysis.
+* How to interpret anomalies using statistical thresholds.
+* How dashboards can simplify communication with non-technical managers.
+* Collaboration and version control when working in a team setting.
+
+---
+
+### ✅ **Conclusion**
+
+The team successfully built a simple fraud detection model that identifies anomalies in Equity Bank transactions.
+Through Python, SQL, and Power BI, we demonstrated how data analytics can strengthen fraud prevention systems in the financial sector.
+
+---
+
+**Appendices (Optional):**
+
+* Python Scripts (Full)
+* SQL Queries
+* Power BI Dashboard Design Notes  
+
+---  
+
+
