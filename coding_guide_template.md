@@ -106,6 +106,7 @@ Would you like me to make this template **AI-interactive** — for example, so y
 **Project Name:**
 **Project Type:** [Learning / Portfolio / Production / Experiment]
 **Main Goal / Problem to Solve:**
+**Target Audience / End User:**
 **Tech Stack (Languages, Frameworks, Tools):**
 **Expected Outcome (What success looks like):**
 **Measurable Success Metrics:**
@@ -190,6 +191,7 @@ Would you like me to make this template **AI-interactive** — for example, so y
 * **Known Bugs / Issues:**
 * **Error-Tracking Strategy:** (logs, exceptions, monitoring)
 * **Performance / Edge Case Tests:**
+* **Key Features to be tested (e.g valid credentials, invalid password, empty fields):**
 
 ---
 
