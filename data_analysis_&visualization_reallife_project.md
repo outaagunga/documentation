@@ -144,3 +144,114 @@ One group member should:
 
 ---
 
+## Steps to do it:
+A quick summary of my dataset what you have and how to proceed next:
+
+---
+
+### 🧾 **Dataset Overview**
+
+✅ **Rows:** 1,908
+✅ **Columns (12):**
+
+| Column                         | Description                   |
+| ------------------------------ | ----------------------------- |
+| `timestamp`                    | Date and time of transaction  |
+| `trxn_id`                      | Unique transaction identifier |
+| `acct_id`                      | Account number (anonymized)   |
+| `name`                         | Customer name                 |
+| `email`, `phone`, `ip`, `card` | Customer/device identifiers   |
+| `amount`                       | Transaction amount            |
+| `currency`                     | e.g. KES, USD, EUR            |
+| `place`                        | Transaction location          |
+| `trxn_type`                    | Channel (ATM, MOBILE, POS)    |
+
+---
+
+### 🧹 **Next Step 1: Data Cleaning**
+
+You’ll need to:
+
+1. Convert all timestamps to uniform datetime format (already done ✅).
+2. Standardize currency (convert to one base, e.g., KES).
+3. Check for duplicates or outliers in `trxn_id` or `amount`.
+4. Optionally, extract **hour**, **day**, and **weekday** for behavior analysis.
+
+Example Python code:
+
+```python
+# Remove duplicates
+df = df.drop_duplicates(subset=['trxn_id'])
+
+# Create new columns
+df['hour'] = df['timestamp'].dt.hour
+df['day'] = df['timestamp'].dt.day_name()
+
+# Basic currency conversion (example rates)
+conversion = {'USD': 150, 'EUR': 160, 'KES': 1}
+df['amount_kes'] = df['amount'] * df['currency'].map(conversion)
+```
+
+---
+
+### 🧮 **Step 2: Detect Anomalies**
+
+You can define “fraudulent” or suspicious transactions as:
+
+* Amounts greater than 3× a customer’s average
+* Unusual hours (e.g. between midnight and 5 AM)
+* Transactions from multiple IPs or locations in a short period
+
+Example:
+
+```python
+avg_amounts = df.groupby('acct_id')['amount_kes'].mean()
+df['avg_amount'] = df['acct_id'].map(avg_amounts)
+df['is_suspicious'] = (df['amount_kes'] > 3 * df['avg_amount']) | (df['hour'] < 5)
+```
+
+Then show top flagged:
+
+```python
+df[df['is_suspicious']].head()
+```
+
+---
+
+### 📊 **Step 3: Visualize (Matplotlib/Seaborn or Power BI)**
+
+Some useful visualizations:
+
+* **Histogram** of transaction amounts
+* **Boxplot** to see outliers per transaction type
+* **Bar chart** of suspicious transactions by location or hour
+
+Example in Python:
+
+```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+sns.boxplot(x='trxn_type', y='amount_kes', data=df)
+plt.title('Transaction Amounts by Type')
+plt.show()
+```
+
+---
+
+### 📈 **Step 4: Power BI Dashboard Ideas**
+
+After exporting your cleaned data to CSV, import it into Power BI and build:
+
+1. KPI card — number of suspicious transactions
+2. Map — locations of red-flagged transactions
+3. Bar chart — fraud frequency by hour or device
+4. Donut chart — transaction types (ATM, MOBILE, POS)
+
+---
+
+### 🧩 **Step 5: Report Summary**
+
+Your report sections can be:
+
+--- 
