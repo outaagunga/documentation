@@ -463,15 +463,6 @@ Format as a big number card, e.g.
 | Bottom Right | Bar Chart   | Fraud Frequency by Hour       |
 
 ---  
-Perfect 👌 — let’s design a **professional, presentation-ready Power BI dashboard layout** for your **Equity Bank Fraud Detection Project**.
-This guide gives you:
-
-✅ Recommended **colors and theme**
-✅ **Visual layout design** (placement & size)
-✅ **Titles, formatting, and labels**
-✅ Optional storytelling elements for your 3–5 minute presentation
-
----
 
 ## 🎨 **1. Dashboard Theme and Color Scheme**
 
@@ -581,9 +572,6 @@ Here’s a suggested **presentation script flow** you can follow:
 
 ---
 
-Would you like me to give you a **Power BI layout wireframe (mockup image)** showing the recommended visual positions and color design — so you can visually replicate it in Power BI?
-
----
 
 ### 🧩 **Step 5: Report Summary**
 
