@@ -1,4 +1,110 @@
 
+## Daily Forex Trading Template
+
+### 1. 🎯 Trading Focus (Establishing Clarity)
+
+| Parameter | Input | **Refined Rule/Guideline** |
+| :--- | :--- | :--- |
+| **Currency Pair(s)** | __________________________ | Focus on **1-2 major pairs** for the session to prevent overtrading. |
+| **Session** | (London / New York / Asian) __________________________ | Trade only during your identified session for optimal volatility/liquidity. |
+| **Market Type** | (Trending / Ranging / Consolidating) __________________________ | **MUST be defined by a clear rule** (e.g., Price is above/below the 50 EMA, or Price is clearly contained between two specific S/R levels). |
+| **Goal for the Day** | __________________________ | Be **specific**: "Wait for confirmed H1 close above 1.1000 for long entry," or "Scalp retracements only on H1 within the D1 uptrend." |
+
+### 2. 📰 Market Preparation (Pre-Market Analysis)
+
+**Objective: Build a data-based bias before entering any trade.**
+
+#### A. Big Picture Analysis
+* Check **economic calendar** for high-impact news (interest rates, NFP, CPI, etc.). **Note specific release times.**
+* Review **DXY (USD Index)** trend if trading USD pairs, and check **correlated pairs** (e.g., GBP/USD for EUR/USD).
+* Note key S/R, supply/demand zones, and trend direction on **H4/D1 timeframes**.
+* Market sentiment today: 🟢 Bullish / 🔴 Bearish / ⚪ Neutral (Based on Big Picture Analysis).
+
+#### B. Technical Setup
+* Indicators in use: __________________________
+* Price action confirmation: (e.g. rejection candle, structure break, retest) __________________________
+* Entry trigger zone: **Specific Price Level & Timeframe required** (e.g., 1.0750 H1 close).
+* Stop loss level: **Calculated based on structure/risk** (e.g., below previous swing low).
+* Take profit zone(s): **Minimum 1.5R or 2R required for entry.**
+
+#### C. Risk Management (NON-NEGOTIABLE)
+* Account balance: __________________________
+* Risk per trade (%): **Max 0.5% - 1.0%** __________________________
+* Lot size (based on risk): __________________________ (Calculated **before** trade entry).
+* Maximum open trades: __________________________
+* **Daily loss limit (max %): _______% (MUST stop trading immediately if reached).**
+
+---
+
+### 3. ✅ Trade Execution Checklist
+
+* Wait for **clear confirmation signal** (must match **2.B**).
+* Align trade with **overall market bias** (must match **2.A**).
+* Place **stop loss** immediately upon entry.
+* **Correctly verify lot size and R:R ratio** before clicking trade.
+* Set take profit or trailing stop according to plan.
+* Record **entry screenshot**.
+* Stay disciplined — **NO revenge trading.** (Take a **mandatory 5-minute break** if a trade hits SL).
+
+---
+
+### 4. 🧠 During Trade (Management Phase)
+
+* Monitor volatility and spread (especially around news).
+* **Adjust stop to breakeven (move SL to entry price)** after **1R profit** is achieved (or other defined **key level**).
+* Avoid emotional decisions mid-trade (do not widen SL, do not close prematurely unless plan dictates).
+* Journal real-time thoughts or emotions briefly.
+
+---
+
+### 5. 📝 After Trade (Post-Trade Reflection)
+
+| For Each Trade: | Result |
+| :--- | :--- |
+| **Entry reason** | __________________________ (Which rule in **2.B** was met?) |
+| **Exit reason** | __________________________ (SL hit, TP hit, manual close - why?) |
+| **P/L Result** | **R-Multiple:** _______R (e.g., +1.5R, -1.0R) |
+| Was it aligned with plan? | ✅ / ❌ |
+| **Emotional state during trade** | __________________________ (Fear, greed, boredom, overconfidence?) |
+| What went right/wrong? | __________________________ |
+| **Lesson learned** | __________________________ (The specific actionable takeaway). |
+
+---
+
+### 6. 📊 Daily Review Summary
+
+* Total trades: _______
+* Wins: _______ | Losses: _______ | BE: _______
+* Win rate: _______%
+* Net profit/loss: **_______ R-Multiple**
+* Rules followed? ✅ / ❌
+* Emotional discipline rating (1–10): _______
+* **Key takeaway of the day:** __________________________ (Focus on **process**, not profit).
+
+---
+
+### 7. 🗓️ Weekly Reflection (End of Week)
+
+* Best performing pair: __________________________
+* **Biggest mistake & how to fix it:** __________________________ (Must be specific and actionable).
+* **Strategy improvement plan for next week:** __________________________ (A concrete, testable change to Section **1** or **2**).
+* Trading journal updated: ✅
+* Confidence level going forward (1–10): _______
+
+---
+
+### 8. 🤖 AI Assistant Integration (Optional but Powerful)
+
+* **Sentiment Summaries:** Use AI to aggregate global market news sentiment before trading.
+* **Visual Journal:** Generate charts/visuals of your journal for quick performance review.
+* **Backtesting:** Input strategy rules to backtest performance on historical data.
+* **Affirmations:** Create and repeat personalized affirmations to combat common emotional biases identified in Section **5**.
+--- 
+
+This complete template provides a powerful framework for **objective, disciplined, and continuous improvement**. Sticking to this process is the surest way to manage risk and achieve long-term success in forex trading.
+
+Would you like me to provide examples of how to define your **Market Type** rules (trending vs. ranging) to make Section **1** even more objective?
+
 # 🧩 **Beginner Setup Pack: Start Here Before the Main Routine**
 
 > 🎯 Goal: Make forex trading + AI assistance simple, clear, and safe for a total beginner.
