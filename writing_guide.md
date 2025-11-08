@@ -729,3 +729,13 @@ Refine the following article for maximum clarity, brevity, and adherence to prof
 > * **Next Steps for Verification:** Suggest 3 specific, targeted search engine queries I should use to try and cross-verify the lowest-rated claims.    
 ---  
 
+## Evaluating an article source!
+
+| Evaluation Area | What to Ask | Why It's Important |
+| :--- | :--- | :--- |
+| **C**urrency (Timeliness) | When was the information published or last updated? Is the topic one that requires current information (e.g., technology, medicine)? | Outdated information can be factually incorrect or incomplete. |
+| **R**elevance (Importance) | Does the information address your research question? Who is the intended audience? Is the content at an appropriate level? | Ensures the source actually contributes to your goal and isn't just filler. |
+| **A**uthority (Source Credibility) | **Who is the author/publisher/source?** What are their credentials or expertise on the topic? Are they qualified? | A well-written but **unqualified** author's work lacks the credibility of an expert. |
+| **A**ccuracy (Reliability) | Is the information supported by **evidence (citations, data)?** Can you verify any of the information in other reputable sources? Is the language professional? | An accurate source is **verifiable**. This is the ultimate test of factual content. |
+| **P**urpose/Bias | *(Your current step)* Is it to inform, persuade, sell, or entertain? What is the author's potential bias? | Determines the **motive** and how carefully you must weigh the claims. |
+
