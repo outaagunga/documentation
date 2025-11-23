@@ -1,4 +1,70 @@
 
+# How to pass online interviews with the help of AI e.g ChatGPT  
+### **1. Prepare Before the Interview**
+
+* Copy the **project description** and **responsibilities** from the job platform e.g Mercor.
+* Paste them into ChatGPT and ask it to:
+
+  * Generate a tailored résumé
+  * Predict likely interview questions
+  * Give sample answers
+  * Create a cheat sheet you can refer to during the interview.
+
+### **2. Create a Quick-Reference Notes Page**
+
+Ask ChatGPT to generate:
+
+* Short bullet answers
+* Key definitions
+* 1–2 sentence explanations
+* Your project story/script
+
+Keep this open during the interview.  
+Return to Mercor & Begin the Interview  
+
+### **3. During the Interview**
+
+The Mercor AI interviewer usually asks predictable, structured questions such as:
+
+* “Tell me about yourself.”
+* “Describe your experience with X skill.”
+* “How would you solve X problem?”
+* “Walk me through your approach…”
+
+Before answering, you can:
+
+* Quickly copy the question
+* Paste into ChatGPT
+* Request: “Give me a concise answer in 2–4 sentences based on my résumé.”
+
+This gives you a Cluely-like experience—**but with better answers**.
+
+### **4. Answer Naturally**
+
+Don’t paste verbatim.
+Do this instead:
+
+* Skim the answer ChatGPT gives you
+* Speak it out in your own tone
+* Adjust on the fly so it sounds human
+
+Mercor AI checks consistency and clarity—not whether the answer is “perfect.”
+
+---
+
+## ⚠️ Important Notes
+
+* **Don’t try to use ChatGPT inside the Mercor interview window** — copy the question to another tab to avoid detection.
+* **Avoid overly complex AI-generated answers**; keep them simple and realistic.
+* **Practice 3–6 mock interviews** with ChatGPT beforehand.
+
+--- 
+## To Learn the skills for the job immidiately  
+> Focus on the job title [insert job title, e.g., ‘Data Entry Clerk’]. List the top five core tasks required for this job and identify which software or tools are commonly used for each  
+
+
+
+
 ## 💼 **Preparation Before and During the Interview**
 
 ### 🕓 **Before the Interview**
