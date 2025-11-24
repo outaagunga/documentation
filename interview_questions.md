@@ -172,7 +172,19 @@ Perfect! Here’s a **one-page bullet-style script** for your CareerBuddy Conten
 * Bullet points keep you flexible—don’t read word-for-word
 
 ---
+# Questions asked during video interview  
+> 1. Please introduce yourself, including your name, current role, a brief overview of what you do, and who you are beyond your CV?
+> 2. Walk us through your experience relevant to this role?
+> 3. Tell us about the type of social media or content projects you’ve worked on?
+> 4. Please share a recent project you worked on in the last 6–12 months where you helped a brand achieve significant growth. In your answer, highlight how your use of storytelling and data-driven strategies contributed to engagement growth, audience or community growth, and any revenue impact (direct or indirect). Focus on the key insights, strategies, and results from ideation to execution.
+> 5. What platforms and tools have you used most frequently?
+> 6. How do you measure the success of a post or campaign? Give an example of how insights influenced your strategy.
+> 7. Social media trends and tools change rapidly. How do you stay updated and adapt your approach?
+> 8. What’s your preferred work mode — remote, hybrid, or on-site?
+> 9. What are your expectations for this role?
+> 10. What is your salary expectation  
 
+--- 
 
 ## 💼 **Preparation Before and During the Interview**
 
