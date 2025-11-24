@@ -62,7 +62,116 @@ Mercor AI checks consistency and clarity—not whether the answer is “perfect.
 ## To Learn the skills for the job immidiately  
 > Focus on the job title [insert job title, e.g., ‘Data Entry Clerk’]. List the top five core tasks required for this job and identify which software or tools are commonly used for each  
 
+--- 
+Perfect! Here’s a **one-page bullet-style script** for your CareerBuddy Content Writer pre-screening video. You can glance at this while recording—no memorizing word-for-word needed.
 
+
+
+### **1. About Me**
+
+* Passionate content creator
+* Experience: articles, social media, web content
+* Enjoy turning complex ideas into clear, engaging stories
+* Example: helped [blog/brand] increase engagement
+
+---
+
+### **2. Why Content Writing**
+
+* Craft stories that inform, inspire, drive action
+* Combine research, creativity, strategy
+* Make measurable impact while learning
+
+---
+
+### **3. Research Approach**
+
+* Understand audience & their needs
+* Gather info from credible sources
+* Organize key points & cross-check facts
+* Create structured outline before writing
+
+---
+
+### **4. Engaging Content**
+
+* Storytelling, strong openings, relatable examples
+* Clear takeaways & call-to-action
+* Use headings, bullet points, visuals
+
+---
+
+### **5. Example of Work**
+
+* Blog post on [topic] simplifying a complex concept
+* Results: [number] views, shares, positive feedback
+* How: thorough research, structured writing, actionable tips
+
+---
+
+### **6. Tight Deadlines**
+
+* Prioritize tasks, outline first
+* Focus on quality & efficiency
+* Communicate early if challenges arise
+
+---
+
+### **7. Simplifying Complex Topics**
+
+* Break down ideas into digestible parts
+* Use examples, visuals, clear language
+* Aim for clarity without losing depth
+
+---
+
+### **8. Tailoring Content**
+
+* Adjust tone, style, examples based on audience
+* Research demographics, interests, pain points
+
+---
+
+### **9. Optimizing Content Online**
+
+* Platform-specific formatting: headings, meta, keywords
+* Track engagement & refine future content
+
+---
+
+### **10. Creativity Under Pressure**
+
+* Brainstorming, mind maps, content calendars
+* Short breaks for fresh perspective
+* Draw inspiration from trends, competitors, real-life stories
+
+---
+
+### **11. Handling Feedback**
+
+* See feedback as improvement opportunity
+* Review, implement changes, clarify if needed
+* Strengthens skill & content quality
+
+---
+
+### **12. Career Goals**
+
+* Grow as versatile content professional
+* Produce high-quality articles & social media content
+* Master storytelling & analytics
+* Contribute to impactful, engaging projects
+
+---
+
+💡 **Delivery Tips:**
+
+* Keep answers **30–45 seconds** each
+* Smile, speak clearly, moderate pace
+* Use **keywords**: storytelling, audience, engagement, impact, clarity
+* Bullet points keep you flexible—don’t read word-for-word
+
+---
 
 
 ## 💼 **Preparation Before and During the Interview**
