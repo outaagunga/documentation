@@ -26,7 +26,7 @@ H2 #1 Understanding (Semantic keyword)
 - Key takeaway  
 
 H2 #2 How to/ Steps (Semantic keyword variation)
-- Bullets, visuals, practical insights
+- Bullets, Step by step, visuals, practical insights
 - Key takeaway
 
 H2 #3 (User intent questions/ Common Challenges)
