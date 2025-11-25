@@ -94,12 +94,11 @@ Use ```pip``` which is the recommended Python's package installer. Ensure you do
 - `transformers` and `torch` for text summarization using the BART model
 - `fastapi.middleware.cors` (included within FastAPI) to enable CORS so the React frontend can access the API
 
-We are going to install the libraries using this command e.g:
+We are going to install all the libraries using pip command e.g:
 ```bash
 pip install --upgrade pip
-pip install fastapi  
+pip install <dependency-name>  
 ```
-Also install other libraries 
 
 ---
 
