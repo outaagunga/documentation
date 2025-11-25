@@ -703,260 +703,121 @@ When using LLMs, require JSON-only responses and validate/parse them server-side
 
 ---
 
-
-That's a great request\! Implementing the recommendations will make your backend code more robust, secure, and truly asynchronous, especially for the heavy CPU-bound tasks.
-
-Here is the complete, revised FastAPI code incorporating **Pydantic validation**, a secure **CORS policy (for deployment)**, **non-blocking CPU task execution** using `run_in_executor`, and a **Type Hinting** for clarity.
-
-I've also included a section for setting up the `ThreadPoolExecutor`.
-
-## 💻 Revised FastAPI Backend Code
-
-This code assumes your file is named `main.py`.
-
+## Recommended backend code
 ```python
+# main.py
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Dict, List
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
 import textstat
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import language_tool_python
 from transformers import pipeline
+import logging
+import os
 
-# --- Configuration & Initialization ---
-
-# 1. ThreadPoolExecutor for CPU-bound tasks (e.g., grammar, summarization)
-# Use a suitable number of workers (e.g., 4) based on your machine's cores.
-executor = ThreadPoolExecutor(max_workers=4)
-
-app = FastAPI()
-
-# Pydantic Model for Request Body Validation
-class TextRequest(BaseModel):
-    text: str
-
-# 2. CORS Configuration (Adjust for Production!)
-# Replace the placeholder URL below with your actual deployed frontend URL (e.g., https://writewise-frontend.vercel.app)
-# Using ["*"] is only safe for local development.
-origins = [
+# --------- Configuration ----------
+MAX_INPUT_CHARS = 20000  # adjust to your limits
+EXECUTOR_WORKERS = int(os.getenv("EXECUTOR_WORKERS", "4"))
+ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://localhost:5173", # Common Vite/React dev ports
-    "https://your-deployed-frontend-url.com" # <-- CHANGE THIS
+    "http://localhost:5173",
+    # "https://your-deployed-frontend-url.com"  <-- Replace with your frontend URL in production
 ]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST"],
-    allow_headers=["*"],
-)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("ai-writing-assistant")
 
-# 3. Load heavy models only once (Non-blocking initialization)
-tool = language_tool_python.LanguageTool('en-US')
-analyzer = SentimentIntensityAnalyzer()
-# Using a faster, smaller model for summarization could be a further optimization
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn") 
+# --------- Thread pool for blocking CPU work ----------
+executor = ThreadPoolExecutor(max_workers=EXECUTOR_WORKERS)
 
-
-# --- Asynchronous Functions (with Thread Pool Execution) ---
-
-async def grammar_check(text: str):
-    """Offloads the blocking language_tool check to the thread pool."""
-    loop = asyncio.get_event_loop()
-    
-    # Run the blocking tool.check() function in a separate thread
-    matches = await loop.run_in_executor(executor, tool.check, text)
-    
-    return [
-        {"message": m.message, "context": m.context, "suggestions": m.replacements}
-        for m in matches
-    ]
-
-async def readability_check(text: str):
-    """These textstat functions are fast enough not to strictly need run_in_executor,
-    but can be if they become a bottleneck."""
-    return {
-        "flesch": textstat.flesch_reading_ease(text),
-        "grade_level": textstat.flesch_kincaid_grade(text),
-        "reading_time": round(textstat.reading_time(text), 2)
-    }
-
-async def tone_analysis(text: str):
-    """VADER is fast and usually doesn't need run_in_executor."""
-    sentiment = analyzer.polarity_scores(text)
-    tone = "Positive" if sentiment['compound'] > 0.2 else "Negative" if sentiment['compound'] < -0.2 else "Neutral"
-    return {"tone": tone, "score": sentiment['compound']}
-
-async def engagement_check(text: str):
-    """Offloads the blocking summarizer task to the thread pool."""
-    loop = asyncio.get_event_loop()
-    
-    # Run the blocking summarizer function in a separate thread
-    summary_result = await loop.run_in_executor(
-        executor, 
-        summarizer, 
-        text, 
-        {"max_length": 50, "min_length": 10, "do_sample": False} # Increased max_length for better summary
-    )
-    
-    return {"summary": summary_result[0]['summary_text']}
-
-
-# --- API Endpoint ---
-
-@app.post("/analyze")
-async def analyze(data: TextRequest):
-    """
-    Receives text and runs four analysis tasks concurrently.
-    """
-    text = data.text
-
-    if not text:
-        raise HTTPException(status_code=400, detail="Text field cannot be empty.")
-
-    # Create concurrent tasks
-    grammar_task = asyncio.create_task(grammar_check(text))
-    read_task = asyncio.create_task(readability_check(text))
-    tone_task = asyncio.create_task(tone_analysis(text))
-    engage_task = asyncio.create_task(engagement_check(text))
-
-    # Wait for all tasks to complete
-    grammar, readability, tone, engagement = await asyncio.gather(
-        grammar_task, read_task, tone_task, engage_task
-    )
-
-    # Return combined results
-    return {
-        "grammar": grammar,
-        "readability": readability,
-        "tone": tone,
-        "engagement": engagement
-    }
-```
-
-### Key Changes Implemented
-
-1.  **Pydantic Input Validation:** The endpoint now uses `data: TextRequest` instead of `request: Request`. This **validates** the input automatically and improves API documentation.
-2.  **Non-Blocking CPU Tasks:**
-      * The heavy, CPU-bound calls (`tool.check`, `summarizer`) are now wrapped with `await loop.run_in_executor(executor, ...)` inside `grammar_check` and `engagement_check`.
-      * This offloads the blocking work to a dedicated thread pool (`executor`), preventing the tasks from **freezing the main FastAPI event loop**  and ensuring the API remains responsive to other requests.
-3.  **Refined CORS:** The `origins` list is now explicit, moving away from the insecure `["*"]` for production readiness. **Remember to update the placeholder URL.**
-4.  **Error Handling:** Added a basic `if not text:` check with an `HTTPException` to return a meaningful 400 error if the input is empty.
-5.  **Summarizer Parameters:** Increased `max_length` and `min_length` to $50$ and $10$ respectively to produce a more useful summary for the size of the model being used.
-
-
-Here is a **clean, production-ready, corrected, best-practice version** of your FastAPI backend.
-
-This version fixes:
-
-✅ Blocking LanguageTool / HF pipeline (moved to background threads)
-✅ Empty text validation
-✅ Error handling
-✅ Pydantic model
-✅ Returns `corrections` instead of `grammar`
-✅ Uses a lighter summarizer model (DistilBART)
-✅ Non-blocking async architecture
-✅ Cleaner directory structure and CORS rules
-
----
-
-# ✅ **FULL BEST-PRACTICE BACKEND CODE (copy–paste ready)**
-
-```python
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import asyncio, textstat
-
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-import language_tool_python
-from transformers import pipeline
-
-# -------------------------------------------------------
-# Initialize app
-# -------------------------------------------------------
+# --------- FastAPI app ----------
 app = FastAPI(title="AI Writing Assistant API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # adjust for production
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
-# -------------------------------------------------------
-# Load heavy models ONCE (thread safe)
-# -------------------------------------------------------
+# --------- Load heavy models once (startup) ----------
+# Note: model downloads happen the first time you instantiate pipeline; ensure network availability
+logger.info("Loading models... (this may take a moment on first run)")
 tool = language_tool_python.LanguageTool("en-US")
 sentiment_analyzer = SentimentIntensityAnalyzer()
 
-summarizer = pipeline(
-    "summarization",
-    model="sshleifer/distilbart-cnn-6-6",   # FAST + lightweight
-)
+# Lightweight summarizer - change model if you have resource constraints
+summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-6-6")
+logger.info("Models loaded.")
 
-# -------------------------------------------------------
-# Request model
-# -------------------------------------------------------
+
+# --------- Request / Response models ----------
 class TextRequest(BaseModel):
-    text: str
+    text: str = Field(..., description="Text to analyze", min_length=1, max_length=MAX_INPUT_CHARS)
 
 
-# -------------------------------------------------------
-# Utility functions (sync → threaded for async safety)
-# -------------------------------------------------------
-def _grammar_sync(text):
+class CorrectionItem(BaseModel):
+    message: str
+    context: str
+    suggestions: List[str]
+
+
+# --------- Helper sync functions (will be executed in threadpool) ----------
+def _grammar_sync(text: str) -> List[Dict[str, Any]]:
     matches = tool.check(text)
     return [
         {
             "message": m.message,
-            "context": m.context,
-            "suggestions": m.replacements,
+            "context": getattr(m, "context", ""),
+            "suggestions": list(m.replacements) if m.replacements else [],
         }
         for m in matches
     ]
 
 
-async def grammar_check(text):
-    return await asyncio.to_thread(_grammar_sync, text)
+def _summarize_sync(text: str, max_length: int = 60, min_length: int = 10) -> str:
+    # summarizer returns a list of dicts with 'summary_text'
+    res = summarizer(text, max_length=max_length, min_length=min_length, do_sample=False)
+    return res[0]["summary_text"] if res and isinstance(res, list) else ""
 
 
-async def readability_check(text):
+# --------- Async wrappers that offload blocking calls ----------
+async def grammar_check(text: str) -> List[Dict[str, Any]]:
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, _grammar_sync, text)
+
+
+async def readability_check(text: str) -> Dict[str, Any]:
+    # textstat is relatively light, but keep it async-compatible
     return {
-        "flesch": textstat.flesch_reading_ease(text),
+        "flesch_reading_ease": textstat.flesch_reading_ease(text),
         "grade_level": textstat.flesch_kincaid_grade(text),
-        "reading_time": round(textstat.reading_time(text), 2),
+        "reading_time_minutes": round(textstat.reading_time(text), 2),
     }
 
 
-async def tone_analysis(text):
+async def tone_analysis(text: str) -> Dict[str, Any]:
+    # VADER is fast; run inline
     sentiment = sentiment_analyzer.polarity_scores(text)
-    score = sentiment["compound"]
-
+    score = sentiment.get("compound", 0.0)
     tone = "Positive" if score > 0.2 else "Negative" if score < -0.2 else "Neutral"
-
     return {"tone": tone, "score": score}
 
 
-def _summary_sync(text):
-    result = summarizer(text, max_length=60, min_length=10, do_sample=False)
-    return result[0]["summary_text"]
-
-
-async def engagement_check(text):
-    summary = await asyncio.to_thread(_summary_sync, text)
+async def engagement_check(text: str) -> Dict[str, Any]:
+    # Summarizer is blocking — run in executor
+    loop = asyncio.get_event_loop()
+    summary = await loop.run_in_executor(executor, _summarize_sync, text, 60, 10)
     return {"summary": summary}
 
 
-# -------------------------------------------------------
-# API endpoint
-# -------------------------------------------------------
+# --------- API endpoints ----------
 @app.post("/analyze")
 async def analyze_text(payload: TextRequest):
     text = payload.text.strip()
@@ -964,59 +825,42 @@ async def analyze_text(payload: TextRequest):
     if not text:
         raise HTTPException(status_code=400, detail="Text cannot be empty.")
 
+    if len(text) > MAX_INPUT_CHARS:
+        raise HTTPException(status_code=413, detail=f"Text too long. Max {MAX_INPUT_CHARS} characters allowed.")
+
     try:
-        # Run all tasks in parallel
+        # Run tasks concurrently
         grammar_task = asyncio.create_task(grammar_check(text))
-        read_task = asyncio.create_task(readability_check(text))
+        readability_task = asyncio.create_task(readability_check(text))
         tone_task = asyncio.create_task(tone_analysis(text))
-        engage_task = asyncio.create_task(engagement_check(text))
+        engagement_task = asyncio.create_task(engagement_check(text))
 
         corrections, readability, tone, engagement = await asyncio.gather(
-            grammar_task, read_task, tone_task, engage_task
+            grammar_task, readability_task, tone_task, engagement_task
         )
 
         return {
-            "corrections": corrections,
+            "corrections": corrections,       # frontend-friendly key (matches your frontend expectation)
             "readability": readability,
             "tone": tone,
             "engagement": engagement,
         }
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as exc:
+        logger.exception("Error during analysis")
+        raise HTTPException(status_code=500, detail=str(exc))
 
 
-# -------------------------------------------------------
-# Health check for Render/Vercel
-# -------------------------------------------------------
 @app.get("/health")
-def health():
+def health_check():
     return {"status": "ok"}
+
+
+# --------- Graceful shutdown ----------
+@app.on_event("shutdown")
+def shutdown_event():
+    logger.info("Shutting down executor...")
+    executor.shutdown(wait=True)
+    logger.info("Executor shut down.")
+
 ```
-
----
-
-# 🎉 **This Version Solves All Major Problems**
-
-### ✔ Fully async-safe
-
-No blocking LanguageTool or Transformers inside the event loop.
-
-### ✔ Lightweight summarizer
-
-Works on Render free CPU.
-
-### ✔ Structured & scalable
-
-Uses Pydantic, modular functions, clean error handling.
-
-### ✔ Returns frontend-friendly field name (`corrections`)
-
-Avoids mismatch issues.
-
-### ✔ Production-ready
-
-Includes `/health`, safe CORS pattern, error messages, and validation.
-
----  
-
