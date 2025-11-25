@@ -205,8 +205,25 @@ async def analyze(request: Request):
 
 
 Your API runs at:
-👉 `http://127.0.0.1:8000/analyze`
+👉 `http://127.0.0.1:8000/analyze` 
+To run it locally: We can run it locally using Uvicorn e.g  
+```bash
+uvicorn main:app --reload
+```
+* `main`: refers to the name of your Python file (e.g., `main.py`).
+* `app`: refers to the FastAPI instance you created within that file (e.g., `app = FastAPI()`).
+* `--reload`: (optional) enables automatic reloading of the server when code changes are detected, which is useful during development.  
 
+**Verify the fastapi Server is running**
+Once running, you can verify your server by checking the interactive fastapi documentation. i.e  
+
+Open your browser and navigate to: http://127.0.0.1:8000/docs. This will confirm the API is up and ready to receive requests from your frontend  
+
+Ensure `fastapi` and `uvicorn` are installed for the backend server to run.  
+
+Bash
+
+pip install fastapi uvicorn
 ---
 
 ## 🖥️ 4. FRONTEND (React + Bootstrap)  
@@ -416,14 +433,6 @@ function App() {
 }
 
 export default App;
-```
-
-Run locally:
-
-```bash
-cd frontend
-npm install
-npm start
 ```
 
 ---
