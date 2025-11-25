@@ -211,62 +211,66 @@ Your API runs at:
 
 ## 🖥️ 4. FRONTEND (React + Bootstrap)  
 
-### **Step 1: Install Node.js and npm**
+### 1. Install Node.js and npm
 
-React requires Node.js and npm (Node Package Manager).
-
-1. Check if Node.js is installed:
-
+  * **Check Installation:**
+    ```bash
+    node -v
+    npm -v
+    ```
+  * If not installed, download and install the **LTS (Long Term Support) version** from the [Node.js official website](https://nodejs.org/).
+  * or use terminal commandline e.g
 ```bash
-node -v
-npm -v
+    sudo apt install nodejs npm
 ```
 
-2. If not installed, download and install from [Node.js official website](https://nodejs.org/en/download/).
-   Make sure to install the **LTS (Long Term Support)** version.
+-----
 
----
+### 2. Create React App (Recommended: Use Vite)
 
-### **Step 2: Create React App**
+For faster setup and development, **Vite** is the modern standard, replacing `create-react-app`.
 
-If you don’t have a `frontend` folder yet:
+  * **Navigate to Project Root:** e.g  
+    ```bash
+    cd writewise
+    ```
+  * **Create Vite Project:**
+    ```bash
+    npm create vite@latest frontend -- --template react
+    ```
+    (This creates the app using the official React template.)
+  * **Go into Frontend Folder:**
+    ```bash
+    cd frontend
+    ```
+  * **Install Node Modules:**
+    ```bash
+    npm install
+    ```
 
-```bash
-# Navigate to your project root
-cd writewise
+-----
 
-# Create React app in frontend folder
-npx create-react-app frontend
+### 3. Install Dependencies and Configuration
 
-# Go into frontend folder
-cd frontend
-```
+Install core libraries, making sure you are inside the `frontend` directory.
 
-This will create a standard React project with `public/` and `src/` folders.
+  * **Install Bootstrap for Styling:**
+    ```bash
+    npm install bootstrap
+    ```
+  * **Import Bootstrap CSS:** Add the following line to your main entry file (usually **`src/main.jsx`** or **`src/index.js`**):
+    ```javascript
+    import 'bootstrap/dist/css/bootstrap.min.css';
+    ```
+  * **Optional: Install Axios for HTTP requests:**
+    ```bash
+    npm install axios
+    ```
+-----
 
----
+### 4. Folder and Component Structure
 
-### **Step 3: Install Dependencies**
-
-1. Install **Bootstrap** for styling:
-
-```bash
-npm install bootstrap
-```
-
-2. Optional: Install **Axios** for HTTP requests (instead of fetch):
-
-```bash
-npm install axios
-```
-
-> ✅ Note: All dependencies must be installed **after** creating the React app.
-
----
-
-### **Step 4: Folder and Component Structure**
-
-Inside `frontend/src/`, create a `components/` folder:
+Organize your application within **`frontend/src/`** for maintainability.
 
 ```
 frontend/src/
@@ -275,52 +279,56 @@ frontend/src/
 │   ├── Editor.js       # Text input area
 │   ├── ResultCard.js   # Display analysis results
 │   └── Navbar.js       # Top navigation bar
-├── App.js
-└── index.js
+├── App.jsx             # Main application logic/layout
+└── main.jsx            # (or index.js) Application entry point
 ```
 
-> This keeps your React app organized.
+-----
 
----
+### 5. Connect Frontend to Backend (Environment Variables)
 
-### **Step 5: Connect Frontend to Backend**
+Create an environment variable to securely store your API URL.
 
-Create an environment variable to store your API URL:
+  * In the **`frontend`** folder, create a **`.env`** file:
+      * **If using Vite:** Variables must be prefixed with `VITE_`.
+        ```
+        VITE_API_URL=http://127.0.0.1:8000/analyze
+        ```
+      * **If using create-react-app (CRA):** Variables must be prefixed with `REACT_APP_`.
+        ```
+        REACT_APP_API_URL=http://127.0.0.1:8000/analyze
+        ```
+  * **Access in your React App:**
+    ```javascript
+    // If using Vite
+    const API_URL = import.meta.env.VITE_API_URL; 
 
-1. In the `frontend` folder, create a `.env` file:
+    // If using CRA
+    const API_URL = process.env.REACT_APP_API_URL;
+    ```
 
-```
-REACT_APP_API_URL=http://127.0.0.1:8000/analyze
-```
+-----
 
-2. Access it in `App.js`:
+### 6. Run React Locally
 
-```javascript
-const API_URL = process.env.REACT_APP_API_URL;
-```
+  * **Make sure your backend is running** at `http://127.0.0.1:8000` for local testing.
+  * **Start the Development Server:**
+    ```bash
+    cd frontend
+    npm run dev  # If using Vite
+    # OR
+    npm start    # If using create-react-app
+    ```
 
-> When deploying, you can replace this with your Render backend URL.
+The app will typically open at `http://localhost:5173` (Vite) or `http://localhost:3000` (CRA).
 
----
+-----
 
-### **Step 7: Run React Locally**
+### 7. Deployment Notes
 
-```bash
-cd frontend
-npm install       # install dependencies
-npm start         # start development server
-```
-
-* The app will open at `http://localhost:3000`
-* Make sure your **backend is running** at `http://127.0.0.1:8000` for local testing.
-
----
-
-### **Step 8: Deployment Notes**
-
-* Replace `.env` variable with your Render backend URL when deploying.
-* You can deploy frontend to **GitHub Pages**, **Vercel**, or **Netlify**.
-* Ensure **CORS** is enabled in FastAPI backend for deployed frontend to communicate with API.
+  * **Update `.env`:** Replace the local URL with your **Render backend URL** before deploying.
+  * **Deployment Platforms:** You can deploy the frontend to **Vercel, Netlify, or GitHub Pages.**
+  * **Crucial Step: CORS:** Ensure **CORS is properly configured** and enabled in your FastAPI backend to allow the deployed frontend to communicate with the API.  
 
 ---
 
