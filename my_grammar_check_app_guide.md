@@ -221,9 +221,9 @@ Open your browser and navigate to: http://127.0.0.1:8000/docs. This will confirm
 
 Ensure `fastapi` and `uvicorn` are installed for the backend server to run.  
 
-Bash
-
+```Bash
 pip install fastapi uvicorn
+```
 ---
 
 ## 🖥️ 4. FRONTEND (React + Bootstrap)  
