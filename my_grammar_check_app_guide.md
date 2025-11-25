@@ -88,7 +88,6 @@ Use ```pip``` which is the recommended Python's package installer. Ensure you do
 ## In our case, we are going to use:
 - `fastapi` to build Backend API
 - `uvicorn` as the ASGI server to run FastAPI
-- `aiohttp` to support async requests (used internally for async tasks)
 - `language-tool-python` for grammar and spelling correction
 - `textstat` for readability scoring
 - `vaderSentiment` for tone and sentiment analysis
@@ -141,7 +140,7 @@ Here’s a **blueprint example:**
 ```python
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-import asyncio, aiohttp, textstat
+import asyncio, textstat
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import language_tool_python
 from transformers import pipeline
@@ -210,7 +209,120 @@ Your API runs at:
 
 ---
 
-## 🖥️ 4. FRONTEND (React + Bootstrap)
+## 🖥️ 4. FRONTEND (React + Bootstrap)  
+
+### **Step 1: Install Node.js and npm**
+
+React requires Node.js and npm (Node Package Manager).
+
+1. Check if Node.js is installed:
+
+```bash
+node -v
+npm -v
+```
+
+2. If not installed, download and install from [Node.js official website](https://nodejs.org/en/download/).
+   Make sure to install the **LTS (Long Term Support)** version.
+
+---
+
+### **Step 2: Create React App**
+
+If you don’t have a `frontend` folder yet:
+
+```bash
+# Navigate to your project root
+cd writewise
+
+# Create React app in frontend folder
+npx create-react-app frontend
+
+# Go into frontend folder
+cd frontend
+```
+
+This will create a standard React project with `public/` and `src/` folders.
+
+---
+
+### **Step 3: Install Dependencies**
+
+1. Install **Bootstrap** for styling:
+
+```bash
+npm install bootstrap
+```
+
+2. Optional: Install **Axios** for HTTP requests (instead of fetch):
+
+```bash
+npm install axios
+```
+
+> ✅ Note: All dependencies must be installed **after** creating the React app.
+
+---
+
+### **Step 4: Folder and Component Structure**
+
+Inside `frontend/src/`, create a `components/` folder:
+
+```
+frontend/src/
+│
+├── components/
+│   ├── Editor.js       # Text input area
+│   ├── ResultCard.js   # Display analysis results
+│   └── Navbar.js       # Top navigation bar
+├── App.js
+└── index.js
+```
+
+> This keeps your React app organized.
+
+---
+
+### **Step 5: Connect Frontend to Backend**
+
+Create an environment variable to store your API URL:
+
+1. In the `frontend` folder, create a `.env` file:
+
+```
+REACT_APP_API_URL=http://127.0.0.1:8000/analyze
+```
+
+2. Access it in `App.js`:
+
+```javascript
+const API_URL = process.env.REACT_APP_API_URL;
+```
+
+> When deploying, you can replace this with your Render backend URL.
+
+---
+
+### **Step 7: Run React Locally**
+
+```bash
+cd frontend
+npm install       # install dependencies
+npm start         # start development server
+```
+
+* The app will open at `http://localhost:3000`
+* Make sure your **backend is running** at `http://127.0.0.1:8000` for local testing.
+
+---
+
+### **Step 8: Deployment Notes**
+
+* Replace `.env` variable with your Render backend URL when deploying.
+* You can deploy frontend to **GitHub Pages**, **Vercel**, or **Netlify**.
+* Ensure **CORS** is enabled in FastAPI backend for deployed frontend to communicate with API.
+
+---
 
 ### `App.js`
 
@@ -275,11 +387,11 @@ function App() {
           </ul>
 
           <h5>✏️ Grammar Suggestions</h5>
-          {result.corrections.length === 0 ? (
+          {result.grammar.length === 0 ? (
             <p>No grammar issues found — excellent writing!</p>
           ) : (
             <ul>
-              {result.corrections.map((c, i) => (
+              {result.grammar.map((c, i) => (
                 <li key={i}>
                   <strong>{c.message}</strong> — <em>{c.context}</em>
                   {c.suggestions.length > 0 && (
