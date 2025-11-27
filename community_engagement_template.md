@@ -355,3 +355,12 @@ Before submitting:
 
 **Template Version:** 1.0  
 **Adaptable for:** Disarmament, peacebuilding, community policing, conflict resolution, humanitarian operations
+
+## Prompts to generate image
+
+**“Generate a realistic outdoor community engagement scene set in a pastoralist region of Kenya (North Rift/Baringo). Use the security officer from the reference image as the central figure. The officer is seated calmly among a group of pastoralist youth who sit around him in a semi-circle. The youths are relaxed, listening, and engaging in an open dialogue with the officer. The atmosphere should show mutual trust, cooperation, and peaceful interaction.**
+
+**The setting includes acacia trees, open savannah grassland, traditional shukas, beadwork, and herding sticks. Warm late-afternoon sunlight casts soft shadows, giving a hopeful and collaborative mood. Capture the officer maintaining a calm, approachable posture while the youths interact confidently. High realism, documentary photography style, natural colors, and respectful representation.”**
+
+---
+
