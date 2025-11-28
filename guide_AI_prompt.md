@@ -5,7 +5,7 @@ Only Very few people:
 - set up automations
 - integrate AI with tools
 - create long-term memory systems
-- create business-wide AI frameworks
+- create business-wide AI frameworks  
 So knowing these mechanisms does put you ahead. Try to learn them.  
 
 Personality and style modifiers prompts that give distinct and unique response features
