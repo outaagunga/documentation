@@ -1542,3 +1542,66 @@ This helps you *see* whether those entries really line up with the daily-wick be
 
 Would you like me to include an optional block that **plots one specific day in detail** (showing the previous close line, entry, SL, and TP visually)? It’s great for reviewing a single example trade.
 
+
+# Cryptocurrency Trading Guide
+
+## Getting Started
+
+**Setting Up Your Account**
+- Download the Binance app from your device's official app store
+- Complete the signup process with your email and a strong password
+- Verify your identity using your ID card (required for trading and withdrawals)
+- Enable two-factor authentication (2FA) for added security
+
+**Learning the Platform**
+- Take time to explore the Binance interface and familiarize yourself with its features
+- Start with the demo/practice mode if available to understand how trades work
+- Learn the difference between spot trading, futures, and other trading options
+
+## Understanding Price Charts
+
+**Candlestick Charts Basics**
+Candlestick charts are the foundation of technical analysis. Each candle shows:
+- Opening price
+- Closing price
+- Highest price (wick/shadow on top)
+- Lowest price (wick/shadow on bottom)
+
+Green/white candles indicate price increases, while red/black candles show price decreases.
+
+## Funding Your Account
+
+- Navigate to the wallet section and select "Deposit"
+- Choose your preferred deposit method (bank transfer, card, P2P trading)
+- Start with an amount you can afford to lose while learning
+- Never invest money you need for essential expenses
+
+## Technical Analysis Tools
+
+**RSI (Relative Strength Index) Indicator**
+The RSI measures momentum and helps identify potential buying and selling opportunities:
+- **RSI below 30**: Asset is potentially oversold—consider this a buying signal
+- **RSI above 70**: Asset is potentially overbought—consider this a selling signal
+- RSI between 30-70: Neutral zone, wait for clearer signals
+
+**Support and Resistance Lines**
+- **Support line**: Price level where an asset tends to stop falling and bounce back up
+- **Resistance line**: Price level where an asset tends to stop rising and pull back down
+- When price approaches these lines, watch closely—breakouts or reversals often occur here
+- Draw these lines by connecting previous price peaks (resistance) or valleys (support)
+
+## Important Reminders
+
+**Risk Management**
+- Never risk more than 2-5% of your capital on a single trade
+- Always use stop-loss orders to limit potential losses
+- Don't trade based on emotions—stick to your strategy
+- No indicator is 100% accurate; use multiple confirmation signals
+
+**Continuous Learning**
+- Practice with small amounts before scaling up
+- Keep a trading journal to track your decisions and learn from them
+- Stay updated on market news and cryptocurrency developments
+- Consider taking additional courses on technical analysis and risk management
+
+**Warning**: Cryptocurrency trading carries significant risk. Prices are highly volatile, and you can lose your entire investment. Only trade with money you can afford to lose, and never borrow money to trade.
