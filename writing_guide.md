@@ -266,6 +266,9 @@ Prompt:
 Do the same for other preceding sections  
 
 ## 4. Editing like Grammarly Pro  
+
+> Check the text for grammar, flow, and readability. Rewrite everything in active voice. Break long paragraphs into shorter, scannable sections. Identify and fix any sentence fragments.  
+
 🧠 Grammarly Premium–Style Editing Prompt  
 
 Copy and use this whenever you want ChatGPT to act like Grammarly Premium 👇
