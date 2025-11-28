@@ -8,11 +8,11 @@
 - Topic ______________  
 - Target Audience _______________  
 - Geography (e.g Kenya or Global) _____________
-- Search Intent (e.g why do people search this .... it is for Information/ Transaction e.tc) _______________  
-- My Goal/ Purpose is to (e.g educate, sell, entertain) _____________
+- Search Intent (e.g why do people search this .... it is for Informational / Transactional / Navigational / Commercial Investigation e.tc) _______________  
+- My Goal/ Purpose is to (e.g Educate / Sell / Entertain / Build Authority / Drive Action) _____________
 - Total number of words ______________  
   
-Title (Primary Keyword)
+Title (Primary Keyword) (Craft a compelling, keyword-optimized title)
 Introduction
 - Hook: (Choose one: Analogy/anecdotal, Story, Provocative Question, Striking Statistic)
 - Pain point (define the problem your audience face)
