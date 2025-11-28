@@ -1,4 +1,13 @@
 
+## Most people only use AI to chat, summarize, or rewrite.
+Only Very few people:
+- build workflows
+- set up automations
+- integrate AI with tools
+- create long-term memory systems
+- create business-wide AI frameworks
+So knowing these mechanisms does put you ahead. Try to learn them.  
+
 Personality and style modifiers prompts that give distinct and unique response features
 
 ---
