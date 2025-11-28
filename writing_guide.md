@@ -9,49 +9,55 @@
 - Target Audience _______________  
 - Geography (e.g Kenya or Global) _____________
 - Search Intent (e.g why do people search this .... it is for Information/ Transaction e.tc) _______________  
-- My Goal/ Purpose is to (e.g educate, sell, entertain) _____________ 
+- My Goal/ Purpose is to (e.g educate, sell, entertain) _____________
+- Total number of words ______________  
   
 Title (Primary Keyword)
 Introduction
-- Hook (analogy/anecdotal, question, statistics)
-- Pain point (define the problem)
-- Show empathy
+- Hook: (Choose one: Analogy/anecdotal, Story, Provocative Question, Striking Statistic)
+- Pain point (define the problem your audience face)
+- Show empathy (Acknowledge their struggle or frustration)
 - Promise/value (what will they gain after reading this)
-- Transition
+- Transition (Bridge smoothly into the main content)
 
 H2 #1 Understanding (Semantic keyword)
-- 2–3 paragraphs
-- H3: Supporting example
-- H3: Data or expert reference
+- 2–3 paragraphs (establishing context and foundational knowledge)
+- H3: Supporting example or case
+- H3: Data point or expert reference
 - Key takeaway  
 
 H2 #2 How to/ Steps (Semantic keyword variation)
-- Bullets, Step by step, visuals, practical insights
+- Format: Numbered steps, bulleted tips, or visual walkthroughs
+- Include: Practical insights, actionable advice, screenshots/diagrams if applicable
 - Key takeaway
 
 H2 #3 (User intent questions/ Common Challenges)
-- Structured answers (QA format)
+- Format: Structured Q&A addressing frequent concerns
+- Tone: Direct, solution-focused answers
 - Key takeaway  
 
-H2 #4 Case studies / Local relevance / Tools / Implementations
-- Real Examples
+H2 #4 (Case Studies / Local Relevance / Tools / Real-World Application)
+- Content: Real examples, success stories, tool recommendations, or local context
+- Purpose: Build credibility and make content tangible
 - Key takeaway  
 
 Conclusion  
-- Recap key insights
-- Reaffirm reader benefit
-- Optional reflective question
-- CTA
+- Recap: Summarize 2–3 key insights from the article
+- Reaffirm Benefit: Remind readers what they've gained
+- Optional: Pose a reflective question or next-step consideration
+- CTA (Call to Action): (Download, subscribe, comment, share, contact, purchase)
 
 FAQs (schema-friendly)
 - Q1…
 - Q2…
 
 SEO Final Touches  
-- Meta title:
-- Meta description:
+- Meta Title (50–60 characters):
+- Meta Description (150–160 characters):
+- Primary Keyword:
+- Secondary Keywords:
 - Internal links:
-- External links:
+- External Links (2–3 authoritative sources):
 ```
 
 
