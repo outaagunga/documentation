@@ -262,6 +262,64 @@ For faster setup and development, **Vite** is the modern standard, replacing `cr
     ```bash
     npm install
     ```
+Vite works with node version 20 and above. If you get error installing vite then,
+
+✅ Remove old Node
+✅ Install latest Node
+
+### **STEP 1 — Remove the old Node**
+
+```bash
+sudo apt remove nodejs npm -y
+```
+
+### Then Remove all old Node files
+
+```bash
+sudo apt remove --purge nodejs libnode-dev npm -y
+sudo apt autoremove -y
+```
+
+> `--purge` ensures config files and headers are removed.
+> `autoremove` cleans any leftover dependencies.
+
+### Then Clean the apt cache
+
+```bash
+sudo apt clean
+sudo rm -rf /var/cache/apt/archives/nodejs_*.deb
+```
+
+This prevents the broken `.deb` from being reused.
+
+
+### **STEP 2 — Install Node 20 (or any new version you want)**
+
+Copy/paste these:
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+```
+if you want another version, just change `_20.x` with the version you want  
+
+### **STEP 3 — Confirm**
+
+```bash
+node -v
+npm -v
+```
+
+You will now see Node 20 installed (or the new version you indicated).
+
+
+# 🟢 After Node 20 is installed → Vite will work
+
+Try again:
+
+```bash
+npm create vite@latest frontend -- --template react
+```
 
 -----
 
