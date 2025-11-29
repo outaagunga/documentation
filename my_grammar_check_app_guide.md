@@ -92,7 +92,6 @@ Use ```pip``` which is the recommended Python's package installer. Ensure you do
 - `textstat` for readability scoring
 - `vaderSentiment` for tone and sentiment analysis
 - `transformers` and `torch` for text summarization using the BART model
-- `fastapi.middleware.cors` (included within FastAPI) to enable CORS so the React frontend can access the API
 
 We are going to install all the libraries using pip command e.g:
 ```bash
