@@ -1589,8 +1589,8 @@ The RSI measures momentum and helps identify potential buying and selling opport
 - RSI between 30-70: Neutral zone, wait for clearer signals
 
 **MACD**
-- When yellow line crosses purple line upwards -- consider buying
-- If yellow line crosses the purple line downwards -- consider selling
+- When yellow line (fast line/MACD line) crosses purple line (slow line/ signal line) upwards -- consider buying
+- If yellow line crosses the purple line downwards -- consider selling  
 
 **Support and Resistance Lines**
 - **Support line**: Price level where an asset tends to stop falling and bounce back up
