@@ -1557,7 +1557,11 @@ Would you like me to include an optional block that **plots one specific day in 
 - Take time to explore the Binance interface and familiarize yourself with its features
 - Start with the demo/practice mode if available to understand how trades work
 - Learn the difference between spot trading, futures, and other trading options
-
+# Wallets in binance account 
+- Funding wallet
+- Futures wallet
+- Spot wallet
+  
 ## Understanding Price Charts
 
 **Candlestick Charts Basics**
@@ -1583,6 +1587,10 @@ The RSI measures momentum and helps identify potential buying and selling opport
 - **RSI below 30**: Asset is potentially oversold—consider this a buying signal
 - **RSI above 70**: Asset is potentially overbought—consider this a selling signal
 - RSI between 30-70: Neutral zone, wait for clearer signals
+
+**MACD**
+- When yellow line crosses purple line upwards -- consider buying
+- If yellow line crosses the purple line downwards -- consider selling
 
 **Support and Resistance Lines**
 - **Support line**: Price level where an asset tends to stop falling and bounce back up
