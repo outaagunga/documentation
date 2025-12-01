@@ -1957,8 +1957,8 @@ npm run dev
 * **Deployment**: `npm run build` produces `dist/`. Deploy to Vercel / Netlify / any static host.
 
 ---  
-## Mar Adek  
-**Delivery Plan**
+## When the project is too long, you can generate it into chunks to avoid interruption   
+**Delivery Plan e.g**
 - Chunk 1 — README Header + Overview + Install Steps + Project Structure
 - Chunk 2 — Config Files (package.json, vite.config.js, postcss.config.js, tailwind.config.js)
 - Chunk 3 — Core Files (index.html, main.jsx, index.css, App.jsx)
