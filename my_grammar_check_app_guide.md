@@ -1175,10 +1175,10 @@ def _grammar_sync(text: str) -> List[Dict[str, Any]]:
     ]
 
 
-def _summarize_sync(text: str, max_length: int = 60, min_length: int = 10) -> str:
+def _summarize_sync(text: str) -> str:
     summarizer = get_summarizer()
-    res = summarizer(text, max_length=max_length, min_length=min_length, do_sample=False)
-    return res[0]["summary_text"] if res else ""
+    res = summarizer(text, do_sample=False)
+    return res[0]["summary_text"] if res else ""  
 
 
 # -------- Async wrappers ----------
