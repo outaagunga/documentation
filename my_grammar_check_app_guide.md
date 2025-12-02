@@ -254,6 +254,7 @@ uvicorn main:app --reload  # if your main app is named main.py
 or
 uvicorn app:app --reload  # if your main app is named app.py  
 ```
+Ensure you `cd` to the directory where the `main.py` or `app.py` is located before starting the uvicorn server  
 * `main`: refers to the name of your Python file (e.g., `main.py`).
 * `app`: refers to the FastAPI instance you created within that file (e.g., `app = FastAPI()`).
 * `--reload`: (optional) enables automatic reloading of the server when code changes are detected, which is useful during development.  
