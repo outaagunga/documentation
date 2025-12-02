@@ -276,7 +276,10 @@ are responding correctly before proceeding with frontend work. You can do it on 
 **We are going to do it on thunderclient**
 
 **Step 1: Install Thunder Client**
-
+Thunder client is a vs code `extension`. To install it:  
+- Go to vscode- then extensions
+- Search for thunder client and install it
+- It should appear on the side of the vscode after installation, click on it to open it  
 
 **Step 2: Create a New Request**
 
