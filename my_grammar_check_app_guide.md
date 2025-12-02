@@ -911,7 +911,7 @@ When using LLMs, require JSON-only responses and validate/parse them server-side
 ---
 
 ## Recommended backend codes:
-**optimized code version: 1  
+**optimized code version: 1**  
 ```python
 # main.py
 import asyncio
@@ -1074,7 +1074,7 @@ def shutdown_event():
 ```
 ---
 
-**Optimized code version: 2
+**Optimized code version: 2**
 ```python
 # optimized_main.py
 import asyncio
