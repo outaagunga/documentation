@@ -93,16 +93,27 @@ Use ```pip``` which is the recommended Python's package installer. Ensure you do
 - `vaderSentiment` for tone and sentiment analysis
 - `transformers` and `torch` for text summarization using the BART model
 
-To be able to run language-too-python on ubuntu, you need to also install `Java` version 8+  
-```bash
-sudo apt install default-jre
-```
-
-We are going to install all the libraries using pip command e.g:
+We are going to install all the libraries using pip command e.g:  
 ```bash
 pip install --upgrade pip
 pip install <dependency-name>  
 ```
+
+To be able to run language-too-python on ubuntu, you need to also install `Java` version 8+  
+```bash
+sudo apt install default-jre
+```
+if you need specific version of Java, un-install the version installed using the command:
+```bash
+sudo apt remove default-jre
+sudo apt autoremove
+```
+then install the needed version by specifying the version using command e.g
+```bash
+sudo apt update
+sudo apt install openjdk-21-jre
+```
+Confirm if installation is successful using command `java -version
 
 ---
 
