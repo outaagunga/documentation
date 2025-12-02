@@ -1205,6 +1205,7 @@ async def tone_analysis(text: str):
 
 async def engagement_check(text: str):
     loop = asyncio.get_running_loop()
+    summary = await loop.run_in_executor(executor, _summarize_sync, text)
     return {"summary": summary}
 
 
