@@ -93,6 +93,11 @@ Use ```pip``` which is the recommended Python's package installer. Ensure you do
 - `vaderSentiment` for tone and sentiment analysis
 - `transformers` and `torch` for text summarization using the BART model
 
+To be able to run language-too-python on ubuntu, you need to also install `Java` version 8+  
+```bash
+sudo apt install default-jre
+```
+
 We are going to install all the libraries using pip command e.g:
 ```bash
 pip install --upgrade pip
@@ -206,7 +211,9 @@ Your API runs at:
 👉 `http://127.0.0.1:8000/analyze` 
 To run it locally: We can run it locally using Uvicorn e.g  
 ```bash
-uvicorn main:app --reload
+uvicorn main:app --reload  # if your main app is named main.py  
+or
+uvicorn app:app --reload  # if your main app is named app.py  
 ```
 * `main`: refers to the name of your Python file (e.g., `main.py`).
 * `app`: refers to the FastAPI instance you created within that file (e.g., `app = FastAPI()`).
