@@ -1205,7 +1205,7 @@ async def tone_analysis(text: str):
 
 async def engagement_check(text: str):
     loop = asyncio.get_running_loop()
-    return {"summary": await loop.run_in_executor(executor, _summarize_sync, text, 60, 10)}
+    return {"summary": summary}
 
 
 # -------- API endpoint ----------
