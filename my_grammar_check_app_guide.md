@@ -910,7 +910,8 @@ When using LLMs, require JSON-only responses and validate/parse them server-side
 
 ---
 
-## Recommended backend code
+## Recommended backend codes:
+**optimized code version: 1  
 ```python
 # main.py
 import asyncio
@@ -1071,3 +1072,169 @@ def shutdown_event():
     logger.info("Executor shut down.")
 
 ```
+---
+
+**Optimized code version: 2
+```python
+# optimized_main.py
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Dict, List
+import os
+import logging
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+import textstat
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import language_tool_python
+from transformers import pipeline
+
+# -------- Logging ----------
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("ai-writing-assistant")
+
+# -------- Config ----------
+MAX_INPUT_CHARS = 50000
+EXECUTOR_WORKERS = int(os.getenv("EXECUTOR_WORKERS", "4"))
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+]
+
+# -------- ThreadPool ----------
+executor = ThreadPoolExecutor(max_workers=EXECUTOR_WORKERS)
+
+# -------- FastAPI ----------
+app = FastAPI(title="AI Writing Assistant API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
+
+# -------- Lazy model loading ----------
+def get_grammar_tool():
+    if not hasattr(get_grammar_tool, "instance"):
+        logger.info("Starting LanguageTool server...")
+        get_grammar_tool.instance = language_tool_python.LanguageTool("en-US")
+        logger.info("LanguageTool ready.")
+    return get_grammar_tool.instance
+
+
+def get_sentiment_analyzer():
+    if not hasattr(get_sentiment_analyzer, "instance"):
+        get_sentiment_analyzer.instance = SentimentIntensityAnalyzer()
+    return get_sentiment_analyzer.instance
+
+
+def get_summarizer():
+    if not hasattr(get_summarizer, "instance"):
+        device = 0 if os.environ.get("USE_GPU", "0") == "1" else -1
+        logger.info(f"Loading summarizer model on device {device}...")
+        get_summarizer.instance = pipeline(
+            "summarization",
+            model="sshleifer/distilbart-cnn-6-6",
+            device=device
+        )
+        logger.info("Summarizer ready.")
+    return get_summarizer.instance
+
+
+# -------- Request / Response ----------
+class TextRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=MAX_INPUT_CHARS)
+
+
+# -------- Helper sync functions ----------
+def _grammar_sync(text: str) -> List[Dict[str, Any]]:
+    tool = get_grammar_tool()
+    matches = tool.check(text)
+    return [
+        {
+            "message": m.message,
+            "context": getattr(m, "context", ""),
+            "suggestions": list(m.replacements) if m.replacements else [],
+        }
+        for m in matches
+    ]
+
+
+def _summarize_sync(text: str, max_length: int = 60, min_length: int = 10) -> str:
+    summarizer = get_summarizer()
+    res = summarizer(text, max_length=max_length, min_length=min_length, do_sample=False)
+    return res[0]["summary_text"] if res else ""
+
+
+# -------- Async wrappers ----------
+async def grammar_check(text: str):
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(executor, _grammar_sync, text)
+
+
+async def readability_check(text: str):
+    return {
+        "flesch_reading_ease": textstat.flesch_reading_ease(text),
+        "grade_level": textstat.flesch_kincaid_grade(text),
+        "reading_time_minutes": round(textstat.reading_time(text), 2),
+    }
+
+
+async def tone_analysis(text: str):
+    analyzer = get_sentiment_analyzer()
+    sentiment = analyzer.polarity_scores(text)
+    score = sentiment.get("compound", 0.0)
+    tone = "Positive" if score > 0.2 else "Negative" if score < -0.2 else "Neutral"
+    return {"tone": tone, "score": score}
+
+
+async def engagement_check(text: str):
+    loop = asyncio.get_running_loop()
+    return {"summary": await loop.run_in_executor(executor, _summarize_sync, text, 60, 10)}
+
+
+# -------- API endpoint ----------
+@app.post("/analyze")
+async def analyze_text(payload: TextRequest):
+    text = payload.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Text cannot be empty.")
+
+    try:
+        tasks = [
+            asyncio.create_task(grammar_check(text)),
+            asyncio.create_task(readability_check(text)),
+            asyncio.create_task(tone_analysis(text)),
+            asyncio.create_task(engagement_check(text)),
+        ]
+        grammar, readability, tone, engagement = await asyncio.gather(*tasks)
+        return {
+            "corrections": grammar,
+            "readability": readability,
+            "tone": tone,
+            "engagement": engagement,
+        }
+    except Exception as e:
+        logger.exception("Error during analysis")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
+
+# -------- Graceful shutdown ----------
+@app.on_event("shutdown")
+def shutdown_event():
+    logger.info("Shutting down executor...")
+    executor.shutdown(wait=True)
+    logger.info("Executor shut down.")
+```
+---
+
+
