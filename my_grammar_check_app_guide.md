@@ -270,6 +270,106 @@ Ensure `fastapi` and `uvicorn` are installed for the backend server to run.
 pip install fastapi uvicorn
 ```
 ---
+## You can test your endpoint to see if **Grammar, Engagement, Readability, and Tone**
+are responding correctly before proceeding with frontend work. You can do it on Postman or Thunderclient.  
+
+**We are going to do it on thunderclient**
+
+**Step 1: Install Thunder Client**
+
+
+**Step 2: Create a New Request**
+
+1. In Thunder Client, click **New Request**
+2. Choose method: **POST**
+3. In the URL field, e.g ours is:
+
+```
+http://127.0.0.1:8000/analyze
+```
+
+**Step 3: Add the JSON body**
+
+1. Click the **Body** tab
+2. Select **JSON**
+3. Paste your test text inside:
+
+```json
+{
+  "text": "This is a sample text that may contains grammar issues and also we want to check engagement and tone."
+}
+```
+
+**Step 4: Hit SEND**
+
+Click the **Send** button.
+
+Your API will return something like:
+
+```json
+{
+  "grammar": [
+      {
+          "message": "Possible grammar error",
+          "context": "text around the issue",
+          "suggestions": ["suggestion1", "suggestion2"]
+      }
+  ],
+  "readability": {
+      "flesch": 65.2,
+      "grade_level": 7.3,
+      "reading_time": 0.12
+  },
+  "tone": {
+      "tone": "Neutral",
+      "score": 0.05
+  },
+  "engagement": {
+      "summary": "A short summary generated from your text."
+  }
+}
+```
+You've now tested:
+
+* **Grammar check**
+* **Engagement summary**
+* **Readability score**
+* **Tone sentiment**
+
+---
+
+## 💡 TIP: Test each part separately by changing the text
+
+**Example: test only grammar**
+
+```json
+{
+  "text": "This sentences are bad constructed."
+}
+```
+
+**Test tone**
+
+```json
+{
+  "text": "I am very happy with this amazing experience!"
+}
+```
+
+**Test readability**
+
+```json
+{
+  "text": "In an attempt to elucidate the multifaceted intricacies..."
+}
+```
+
+**Test summarization (engagement)**
+
+Paste a long paragraph.
+
+---
+
 
 ## 🖥️ 4. FRONTEND (React + Bootstrap)  
 
