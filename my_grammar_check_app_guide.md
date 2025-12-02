@@ -147,8 +147,11 @@ import asyncio, textstat
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import language_tool_python
 from transformers import pipeline
+from functools import lru_cache
+
 
 app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -156,17 +159,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load heavy models only once
-tool = language_tool_python.LanguageTool('en-US')
-analyzer = SentimentIntensityAnalyzer()
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+
+# ---------------------------
+# LAZY LOADING OF HEAVY MODELS
+# ---------------------------
+
+@lru_cache(maxsize=1)
+def get_grammar_tool():
+    """Start LanguageTool server only once, on the first request."""
+    return language_tool_python.LanguageTool('en-US')
+
+
+@lru_cache(maxsize=1)
+def get_sentiment_analyzer():
+    return SentimentIntensityAnalyzer()
+
+
+@lru_cache(maxsize=1)
+def get_summarizer():
+    return pipeline("summarization", model="facebook/bart-large-cnn")
+
+
+# ---------------------------
+# ANALYSIS FUNCTIONS
+# ---------------------------
 
 async def grammar_check(text):
+    tool = get_grammar_tool()
     matches = tool.check(text)
+
     return [
         {"message": m.message, "context": m.context, "suggestions": m.replacements}
         for m in matches
     ]
+
 
 async def readability_check(text):
     return {
@@ -175,14 +201,27 @@ async def readability_check(text):
         "reading_time": round(textstat.reading_time(text), 2)
     }
 
+
 async def tone_analysis(text):
+    analyzer = get_sentiment_analyzer()
     sentiment = analyzer.polarity_scores(text)
-    tone = "Positive" if sentiment['compound'] > 0.2 else "Negative" if sentiment['compound'] < -0.2 else "Neutral"
+
+    tone = "Positive" if sentiment['compound'] > 0.2 \
+        else "Negative" if sentiment['compound'] < -0.2 \
+        else "Neutral"
+
     return {"tone": tone, "score": sentiment['compound']}
 
+
 async def engagement_check(text):
+    summarizer = get_summarizer()
     summary = summarizer(text, max_length=30, min_length=5, do_sample=False)
     return {"summary": summary[0]['summary_text']}
+
+
+# ---------------------------
+# API ROUTE
+# ---------------------------
 
 @app.post("/analyze")
 async def analyze(request: Request):
