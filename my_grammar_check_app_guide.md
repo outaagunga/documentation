@@ -1711,6 +1711,409 @@ async def health_check():
     return {"status": "ok"}
 ```
 ---
+**Optimized code version: 4**
+```bash
+# app_main.py
+import asyncio
+import logging
+import os
+import re
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Dict, List, Optional, Tuple
+
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, BaseSettings, Field
+from starlette.concurrency import run_in_threadpool
+import httpx  # <--- NEW: For remote inference HTTP requests
+
+# third-party libs (same as original)
+import textstat
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import language_tool_python
+
+# removed heavy transformers imports
+# from transformers import pipeline, Pipeline
+
+# Optional spell libraries
+try:
+    from symspellpy import SymSpell, Verbosity
+    SYMSPELL_AVAILABLE = True
+except Exception:
+    SYMSPELL_AVAILABLE = False
+
+try:
+    from spellchecker import SpellChecker
+    PYSPELL_AVAILABLE = True
+except Exception:
+    PYSPELL_AVAILABLE = False
+
+logger = logging.getLogger("ai-writing-assistant")
+logging.basicConfig(level=logging.INFO)
+
+
+# ------------------------------------------------------------
+# Configuration (Updated: include remote inference settings)
+# ------------------------------------------------------------
+class Settings(BaseSettings):
+    max_input_chars: int = 50_000
+    executor_workers: int = int(os.getenv("EXECUTOR_WORKERS", "4"))
+    allowed_origins: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+
+    # no local GPU usage anymore
+    use_gpu: bool = False
+
+    # remote inference URL + token
+    remote_summarizer_url: str = os.getenv(
+        "REMOTE_SUMMARIZER_URL",
+        "https://api-inference.huggingface.co/models/facebook/bart-large-cnn",
+    )
+    remote_summarizer_token: Optional[str] = os.getenv("REMOTE_SUMMARIZER_TOKEN")
+
+    short_text_word_threshold: int = int(os.getenv("SHORT_TEXT_WORD_THRESHOLD", "20"))
+    min_sentence_for_readability: int = int(os.getenv("MIN_SENTENCE_FOR_READABILITY", "3"))
+    symspell_freq_path: Optional[str] = os.getenv("SYMSPELL_FREQ_PATH")
+    request_timeout_seconds: int = int(os.getenv("REQUEST_TIMEOUT_SECONDS", "30"))
+
+    class Config:
+        env_file = ".env"
+
+
+settings = Settings()
+
+
+# ------------------------------------------------------------
+# FastAPI setup
+# ------------------------------------------------------------
+app = FastAPI(title="AI Writing Assistant API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.allowed_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
+
+
+class TextRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=settings.max_input_chars)
+
+
+# ------------------------------------------------------------
+# Utility helpers
+# ------------------------------------------------------------
+_TOKEN_RE = re.compile(r"\S+")
+
+
+def tokenize_preserving_indices(text: str) -> List[Tuple[str, int, int]]:
+    return [(m.group(0), m.start(), m.end()) for m in _TOKEN_RE.finditer(text)]
+
+
+def simple_normalize_text(text: str) -> str:
+    text = text.strip()
+    text = re.sub(r"\s+", " ", text)
+    text = re.sub(r"\s+([,.;:!?])", r"\1", text)
+    return text
+
+
+# ------------------------------------------------------------
+# Startup
+# ------------------------------------------------------------
+@app.on_event("startup")
+async def startup_event():
+    app.state.executor = ThreadPoolExecutor(max_workers=settings.executor_workers)
+    app.state._model_locks = {
+        "grammar": asyncio.Lock(),
+        "sentiment": asyncio.Lock(),
+        "summarizer": asyncio.Lock(),   # stays for API rate-limiting safety
+        "spell": asyncio.Lock(),
+    }
+    app.state._instances = {
+        "grammar": None,
+        "sentiment": None,
+        "summarizer": True,  # <--- No local summarizer, just mark enabled
+        "spell": None,
+    }
+    app.state.semaphore = asyncio.Semaphore(settings.executor_workers)
+    logger.info("Startup complete (remote inference mode).")
+
+
+@app.on_event("shutdown")
+def shutdown_event():
+    executor: ThreadPoolExecutor = app.state.executor
+    executor.shutdown(wait=True)
+
+
+# ------------------------------------------------------------
+# Lazy getters (updated summarizer)
+# ------------------------------------------------------------
+async def get_grammar_tool():
+    if app.state._instances["grammar"]:
+        return app.state._instances["grammar"]
+    async with app.state._model_locks["grammar"]:
+        if app.state._instances["grammar"]:
+            return app.state._instances["grammar"]
+        def init():
+            return language_tool_python.LanguageTool("en-US")
+        tool = await run_in_threadpool(init)
+        app.state._instances["grammar"] = tool
+        return tool
+
+
+async def get_sentiment_analyzer():
+    if app.state._instances["sentiment"]:
+        return app.state._instances["sentiment"]
+    async with app.state._model_locks["sentiment"]:
+        if app.state._instances["sentiment"]:
+            return app.state._instances["sentiment"]
+        analyzer = SentimentIntensityAnalyzer()
+        app.state._instances["sentiment"] = analyzer
+        return analyzer
+
+
+async def get_summarizer():
+    # always returns "enabled" because summarization is remote
+    return True
+
+
+async def get_spell_checker():
+    if app.state._instances["spell"]:
+        return app.state._instances["spell"]
+    async with app.state._model_locks["spell"]:
+        if app.state._instances["spell"]:
+            return app.state._instances["spell"]
+
+        if SYMSPELL_AVAILABLE:
+            try:
+                def init_symspell():
+                    sym = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
+                    if settings.symspell_freq_path:
+                        sym.load_dictionary(settings.symspell_freq_path, term_index=0, count_index=1)
+                    return ("symspell", sym)
+                spell_inst = await run_in_threadpool(init_symspell)
+                app.state._instances["spell"] = spell_inst
+                return spell_inst
+            except Exception:
+                pass
+
+        if PYSPELL_AVAILABLE:
+            sp = SpellChecker(language="en")
+            app.state._instances["spell"] = ("pyspell", sp)
+            return ("pyspell", sp)
+
+        app.state._instances["spell"] = ("none", None)
+        return ("none", None)
+
+
+# ------------------------------------------------------------
+# NEW — Remote Summarization Function
+# ------------------------------------------------------------
+async def remote_summarize(text: str) -> str:
+    """
+    Calls HuggingFace Inference API (or any external endpoint)
+    instead of loading local transformer models.
+    """
+    headers = {
+        "Authorization": f"Bearer {settings.remote_summarizer_token}"
+    } if settings.remote_summarizer_token else {}
+
+    payload = {"inputs": text}
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            r = await client.post(
+                settings.remote_summarizer_url,
+                headers=headers,
+                json=payload
+            )
+            r.raise_for_status()
+            data = r.json()
+
+            # HF returns list of dicts
+            if isinstance(data, list) and data:
+                return data[0].get("summary_text", text[:400])
+            return text[:400]
+
+        except Exception:
+            logger.exception("Remote summarizer failed")
+            return text[:400]
+
+
+# ------------------------------------------------------------
+# Replaced _summarize_sync (no heavy transformer)
+# ------------------------------------------------------------
+async def summarize_text(text: str):
+    normalized = simple_normalize_text(text)
+    wc = len(re.findall(r"\w+", normalized))
+
+    if wc <= settings.short_text_word_threshold:
+        # keep your clarity logic
+        clarity = re.sub(
+            r"(\b\w+\b)(?:\s+\1\b)+",
+            r"\1",
+            normalized,
+            flags=re.IGNORECASE,
+        )
+        return clarity if len(clarity) < 400 else clarity[:400].rsplit(" ", 1)[0] + "..."
+
+    # Use remote inference
+    return await remote_summarize(normalized)
+
+
+# ------------------------------------------------------------
+# (ALL OTHER FUNCTIONS REMAIN EXACTLY THE SAME)
+# ------------------------------------------------------------
+
+# spell_corrections(), grammar_check(), readability_check(), tone_analysis()
+# analyze_text() endpoint
+# health_check()
+# ------------------------------------------------------------
+
+# ---------------- Async wrappers ----------------
+async def spell_corrections(text: str):
+    spell_inst = await get_spell_checker()
+    # run heavy work in threadpool
+    return await run_in_threadpool(_spell_corrections_sync, text, spell_inst)
+
+
+async def grammar_check(text: str):
+    tool = await get_grammar_tool()
+    return await run_in_threadpool(_grammar_sync, text, tool)
+
+
+async def summarize_text(text: str):
+    summarizer = await get_summarizer()
+    return await run_in_threadpool(_summarize_sync, text, summarizer, settings.short_text_word_threshold)
+
+
+async def readability_check(text: str):
+    return await run_in_threadpool(_readability_sync, text, settings.min_sentence_for_readability)
+
+
+async def tone_analysis(text: str):
+    analyzer = await get_sentiment_analyzer()
+    words = re.findall(r"\w+", text)
+    if len(words) < 3:
+        return {"tone": None, "score": None, "note": "Not enough text to determine tone reliably."}
+    sentiment = analyzer.polarity_scores(text)
+    score = sentiment.get("compound", 0.0)
+    tone = "Positive" if score > 0.2 else "Negative" if score < -0.2 else "Neutral"
+    return {"tone": tone, "score": score}
+
+
+# ---------------- API endpoint ----------------
+@app.post("/analyze")
+async def analyze_text(payload: TextRequest, request: Request):
+    raw_text = payload.text or ""
+    text = raw_text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Text cannot be empty.")
+
+    # acquire concurrency guard per-request
+    try:
+        await asyncio.wait_for(app.state.semaphore.acquire(), timeout=settings.request_timeout_seconds)
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=503, detail="Server busy; try again later.")
+
+    try:
+        # 1) Spell corrections first (sync in threadpool)
+        spell_result = await spell_corrections(text)
+        corrected_text = spell_result.get("corrected_text", text)
+        spell_items = spell_result.get("corrections", [])
+
+        # 2) run grammar/readability/tone/summary concurrently
+        coro_tasks = [
+            asyncio.create_task(grammar_check(corrected_text)),
+            asyncio.create_task(readability_check(corrected_text)),
+            asyncio.create_task(tone_analysis(corrected_text)),
+            asyncio.create_task(summarize_text(corrected_text)),
+        ]
+        grammar, readability, tone, engagement = await asyncio.gather(*coro_tasks)
+
+        # 3) Merge suggestions (kept intentionally similar to original but clearer)
+        merged = []
+        for g in grammar:
+            g_start = g.get("offset")
+            g_len = g.get("length")
+            g_end = (g_start + g_len) if (g_start is not None and g_len is not None) else None
+            overlapping_spells = [
+                s for s in spell_items
+                if s.get("start") is not None and g_start is not None and g_end is not None
+                and not (s["end"] <= g_start or s["start"] >= g_end)
+            ]
+            if overlapping_spells:
+                combined = []
+                for s in overlapping_spells:
+                    if s.get("best"):
+                        combined.append(s["best"])
+                    combined.extend(s.get("suggestions", [])[:3])
+                combined.extend(g.get("suggestions", [])[:3])
+                merged.append({
+                    "message": g.get("message"),
+                    "context": g.get("context"),
+                    "suggestions": combined,
+                    "rule_id": g.get("rule_id"),
+                    "offset": g.get("offset"),
+                    "length": g.get("length"),
+                })
+            else:
+                merged.append({
+                    "message": g.get("message"),
+                    "context": g.get("context"),
+                    "suggestions": g.get("suggestions", []),
+                    "rule_id": g.get("rule_id"),
+                    "offset": g.get("offset"),
+                    "length": g.get("length"),
+                })
+
+        non_overlapping_spells = []
+        for s in spell_items:
+            overlapped = False
+            for g in grammar:
+                g_start = g.get("offset")
+                g_len = g.get("length")
+                if g_start is None or g_len is None:
+                    continue
+                g_end = g_start + g_len
+                if s.get("start") is not None and not (s["end"] <= g_start or s["start"] >= g_end):
+                    overlapped = True
+                    break
+            if not overlapped:
+                non_overlapping_spells.append({
+                    "message": f"Possible spelling mistake: {s.get('token')}",
+                    "context": corrected_text[max(0, s.get("start", 0) - 30): s.get("end", 0) + 30],
+                    "suggestions": s.get("suggestions", [])[:5],
+                    "best": s.get("best"),
+                    "offset": s.get("start"),
+                    "length": (s.get("end") - s.get("start")) if (s.get("end") is not None and s.get("start") is not None) else None,
+                })
+
+        final_corrections = merged + non_overlapping_spells
+
+        return {
+            "original_text": raw_text,
+            "corrected_text": corrected_text,
+            "corrections": final_corrections,
+            "readability": readability,
+            "tone": tone,
+            "engagement": {"summary": engagement},
+        }
+
+    except Exception as e:
+        logger.exception("Error during analysis pipeline")
+        raise HTTPException(status_code=500, detail="Internal processing error.")
+    finally:
+        app.state.semaphore.release()
+
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+```
+---
+
+
 
 
 
