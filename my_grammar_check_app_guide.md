@@ -1712,6 +1712,7 @@ async def health_check():
 ```
 ---
 **Optimized code version: 4**
+Real-world architecture (API → cloud inference → merge pipeline)- This id the method for industy standards  
 ```bash
 # app_main.py
 import asyncio
