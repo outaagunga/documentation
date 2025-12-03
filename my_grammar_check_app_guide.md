@@ -1714,69 +1714,94 @@ async def health_check():
 **Optimized code version: 4**
 Real-world architecture (API → cloud inference → merge pipeline)- This id the method for industy standards  
 ```bash
-# app_main.py
 import asyncio
+import hashlib
 import logging
 import os
 import re
-from concurrent.futures import ThreadPoolExecutor
+from functools import lru_cache
 from typing import Any, Dict, List, Optional, Tuple
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from pydantic_settings import BaseSettings
 from starlette.concurrency import run_in_threadpool
-import httpx  # <--- NEW: For remote inference HTTP requests
+import httpx
 
-# third-party libs (same as original)
+# Third-party libs
 import textstat
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import language_tool_python
-
-# removed heavy transformers imports
-# from transformers import pipeline, Pipeline
 
 # Optional spell libraries
 try:
     from symspellpy import SymSpell, Verbosity
     SYMSPELL_AVAILABLE = True
-except Exception:
+except ImportError:
     SYMSPELL_AVAILABLE = False
 
 try:
     from spellchecker import SpellChecker
     PYSPELL_AVAILABLE = True
-except Exception:
+except ImportError:
     PYSPELL_AVAILABLE = False
 
+# Optional caching
+try:
+    from cachetools import TTLCache
+    CACHE_AVAILABLE = True
+except ImportError:
+    CACHE_AVAILABLE = False
+
 logger = logging.getLogger("ai-writing-assistant")
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 
-# ------------------------------------------------------------
-# Configuration (Updated: include remote inference settings)
-# ------------------------------------------------------------
+# ============================================================
+# Configuration
+# ============================================================
 class Settings(BaseSettings):
+    # Input validation
     max_input_chars: int = 50_000
-    executor_workers: int = int(os.getenv("EXECUTOR_WORKERS", "4"))
+    min_input_chars: int = 1
+    
+    # Concurrency settings
+    max_concurrent_requests: int = 50
+    max_workers_per_service: int = 4
+    
+    # CORS
     allowed_origins: List[str] = ["http://localhost:3000", "http://localhost:5173"]
-
-    # no local GPU usage anymore
-    use_gpu: bool = False
-
-    # remote inference URL + token
+    
+    # Remote inference
     remote_summarizer_url: str = os.getenv(
         "REMOTE_SUMMARIZER_URL",
-        "https://api-inference.huggingface.co/models/facebook/bart-large-cnn",
+        "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
     )
     remote_summarizer_token: Optional[str] = os.getenv("REMOTE_SUMMARIZER_TOKEN")
-
-    short_text_word_threshold: int = int(os.getenv("SHORT_TEXT_WORD_THRESHOLD", "20"))
-    min_sentence_for_readability: int = int(os.getenv("MIN_SENTENCE_FOR_READABILITY", "3"))
+    remote_timeout: int = 30
+    
+    # Analysis thresholds
+    short_text_word_threshold: int = 20
+    min_sentence_for_readability: int = 3
+    min_words_for_tone: int = 5
+    
+    # Spell checker
     symspell_freq_path: Optional[str] = os.getenv("SYMSPELL_FREQ_PATH")
-    request_timeout_seconds: int = int(os.getenv("REQUEST_TIMEOUT_SECONDS", "30"))
-
+    spell_max_edit_distance: int = 2
+    
+    # Caching
+    enable_cache: bool = True
+    cache_ttl: int = 3600  # 1 hour
+    cache_maxsize: int = 1000
+    
+    # Timeouts
+    request_timeout: int = 60
+    grammar_check_timeout: int = 30
+    
     class Config:
         env_file = ".env"
 
@@ -1784,10 +1809,14 @@ class Settings(BaseSettings):
 settings = Settings()
 
 
-# ------------------------------------------------------------
-# FastAPI setup
-# ------------------------------------------------------------
-app = FastAPI(title="AI Writing Assistant API")
+# ============================================================
+# FastAPI Setup
+# ============================================================
+app = FastAPI(
+    title="AI Writing Assistant API",
+    version="2.0.0",
+    description="Advanced grammar, spell-checking, and text analysis API"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -1798,389 +1827,681 @@ app.add_middleware(
 )
 
 
+# ============================================================
+# Request/Response Models
+# ============================================================
 class TextRequest(BaseModel):
-    text: str = Field(..., min_length=1, max_length=settings.max_input_chars)
+    text: str = Field(..., min_length=settings.min_input_chars, max_length=settings.max_input_chars)
+    include_grammar: bool = True
+    include_spell: bool = True
+    include_readability: bool = True
+    include_tone: bool = True
+    include_summary: bool = True
+    
+    @validator('text')
+    def validate_text(cls, v):
+        if not v or not v.strip():
+            raise ValueError("Text cannot be empty or whitespace only")
+        return v
 
 
-# ------------------------------------------------------------
-# Utility helpers
-# ------------------------------------------------------------
+class CorrectionItem(BaseModel):
+    message: str
+    context: str
+    suggestions: List[str]
+    offset: Optional[int] = None
+    length: Optional[int] = None
+    rule_id: Optional[str] = None
+    severity: Optional[str] = "suggestion"
+
+
+class AnalysisResponse(BaseModel):
+    original_text: str
+    corrected_text: str
+    corrections: List[CorrectionItem]
+    readability: Optional[Dict[str, Any]] = None
+    tone: Optional[Dict[str, Any]] = None
+    engagement: Optional[Dict[str, Any]] = None
+    metadata: Dict[str, Any] = {}
+
+
+# ============================================================
+# Utility Functions
+# ============================================================
 _TOKEN_RE = re.compile(r"\S+")
 
 
 def tokenize_preserving_indices(text: str) -> List[Tuple[str, int, int]]:
+    """Tokenize text while preserving character positions."""
     return [(m.group(0), m.start(), m.end()) for m in _TOKEN_RE.finditer(text)]
 
 
-def simple_normalize_text(text: str) -> str:
+def normalize_text(text: str) -> str:
+    """Normalize whitespace and punctuation."""
     text = text.strip()
-    text = re.sub(r"\s+", " ", text)
-    text = re.sub(r"\s+([,.;:!?])", r"\1", text)
+    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'\s+([,.;:!?])', r'\1', text)
     return text
 
 
-# ------------------------------------------------------------
-# Startup
-# ------------------------------------------------------------
-@app.on_event("startup")
-async def startup_event():
-    app.state.executor = ThreadPoolExecutor(max_workers=settings.executor_workers)
-    app.state._model_locks = {
-        "grammar": asyncio.Lock(),
-        "sentiment": asyncio.Lock(),
-        "summarizer": asyncio.Lock(),   # stays for API rate-limiting safety
-        "spell": asyncio.Lock(),
-    }
-    app.state._instances = {
-        "grammar": None,
-        "sentiment": None,
-        "summarizer": True,  # <--- No local summarizer, just mark enabled
-        "spell": None,
-    }
-    app.state.semaphore = asyncio.Semaphore(settings.executor_workers)
-    logger.info("Startup complete (remote inference mode).")
+def compute_text_hash(text: str) -> str:
+    """Compute SHA256 hash of text for caching."""
+    return hashlib.sha256(text.encode('utf-8')).hexdigest()
 
 
-@app.on_event("shutdown")
-def shutdown_event():
-    executor: ThreadPoolExecutor = app.state.executor
-    executor.shutdown(wait=True)
+@lru_cache(maxsize=100)
+def count_words(text: str) -> int:
+    """Cached word counting."""
+    return len(re.findall(r'\w+', text))
 
 
-# ------------------------------------------------------------
-# Lazy getters (updated summarizer)
-# ------------------------------------------------------------
-async def get_grammar_tool():
-    if app.state._instances["grammar"]:
-        return app.state._instances["grammar"]
-    async with app.state._model_locks["grammar"]:
-        if app.state._instances["grammar"]:
-            return app.state._instances["grammar"]
-        def init():
-            return language_tool_python.LanguageTool("en-US")
-        tool = await run_in_threadpool(init)
-        app.state._instances["grammar"] = tool
-        return tool
+@lru_cache(maxsize=100)
+def count_sentences(text: str) -> int:
+    """Cached sentence counting."""
+    return textstat.sentence_count(text)
 
 
-async def get_sentiment_analyzer():
-    if app.state._instances["sentiment"]:
-        return app.state._instances["sentiment"]
-    async with app.state._model_locks["sentiment"]:
-        if app.state._instances["sentiment"]:
-            return app.state._instances["sentiment"]
-        analyzer = SentimentIntensityAnalyzer()
-        app.state._instances["sentiment"] = analyzer
-        return analyzer
-
-
-async def get_summarizer():
-    # always returns "enabled" because summarization is remote
-    return True
-
-
-async def get_spell_checker():
-    if app.state._instances["spell"]:
-        return app.state._instances["spell"]
-    async with app.state._model_locks["spell"]:
-        if app.state._instances["spell"]:
-            return app.state._instances["spell"]
-
-        if SYMSPELL_AVAILABLE:
-            try:
-                def init_symspell():
-                    sym = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
-                    if settings.symspell_freq_path:
-                        sym.load_dictionary(settings.symspell_freq_path, term_index=0, count_index=1)
-                    return ("symspell", sym)
-                spell_inst = await run_in_threadpool(init_symspell)
-                app.state._instances["spell"] = spell_inst
-                return spell_inst
-            except Exception:
-                pass
-
-        if PYSPELL_AVAILABLE:
-            sp = SpellChecker(language="en")
-            app.state._instances["spell"] = ("pyspell", sp)
-            return ("pyspell", sp)
-
-        app.state._instances["spell"] = ("none", None)
-        return ("none", None)
-
-
-# ------------------------------------------------------------
-# NEW — Remote Summarization Function
-# ------------------------------------------------------------
-async def remote_summarize(text: str) -> str:
-    """
-    Calls HuggingFace Inference API (or any external endpoint)
-    instead of loading local transformer models.
-    """
-    headers = {
-        "Authorization": f"Bearer {settings.remote_summarizer_token}"
-    } if settings.remote_summarizer_token else {}
-
-    payload = {"inputs": text}
-
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        try:
-            r = await client.post(
-                settings.remote_summarizer_url,
-                headers=headers,
-                json=payload
+# ============================================================
+# Cache Manager
+# ============================================================
+class CacheManager:
+    """Manages TTL caches for different analysis types."""
+    
+    def __init__(self):
+        if CACHE_AVAILABLE and settings.enable_cache:
+            self.grammar_cache = TTLCache(
+                maxsize=settings.cache_maxsize,
+                ttl=settings.cache_ttl
             )
-            r.raise_for_status()
-            data = r.json()
-
-            # HF returns list of dicts
-            if isinstance(data, list) and data:
-                return data[0].get("summary_text", text[:400])
-            return text[:400]
-
-        except Exception:
-            logger.exception("Remote summarizer failed")
-            return text[:400]
-
-
-# ------------------------------------------------------------
-# Replaced _summarize_sync (no heavy transformer)
-# ------------------------------------------------------------
-async def summarize_text(text: str):
-    normalized = simple_normalize_text(text)
-    wc = len(re.findall(r"\w+", normalized))
-
-    if wc <= settings.short_text_word_threshold:
-        # keep your clarity logic
-        clarity = re.sub(
-            r"(\b\w+\b)(?:\s+\1\b)+",
-            r"\1",
-            normalized,
-            flags=re.IGNORECASE,
-        )
-        return clarity if len(clarity) < 400 else clarity[:400].rsplit(" ", 1)[0] + "..."
-
-    # Use remote inference
-    return await remote_summarize(normalized)
+            self.spell_cache = TTLCache(
+                maxsize=settings.cache_maxsize,
+                ttl=settings.cache_ttl
+            )
+            self.readability_cache = TTLCache(
+                maxsize=settings.cache_maxsize,
+                ttl=settings.cache_ttl
+            )
+            self.enabled = True
+        else:
+            self.enabled = False
+    
+    def get(self, cache_type: str, key: str) -> Optional[Any]:
+        if not self.enabled:
+            return None
+        cache = getattr(self, f"{cache_type}_cache", None)
+        return cache.get(key) if cache else None
+    
+    def set(self, cache_type: str, key: str, value: Any):
+        if not self.enabled:
+            return
+        cache = getattr(self, f"{cache_type}_cache", None)
+        if cache is not None:
+            cache[key] = value
 
 
-# ------------------------------------------------------------
-# (ALL OTHER FUNCTIONS REMAIN EXACTLY THE SAME)
-# ------------------------------------------------------------
-
-# spell_corrections(), grammar_check(), readability_check(), tone_analysis()
-# analyze_text() endpoint
-# health_check()
-
-
-# ------------------------------------------------------------
-# _spell_corrections_sync. Works with SymSpell, PySpellChecker, or disabled mode
-
-def _spell_corrections_sync(text: str, spell_inst):
-    mode, inst = spell_inst
-
-    tokens = tokenize_preserving_indices(text)
-    corrections = []
-    corrected_list = list(text)
-
-    if mode == "none":
-        return {"corrected_text": text, "corrections": []}
-
-    for tok, start, end in tokens:
-        best = None
-        suggs = []
-
-        if mode == "symspell":
-            res = inst.lookup(tok, Verbosity.TOP, max_edit_distance=2)
-            if res:
-                best = res[0].term
-                suggs = [r.term for r in res[:5]]
-
-        elif mode == "pyspell":
-            if inst.unknown([tok]):
-                best = inst.correction(tok)
-                suggs = inst.candidates(tok)
-
-        if best and best != tok:
-            corrected_list[start:end] = best
-            corrections.append({
-                "token": tok,
-                "best": best,
-                "suggestions": list(suggs)[:5],
-                "start": start,
-                "end": start + len(best),
-            })
-
-    return {"corrected_text": "".join(corrected_list), "corrections": corrections}
-
-# _grammar_sync. Uses LanguageTool’s standard API.
-def _grammar_sync(text: str, tool):
-    matches = tool.check(text)
-    output = []
-    for m in matches:
-        output.append({
-            "message": m.message,
-            "context": m.context,
-            "suggestions": m.replacements,
-            "rule_id": m.ruleId,
-            "offset": m.offset,
-            "length": m.errorLength,
-        })
-    return output
-# _readability_sync. Uses textstat and minimum sentence requirement
-def _readability_sync(text: str, min_sentences: int):
-    sentences = textstat.sentence_count(text)
-    if sentences < min_sentences:
-        return {
-            "readability_score": None,
-            "note": f"Not enough sentences (minimum {min_sentences})",
+# ============================================================
+# Service Layer (Singletons with lazy loading)
+# ============================================================
+class ServiceManager:
+    """Manages singleton instances of analysis services."""
+    
+    def __init__(self):
+        self._grammar_tool: Optional[language_tool_python.LanguageTool] = None
+        self._sentiment_analyzer: Optional[SentimentIntensityAnalyzer] = None
+        self._spell_checker: Optional[Tuple[str, Any]] = None
+        self._http_client: Optional[httpx.AsyncClient] = None
+        self._locks = {
+            'grammar': asyncio.Lock(),
+            'sentiment': asyncio.Lock(),
+            'spell': asyncio.Lock(),
         }
+        self.cache = CacheManager()
+    
+    async def get_grammar_tool(self) -> language_tool_python.LanguageTool:
+        if self._grammar_tool:
+            return self._grammar_tool
+        
+        async with self._locks['grammar']:
+            if self._grammar_tool:
+                return self._grammar_tool
+            
+            logger.info("Initializing LanguageTool...")
+            self._grammar_tool = await run_in_threadpool(
+                language_tool_python.LanguageTool, "en-US"
+            )
+            logger.info("LanguageTool initialized")
+            return self._grammar_tool
+    
+    async def get_sentiment_analyzer(self) -> SentimentIntensityAnalyzer:
+        if self._sentiment_analyzer:
+            return self._sentiment_analyzer
+        
+        async with self._locks['sentiment']:
+            if self._sentiment_analyzer:
+                return self._sentiment_analyzer
+            
+            logger.info("Initializing VADER sentiment analyzer...")
+            self._sentiment_analyzer = SentimentIntensityAnalyzer()
+            logger.info("VADER initialized")
+            return self._sentiment_analyzer
+    
+    async def get_spell_checker(self) -> Tuple[str, Any]:
+        if self._spell_checker:
+            return self._spell_checker
+        
+        async with self._locks['spell']:
+            if self._spell_checker:
+                return self._spell_checker
+            
+            # Try SymSpell first (faster)
+            if SYMSPELL_AVAILABLE:
+                try:
+                    logger.info("Initializing SymSpell...")
+                    def init_symspell():
+                        sym = SymSpell(
+                            max_dictionary_edit_distance=settings.spell_max_edit_distance,
+                            prefix_length=7
+                        )
+                        if settings.symspell_freq_path and os.path.exists(settings.symspell_freq_path):
+                            sym.load_dictionary(
+                                settings.symspell_freq_path,
+                                term_index=0,
+                                count_index=1
+                            )
+                        else:
+                            # Use default dictionary
+                            sym.create_dictionary_entry("", 1)
+                        return sym
+                    
+                    sym = await run_in_threadpool(init_symspell)
+                    self._spell_checker = ("symspell", sym)
+                    logger.info("SymSpell initialized")
+                    return self._spell_checker
+                except Exception as e:
+                    logger.warning(f"SymSpell initialization failed: {e}")
+            
+            # Fallback to PySpellChecker
+            if PYSPELL_AVAILABLE:
+                logger.info("Initializing PySpellChecker...")
+                checker = SpellChecker(language="en")
+                self._spell_checker = ("pyspell", checker)
+                logger.info("PySpellChecker initialized")
+                return self._spell_checker
+            
+            # No spell checker available
+            logger.warning("No spell checker available")
+            self._spell_checker = ("none", None)
+            return self._spell_checker
+    
+    def get_http_client(self) -> httpx.AsyncClient:
+        if not self._http_client:
+            self._http_client = httpx.AsyncClient(
+                timeout=httpx.Timeout(settings.remote_timeout),
+                limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)
+            )
+        return self._http_client
+    
+    async def cleanup(self):
+        """Cleanup resources."""
+        if self._grammar_tool:
+            try:
+                self._grammar_tool.close()
+            except Exception as e:
+                logger.error(f"Error closing grammar tool: {e}")
+        
+        if self._http_client:
+            await self._http_client.aclose()
 
-    try:
-        fk = textstat.flesch_kincaid_grade(text)
-    except Exception:
-        fk = None
 
+# ============================================================
+# Analysis Functions
+# ============================================================
+async def spell_corrections(text: str, service_mgr: ServiceManager) -> Dict[str, Any]:
+    """Perform spell checking with caching."""
+    text_hash = compute_text_hash(text)
+    cached = service_mgr.cache.get('spell', text_hash)
+    if cached:
+        logger.debug("Spell check cache hit")
+        return cached
+    
+    mode, checker = await service_mgr.get_spell_checker()
+    
+    def _check_spelling():
+        tokens = tokenize_preserving_indices(text)
+        corrections = []
+        corrected_list = list(text)
+        
+        if mode == "none":
+            return {"corrected_text": text, "corrections": []}
+        
+        for tok, start, end in tokens:
+            # Skip if token is not alphabetic or too short
+            if not tok.isalpha() or len(tok) < 2:
+                continue
+            
+            best = None
+            suggestions = []
+            
+            if mode == "symspell":
+                results = checker.lookup(tok, Verbosity.TOP, max_edit_distance=2)
+                if results and results[0].term.lower() != tok.lower():
+                    best = results[0].term
+                    suggestions = [r.term for r in results[:5]]
+            
+            elif mode == "pyspell":
+                if checker.unknown([tok]):
+                    best = checker.correction(tok)
+                    candidates = checker.candidates(tok)
+                    suggestions = list(candidates)[:5] if candidates else []
+            
+            if best and best != tok:
+                corrected_list[start:end] = best
+                corrections.append({
+                    "token": tok,
+                    "best": best,
+                    "suggestions": suggestions,
+                    "start": start,
+                    "end": start + len(best),
+                })
+        
+        return {
+            "corrected_text": "".join(corrected_list),
+            "corrections": corrections
+        }
+    
+    result = await run_in_threadpool(_check_spelling)
+    service_mgr.cache.set('spell', text_hash, result)
+    return result
+
+
+async def grammar_check(text: str, service_mgr: ServiceManager) -> List[Dict[str, Any]]:
+    """Perform grammar checking with caching."""
+    text_hash = compute_text_hash(text)
+    cached = service_mgr.cache.get('grammar', text_hash)
+    if cached:
+        logger.debug("Grammar check cache hit")
+        return cached
+    
+    tool = await service_mgr.get_grammar_tool()
+    
+    def _check_grammar():
+        try:
+            matches = tool.check(text)
+            return [
+                {
+                    "message": m.message,
+                    "context": m.context,
+                    "suggestions": m.replacements[:5],
+                    "rule_id": m.ruleId,
+                    "offset": m.offset,
+                    "length": m.errorLength,
+                    "severity": "error" if "error" in m.ruleId.lower() else "suggestion"
+                }
+                for m in matches
+            ]
+        except Exception as e:
+            logger.error(f"Grammar check failed: {e}")
+            return []
+    
+    result = await asyncio.wait_for(
+        run_in_threadpool(_check_grammar),
+        timeout=settings.grammar_check_timeout
+    )
+    service_mgr.cache.set('grammar', text_hash, result)
+    return result
+
+
+async def readability_check(text: str, service_mgr: ServiceManager) -> Dict[str, Any]:
+    """Perform readability analysis with caching."""
+    text_hash = compute_text_hash(text)
+    cached = service_mgr.cache.get('readability', text_hash)
+    if cached:
+        logger.debug("Readability check cache hit")
+        return cached
+    
+    def _analyze_readability():
+        sentences = count_sentences(text)
+        words = count_words(text)
+        
+        if sentences < settings.min_sentence_for_readability:
+            return {
+                "readability_score": None,
+                "grade_level": None,
+                "sentences": sentences,
+                "words": words,
+                "note": f"Need at least {settings.min_sentence_for_readability} sentences for reliable analysis"
+            }
+        
+        try:
+            flesch_kincaid = textstat.flesch_kincaid_grade(text)
+            flesch_reading = textstat.flesch_reading_ease(text)
+            
+            # Interpret reading ease
+            if flesch_reading >= 90:
+                difficulty = "Very Easy"
+            elif flesch_reading >= 80:
+                difficulty = "Easy"
+            elif flesch_reading >= 70:
+                difficulty = "Fairly Easy"
+            elif flesch_reading >= 60:
+                difficulty = "Standard"
+            elif flesch_reading >= 50:
+                difficulty = "Fairly Difficult"
+            elif flesch_reading >= 30:
+                difficulty = "Difficult"
+            else:
+                difficulty = "Very Difficult"
+            
+            return {
+                "readability_score": flesch_reading,
+                "grade_level": flesch_kincaid,
+                "difficulty": difficulty,
+                "sentences": sentences,
+                "words": words,
+                "avg_words_per_sentence": round(words / sentences, 1) if sentences > 0 else 0
+            }
+        except Exception as e:
+            logger.error(f"Readability calculation failed: {e}")
+            return {
+                "readability_score": None,
+                "grade_level": None,
+                "sentences": sentences,
+                "words": words,
+                "error": str(e)
+            }
+    
+    result = await run_in_threadpool(_analyze_readability)
+    service_mgr.cache.set('readability', text_hash, result)
+    return result
+
+
+async def tone_analysis(text: str, service_mgr: ServiceManager) -> Dict[str, Any]:
+    """Perform sentiment/tone analysis."""
+    words = count_words(text)
+    
+    if words < settings.min_words_for_tone:
+        return {
+            "tone": "Neutral",
+            "score": 0.0,
+            "confidence": "Low",
+            "note": f"Need at least {settings.min_words_for_tone} words for reliable tone analysis"
+        }
+    
+    analyzer = await service_mgr.get_sentiment_analyzer()
+    sentiment = analyzer.polarity_scores(text)
+    
+    compound = sentiment.get("compound", 0.0)
+    
+    # Determine tone and confidence
+    if compound >= 0.5:
+        tone = "Very Positive"
+        confidence = "High"
+    elif compound >= 0.2:
+        tone = "Positive"
+        confidence = "Medium"
+    elif compound > -0.2:
+        tone = "Neutral"
+        confidence = "Medium"
+    elif compound > -0.5:
+        tone = "Negative"
+        confidence = "Medium"
+    else:
+        tone = "Very Negative"
+        confidence = "High"
+    
     return {
-        "readability_score": fk,
-        "sentences": sentences,
+        "tone": tone,
+        "score": round(compound, 3),
+        "confidence": confidence,
+        "breakdown": {
+            "positive": round(sentiment.get("pos", 0.0), 3),
+            "neutral": round(sentiment.get("neu", 0.0), 3),
+            "negative": round(sentiment.get("neg", 0.0), 3)
+        }
     }
 
 
-# ---------------- Async wrappers ----------------
-async def spell_corrections(text: str):
-    spell_inst = await get_spell_checker()
-    # run heavy work in threadpool
-    return await run_in_threadpool(_spell_corrections_sync, text, spell_inst)
-
-
-async def grammar_check(text: str):
-    tool = await get_grammar_tool()
-    return await run_in_threadpool(_grammar_sync, text, tool)
-
-
-async def readability_check(text: str):
-    return await run_in_threadpool(_readability_sync, text, settings.min_sentence_for_readability)
-
-
-async def tone_analysis(text: str):
-    analyzer = await get_sentiment_analyzer()
-    words = re.findall(r"\w+", text)
-    if len(words) < 3:
-        return {"tone": None, "score": None, "note": "Not enough text to determine tone reliably."}
-    sentiment = analyzer.polarity_scores(text)
-    score = sentiment.get("compound", 0.0)
-    tone = "Positive" if score > 0.2 else "Negative" if score < -0.2 else "Neutral"
-    return {"tone": tone, "score": score}
-
-
-# ---------------- API endpoint ----------------
-@app.post("/analyze")
-async def analyze_text(payload: TextRequest, request: Request):
-    raw_text = payload.text or ""
-    text = raw_text.strip()
-    if not text:
-        raise HTTPException(status_code=400, detail="Text cannot be empty.")
-
-    # acquire concurrency guard per-request
+async def summarize_text(text: str, service_mgr: ServiceManager) -> str:
+    """Generate text summary using remote API."""
+    normalized = normalize_text(text)
+    word_count = count_words(normalized)
+    
+    # For very short text, just clean it up
+    if word_count <= settings.short_text_word_threshold:
+        # Remove redundant words
+        cleaned = re.sub(
+            r'(\b\w+\b)(?:\s+\1\b)+',
+            r'\1',
+            normalized,
+            flags=re.IGNORECASE
+        )
+        if len(cleaned) <= 400:
+            return cleaned
+        return cleaned[:400].rsplit(' ', 1)[0] + '...'
+    
+    # Use remote summarization API
     try:
-        await asyncio.wait_for(app.state.semaphore.acquire(), timeout=settings.request_timeout_seconds)
-    except asyncio.TimeoutError:
-        raise HTTPException(status_code=503, detail="Server busy; try again later.")
-
-    try:
-        # 1) Spell corrections first (sync in threadpool)
-        spell_result = await spell_corrections(text)
-        corrected_text = spell_result.get("corrected_text", text)
-        spell_items = spell_result.get("corrections", [])
-
-        # 2) run grammar/readability/tone/summary concurrently
-        coro_tasks = [
-            asyncio.create_task(grammar_check(corrected_text)),
-            asyncio.create_task(readability_check(corrected_text)),
-            asyncio.create_task(tone_analysis(corrected_text)),
-            asyncio.create_task(summarize_text(corrected_text)),
-        ]
-        grammar, readability, tone, engagement = await asyncio.gather(*coro_tasks)
-
-        # 3) Merge suggestions (kept intentionally similar to original but clearer)
-        merged = []
-        for g in grammar:
-            g_start = g.get("offset")
-            g_len = g.get("length")
-            g_end = (g_start + g_len) if (g_start is not None and g_len is not None) else None
-            overlapping_spells = [
-                s for s in spell_items
-                if s.get("start") is not None and g_start is not None and g_end is not None
-                and not (s["end"] <= g_start or s["start"] >= g_end)
-            ]
-            if overlapping_spells:
-                combined = []
-                for s in overlapping_spells:
-                    if s.get("best"):
-                        combined.append(s["best"])
-                    combined.extend(s.get("suggestions", [])[:3])
-                combined.extend(g.get("suggestions", [])[:3])
-                merged.append({
-                    "message": g.get("message"),
-                    "context": g.get("context"),
-                    "suggestions": combined,
-                    "rule_id": g.get("rule_id"),
-                    "offset": g.get("offset"),
-                    "length": g.get("length"),
-                })
-            else:
-                merged.append({
-                    "message": g.get("message"),
-                    "context": g.get("context"),
-                    "suggestions": g.get("suggestions", []),
-                    "rule_id": g.get("rule_id"),
-                    "offset": g.get("offset"),
-                    "length": g.get("length"),
-                })
-
-        non_overlapping_spells = []
-        for s in spell_items:
-            overlapped = False
-            for g in grammar:
-                g_start = g.get("offset")
-                g_len = g.get("length")
-                if g_start is None or g_len is None:
-                    continue
-                g_end = g_start + g_len
-                if s.get("start") is not None and not (s["end"] <= g_start or s["start"] >= g_end):
-                    overlapped = True
-                    break
-            if not overlapped:
-                non_overlapping_spells.append({
-                    "message": f"Possible spelling mistake: {s.get('token')}",
-                    "context": corrected_text[max(0, s.get("start", 0) - 30): s.get("end", 0) + 30],
-                    "suggestions": s.get("suggestions", [])[:5],
-                    "best": s.get("best"),
-                    "offset": s.get("start"),
-                    "length": (s.get("end") - s.get("start")) if (s.get("end") is not None and s.get("start") is not None) else None,
-                })
-
-        final_corrections = merged + non_overlapping_spells
-
-        return {
-            "original_text": raw_text,
-            "corrected_text": corrected_text,
-            "corrections": final_corrections,
-            "readability": readability,
-            "tone": tone,
-            "engagement": {"summary": engagement},
-        }
-
+        client = service_mgr.get_http_client()
+        headers = {}
+        if settings.remote_summarizer_token:
+            headers["Authorization"] = f"Bearer {settings.remote_summarizer_token}"
+        
+        response = await client.post(
+            settings.remote_summarizer_url,
+            headers=headers,
+            json={"inputs": normalized[:1024]}  # Limit input size
+        )
+        response.raise_for_status()
+        
+        data = response.json()
+        if isinstance(data, list) and data:
+            summary = data[0].get("summary_text", "")
+            if summary:
+                return summary
+        
+        # Fallback to truncation
+        return normalized[:400].rsplit(' ', 1)[0] + '...'
+        
     except Exception as e:
-        logger.exception("Error during analysis pipeline")
-        raise HTTPException(status_code=500, detail="Internal processing error.")
-    finally:
-        app.state.semaphore.release()
+        logger.error(f"Remote summarization failed: {e}")
+        return normalized[:400].rsplit(' ', 1)[0] + '...'
+
+
+def merge_corrections(
+    grammar_issues: List[Dict],
+    spell_corrections: List[Dict]
+) -> List[CorrectionItem]:
+    """Merge grammar and spelling corrections, avoiding duplicates."""
+    merged = []
+    
+    # Add grammar issues first
+    for g in grammar_issues:
+        g_start = g.get("offset", 0)
+        g_end = g_start + g.get("length", 0)
+        
+        # Find overlapping spell corrections
+        overlapping_spells = [
+            s for s in spell_corrections
+            if not (s["end"] <= g_start or s["start"] >= g_end)
+        ]
+        
+        # Combine suggestions
+        suggestions = []
+        if overlapping_spells:
+            for s in overlapping_spells:
+                if s.get("best"):
+                    suggestions.append(s["best"])
+                suggestions.extend(s.get("suggestions", [])[:2])
+        suggestions.extend(g.get("suggestions", [])[:3])
+        
+        # Remove duplicates while preserving order
+        seen = set()
+        unique_suggestions = []
+        for sug in suggestions:
+            if sug.lower() not in seen:
+                seen.add(sug.lower())
+                unique_suggestions.append(sug)
+        
+        merged.append(CorrectionItem(
+            message=g.get("message", ""),
+            context=g.get("context", ""),
+            suggestions=unique_suggestions[:5],
+            rule_id=g.get("rule_id"),
+            offset=g.get("offset"),
+            length=g.get("length"),
+            severity=g.get("severity", "suggestion")
+        ))
+    
+    # Add non-overlapping spell corrections
+    for s in spell_corrections:
+        overlapped = any(
+            not (s["end"] <= g.get("offset", 0) or 
+                 s["start"] >= g.get("offset", 0) + g.get("length", 0))
+            for g in grammar_issues
+        )
+        
+        if not overlapped:
+            merged.append(CorrectionItem(
+                message=f"Possible spelling: '{s['token']}'",
+                context=s.get("context", ""),
+                suggestions=s.get("suggestions", [])[:5],
+                offset=s.get("start"),
+                length=s["end"] - s["start"],
+                severity="suggestion"
+            ))
+    
+    return merged
+
+
+# ============================================================
+# API Endpoints
+# ============================================================
+@app.post("/analyze", response_model=AnalysisResponse)
+async def analyze_text_endpoint(
+    payload: TextRequest,
+    request: Request,
+    background_tasks: BackgroundTasks
+):
+    """Main text analysis endpoint."""
+    text = payload.text.strip()
+    service_mgr: ServiceManager = request.app.state.service_mgr
+    
+    start_time = asyncio.get_event_loop().time()
+    
+    try:
+        # Step 1: Spell check first
+        spell_result = {"corrected_text": text, "corrections": []}
+        if payload.include_spell:
+            spell_result = await spell_corrections(text, service_mgr)
+        
+        corrected_text = spell_result["corrected_text"]
+        
+        # Step 2: Run other analyses concurrently
+        tasks = {}
+        
+        if payload.include_grammar:
+            tasks["grammar"] = asyncio.create_task(grammar_check(corrected_text, service_mgr))
+        
+        if payload.include_readability:
+            tasks["readability"] = asyncio.create_task(readability_check(corrected_text, service_mgr))
+        
+        if payload.include_tone:
+            tasks["tone"] = asyncio.create_task(tone_analysis(corrected_text, service_mgr))
+        
+        if payload.include_summary:
+            tasks["summary"] = asyncio.create_task(summarize_text(corrected_text, service_mgr))
+        
+        # Gather results
+        results = await asyncio.gather(*tasks.values(), return_exceptions=True)
+        result_dict = dict(zip(tasks.keys(), results))
+        
+        # Handle any errors
+        for key, result in result_dict.items():
+            if isinstance(result, Exception):
+                logger.error(f"{key} analysis failed: {result}")
+                result_dict[key] = None
+        
+        # Step 3: Merge corrections
+        grammar_issues = result_dict.get("grammar", []) or []
+        final_corrections = merge_corrections(grammar_issues, spell_result["corrections"])
+        
+        # Calculate processing time
+        processing_time = asyncio.get_event_loop().time() - start_time
+        
+        return AnalysisResponse(
+            original_text=text,
+            corrected_text=corrected_text,
+            corrections=final_corrections,
+            readability=result_dict.get("readability"),
+            tone=result_dict.get("tone"),
+            engagement={"summary": result_dict.get("summary")} if result_dict.get("summary") else None,
+            metadata={
+                "processing_time_seconds": round(processing_time, 3),
+                "word_count": count_words(text),
+                "character_count": len(text),
+                "correction_count": len(final_corrections)
+            }
+        )
+    
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="Request timeout")
+    except Exception as e:
+        logger.exception("Analysis pipeline error")
+        raise HTTPException(status_code=500, detail="Internal processing error")
 
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok"}
+    """Health check endpoint."""
+    return {
+        "status": "healthy",
+        "version": "2.0.0",
+        "cache_enabled": settings.enable_cache and CACHE_AVAILABLE
+    }
+
+
+@app.get("/stats")
+async def get_stats(request: Request):
+    """Get service statistics."""
+    service_mgr: ServiceManager = request.app.state.service_mgr
+    
+    stats = {
+        "grammar_tool_loaded": service_mgr._grammar_tool is not None,
+        "sentiment_analyzer_loaded": service_mgr._sentiment_analyzer is not None,
+        "spell_checker_loaded": service_mgr._spell_checker is not None,
+    }
+    
+    if service_mgr._spell_checker:
+        stats["spell_checker_type"] = service_mgr._spell_checker[0]
+    
+    return stats
+
+
+# ============================================================
+# Lifecycle Events
+# ============================================================
+@app.on_event("startup")
+async def startup_event():
+    """Initialize services on startup."""
+    logger.info("Starting AI Writing Assistant API...")
+    app.state.service_mgr = ServiceManager()
+    
+    # Pre-warm critical services
+    try:
+        await app.state.service_mgr.get_sentiment_analyzer()
+        logger.info("Pre-warmed sentiment analyzer")
+    except Exception as e:
+        logger.error(f"Failed to pre-warm sentiment analyzer: {e}")
+    
+    logger.info("Startup complete")
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup on shutdown."""
+    logger.info("Shutting down...")
+    await app.state.service_mgr.cleanup()
+    logger.info("Shutdown complete")
 ```
 ---
 
