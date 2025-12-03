@@ -1982,11 +1982,6 @@ async def grammar_check(text: str):
     return await run_in_threadpool(_grammar_sync, text, tool)
 
 
-async def summarize_text(text: str):
-    summarizer = await get_summarizer()
-    return await run_in_threadpool(_summarize_sync, text, summarizer, settings.short_text_word_threshold)
-
-
 async def readability_check(text: str):
     return await run_in_threadpool(_readability_sync, text, settings.min_sentence_for_readability)
 
