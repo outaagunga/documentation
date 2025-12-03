@@ -1970,7 +1970,81 @@ async def summarize_text(text: str):
 # spell_corrections(), grammar_check(), readability_check(), tone_analysis()
 # analyze_text() endpoint
 # health_check()
+
+
 # ------------------------------------------------------------
+# _spell_corrections_sync. Works with SymSpell, PySpellChecker, or disabled mode
+
+def _spell_corrections_sync(text: str, spell_inst):
+    mode, inst = spell_inst
+
+    tokens = tokenize_preserving_indices(text)
+    corrections = []
+    corrected_list = list(text)
+
+    if mode == "none":
+        return {"corrected_text": text, "corrections": []}
+
+    for tok, start, end in tokens:
+        best = None
+        suggs = []
+
+        if mode == "symspell":
+            res = inst.lookup(tok, Verbosity.TOP, max_edit_distance=2)
+            if res:
+                best = res[0].term
+                suggs = [r.term for r in res[:5]]
+
+        elif mode == "pyspell":
+            if inst.unknown([tok]):
+                best = inst.correction(tok)
+                suggs = inst.candidates(tok)
+
+        if best and best != tok:
+            corrected_list[start:end] = best
+            corrections.append({
+                "token": tok,
+                "best": best,
+                "suggestions": list(suggs)[:5],
+                "start": start,
+                "end": start + len(best),
+            })
+
+    return {"corrected_text": "".join(corrected_list), "corrections": corrections}
+
+# _grammar_sync. Uses LanguageTool’s standard API.
+def _grammar_sync(text: str, tool):
+    matches = tool.check(text)
+    output = []
+    for m in matches:
+        output.append({
+            "message": m.message,
+            "context": m.context,
+            "suggestions": m.replacements,
+            "rule_id": m.ruleId,
+            "offset": m.offset,
+            "length": m.errorLength,
+        })
+    return output
+# _readability_sync. Uses textstat and minimum sentence requirement
+def _readability_sync(text: str, min_sentences: int):
+    sentences = textstat.sentence_count(text)
+    if sentences < min_sentences:
+        return {
+            "readability_score": None,
+            "note": f"Not enough sentences (minimum {min_sentences})",
+        }
+
+    try:
+        fk = textstat.flesch_kincaid_grade(text)
+    except Exception:
+        fk = None
+
+    return {
+        "readability_score": fk,
+        "sentences": sentences,
+    }
+
 
 # ---------------- Async wrappers ----------------
 async def spell_corrections(text: str):
