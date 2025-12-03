@@ -1724,7 +1724,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, BaseSettings, Field
+from pydantic import BaseModel, Field
+from pydantic_settings import BaseSettings
 from starlette.concurrency import run_in_threadpool
 import httpx  # <--- NEW: For remote inference HTTP requests
 
