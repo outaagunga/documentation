@@ -1778,9 +1778,11 @@ class Settings(BaseSettings):
     
     # Remote inference
     remote_summarizer_url: str = os.getenv(
+        """Add link to your inference model (e.g HuggingFace or Open AI)"""
         "REMOTE_SUMMARIZER_URL",
         "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
     )
+    """add your inference token (e.g REMOTE_SUMMARIZER_TOKEN=076-456j-64n)"""
     remote_summarizer_token: Optional[str] = os.getenv("REMOTE_SUMMARIZER_TOKEN")
     remote_timeout: int = 30
     
