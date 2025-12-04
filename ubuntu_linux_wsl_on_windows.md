@@ -26,6 +26,13 @@
 - Click to open the Linux terminal
 - Alternatively, open Ubuntu directly from VS Code using the integrated terminal
 
+### **Essential Linux Commands**
+
+* **`ls`** — Lists all files and folders in the current directory.
+* **`cd <directory_name>`** — Changes the current working directory to the specified folder.
+* **`cd ..`** — Moves one level up from the current directory.
+* **`code .`** — Opens the current directory in Visual Studio Code (requires VS Code + `code` command installed).
+
 ## 5. Create Project Structure
 ```bash
 # Create project directory
