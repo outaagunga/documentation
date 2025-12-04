@@ -1,5 +1,5 @@
 
-# Grammarly like app for writing and Grammar check
+# Building Grammarly like app  
 
 # ✅ **Recommended Project Structure**
 
@@ -36,7 +36,7 @@ project/
     └── (later)
 ```
 
-# ⭐ Tips To achieve Clean Codebase
+# ⭐ Tips to achieve clean Codebase
 
 ### ✔ Keep endpoints short
 
@@ -56,11 +56,11 @@ Lazy loading ML models, configuration, shared functions.
 
 ---
 ## Each task should be in its own file categorized in sub-directories
-✔ `routers/` = endpoints
-✔ `services/` = logic
-✔ `models/` = request/response schemas
-✔ `utils/` = lazy-loading, settings, validation
-✔ `app.py` = the main FastAPI app
+✔ `routers/` = endpoints  
+✔ `services/` = logic  
+✔ `models/` = request/response schemas  
+✔ `utils/` = lazy-loading, settings, validation  
+✔ `app.py` = the main FastAPI app  
 
 ---
 
