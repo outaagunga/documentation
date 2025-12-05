@@ -5245,6 +5245,5095 @@ def _calculate_style_score(metrics: Dict) -> float:
 
 Let me continue with the remaining files in the next segment. Would you like me to proceed with Models, Utils, Core, and ML Models?
 
+## **SEGMENT 7: Models (Request, Response, Database, Enums, Errors)**
+
+### **📁 models/__init__.py**
+
+```python
+"""
+Models package - Data models and schemas
+"""
+from . import (
+    request_models,
+    response_models,
+    database_models,
+    enums,
+    error_models
+)
+
+__all__ = [
+    "request_models",
+    "response_models",
+    "database_models",
+    "enums",
+    "error_models"
+]
+```
+
+---
+
+### **📁 models/request_models.py**
+
+```python
+"""
+Request Models
+Pydantic models for API request validation
+"""
+from pydantic import BaseModel, Field, EmailStr, validator
+from typing import List, Optional
+from datetime import datetime
+
+from models.enums import RewriteStyle, ToneType, GrammarRuleType
+
+
+class TextRequest(BaseModel):
+    """Basic text input request"""
+    text: str = Field(..., min_length=1, description="Text to analyze")
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "text": "This is a sample text for analysis."
+            }
+        }
+
+
+class BatchTextRequest(BaseModel):
+    """Batch text input request"""
+    texts: List[str] = Field(..., min_items=1, max_items=100)
+    
+    @validator('texts')
+    def validate_texts(cls, v):
+        if not all(len(text.strip()) > 0 for text in v):
+            raise ValueError("All texts must be non-empty")
+        return v
+
+
+class GrammarCheckRequest(BaseModel):
+    """Grammar check request with options"""
+    text: str = Field(..., min_length=1)
+    rule_types: Optional[List[GrammarRuleType]] = Field(
+        default=None,
+        description="Specific grammar rules to check"
+    )
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "text": "She don't like ice cream.",
+                "rule_types": ["GRAMMAR", "VERB_AGREEMENT"]
+            }
+        }
+
+
+class ToneAnalysisRequest(BaseModel):
+    """Tone analysis request with options"""
+    text: str = Field(..., min_length=1)
+    target_tone: Optional[ToneType] = Field(
+        default=None,
+        description="Target tone to compare against"
+    )
+    include_sentiment: bool = Field(
+        default=True,
+        description="Include sentiment analysis"
+    )
+
+
+class ReadabilityRequest(BaseModel):
+    """Readability check request"""
+    text: str = Field(..., min_length=1)
+    target_grade_level: Optional[int] = Field(
+        default=None,
+        ge=1,
+        le=20,
+        description="Target reading grade level"
+    )
+
+
+class RewriteRequest(BaseModel):
+    """AI rewrite request"""
+    text: str = Field(..., min_length=1)
+    style: RewriteStyle = Field(
+        default=RewriteStyle.IMPROVE,
+        description="Rewriting style"
+    )
+    preserve_meaning: bool = Field(
+        default=True,
+        description="Preserve original meaning"
+    )
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "text": "The thing is really good.",
+                "style": "improve",
+                "preserve_meaning": True
+            }
+        }
+
+
+class ParaphraseRequest(BaseModel):
+    """Paraphrase request"""
+    text: str = Field(..., min_length=1)
+    num_variations: int = Field(
+        default=3,
+        ge=1,
+        le=5,
+        description="Number of paraphrased versions"
+    )
+    creativity_level: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description="Creativity level (0=conservative, 1=creative)"
+    )
+
+
+class UserCreateRequest(BaseModel):
+    """User registration request"""
+    email: EmailStr = Field(..., description="User email address")
+    password: str = Field(..., min_length=8, description="Password (min 8 characters)")
+    full_name: str = Field(..., min_length=1, description="Full name")
+    
+    @validator('password')
+    def validate_password(cls, v):
+        if not any(c.isupper() for c in v):
+            raise ValueError("Password must contain at least one uppercase letter")
+        if not any(c.isdigit() for c in v):
+            raise ValueError("Password must contain at least one digit")
+        return v
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "email": "user@example.com",
+                "password": "SecurePass123",
+                "full_name": "John Doe"
+            }
+        }
+
+
+class UserLoginRequest(BaseModel):
+    """User login request"""
+    email: EmailStr
+    password: str
+
+
+class UserUpdateRequest(BaseModel):
+    """User update request"""
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    preferences: Optional[dict] = None
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "full_name": "Jane Doe",
+                "preferences": {
+                    "notification_enabled": True,
+                    "theme": "dark"
+                }
+            }
+        }
+
+
+class DocumentCreateRequest(BaseModel):
+    """Document creation request"""
+    title: str = Field(..., min_length=1, max_length=200)
+    content: str = Field(..., min_length=1)
+    tags: Optional[List[str]] = Field(default=None, max_items=10)
+    
+    @validator('tags')
+    def validate_tags(cls, v):
+        if v:
+            return [tag.strip().lower() for tag in v if tag.strip()]
+        return v
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "title": "My Essay",
+                "content": "This is the content of my essay...",
+                "tags": ["essay", "education"]
+            }
+        }
+
+
+class DocumentUpdateRequest(BaseModel):
+    """Document update request"""
+    title: Optional[str] = Field(None, min_length=1, max_length=200)
+    content: Optional[str] = Field(None, min_length=1)
+    tags: Optional[List[str]] = Field(None, max_items=10)
+    
+    @validator('tags')
+    def validate_tags(cls, v):
+        if v:
+            return [tag.strip().lower() for tag in v if tag.strip()]
+        return v
+```
+
+---
+
+### **📁 models/response_models.py**
+
+```python
+"""
+Response Models
+Pydantic models for API responses
+"""
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
+from datetime import datetime
+
+from models.enums import ToneType, RewriteStyle, GrammarRuleType
+
+
+class SpellingIssue(BaseModel):
+    """Single spelling issue"""
+    word: str
+    position: int
+    suggestions: List[str]
+    confidence: float = Field(ge=0.0, le=1.0)
+    context: str
+
+
+class SpellingCheckResponse(BaseModel):
+    """Spelling check response"""
+    text: str
+    issues: List[SpellingIssue]
+    total_issues: int
+    corrected_count: int
+
+
+class BatchSpellingCheckResponse(BaseModel):
+    """Batch spelling check response"""
+    results: List[SpellingCheckResponse]
+    total_texts: int
+    processed_texts: int
+
+
+class GrammarIssue(BaseModel):
+    """Single grammar issue"""
+    rule_id: str
+    rule_description: str
+    error_text: str
+    position: int
+    length: int
+    suggestions: List[str]
+    category: GrammarRuleType
+    severity: str  # "low", "medium", "high"
+    context: str
+
+
+class GrammarCheckResponse(BaseModel):
+    """Grammar check response"""
+    text: str
+    issues: List[GrammarIssue]
+    total_issues: int
+    critical_issues: int
+
+
+class GrammarCorrectionResponse(BaseModel):
+    """Grammar correction response"""
+    original_text: str
+    corrected_text: str
+    corrections_applied: bool
+    changes_made: Optional[int] = None
+    suggestions: Optional[List[Dict]] = None
+
+
+class SentimentScore(BaseModel):
+    """Sentiment analysis score"""
+    score: float = Field(ge=-1.0, le=1.0)  # -1 (negative) to 1 (positive)
+    magnitude: float = Field(ge=0.0, le=1.0)
+    label: str  # "positive", "negative", "neutral"
+
+
+class ToneAnalysisResponse(BaseModel):
+    """Tone analysis response"""
+    text: str
+    primary_tone: ToneType
+    tone_scores: Dict[str, float]
+    sentiment: SentimentScore
+    confidence: float = Field(ge=0.0, le=1.0)
+    formality_score: float = Field(ge=0.0, le=1.0)
+
+
+class ToneSuggestionResponse(BaseModel):
+    """Tone adjustment suggestions"""
+    original_text: str
+    current_tone: ToneType
+    target_tone: ToneType
+    suggestions: List[Dict]
+    examples: List[str]
+    estimated_changes: int
+
+
+class ReadabilityMetrics(BaseModel):
+    """Readability metrics"""
+    flesch_reading_ease: float
+    flesch_kincaid_grade: float
+    gunning_fog: float
+    smog_index: float
+    coleman_liau_index: float
+    automated_readability_index: float
+    dale_chall_readability: float
+
+
+class ReadabilityResponse(BaseModel):
+    """Readability check response"""
+    text: str
+    metrics: ReadabilityMetrics
+    grade_level: float
+    reading_time_minutes: float
+    difficulty_level: str
+    word_count: int
+    sentence_count: int
+    avg_words_per_sentence: float
+    recommendations: List[str]
+
+
+class SentenceComplexity(BaseModel):
+    """Sentence complexity analysis"""
+    sentence: str
+    position: int
+    word_count: int
+    syllable_count: int
+    complexity_score: float = Field(ge=0.0, le=1.0)
+    issues: List[str]
+    suggestions: List[str]
+
+
+class ReadabilityDetailedResponse(ReadabilityResponse):
+    """Detailed readability response with sentence-level analysis"""
+    sentence_analyses: List[SentenceComplexity]
+    problem_sentences: List[SentenceComplexity]
+    target_grade_level: Optional[int] = None
+    meets_target: Optional[bool] = None
+
+
+class RewriteResponse(BaseModel):
+    """AI rewrite response"""
+    original_text: str
+    rewritten_text: str
+    style: RewriteStyle
+    changes_made: int
+    improvement_score: float = Field(ge=0.0, le=1.0)
+    changes_summary: Dict
+
+
+class RewriteVariation(BaseModel):
+    """Single rewrite variation"""
+    text: str
+    variation_index: int
+    creativity_score: float
+    similarity_to_original: float
+
+
+class ParaphraseResponse(BaseModel):
+    """Paraphrase response"""
+    original_text: str
+    variations: List[RewriteVariation]
+    num_variations: int
+
+
+class UserResponse(BaseModel):
+    """User response"""
+    id: str
+    email: str
+    full_name: str
+    is_active: bool
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+class TokenResponse(BaseModel):
+    """Authentication token response"""
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int
+
+
+class UserProfileResponse(UserResponse):
+    """User profile with statistics"""
+    last_login: Optional[datetime] = None
+    preferences: Dict[str, Any]
+    statistics: Dict[str, Any]
+
+
+class DocumentResponse(BaseModel):
+    """Document response"""
+    id: str
+    user_id: str
+    title: str
+    content: str
+    tags: List[str]
+    created_at: datetime
+    updated_at: datetime
+    word_count: int
+    character_count: int
+    
+    class Config:
+        from_attributes = True
+
+
+class DocumentListResponse(BaseModel):
+    """Document list response"""
+    documents: List[DocumentResponse]
+    total: int
+    skip: int
+    limit: int
+
+
+class UsageStatsResponse(BaseModel):
+    """Usage statistics response"""
+    user_id: str
+    start_date: datetime
+    end_date: datetime
+    total_api_calls: int
+    daily_usage: List[Dict]
+    feature_usage: Dict[str, int]
+    avg_response_time_ms: float
+    peak_usage_day: Optional[str] = None
+
+
+class AnalyticsResponse(BaseModel):
+    """Analytics response"""
+    user_id: str
+    period: str
+    total_checks: int
+    total_errors_found: int
+    errors_corrected: int
+    improvement_rate: float
+    error_breakdown: Dict[str, int]
+    most_common_errors: List[Dict]
+    writing_score: float
+
+
+class TrendAnalysisResponse(BaseModel):
+    """Trend analysis response"""
+    user_id: str
+    error_type: Optional[str]
+    trends: List[Dict]
+    trend_direction: str  # "improving", "declining", "stable"
+    improvement_percentage: float
+
+
+class ErrorResponse(BaseModel):
+    """Error response"""
+    error: str
+    message: str
+    details: Optional[Dict] = None
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+
+class HealthResponse(BaseModel):
+    """Health check response"""
+    status: str
+    timestamp: datetime
+    version: str
+    components: Optional[Dict[str, Any]] = None
+```
+
+---
+
+### **📁 models/database_models.py**
+
+```python
+"""
+Database Models
+SQLAlchemy ORM models for database tables
+"""
+from sqlalchemy import Column, String, Boolean, DateTime, Integer, Text, JSON, ForeignKey, Float
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+from datetime import datetime
+import uuid
+
+Base = declarative_base()
+
+
+def generate_uuid():
+    """Generate UUID for primary keys"""
+    return str(uuid.uuid4())
+
+
+class User(Base):
+    """User model"""
+    __tablename__ = "users"
+    
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    email = Column(String(255), unique=True, nullable=False, index=True)
+    hashed_password = Column(String(255), nullable=False)
+    full_name = Column(String(255), nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    is_superuser = Column(Boolean, default=False, nullable=False)
+    preferences = Column(JSON, default={})
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_login = Column(DateTime, nullable=True)
+    
+    # Relationships
+    documents = relationship("Document", back_populates="user", cascade="all, delete-orphan")
+    suggestions = relationship("Suggestion", back_populates="user", cascade="all, delete-orphan")
+    
+    def __repr__(self):
+        return f"<User(id={self.id}, email={self.email})>"
+
+
+class Document(Base):
+    """Document model"""
+    __tablename__ = "documents"
+    
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    title = Column(String(200), nullable=False)
+    content = Column(Text, nullable=False)
+    tags = Column(JSON, default=[])
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    user = relationship("User", back_populates="documents")
+    
+    def __repr__(self):
+        return f"<Document(id={self.id}, title={self.title})>"
+
+
+class Suggestion(Base):
+    """Suggestion/correction tracking model"""
+    __tablename__ = "suggestions"
+    
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    document_id = Column(String(36), ForeignKey("documents.id"), nullable=True, index=True)
+    suggestion_type = Column(String(50), nullable=False, index=True)  # spelling, grammar, etc.
+    original_text = Column(Text, nullable=False)
+    suggested_text = Column(Text, nullable=False)
+    position = Column(Integer, nullable=False)
+    accepted = Column(Boolean, default=False)
+    confidence_score = Column(Float, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+    
+    # Relationships
+    user = relationship("User", back_populates="suggestions")
+    
+    def __repr__(self):
+        return f"<Suggestion(id={self.id}, type={self.suggestion_type})>"
+
+
+class APIKey(Base):
+    """API Key model"""
+    __tablename__ = "api_keys"
+    
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    key = Column(String(64), unique=True, nullable=False, index=True)
+    name = Column(String(100), nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    expires_at = Column(DateTime, nullable=True)
+    last_used_at = Column(DateTime, nullable=True)
+    
+    def __repr__(self):
+        return f"<APIKey(id={self.id}, name={self.name})>"
+
+
+class UsageLog(Base):
+    """Usage logging model"""
+    __tablename__ = "usage_logs"
+    
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False, index=True)
+    endpoint = Column(String(100), nullable=False, index=True)
+    method = Column(String(10), nullable=False)
+    status_code = Column(Integer, nullable=False)
+    response_time_ms = Column(Float, nullable=False)
+    request_size_bytes = Column(Integer, nullable=True)
+    response_size_bytes = Column(Integer, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+    
+    def __repr__(self):
+        return f"<UsageLog(id={self.id}, endpoint={self.endpoint})>"
+
+
+class ErrorLog(Base):
+    """Error logging model"""
+    __tablename__ = "error_logs"
+    
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=True, index=True)
+    error_type = Column(String(100), nullable=False, index=True)
+    error_message = Column(Text, nullable=False)
+    stack_trace = Column(Text, nullable=True)
+    endpoint = Column(String(100), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+    
+    def __repr__(self):
+        return f"<ErrorLog(id={self.id}, type={self.error_type})>"
+```
+
+---
+
+### **📁 models/enums.py**
+
+```python
+"""
+Enums
+Enumeration types used across the application
+"""
+from enum import Enum
+
+
+class ToneType(str, Enum):
+    """Tone types for text analysis"""
+    FORMAL = "formal"
+    CASUAL = "casual"
+    FRIENDLY = "friendly"
+    PROFESSIONAL = "professional"
+    ENTHUSIASTIC = "enthusiastic"
+    EMPATHETIC = "empathetic"
+    ASSERTIVE = "assertive"
+    CAUTIOUS = "cautious"
+    CRITICAL = "critical"
+    NEUTRAL = "neutral"
+    CONFIDENT = "confident"
+    RESPECTFUL = "respectful"
+
+
+class RewriteStyle(str, Enum):
+    """Rewriting style options"""
+    IMPROVE = "improve"
+    SIMPLIFY = "simplify"
+    EXPAND = "expand"
+    FORMAL = "formal"
+    CASUAL = "casual"
+    PROFESSIONAL = "professional"
+    CREATIVE = "creative"
+    ACADEMIC = "academic"
+    TECHNICAL = "technical"
+    PERSUASIVE = "persuasive"
+
+
+class GrammarRuleType(str, Enum):
+    """Grammar rule categories"""
+    GRAMMAR = "grammar"
+    SPELLING = "spelling"
+    PUNCTUATION = "punctuation"
+    CAPITALIZATION = "capitalization"
+    STYLE = "style"
+    WORD_CHOICE = "word_choice"
+    VERB_AGREEMENT = "verb_agreement"
+    PRONOUN_AGREEMENT = "pronoun_agreement"
+    SENTENCE_STRUCTURE = "sentence_structure"
+    REDUNDANCY = "redundancy"
+    OTHER = "other"
+
+
+class SuggestionType(str, Enum):
+    """Types of suggestions"""
+    SPELLING = "spelling"
+    GRAMMAR = "grammar"
+    TONE = "tone"
+    READABILITY = "readability"
+    STYLE = "style"
+    CLARITY = "clarity"
+    CONCISENESS = "conciseness"
+    FORMALITY = "formality"
+
+
+class ErrorSeverity(str, Enum):
+    """Error severity levels"""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class DocumentStatus(str, Enum):
+    """Document status"""
+    DRAFT = "draft"
+    IN_REVIEW = "in_review"
+    PUBLISHED = "published"
+    ARCHIVED = "archived"
+
+
+class UserRole(str, Enum):
+    """User roles"""
+    USER = "user"
+    PREMIUM = "premium"
+    ADMIN = "admin"
+    SUPERADMIN = "superadmin"
+
+
+class AnalyticsPeriod(str, Enum):
+    """Analytics time periods"""
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
+```
+
+---
+
+### **📁 models/error_models.py**
+
+```python
+"""
+Error Models
+Custom exception classes and error responses
+"""
+from typing import Optional, Dict, Any
+from datetime import datetime
+
+
+class AppException(Exception):
+    """Base application exception"""
+    def __init__(
+        self,
+        message: str,
+        error_code: str = "APP_ERROR",
+        details: Optional[Dict[str, Any]] = None
+    ):
+        self.message = message
+        self.error_code = error_code
+        self.details = details or {}
+        self.timestamp = datetime.utcnow()
+        super().__init__(self.message)
+
+
+class ValidationError(AppException):
+    """Validation error"""
+    def __init__(self, message: str, details: Optional[Dict] = None):
+        super().__init__(
+            message=message,
+            error_code="VALIDATION_ERROR",
+            details=details
+        )
+
+
+class AuthenticationError(AppException):
+    """Authentication error"""
+    def __init__(self, message: str = "Authentication failed"):
+        super().__init__(
+            message=message,
+            error_code="AUTHENTICATION_ERROR"
+        )
+
+
+class AuthorizationError(AppException):
+    """Authorization error"""
+    def __init__(self, message: str = "Access denied"):
+        super().__init__(
+            message=message,
+            error_code="AUTHORIZATION_ERROR"
+        )
+
+
+class ResourceNotFoundError(AppException):
+    """Resource not found error"""
+    def __init__(self, resource: str, resource_id: str):
+        super().__init__(
+            message=f"{resource} with ID {resource_id} not found",
+            error_code="RESOURCE_NOT_FOUND",
+            details={"resource": resource, "resource_id": resource_id}
+        )
+
+
+class RateLimitError(AppException):
+    """Rate limit exceeded error"""
+    def __init__(self, message: str = "Rate limit exceeded"):
+        super().__init__(
+            message=message,
+            error_code="RATE_LIMIT_EXCEEDED"
+        )
+
+
+class ExternalServiceError(AppException):
+    """External service error"""
+    def __init__(self, service: str, message: str):
+        super().__init__(
+            message=f"Error from {service}: {message}",
+            error_code="EXTERNAL_SERVICE_ERROR",
+            details={"service": service}
+        )
+
+
+class DatabaseError(AppException):
+    """Database operation error"""
+    def __init__(self, message: str, operation: Optional[str] = None):
+        super().__init__(
+            message=message,
+            error_code="DATABASE_ERROR",
+            details={"operation": operation} if operation else {}
+        )
+
+
+class ModelLoadError(AppException):
+    """ML model loading error"""
+    def __init__(self, model_name: str, message: str):
+        super().__init__(
+            message=f"Failed to load model {model_name}: {message}",
+            error_code="MODEL_LOAD_ERROR",
+            details={"model_name": model_name}
+        )
+
+
+class TextProcessingError(AppException):
+    """Text processing error"""
+    def __init__(self, message: str, processing_stage: Optional[str] = None):
+        super().__init__(
+            message=message,
+            error_code="TEXT_PROCESSING_ERROR",
+            details={"processing_stage": processing_stage} if processing_stage else {}
+        )
+```
+
+---
+
+## **SEGMENT 8: Utils Package**
+
+### **📁 utils/__init__.py**
+
+```python
+"""
+Utils package - Utility functions and helpers
+"""
+from . import (
+    lazy_loading,
+    validation,
+    settings,
+    text_processing,
+    logger,
+    cache,
+    rate_limiter,
+    error_handler,
+    metrics
+)
+
+__all__ = [
+    "lazy_loading",
+    "validation",
+    "settings",
+    "text_processing",
+    "logger",
+    "cache",
+    "rate_limiter",
+    "error_handler",
+    "metrics"
+]
+```
+
+---
+
+### **📁 utils/lazy_loading.py**
+
+```python
+"""
+Lazy Loading Utility
+Handles lazy initialization of heavy resources like ML models
+"""
+from typing import Callable, Any, Optional
+from functools import wraps
+import threading
+
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+# Global cache for lazy-loaded resources
+_lazy_cache = {}
+_cache_lock = threading.Lock()
+
+
+def lazy_load(resource_name: str):
+    """
+    Decorator for lazy loading resources.
+    
+    Args:
+        resource_name: Unique name for the resource
+        
+    Returns:
+        Decorated function
+    """
+    def decorator(load_function: Callable) -> Callable:
+        @wraps(load_function)
+        def wrapper(*args, **kwargs) -> Any:
+            global _lazy_cache
+            
+            if resource_name not in _lazy_cache:
+                with _cache_lock:
+                    # Double-check locking pattern
+                    if resource_name not in _lazy_cache:
+                        logger.info(f"Lazy loading resource: {resource_name}")
+                        try:
+                            resource = load_function(*args, **kwargs)
+                            _lazy_cache[resource_name] = resource
+                            logger.info(f"Successfully loaded: {resource_name}")
+                        except Exception as e:
+                            logger.error(f"Failed to load {resource_name}: {e}")
+                            raise
+            
+            return _lazy_cache[resource_name]
+        
+        return wrapper
+    return decorator
+
+
+def load_model_once(model_name: str, load_function: Callable) -> Any:
+    """
+    Load a model only once and cache it.
+    
+    Args:
+        model_name: Name of the model
+        load_function: Function to load the model
+        
+    Returns:
+        Loaded model
+    """
+    global _lazy_cache
+    
+    if model_name not in _lazy_cache:
+        with _cache_lock:
+            if model_name not in _lazy_cache:
+                logger.info(f"Loading model: {model_name}")
+                _lazy_cache[model_name] = load_function()
+                logger.info(f"Model loaded: {model_name}")
+    
+    return _lazy_cache[model_name]
+
+
+def clear_cache(resource_name: Optional[str] = None):
+    """
+    Clear cached resources.
+    
+    Args:
+        resource_name: Specific resource to clear, or None to clear all
+    """
+    global _lazy_cache
+    
+    with _cache_lock:
+        if resource_name:
+            if resource_name in _lazy_cache:
+                del _lazy_cache[resource_name]
+                logger.info(f"Cleared cache for: {resource_name}")
+        else:
+            _lazy_cache.clear()
+            logger.info("Cleared all cached resources")
+
+
+def get_cached_resources() -> dict:
+    """
+    Get list of currently cached resources.
+    
+    Returns:
+        Dictionary of cached resource names
+    """
+    return list(_lazy_cache.keys())
+```
+
+---
+
+### **📁 utils/validation.py**
+
+```python
+"""
+Validation Utility
+Input validation and sanitization functions
+"""
+import re
+from typing import Any, Optional
+from fastapi import HTTPException, status
+
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+
+def validate_text(text: str, min_length: int = 1, max_length: int = 100000) -> bool:
+    """
+    Validate text input.
+    
+    Args:
+        text: Text to validate
+        min_length: Minimum length
+        max_length: Maximum length
+        
+    Returns:
+        True if valid
+        
+    Raises:
+        ValueError: If validation fails
+    """
+    if not text or text.strip() == "":
+        raise ValueError("Text cannot be empty")
+    
+    if len(text) < min_length:
+        raise ValueError(f"Text must be at least {min_length} characters")
+    
+    if len(text) > max_length:
+        raise ValueError(f"Text cannot exceed {max_length} characters")
+    
+    return True
+
+
+def validate_email(email: str) -> bool:
+    """
+    Validate email format.
+    
+    Args:
+        email: Email to validate
+        
+    Returns:
+        True if valid
+        
+    Raises:
+        ValueError: If validation fails
+    """
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    
+    if not re.match(pattern, email):
+        raise ValueError("Invalid email format")
+    
+    return True
+
+
+def validate_password(password: str) -> bool:
+    """
+    Validate password strength.
+    
+    Args:
+        password: Password to validate
+        
+    Returns:
+        True if valid
+        
+    Raises:
+        ValueError: If validation fails
+    """
+    if len(password) < 8:
+        raise ValueError("Password must be at least 8 characters")
+    
+    if not any(c.isupper() for c in password):
+        raise ValueError("Password must contain at least one uppercase letter")
+    
+    if not any(c.islower() for c in password):
+        raise ValueError("Password must contain at least one lowercase letter")
+    
+    if not any(c.isdigit() for c in password):
+        raise ValueError("Password must contain at least one digit")
+    
+    return True
+
+
+def sanitize_text(text: str) -> str
+
+:
+    """
+    Sanitize text input by removing potentially harmful content.
+    
+    Args:
+        text: Text to sanitize
+        
+    Returns:
+        Sanitized text
+    """
+    # Remove null bytes
+    text = text.replace('\x00', '')
+    
+    # Remove or escape HTML tags (basic sanitization)
+    text = re.sub(r'<script[^>]*>.*?</script>', '', text, flags=re.DOTALL | re.IGNORECASE)
+    text = re.sub(r'<[^>]+>', '', text)
+    
+    # Remove excessive whitespace
+    text = re.sub(r'\s+', ' ', text)
+    
+    return text.strip()
+
+
+def validate_file_extension(filename: str, allowed_extensions: list) -> bool:
+    """
+    Validate file extension.
+    
+    Args:
+        filename: Name of the file
+        allowed_extensions: List of allowed extensions
+        
+    Returns:
+        True if valid
+        
+    Raises:
+        ValueError: If validation fails
+    """
+    if '.' not in filename:
+        raise ValueError("File must have an extension")
+    
+    extension = '.' + filename.rsplit('.', 1)[1].lower()
+    
+    if extension not in allowed_extensions:
+        raise ValueError(f"File type not allowed. Allowed types: {', '.join(allowed_extensions)}")
+    
+    return True
+
+
+def validate_uuid(uuid_string: str) -> bool:
+    """
+    Validate UUID format.
+    
+    Args:
+        uuid_string: UUID string to validate
+        
+    Returns:
+        True if valid
+        
+    Raises:
+        ValueError: If validation fails
+    """
+    uuid_pattern = r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+    
+    if not re.match(uuid_pattern, uuid_string, re.IGNORECASE):
+        raise ValueError("Invalid UUID format")
+    
+    return True
+
+
+def validate_json_structure(data: dict, required_fields: list) -> bool:
+    """
+    Validate JSON structure has required fields.
+    
+    Args:
+        data: Dictionary to validate
+        required_fields: List of required field names
+        
+    Returns:
+        True if valid
+        
+    Raises:
+        ValueError: If validation fails
+    """
+    missing_fields = [field for field in required_fields if field not in data]
+    
+    if missing_fields:
+        raise ValueError(f"Missing required fields: {', '.join(missing_fields)}")
+    
+    return True
+```
+
+---
+
+### **📁 utils/settings.py**
+
+```python
+"""
+Settings Utility
+Application settings and configuration
+"""
+import os
+from typing import List
+from pydantic import Field
+from pydantic_settings import BaseSettings
+
+
+class Settings(BaseSettings):
+    """Application settings"""
+    
+    # Application
+    PROJECT_NAME: str = "Grammarly-like Backend"
+    VERSION: str = "1.0.0"
+    DEBUG: bool = Field(default=True, env="DEBUG")
+    ENVIRONMENT: str = Field(default="development", env="ENVIRONMENT")
+    
+    # Server
+    HOST: str = Field(default="0.0.0.0", env="HOST")
+    PORT: int = Field(default=8000, env="PORT")
+    WORKERS: int = Field(default=4, env="WORKERS")
+    
+    # CORS
+    ALLOWED_ORIGINS: List[str] = Field(
+        default=["http://localhost:3000", "http://localhost:8000"],
+        env="ALLOWED_ORIGINS"
+    )
+    
+    # Database
+    DATABASE_URL: str = Field(
+        default="postgresql://user:password@localhost:5432/grammarly_db",
+        env="DATABASE_URL"
+    )
+    DB_POOL_SIZE: int = Field(default=10, env="DB_POOL_SIZE")
+    DB_MAX_OVERFLOW: int = Field(default=20, env="DB_MAX_OVERFLOW")
+    DB_ECHO: bool = Field(default=False, env="DB_ECHO")
+    
+    # Redis Cache
+    REDIS_URL: str = Field(default="redis://localhost:6379/0", env="REDIS_URL")
+    CACHE_TTL: int = Field(default=3600, env="CACHE_TTL")
+    CACHE_ENABLED: bool = Field(default=True, env="CACHE_ENABLED")
+    
+    # Security
+    SECRET_KEY: str = Field(
+        default="your-secret-key-change-in-production-please",
+        env="SECRET_KEY"
+    )
+    API_KEY_HEADER: str = "X-API-Key"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    
+    # Rate Limiting
+    RATE_LIMIT_PER_MINUTE: int = Field(default=60, env="RATE_LIMIT_PER_MINUTE")
+    RATE_LIMIT_PER_HOUR: int = Field(default=1000, env="RATE_LIMIT_PER_HOUR")
+    RATE_LIMIT_ENABLED: bool = Field(default=True, env="RATE_LIMIT_ENABLED")
+    
+    # AI Models
+    OPENAI_API_KEY: str = Field(default="", env="OPENAI_API_KEY")
+    HUGGINGFACE_API_KEY: str = Field(default="", env="HUGGINGFACE_API_KEY")
+    MODEL_CACHE_DIR: str = Field(default="./static/models", env="MODEL_CACHE_DIR")
+    
+    # ML Model Settings
+    GRAMMAR_MODEL_NAME: str = "prithivida/grammar_error_correcter_v1"
+    TONE_MODEL_NAME: str = "cardiffnlp/twitter-roberta-base-sentiment"
+    SPELL_CHECKER_LANGUAGE: str = "en"
+    MAX_TEXT_LENGTH: int = Field(default=10000, env="MAX_TEXT_LENGTH")
+    
+    # Logging
+    LOG_LEVEL: str = Field(default="INFO", env="LOG_LEVEL")
+    LOG_FILE: str = Field(default="./logs/app.log", env="LOG_FILE")
+    LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    LOG_TO_FILE: bool = Field(default=True, env="LOG_TO_FILE")
+    
+    # File Upload
+    MAX_UPLOAD_SIZE: int = Field(default=10485760, env="MAX_UPLOAD_SIZE")  # 10MB
+    ALLOWED_EXTENSIONS: List[str] = [".txt", ".doc", ".docx", ".pdf"]
+    UPLOAD_DIR: str = Field(default="./uploads", env="UPLOAD_DIR")
+    
+    # Analytics
+    ENABLE_ANALYTICS: bool = Field(default=True, env="ENABLE_ANALYTICS")
+    ANALYTICS_BATCH_SIZE: int = Field(default=100, env="ANALYTICS_BATCH_SIZE")
+    
+    # Performance
+    REQUEST_TIMEOUT: int = Field(default=30, env="REQUEST_TIMEOUT")
+    MAX_CONCURRENT_REQUESTS: int = Field(default=100, env="MAX_CONCURRENT_REQUESTS")
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = True
+        env_file_encoding = 'utf-8'
+
+
+# Global settings instance
+settings = Settings()
+
+
+# Create necessary directories
+os.makedirs(os.path.dirname(settings.LOG_FILE), exist_ok=True)
+os.makedirs(settings.MODEL_CACHE_DIR, exist_ok=True)
+os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+```
+
+---
+
+Let me continue with the remaining utils files in the next segment. Would you like me to proceed?
+
+## **SEGMENT 9: Utils Package (Continued)**
+
+### **📁 utils/text_processing.py**
+
+```python
+"""
+Text Processing Utility
+Text manipulation and processing functions
+"""
+import re
+from typing import List, Dict
+import unicodedata
+
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+
+def clean_text(text: str) -> str:
+    """
+    Clean and normalize text.
+    
+    Args:
+        text: Text to clean
+        
+    Returns:
+        Cleaned text
+    """
+    # Normalize unicode characters
+    text = unicodedata.normalize('NFKD', text)
+    
+    # Remove extra whitespace
+    text = re.sub(r'\s+', ' ', text)
+    
+    # Remove leading/trailing whitespace
+    text = text.strip()
+    
+    return text
+
+
+def tokenize_words(text: str) -> List[str]:
+    """
+    Tokenize text into words.
+    
+    Args:
+        text: Text to tokenize
+        
+    Returns:
+        List of words
+    """
+    # Remove punctuation and split
+    words = re.findall(r'\b\w+\b', text.lower())
+    return words
+
+
+def split_into_sentences(text: str) -> List[str]:
+    """
+    Split text into sentences.
+    
+    Args:
+        text: Text to split
+        
+    Returns:
+        List of sentences
+    """
+    # Simple sentence splitting on common punctuation
+    sentences = re.split(r'[.!?]+', text)
+    
+    # Filter out empty sentences and strip whitespace
+    sentences = [s.strip() for s in sentences if s.strip()]
+    
+    return sentences
+
+
+def count_syllables(text: str) -> int:
+    """
+    Count syllables in text (approximate).
+    
+    Args:
+        text: Text to analyze
+        
+    Returns:
+        Approximate syllable count
+    """
+    text = text.lower()
+    syllable_count = 0
+    
+    for word in text.split():
+        word = re.sub(r'[^a-z]', '', word)
+        if not word:
+            continue
+        
+        # Count vowel groups
+        vowels = 'aeiouy'
+        previous_was_vowel = False
+        
+        for char in word:
+            is_vowel = char in vowels
+            if is_vowel and not previous_was_vowel:
+                syllable_count += 1
+            previous_was_vowel = is_vowel
+        
+        # Adjust for silent 'e'
+        if word.endswith('e'):
+            syllable_count -= 1
+        
+        # Every word has at least one syllable
+        if syllable_count == 0:
+            syllable_count = 1
+    
+    return syllable_count
+
+
+def count_words(text: str) -> int:
+    """
+    Count words in text.
+    
+    Args:
+        text: Text to count
+        
+    Returns:
+        Word count
+    """
+    words = tokenize_words(text)
+    return len(words)
+
+
+def count_characters(text: str, include_spaces: bool = True) -> int:
+    """
+    Count characters in text.
+    
+    Args:
+        text: Text to count
+        include_spaces: Whether to include spaces in count
+        
+    Returns:
+        Character count
+    """
+    if include_spaces:
+        return len(text)
+    else:
+        return len(text.replace(' ', ''))
+
+
+def extract_keywords(text: str, top_n: int = 10) -> List[str]:
+    """
+    Extract keywords from text (simple frequency-based).
+    
+    Args:
+        text: Text to analyze
+        top_n: Number of top keywords to return
+        
+    Returns:
+        List of keywords
+    """
+    # Common words to exclude
+    stop_words = {
+        'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+        'of', 'with', 'is', 'was', 'are', 'were', 'be', 'been', 'being',
+        'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'should',
+        'could', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those'
+    }
+    
+    # Tokenize and count
+    words = tokenize_words(text)
+    word_freq = {}
+    
+    for word in words:
+        if word not in stop_words and len(word) > 2:
+            word_freq[word] = word_freq.get(word, 0) + 1
+    
+    # Sort by frequency
+    sorted_words = sorted(word_freq.items(), key=lambda x: x[1], reverse=True)
+    
+    return [word for word, freq in sorted_words[:top_n]]
+
+
+def truncate_text(text: str, max_length: int, suffix: str = "...") -> str:
+    """
+    Truncate text to maximum length.
+    
+    Args:
+        text: Text to truncate
+        max_length: Maximum length
+        suffix: Suffix to add if truncated
+        
+    Returns:
+        Truncated text
+    """
+    if len(text) <= max_length:
+        return text
+    
+    return text[:max_length - len(suffix)] + suffix
+
+
+def remove_punctuation(text: str) -> str:
+    """
+    Remove punctuation from text.
+    
+    Args:
+        text: Text to process
+        
+    Returns:
+        Text without punctuation
+    """
+    return re.sub(r'[^\w\s]', '', text)
+
+
+def capitalize_sentences(text: str) -> str:
+    """
+    Capitalize the first letter of each sentence.
+    
+    Args:
+        text: Text to process
+        
+    Returns:
+        Text with capitalized sentences
+    """
+    sentences = split_into_sentences(text)
+    capitalized = [s[0].upper() + s[1:] if s else s for s in sentences]
+    return '. '.join(capitalized) + '.'
+
+
+def extract_text_from_file(filename: str, content: bytes) -> str:
+    """
+    Extract text from uploaded file.
+    
+    Args:
+        filename: Name of the file
+        content: File content bytes
+        
+    Returns:
+        Extracted text
+    """
+    extension = filename.lower().split('.')[-1]
+    
+    try:
+        if extension == 'txt':
+            return content.decode('utf-8')
+        
+        elif extension == 'pdf':
+            # PDF text extraction (requires PyPDF2 or similar)
+            try:
+                import PyPDF2
+                import io
+                
+                pdf_file = io.BytesIO(content)
+                pdf_reader = PyPDF2.PdfReader(pdf_file)
+                
+                text = ""
+                for page in pdf_reader.pages:
+                    text += page.extract_text()
+                
+                return text
+            except ImportError:
+                logger.warning("PyPDF2 not installed, cannot extract PDF text")
+                return "PDF text extraction not available"
+        
+        elif extension in ['doc', 'docx']:
+            # DOCX text extraction (requires python-docx)
+            try:
+                import docx
+                import io
+                
+                doc_file = io.BytesIO(content)
+                doc = docx.Document(doc_file)
+                
+                text = ""
+                for paragraph in doc.paragraphs:
+                    text += paragraph.text + "\n"
+                
+                return text
+            except ImportError:
+                logger.warning("python-docx not installed, cannot extract DOCX text")
+                return "DOCX text extraction not available"
+        
+        else:
+            return "Unsupported file format"
+    
+    except Exception as e:
+        logger.error(f"Error extracting text from file: {e}")
+        return f"Error extracting text: {str(e)}"
+
+
+def calculate_reading_time(text: str, words_per_minute: int = 200) -> float:
+    """
+    Calculate estimated reading time.
+    
+    Args:
+        text: Text to analyze
+        words_per_minute: Average reading speed
+        
+    Returns:
+        Reading time in minutes
+    """
+    word_count = count_words(text)
+    return word_count / words_per_minute
+
+
+def highlight_text(text: str, positions: List[tuple], marker: str = "**") -> str:
+    """
+    Highlight specific positions in text.
+    
+    Args:
+        text: Original text
+        positions: List of (start, end) tuples
+        marker: Marker to use for highlighting
+        
+    Returns:
+        Text with highlights
+    """
+    # Sort positions in reverse order to avoid offset issues
+    sorted_positions = sorted(positions, key=lambda x: x[0], reverse=True)
+    
+    result = text
+    for start, end in sorted_positions:
+        result = result[:start] + marker + result[start:end] + marker + result[end:]
+    
+    return result
+```
+
+---
+
+### **📁 utils/logger.py**
+
+```python
+"""
+Logger Utility
+Logging configuration and setup
+"""
+import logging
+import logging.handlers
+import os
+from typing import Optional
+
+from utils.settings import settings
+
+
+def setup_logger(name: str, level: Optional[str] = None) -> logging.Logger:
+    """
+    Setup and configure logger.
+    
+    Args:
+        name: Logger name
+        level: Optional log level override
+        
+    Returns:
+        Configured logger
+    """
+    logger = logging.getLogger(name)
+    
+    # Set level
+    log_level = level or settings.LOG_LEVEL
+    logger.setLevel(getattr(logging, log_level.upper()))
+    
+    # Prevent duplicate handlers
+    if logger.handlers:
+        return logger
+    
+    # Create formatter
+    formatter = logging.Formatter(settings.LOG_FORMAT)
+    
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+    
+    # File handler (if enabled)
+    if settings.LOG_TO_FILE:
+        # Ensure log directory exists
+        log_dir = os.path.dirname(settings.LOG_FILE)
+        os.makedirs(log_dir, exist_ok=True)
+        
+        # Rotating file handler (10MB max, 5 backup files)
+        file_handler = logging.handlers.RotatingFileHandler(
+            settings.LOG_FILE,
+            maxBytes=10485760,  # 10MB
+            backupCount=5
+        )
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+    
+    return logger
+
+
+def log_request(endpoint: str, method: str, status_code: int, response_time: float):
+    """
+    Log API request details.
+    
+    Args:
+        endpoint: API endpoint
+        method: HTTP method
+        status_code: Response status code
+        response_time: Response time in milliseconds
+    """
+    logger = logging.getLogger("api.requests")
+    logger.info(
+        f"{method} {endpoint} - Status: {status_code} - Time: {response_time:.2f}ms"
+    )
+
+
+def log_error(error: Exception, context: Optional[dict] = None):
+    """
+    Log error with context.
+    
+    Args:
+        error: Exception object
+        context: Optional context information
+    """
+    logger = logging.getLogger("api.errors")
+    
+    error_msg = f"{type(error).__name__}: {str(error)}"
+    
+    if context:
+        error_msg += f" | Context: {context}"
+    
+    logger.error(error_msg, exc_info=True)
+```
+
+---
+
+### **📁 utils/cache.py**
+
+```python
+"""
+Cache Utility
+Redis-based caching functionality
+"""
+import json
+import redis
+from typing import Any, Optional
+import asyncio
+
+from utils.settings import settings
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+# Redis client instance
+_redis_client: Optional[redis.Redis] = None
+
+
+def get_redis_client() -> redis.Redis:
+    """
+    Get or create Redis client.
+    
+    Returns:
+        Redis client instance
+    """
+    global _redis_client
+    
+    if _redis_client is None:
+        try:
+            _redis_client = redis.from_url(
+                settings.REDIS_URL,
+                decode_responses=True
+            )
+            # Test connection
+            _redis_client.ping()
+            logger.info("Redis connection established")
+        except Exception as e:
+            logger.warning(f"Redis connection failed: {e}. Caching disabled.")
+            _redis_client = None
+    
+    return _redis_client
+
+
+async def get_cache_client():
+    """
+    Async wrapper for getting cache client.
+    
+    Returns:
+        Redis client or None
+    """
+    return get_redis_client()
+
+
+async def cache_result(key: str, value: Any, ttl: int = None) -> bool:
+    """
+    Cache a result in Redis.
+    
+    Args:
+        key: Cache key
+        value: Value to cache
+        ttl: Time to live in seconds
+        
+    Returns:
+        True if successful
+    """
+    if not settings.CACHE_ENABLED:
+        return False
+    
+    client = get_redis_client()
+    if not client:
+        return False
+    
+    try:
+        ttl = ttl or settings.CACHE_TTL
+        serialized = json.dumps(value)
+        client.setex(key, ttl, serialized)
+        logger.debug(f"Cached result for key: {key}")
+        return True
+    except Exception as e:
+        logger.error(f"Error caching result: {e}")
+        return False
+
+
+async def get_cached_result(key: str) -> Optional[Any]:
+    """
+    Get cached result from Redis.
+    
+    Args:
+        key: Cache key
+        
+    Returns:
+        Cached value or None
+    """
+    if not settings.CACHE_ENABLED:
+        return None
+    
+    client = get_redis_client()
+    if not client:
+        return None
+    
+    try:
+        cached = client.get(key)
+        if cached:
+            logger.debug(f"Cache hit for key: {key}")
+            return json.loads(cached)
+        else:
+            logger.debug(f"Cache miss for key: {key}")
+            return None
+    except Exception as e:
+        logger.error(f"Error getting cached result: {e}")
+        return None
+
+
+async def delete_cache(key: str) -> bool:
+    """
+    Delete cached result.
+    
+    Args:
+        key: Cache key
+        
+    Returns:
+        True if successful
+    """
+    if not settings.CACHE_ENABLED:
+        return False
+    
+    client = get_redis_client()
+    if not client:
+        return False
+    
+    try:
+        client.delete(key)
+        logger.debug(f"Deleted cache for key: {key}")
+        return True
+    except Exception as e:
+        logger.error(f"Error deleting cache: {e}")
+        return False
+
+
+async def clear_all_cache() -> bool:
+    """
+    Clear all cached data.
+    
+    Returns:
+        True if successful
+    """
+    if not settings.CACHE_ENABLED:
+        return False
+    
+    client = get_redis_client()
+    if not client:
+        return False
+    
+    try:
+        client.flushdb()
+        logger.info("Cleared all cache")
+        return True
+    except Exception as e:
+        logger.error(f"Error clearing cache: {e}")
+        return False
+
+
+async def check_cache_health() -> bool:
+    """
+    Check if cache is healthy.
+    
+    Returns:
+        True if cache is accessible
+    """
+    client = get_redis_client()
+    if not client:
+        return False
+    
+    try:
+        client.ping()
+        return True
+    except Exception:
+        return False
+```
+
+---
+
+### **📁 utils/rate_limiter.py**
+
+```python
+"""
+Rate Limiter Utility
+Request rate limiting functionality
+"""
+import time
+from typing import Optional
+import redis
+
+from utils.settings import settings
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+
+async def check_rate_limit(identifier: str) -> bool:
+    """
+    Check if request is within rate limits.
+    
+    Args:
+        identifier: Unique identifier (user ID, API key, IP, etc.)
+        
+    Returns:
+        True if within limits, False if exceeded
+    """
+    if not settings.RATE_LIMIT_ENABLED:
+        return True
+    
+    try:
+        from utils.cache import get_redis_client
+        
+        client = get_redis_client()
+        if not client:
+            # If Redis unavailable, allow request
+            return True
+        
+        current_time = int(time.time())
+        
+        # Check per-minute limit
+        minute_key = f"rate_limit:minute:{identifier}:{current_time // 60}"
+        minute_count = client.incr(minute_key)
+        
+        if minute_count == 1:
+            client.expire(minute_key, 60)
+        
+        if minute_count > settings.RATE_LIMIT_PER_MINUTE:
+            logger.warning(f"Rate limit exceeded (per minute) for: {identifier}")
+            return False
+        
+        # Check per-hour limit
+        hour_key = f"rate_limit:hour:{identifier}:{current_time // 3600}"
+        hour_count = client.incr(hour_key)
+        
+        if hour_count == 1:
+            client.expire(hour_key, 3600)
+        
+        if hour_count > settings.RATE_LIMIT_PER_HOUR:
+            logger.warning(f"Rate limit exceeded (per hour) for: {identifier}")
+            return False
+        
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error checking rate limit: {e}")
+        # On error, allow request
+        return True
+
+
+async def get_rate_limit_status(identifier: str) -> dict:
+    """
+    Get current rate limit status for identifier.
+    
+    Args:
+        identifier: Unique identifier
+        
+    Returns:
+        Dictionary with rate limit status
+    """
+    try:
+        from utils.cache import get_redis_client
+        
+        client = get_redis_client()
+        if not client:
+            return {
+                "per_minute": {"used": 0, "limit": settings.RATE_LIMIT_PER_MINUTE},
+                "per_hour": {"used": 0, "limit": settings.RATE_LIMIT_PER_HOUR}
+            }
+        
+        current_time = int(time.time())
+        
+        minute_key = f"rate_limit:minute:{identifier}:{current_time // 60}"
+        hour_key = f"rate_limit:hour:{identifier}:{current_time // 3600}"
+        
+        minute_used = int(client.get(minute_key) or 0)
+        hour_used = int(client.get(hour_key) or 0)
+        
+        return {
+            "per_minute": {
+                "used": minute_used,
+                "limit": settings.RATE_LIMIT_PER_MINUTE,
+                "remaining": max(0, settings.RATE_LIMIT_PER_MINUTE - minute_used)
+            },
+            "per_hour": {
+                "used": hour_used,
+                "limit": settings.RATE_LIMIT_PER_HOUR,
+                "remaining": max(0, settings.RATE_LIMIT_PER_HOUR - hour_used)
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting rate limit status: {e}")
+        return {
+            "per_minute": {"used": 0, "limit": settings.RATE_LIMIT_PER_MINUTE},
+            "per_hour": {"used": 0, "limit": settings.RATE_LIMIT_PER_HOUR}
+        }
+
+
+async def reset_rate_limit(identifier: str) -> bool:
+    """
+    Reset rate limit for identifier.
+    
+    Args:
+        identifier: Unique identifier
+        
+    Returns:
+        True if successful
+    """
+    try:
+        from utils.cache import get_redis_client
+        
+        client = get_redis_client()
+        if not client:
+            return False
+        
+        current_time = int(time.time())
+        
+        minute_key = f"rate_limit:minute:{identifier}:{current_time // 60}"
+        hour_key = f"rate_limit:hour:{identifier}:{current_time // 3600}"
+        
+        client.delete(minute_key)
+        client.delete(hour_key)
+        
+        logger.info(f"Reset rate limit for: {identifier}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error resetting rate limit: {e}")
+        return False
+```
+
+---
+
+### **📁 utils/error_handler.py**
+
+```python
+"""
+Error Handler Utility
+Centralized error handling and formatting
+"""
+from fastapi import Request, status
+from fastapi.responses import JSONResponse
+from datetime import datetime
+
+from models.error_models import AppException
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+
+async def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
+    """
+    Handle application exceptions.
+    
+    Args:
+        request: FastAPI request
+        exc: Application exception
+        
+    Returns:
+        JSON error response
+    """
+    logger.error(f"Application error: {exc.message}", extra={
+        "error_code": exc.error_code,
+        "details": exc.details,
+        "path": request.url.path
+    })
+    
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={
+            "error": exc.error_code,
+            "message": exc.message,
+            "details": exc.details,
+            "timestamp": exc.timestamp.isoformat()
+        }
+    )
+
+
+async def validation_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Handle validation exceptions.
+    
+    Args:
+        request: FastAPI request
+        exc: Validation exception
+        
+    Returns:
+        JSON error response
+    """
+    logger.warning(f"Validation error: {str(exc)}", extra={"path": request.url.path})
+    
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "error": "VALIDATION_ERROR",
+            "message": "Invalid request data",
+            "details": str(exc),
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    )
+
+
+async def generic_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """
+    Handle generic exceptions.
+    
+    Args:
+        request: FastAPI request
+        exc: Exception
+        
+    Returns:
+        JSON error response
+    """
+    logger.error(f"Unhandled error: {str(exc)}", exc_info=True, extra={
+        "path": request.url.path
+    })
+    
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={
+            "error": "INTERNAL_SERVER_ERROR",
+            "message": "An unexpected error occurred",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    )
+
+
+def format_error_response(
+    error_code: str,
+    message: str,
+    status_code: int = status.HTTP_400_BAD_REQUEST,
+    details: dict = None
+) -> JSONResponse:
+    """
+    Format error response.
+    
+    Args:
+        error_code: Error code
+        message: Error message
+        status_code: HTTP status code
+        details: Optional error details
+        
+    Returns:
+        JSON error response
+    """
+    return JSONResponse(
+        status_code=status_code,
+        content={
+            "error": error_code,
+            "message": message,
+            "details": details or {},
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    )
+```
+
+---
+
+### **📁 utils/metrics.py**
+
+```python
+"""
+Metrics Utility
+Performance metrics and monitoring
+"""
+import time
+from typing import Optional, Callable
+from functools import wraps
+
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+# In-memory metrics storage (in production, use Prometheus or similar)
+_metrics = {
+    "requests": 0,
+    "errors": 0,
+    "total_response_time": 0.0
+}
+
+
+def track_time(func: Callable) -> Callable:
+    """
+    Decorator to track function execution time.
+    
+    Args:
+        func: Function to track
+        
+    Returns:
+        Wrapped function
+    """
+    @wraps(func)
+    async def async_wrapper(*args, **kwargs):
+        start_time = time.time()
+        try:
+            result = await func(*args, **kwargs)
+            return result
+        finally:
+            elapsed = (time.time() - start_time) * 1000  # Convert to ms
+            logger.debug(f"{func.__name__} took {elapsed:.2f}ms")
+            
+            # Update metrics
+            _metrics["requests"] += 1
+            _metrics["total_response_time"] += elapsed
+    
+    @wraps(func)
+    def sync_wrapper(*args, **kwargs):
+        start_time = time.time()
+        try:
+            result = func(*args, **kwargs)
+            return result
+        finally:
+            elapsed = (time.time() - start_time) * 1000
+            logger.debug(f"{func.__name__} took {elapsed:.2f}ms")
+            
+            _metrics["requests"] += 1
+            _metrics["total_response_time"] += elapsed
+    
+    # Return appropriate wrapper based on function type
+    import asyncio
+    if asyncio.iscoroutinefunction(func):
+        return async_wrapper
+    else:
+        return sync_wrapper
+
+
+def record_request():
+    """Record an API request"""
+    _metrics["requests"] += 1
+
+
+def record_error():
+    """Record an error"""
+    _metrics["errors"] += 1
+
+
+def record_response_time(time_ms: float):
+    """
+    Record response time.
+    
+    Args:
+        time_ms: Response time in milliseconds
+    """
+    _metrics["total_response_time"] += time_ms
+
+
+def get_metrics() -> dict:
+    """
+    Get current metrics.
+    
+    Returns:
+        Dictionary of metrics
+    """
+    avg_response_time = (
+        _metrics["total_response_time"] / _metrics["requests"]
+        if _metrics["requests"] > 0 else 0
+    )
+    
+    error_rate = (
+        (_metrics["errors"] / _metrics["requests"]) * 100
+        if _metrics["requests"] > 0 else 0
+    )
+    
+    return {
+        "total_requests": _metrics["requests"],
+        "total_errors": _metrics["errors"],
+        "error_rate_percentage": round(error_rate, 2),
+        "avg_response_time_ms": round(avg_response_time, 2)
+    }
+
+
+def reset_metrics():
+    """Reset all metrics"""
+    global _metrics
+    _metrics = {
+        "requests": 0,
+        "errors": 0,
+        "total_response_time": 0.0
+    }
+    logger.info("Metrics reset")
+```
+
+---
+
+Let me continue with the Core and ML Models packages in the next segment. Would you like me to proceed?
+
+## **SEGMENT 10: Core Package**
+
+### **📁 core/__init__.py**
+
+```python
+"""
+Core package - Core application functionality
+"""
+from . import (
+    security,
+    database,
+    middleware,
+    exceptions
+)
+
+__all__ = [
+    "security",
+    "database",
+    "middleware",
+    "exceptions"
+]
+```
+
+---
+
+### **📁 core/security.py**
+
+```python
+"""
+Security
+Authentication, authorization, and security utilities
+"""
+from datetime import datetime, timedelta
+from typing import Optional
+import jwt
+from passlib.context import CryptContext
+from fastapi import HTTPException, status, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+from utils.settings import settings
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+# Password hashing context
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# HTTP Bearer for token authentication
+security = HTTPBearer()
+
+
+def hash_password(password: str) -> str:
+    """
+    Hash a password.
+    
+    Args:
+        password: Plain text password
+        
+    Returns:
+        Hashed password
+    """
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """
+    Verify a password against its hash.
+    
+    Args:
+        plain_password: Plain text password
+        hashed_password: Hashed password
+        
+    Returns:
+        True if password matches
+    """
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """
+    Create JWT access token.
+    
+    Args:
+        data: Data to encode in token
+        expires_delta: Optional expiration time delta
+        
+    Returns:
+        Encoded JWT token
+    """
+    to_encode = data.copy()
+    
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    
+    to_encode.update({"exp": expire})
+    
+    encoded_jwt = jwt.encode(
+        to_encode,
+        settings.SECRET_KEY,
+        algorithm=settings.JWT_ALGORITHM
+    )
+    
+    return encoded_jwt
+
+
+def decode_access_token(token: str) -> dict:
+    """
+    Decode and verify JWT token.
+    
+    Args:
+        token: JWT token
+        
+    Returns:
+        Decoded token data
+        
+    Raises:
+        HTTPException: If token is invalid or expired
+    """
+    try:
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.JWT_ALGORITHM]
+        )
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has expired"
+        )
+    except jwt.JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials"
+        )
+
+
+async def verify_api_key(api_key: str) -> bool:
+    """
+    Verify API key.
+    
+    Args:
+        api_key: API key to verify
+        
+    Returns:
+        True if valid
+    """
+    # In production, verify against database
+    # For now, simple check
+    if not api_key or len(api_key) < 32:
+        return False
+    
+    # Would check database here
+    return True
+
+
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """
+    Get current authenticated user from token.
+    
+    Args:
+        credentials: HTTP Bearer credentials
+        
+    Returns:
+        User object
+        
+    Raises:
+        HTTPException: If authentication fails
+    """
+    token = credentials.credentials
+    
+    try:
+        payload = decode_access_token(token)
+        user_id: str = payload.get("sub")
+        
+        if user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials"
+            )
+        
+        # In production, fetch user from database
+        from database.repositories.user_repository import UserRepository
+        from core.database import get_db
+        
+        async for db in get_db():
+            user_repo = UserRepository(db)
+            user = await user_repo.get_by_id(user_id)
+            
+            if user is None:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="User not found"
+                )
+            
+            return user
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting current user: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials"
+        )
+
+
+def generate_api_key() -> str:
+    """
+    Generate a new API key.
+    
+    Returns:
+        New API key string
+    """
+    import secrets
+    return secrets.token_urlsafe(32)
+
+
+def check_permissions(user, required_permissions: list) -> bool:
+    """
+    Check if user has required permissions.
+    
+    Args:
+        user: User object
+        required_permissions: List of required permissions
+        
+    Returns:
+        True if user has permissions
+    """
+    # Implement permission checking logic
+    # For now, always return True
+    return True
+```
+
+---
+
+### **📁 core/database.py**
+
+```python
+"""
+Database
+Database connection and session management
+"""
+from typing import AsyncGenerator
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.pool import NullPool
+
+from utils.settings import settings
+from utils.logger import setup_logger
+from models.database_models import Base
+
+logger = setup_logger(__name__)
+
+# Database engine
+engine = None
+AsyncSessionLocal = None
+
+
+async def init_db():
+    """
+    Initialize database connection and create tables.
+    """
+    global engine, AsyncSessionLocal
+    
+    try:
+        # Create async engine
+        engine = create_async_engine(
+            settings.DATABASE_URL.replace('postgresql://', 'postgresql+asyncpg://'),
+            echo=settings.DB_ECHO,
+            pool_size=settings.DB_POOL_SIZE,
+            max_overflow=settings.DB_MAX_OVERFLOW,
+            poolclass=NullPool if settings.ENVIRONMENT == "test" else None
+        )
+        
+        # Create session factory
+        AsyncSessionLocal = async_sessionmaker(
+            engine,
+            class_=AsyncSession,
+            expire_on_commit=False
+        )
+        
+        # Create tables
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        
+        logger.info("Database initialized successfully")
+        
+    except Exception as e:
+        logger.error(f"Error initializing database: {e}")
+        raise
+
+
+async def close_db():
+    """
+    Close database connection.
+    """
+    global engine
+    
+    if engine:
+        await engine.dispose()
+        logger.info("Database connection closed")
+
+
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """
+    Get database session.
+    
+    Yields:
+        Database session
+    """
+    if AsyncSessionLocal is None:
+        raise RuntimeError("Database not initialized. Call init_db() first.")
+    
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+
+async def check_db_health() -> bool:
+    """
+    Check database connection health.
+    
+    Returns:
+        True if database is accessible
+    """
+    try:
+        async for session in get_db():
+            # Execute simple query
+            await session.execute("SELECT 1")
+            return True
+    except Exception as e:
+        logger.error(f"Database health check failed: {e}")
+        return False
+```
+
+---
+
+### **📁 core/middleware.py**
+
+```python
+"""
+Middleware
+Custom middleware for request processing
+"""
+import time
+import uuid
+from typing import Callable
+from fastapi import Request, Response
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.types import ASGIApp
+
+from utils.logger import setup_logger
+from utils.metrics import record_request, record_error, record_response_time
+from utils.rate_limiter import check_rate_limit
+
+logger = setup_logger(__name__)
+
+
+class RequestIDMiddleware(BaseHTTPMiddleware):
+    """
+    Add unique request ID to each request.
+    """
+    
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        request_id = str(uuid.uuid4())
+        request.state.request_id = request_id
+        
+        response = await call_next(request)
+        response.headers["X-Request-ID"] = request_id
+        
+        return response
+
+
+class LoggingMiddleware(BaseHTTPMiddleware):
+    """
+    Log all incoming requests and responses.
+    """
+    
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        start_time = time.time()
+        
+        # Log request
+        logger.info(f"Request: {request.method} {request.url.path}")
+        
+        try:
+            response = await call_next(request)
+            
+            # Calculate response time
+            process_time = (time.time() - start_time) * 1000  # Convert to ms
+            
+            # Log response
+            logger.info(
+                f"Response: {request.method} {request.url.path} - "
+                f"Status: {response.status_code} - Time: {process_time:.2f}ms"
+            )
+            
+            # Add timing header
+            response.headers["X-Process-Time"] = f"{process_time:.2f}ms"
+            
+            # Record metrics
+            record_request()
+            record_response_time(process_time)
+            
+            return response
+            
+        except Exception as e:
+            process_time = (time.time() - start_time) * 1000
+            logger.error(
+                f"Error: {request.method} {request.url.path} - "
+                f"Error: {str(e)} - Time: {process_time:.2f}ms"
+            )
+            record_error()
+            raise
+
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    """
+    Rate limiting middleware.
+    """
+    
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        # Skip rate limiting for health checks
+        if request.url.path in ["/health", "/health/live", "/health/ready"]:
+            return await call_next(request)
+        
+        # Get identifier (API key, user ID, or IP)
+        identifier = request.headers.get("X-API-Key") or request.client.host
+        
+        # Check rate limit
+        if not await check_rate_limit(identifier):
+            from fastapi.responses import JSONResponse
+            return JSONResponse(
+                status_code=429,
+                content={
+                    "error": "RATE_LIMIT_EXCEEDED",
+                    "message": "Too many requests. Please try again later."
+                }
+            )
+        
+        return await call_next(request)
+
+
+class CORSMiddleware(BaseHTTPMiddleware):
+    """
+    Custom CORS middleware with additional security.
+    """
+    
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        response = await call_next(request)
+        
+        # Add security headers
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        
+        return response
+
+
+class ErrorHandlingMiddleware(BaseHTTPMiddleware):
+    """
+    Global error handling middleware.
+    """
+    
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+        try:
+            return await call_next(request)
+        except Exception as e:
+            logger.error(f"Unhandled error in {request.url.path}: {str(e)}", exc_info=True)
+            
+            from fastapi.responses import JSONResponse
+            from datetime import datetime
+            
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error": "INTERNAL_SERVER_ERROR",
+                    "message": "An unexpected error occurred",
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+            )
+```
+
+---
+
+### **📁 core/exceptions.py**
+
+```python
+"""
+Exceptions
+Exception handlers registration
+"""
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from datetime import datetime
+
+from models.error_models import (
+    AppException,
+    ValidationError,
+    AuthenticationError,
+    AuthorizationError,
+    ResourceNotFoundError,
+    RateLimitError
+)
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+
+def register_exception_handlers(app: FastAPI):
+    """
+    Register all exception handlers with the FastAPI app.
+    
+    Args:
+        app: FastAPI application instance
+    """
+    
+    @app.exception_handler(AppException)
+    async def app_exception_handler(request: Request, exc: AppException):
+        """Handle custom application exceptions"""
+        logger.error(f"Application error: {exc.message}", extra={
+            "error_code": exc.error_code,
+            "details": exc.details,
+            "path": request.url.path
+        })
+        
+        status_code = 400
+        if isinstance(exc, AuthenticationError):
+            status_code = 401
+        elif isinstance(exc, AuthorizationError):
+            status_code = 403
+        elif isinstance(exc, ResourceNotFoundError):
+            status_code = 404
+        elif isinstance(exc, RateLimitError):
+            status_code = 429
+        
+        return JSONResponse(
+            status_code=status_code,
+            content={
+                "error": exc.error_code,
+                "message": exc.message,
+                "details": exc.details,
+                "timestamp": exc.timestamp.isoformat()
+            }
+        )
+    
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+        """Handle Pydantic validation errors"""
+        errors = []
+        for error in exc.errors():
+            errors.append({
+                "field": ".".join(str(x) for x in error["loc"]),
+                "message": error["msg"],
+                "type": error["type"]
+            })
+        
+        logger.warning(f"Validation error on {request.url.path}", extra={"errors": errors})
+        
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": "VALIDATION_ERROR",
+                "message": "Request validation failed",
+                "details": errors,
+                "timestamp": datetime.utcnow().isoformat()
+            }
+        )
+    
+    @app.exception_handler(Exception)
+    async def generic_exception_handler(request: Request, exc: Exception):
+        """Handle all other exceptions"""
+        logger.error(
+            f"Unhandled exception on {request.url.path}: {str(exc)}",
+            exc_info=True
+        )
+        
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": "INTERNAL_SERVER_ERROR",
+                "message": "An unexpected error occurred",
+                "timestamp": datetime.utcnow().isoformat()
+            }
+        )
+```
+
+---
+
+## **SEGMENT 11: ML Models Package**
+
+### **📁 ml_models/__init__.py**
+
+```python
+"""
+ML Models package - Machine learning model management
+"""
+from . import (
+    model_loader,
+    grammar_model,
+    tone_model,
+    spell_checker,
+    style_analyzer
+)
+
+__all__ = [
+    "model_loader",
+    "grammar_model",
+    "tone_model",
+    "spell_checker",
+    "style_analyzer"
+]
+```
+
+---
+
+### **📁 ml_models/model_loader.py**
+
+```python
+"""
+Model Loader
+Centralized ML model loading and management
+"""
+from typing import Any, Dict, Optional
+import os
+from pathlib import Path
+
+from utils.settings import settings
+from utils.logger import setup_logger
+from utils.lazy_loading import lazy_load
+
+logger = setup_logger(__name__)
+
+# Model registry
+_model_registry: Dict[str, Any] = {}
+
+
+@lazy_load("grammar_model")
+def load_grammar_model():
+    """
+    Load grammar checking model.
+    
+    Returns:
+        Grammar model
+    """
+    try:
+        # In production, load actual model
+        # For now, return None (using LanguageTool instead)
+        logger.info("Grammar model loaded (using LanguageTool)")
+        return None
+        
+    except Exception as e:
+        logger.error(f"Failed to load grammar model: {e}")
+        raise
+
+
+@lazy_load("tone_model")
+def load_tone_model():
+    """
+    Load tone analysis model.
+    
+    Returns:
+        Tone model
+    """
+    try:
+        from transformers import pipeline
+        
+        model_name = settings.TONE_MODEL_NAME
+        logger.info(f"Loading tone model: {model_name}")
+        
+        model = pipeline(
+            "sentiment-analysis",
+            model=model_name,
+            top_k=None
+        )
+        
+        logger.info("Tone model loaded successfully")
+        return model
+        
+    except Exception as e:
+        logger.error(f"Failed to load tone model: {e}")
+        # Return None to allow graceful degradation
+        return None
+
+
+@lazy_load("spell_checker")
+def load_spell_checker():
+    """
+    Load spell checker.
+    
+    Returns:
+        Spell checker
+    """
+    try:
+        from spellchecker import SpellChecker
+        
+        language = settings.SPELL_CHECKER_LANGUAGE
+        logger.info(f"Loading spell checker: {language}")
+        
+        spell = SpellChecker(language=language)
+        
+        logger.info("Spell checker loaded successfully")
+        return spell
+        
+    except Exception as e:
+        logger.error(f"Failed to load spell checker: {e}")
+        return None
+
+
+def get_model(model_name: str) -> Optional[Any]:
+    """
+    Get a loaded model by name.
+    
+    Args:
+        model_name: Name of the model
+        
+    Returns:
+        Model or None if not found
+    """
+    return _model_registry.get(model_name)
+
+
+def register_model(model_name: str, model: Any):
+    """
+    Register a model in the registry.
+    
+    Args:
+        model_name: Name of the model
+        model: Model object
+    """
+    _model_registry[model_name] = model
+    logger.info(f"Model registered: {model_name}")
+
+
+def unload_model(model_name: str):
+    """
+    Unload a model from memory.
+    
+    Args:
+        model_name: Name of the model
+    """
+    if model_name in _model_registry:
+        del _model_registry[model_name]
+        logger.info(f"Model unloaded: {model_name}")
+
+
+async def check_models_health() -> Dict:
+    """
+    Check health status of all models.
+    
+    Returns:
+        Dictionary with model health status
+    """
+    status = {
+        "status": "healthy",
+        "models": {}
+    }
+    
+    # Check grammar model
+    try:
+        from ml_models.grammar_model import load_grammar_model
+        model = load_grammar_model()
+        status["models"]["grammar"] = "loaded" if model else "not_loaded"
+    except Exception as e:
+        status["models"]["grammar"] = f"error: {str(e)}"
+        status["status"] = "degraded"
+    
+    # Check tone model
+    try:
+        from ml_models.tone_model import load_tone_model
+        model = load_tone_model()
+        status["models"]["tone"] = "loaded" if model else "not_loaded"
+    except Exception as e:
+        status["models"]["tone"] = f"error: {str(e)}"
+        status["status"] = "degraded"
+    
+    # Check spell checker
+    try:
+        from ml_models.spell_checker import load_spell_checker
+        model = load_spell_checker()
+        status["models"]["spell_checker"] = "loaded" if model else "not_loaded"
+    except Exception as e:
+        status["models"]["spell_checker"] = f"error: {str(e)}"
+        status["status"] = "degraded"
+    
+    return status
+
+
+def preload_models():
+    """
+    Preload all models at startup.
+    """
+    logger.info("Preloading models...")
+    
+    try:
+        load_grammar_model()
+        load_tone_model()
+        load_spell_checker()
+        logger.info("All models preloaded successfully")
+    except Exception as e:
+        logger.warning(f"Some models failed to preload: {e}")
+```
+
+---
+
+### **📁 ml_models/grammar_model.py**
+
+```python
+"""
+Grammar Model
+Grammar checking model wrapper
+"""
+from typing import Optional
+import language_tool_python
+
+from utils.logger import setup_logger
+from utils.lazy_loading import lazy_load
+
+logger = setup_logger(__name__)
+
+_grammar_tool: Optional[language_tool_python.LanguageTool] = None
+
+
+@lazy_load("grammar_tool")
+def load_grammar_model():
+    """
+    Load grammar checking tool.
+    
+    Returns:
+        LanguageTool instance
+    """
+    global _grammar_tool
+    
+    if _grammar_tool is None:
+        try:
+            logger.info("Loading LanguageTool for grammar checking")
+            _grammar_tool = language_tool_python.LanguageTool('en-US')
+            logger.info("LanguageTool loaded successfully")
+        except Exception as e:
+            logger.error(f"Failed to load LanguageTool: {e}")
+            raise
+    
+    return _grammar_tool
+
+
+def check_grammar_with_model(text: str) -> list:
+    """
+    Check grammar using the loaded model.
+    
+    Args:
+        text: Text to check
+        
+    Returns:
+        List of grammar issues
+    """
+    tool = load_grammar_model()
+    
+    if tool is None:
+        logger.warning("Grammar tool not available")
+        return []
+    
+    try:
+        matches = tool.check(text)
+        return matches
+    except Exception as e:
+        logger.error(f"Error checking grammar: {e}")
+        return []
+
+
+def correct_grammar_with_model(text: str) -> str:
+    """
+    Automatically correct grammar in text.
+    
+    Args:
+        text: Text to correct
+        
+    Returns:
+        Corrected text
+    """
+    tool = load_grammar_model()
+    
+    if tool is None:
+        logger.warning("Grammar tool not available")
+        return text
+    
+    try:
+        return tool.correct(text)
+    except Exception as e:
+        logger.error(f"Error correcting grammar: {e}")
+        return text
+```
+
+---
+
+### **📁 ml_models/tone_model.py**
+
+```python
+"""
+Tone Model
+Tone analysis model wrapper
+"""
+from typing import Optional, List, Dict
+from transformers import pipeline
+
+from utils.settings import settings
+from utils.logger import setup_logger
+from utils.lazy_loading import lazy_load
+
+logger = setup_logger(__name__)
+
+_tone_analyzer: Optional[pipeline] = None
+
+
+@lazy_load("tone_analyzer")
+def load_tone_model():
+    """
+    Load tone analysis model.
+    
+    Returns:
+        HuggingFace pipeline for sentiment analysis
+    """
+    global _tone_analyzer
+    
+    if _tone_analyzer is None:
+        try:
+            logger.info(f"Loading tone model: {settings.TONE_MODEL_NAME}")
+            
+            _tone_analyzer = pipeline(
+                "sentiment-analysis",
+                model=settings.TONE_MODEL_NAME,
+                top_k=None,
+                device=-1  # CPU
+            )
+            
+            logger.info("Tone model loaded successfully")
+        except Exception as e:
+            logger.error(f"Failed to load tone model: {e}")
+            # Return None for graceful degradation
+            return None
+    
+    return _tone_analyzer
+
+
+def analyze_tone_with_model(text: str) -> List[Dict]:
+    """
+    Analyze tone using the loaded model.
+    
+    Args:
+        text: Text to analyze
+        
+    Returns:
+        List of tone predictions with scores
+    """
+    analyzer = load_tone_model()
+    
+    if analyzer is None:
+        logger.warning("Tone analyzer not available")
+        return []
+    
+    try:
+        # Truncate text if too long
+        if len(text) > 512:
+            text = text[:512]
+        
+        result = analyzer(text)
+        return result
+    except Exception as e:
+        logger.error(f"Error analyzing tone: {e}")
+        return []
+```
+
+---
+
+### **📁 ml_models/spell_checker.py**
+
+```python
+"""
+Spell Checker
+Spelling correction model wrapper
+"""
+from typing import Optional, List, Set
+from spellchecker import SpellChecker
+
+from utils.settings import settings
+from utils.logger import setup_logger
+from utils.lazy_loading import lazy_load
+
+logger = setup_logger(__name__)
+
+_spell_checker: Optional[SpellChecker] = None
+
+
+@lazy_load("spell_checker")
+def load_spell_checker():
+    """
+    Load spell checker.
+    
+    Returns:
+        SpellChecker instance
+    """
+    global _spell_checker
+    
+    if _spell_checker is None:
+        try:
+            logger.info(f"Loading spell checker: {settings.SPELL_CHECKER_LANGUAGE}")
+            
+            _spell_checker = SpellChecker(language=settings.SPELL_CHECKER_LANGUAGE)
+            
+            logger.info("Spell checker loaded successfully")
+        except Exception as e:
+            logger.error(f"Failed to load spell checker: {e}")
+            raise
+    
+    return _spell_checker
+
+
+def check_spelling_with_model(words: List[str]) -> Set[str]:
+    """
+    Check spelling of words.
+    
+    Args:
+        words: List of words to check
+        
+    Returns:
+        Set of misspelled words
+    """
+    checker = load_spell_checker()
+    
+    if checker is None:
+        logger.warning("Spell checker not available")
+        return set()
+    
+    try:
+        misspelled = checker.unknown(words)
+        return misspelled
+    except Exception as e:
+        logger.error(f"Error checking spelling: {e}")
+        return set()
+
+
+def get_spelling_suggestions(word: str, max_suggestions: int = 5) -> List[str]:
+    """
+    Get spelling suggestions for a word.
+    
+    Args:
+        word: Word to get suggestions for
+        max_suggestions: Maximum number of suggestions
+        
+    Returns:
+        List of suggestions
+    """
+    checker = load_spell_checker()
+    
+    if checker is None:
+        logger.warning("Spell checker not available")
+        return []
+    
+    try:
+        candidates = checker.candidates(word)
+        if candidates:
+            return list(candidates)[:max_suggestions]
+        return []
+    except Exception as e:
+        logger.error(f"Error getting suggestions: {e}")
+        return []
+
+
+def correct_word(word: str) -> str:
+    """
+    Get most likely correction for a word.
+    
+    Args:
+        word: Word to correct
+        
+    Returns:
+        Corrected word or original if no correction found
+    """
+    checker = load_spell_checker()
+    
+    if checker is None:
+        return word
+    
+    try:
+        correction = checker.correction(word)
+        return correction if correction else word
+    except Exception as e:
+        logger.error(f"Error correcting word: {e}")
+        return word
+```
+
+---
+
+### **📁 ml_models/style_analyzer.py**
+
+```python
+"""
+Style Analyzer
+Writing style analysis
+"""
+from typing import Dict, List
+import re
+
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+
+def analyze_writing_style(text: str) -> Dict:
+    """
+    Analyze writing style of text.
+    
+    Args:
+        text: Text to analyze
+        
+    Returns:
+        Dictionary with style metrics
+    """
+    try:
+        metrics = {
+            "sentence_variety": _calculate_sentence_variety(text),
+            "word_complexity": _calculate_word_complexity(text),
+            "active_vs_passive": _calculate_voice_ratio(text),
+            "paragraph_structure": _analyze_paragraph_structure(text),
+            "transition_usage": _analyze_transition_usage(text)
+        }
+        
+        return metrics
+        
+    except Exception as e:
+        logger.error(f"Error analyzing style: {e}")
+        return {}
+
+
+def _calculate_sentence_variety(text: str) -> Dict:
+    """Calculate sentence length variety"""
+    sentences = [s.strip() for s in re.split(r'[.!?]+', text) if s.strip()]
+    
+    if not sentences:
+        return {"score": 0, "avg_length": 0, "variation": 0}
+    
+    lengths = [len(s.split()) for s in sentences]
+    avg_length = sum(lengths) / len(lengths)
+    variation = max(lengths) - min(lengths) if lengths else 0
+    
+    return {
+        "score": min(100, variation * 5),
+        "avg_length": avg_length,
+        "variation": variation
+    }
+
+
+def _calculate_word_complexity(text: str) -> Dict:
+    """Calculate word complexity score"""
+    words = text.split()
+    
+    if not words:
+        return {"score": 0, "avg_word_length": 0}
+    
+    avg_length = sum(len(w) for w in words) / len(words)
+    
+    # Complexity based on average word length
+    complexity_score = min(100, (avg_length - 3) * 20)
+    
+    return {
+        "score": complexity_score,
+        "avg_word_length": avg_length
+    }
+
+
+def _calculate_voice_ratio(text: str) -> Dict:
+    """Calculate active vs passive voice ratio"""
+    # Simple passive voice detection
+    passive_pattern = r'\b(is|are|was|were|been|being)\s+\w+ed\b'
+    passive_count = len(re.findall(passive_pattern, text, re.IGNORECASE))
+    
+    sentences = len([s for s in re.split(r'[.!?]+', text) if s.strip()])
+    
+    if sentences == 0:
+        return {"passive_percentage": 0, "active_percentage": 100}
+    
+    passive_percentage = (passive_count / sentences) * 100
+    active_percentage = 100 - passive_percentage
+    
+    return {
+        "passive_percentage": passive_percentage,
+        "active_percentage": active_percentage
+    }
+
+
+def _analyze_paragraph_structure(text: str) -> Dict:
+    """Analyze paragraph structure"""
+    paragraphs = [p.strip() for p in text.split('\n\n') if p.strip()]
+    
+    if not paragraphs:
+        return {"paragraph_count": 0, "avg_paragraph_length": 0}
+    
+    lengths = [len(p.split()) for p in paragraphs]
+    avg_length = sum(lengths) / len(lengths)
+    
+    return {
+        "paragraph_count": len(paragraphs),
+        "avg_paragraph_length": avg_length
+    }
+
+
+def _analyze_transition_usage(text: str) -> Dict:
+    """Analyze use of transition words"""
+    transitions = [
+        'however', 'therefore', 'furthermore', 'moreover',
+        'consequently', 'nevertheless', 'additionally', 'finally',
+        'meanwhile', 'subsequently', 'thus', 'hence'
+    ]
+    
+    text_lower = text.lower()
+    found_transitions = [t for t in transitions if t in text_lower]
+    
+    return {
+        "transition_count": len(found_transitions
+
+),
+        "transitions_found": found_transitions
+    }
+```
+
+---
+
+## **SEGMENT 12: Database Repositories**
+
+### **📁 database/__init__.py**
+
+```python
+"""
+Database package - Database operations and repositories
+"""
+from . import connection, repositories
+
+__all__ = ["connection", "repositories"]
+```
+
+---
+
+### **📁 database/connection.py**
+
+```python
+"""
+Database Connection
+Database connection utilities
+"""
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
+
+from utils.settings import settings
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+# Database engine and session factory
+engine = None
+async_session_factory = None
+
+
+def init_database():
+    """
+    Initialize database connection.
+    """
+    global engine, async_session_factory
+    
+    try:
+        database_url = settings.DATABASE_URL.replace(
+            'postgresql://',
+            'postgresql+asyncpg://'
+        )
+        
+        engine = create_async_engine(
+            database_url,
+            echo=settings.DB_ECHO,
+            pool_size=settings.DB_POOL_SIZE,
+            max_overflow=settings.DB_MAX_OVERFLOW
+        )
+        
+        async_session_factory = sessionmaker(
+            engine,
+            class_=AsyncSession,
+            expire_on_commit=False
+        )
+        
+        logger.info("Database connection initialized")
+        
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+        raise
+
+
+async def close_database():
+    """
+    Close database connection.
+    """
+    global engine
+    
+    if engine:
+        await engine.dispose()
+        logger.info("Database connection closed")
+```
+
+---
+
+### **📁 database/repositories/__init__.py**
+
+```python
+"""
+Repositories package - Data access layer
+"""
+from . import (
+    user_repository,
+    document_repository,
+    suggestion_repository
+)
+
+__all__ = [
+    "user_repository",
+    "document_repository",
+    "suggestion_repository"
+]
+```
+
+---
+
+### **📁 database/repositories/user_repository.py**
+
+```python
+"""
+User Repository
+Data access layer for User model
+"""
+from typing import Optional, List, Dict
+from datetime import datetime
+from sqlalchemy import select, func, and_
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models.database_models import User
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+
+class UserRepository:
+    """Repository for User operations"""
+    
+    def __init__(self, session: AsyncSession):
+        self.session = session
+    
+    async def create(
+        self,
+        email: str,
+        hashed_password: str,
+        full_name: str
+    ) -> User:
+        """
+        Create a new user.
+        
+        Args:
+            email: User email
+            hashed_password: Hashed password
+            full_name: User's full name
+            
+        Returns:
+            Created user
+        """
+        try:
+            user = User(
+                email=email,
+                hashed_password=hashed_password,
+                full_name=full_name
+            )
+            
+            self.session.add(user)
+            await self.session.flush()
+            
+            logger.info(f"User created: {user.id}")
+            
+            return user
+            
+        except Exception as e:
+            logger.error(f"Error creating user: {e}")
+            raise
+    
+    async def get_by_id(self, user_id: str) -> Optional[User]:
+        """
+        Get user by ID.
+        
+        Args:
+            user_id: User ID
+            
+        Returns:
+            User or None
+        """
+        try:
+            result = await self.session.execute(
+                select(User).where(User.id == user_id)
+            )
+            return result.scalar_one_or_none()
+            
+        except Exception as e:
+            logger.error(f"Error getting user by ID: {e}")
+            return None
+    
+    async def get_by_email(self, email: str) -> Optional[User]:
+        """
+        Get user by email.
+        
+        Args:
+            email: User email
+            
+        Returns:
+            User or None
+        """
+        try:
+            result = await self.session.execute(
+                select(User).where(User.email == email)
+            )
+            return result.scalar_one_or_none()
+            
+        except Exception as e:
+            logger.error(f"Error getting user by email: {e}")
+            return None
+    
+    async def update(self, user_id: str, update_data: Dict) -> Optional[User]:
+        """
+        Update user.
+        
+        Args:
+            user_id: User ID
+            update_data: Dictionary of fields to update
+            
+        Returns:
+            Updated user or None
+        """
+        try:
+            user = await self.get_by_id(user_id)
+            
+            if not user:
+                return None
+            
+            for key, value in update_data.items():
+                if hasattr(user, key):
+                    setattr(user, key, value)
+            
+            user.updated_at = datetime.utcnow()
+            
+            await self.session.flush()
+            
+            logger.info(f"User updated: {user_id}")
+            
+            return user
+            
+        except Exception as e:
+            logger.error(f"Error updating user: {e}")
+            raise
+    
+    async def delete(self, user_id: str) -> bool:
+        """
+        Delete user.
+        
+        Args:
+            user_id: User ID
+            
+        Returns:
+            True if successful
+        """
+        try:
+            user = await self.get_by_id(user_id)
+            
+            if not user:
+                return False
+            
+            await self.session.delete(user)
+            await self.session.flush()
+            
+            logger.info(f"User deleted: {user_id}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error deleting user: {e}")
+            return False
+    
+    async def update_last_login(self, user_id: str):
+        """
+        Update user's last login timestamp.
+        
+        Args:
+            user_id: User ID
+        """
+        try:
+            user = await self.get_by_id(user_id)
+            
+            if user:
+                user.last_login = datetime.utcnow()
+                await self.session.flush()
+                
+        except Exception as e:
+            logger.error(f"Error updating last login: {e}")
+    
+    async def get_user_statistics(self, user_id: str) -> Dict:
+        """
+        Get user statistics.
+        
+        Args:
+            user_id: User ID
+            
+        Returns:
+            Dictionary with statistics
+        """
+        try:
+            # This would query related tables for statistics
+            # For now, return placeholder
+            return {
+                "total_documents": 0,
+                "total_checks": 0,
+                "total_errors_corrected": 0
+            }
+            
+        except Exception as e:
+            logger.error(f"Error getting user statistics: {e}")
+            return {}
+```
+
+---
+
+Let me continue with the remaining repository files and configuration files in the final segment.
+
+## **SEGMENT 13: Database Repositories (Continued) and Configuration Files**
+
+### **📁 database/repositories/document_repository.py**
+
+```python
+"""
+Document Repository
+Data access layer for Document model
+"""
+from typing import Optional, List, Dict
+from datetime import datetime
+from sqlalchemy import select, func, and_, or_
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models.database_models import Document
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+
+class DocumentRepository:
+    """Repository for Document operations"""
+    
+    def __init__(self, session: AsyncSession):
+        self.session = session
+    
+    async def create(
+        self,
+        user_id: str,
+        title: str,
+        content: str,
+        tags: List[str] = None
+    ) -> Document:
+        """
+        Create a new document.
+        
+        Args:
+            user_id: Owner user ID
+            title: Document title
+            content: Document content
+            tags: Optional tags
+            
+        Returns:
+            Created document
+        """
+        try:
+            document = Document(
+                user_id=user_id,
+                title=title,
+                content=content,
+                tags=tags or []
+            )
+            
+            self.session.add(document)
+            await self.session.flush()
+            
+            logger.info(f"Document created: {document.id}")
+            
+            return document
+            
+        except Exception as e:
+            logger.error(f"Error creating document: {e}")
+            raise
+    
+    async def get_by_id(self, document_id: str, user_id: str) -> Optional[Document]:
+        """
+        Get document by ID (with user authorization check).
+        
+        Args:
+            document_id: Document ID
+            user_id: User ID (for authorization)
+            
+        Returns:
+            Document or None
+        """
+        try:
+            result = await self.session.execute(
+                select(Document).where(
+                    and_(
+                        Document.id == document_id,
+                        Document.user_id == user_id
+                    )
+                )
+            )
+            return result.scalar_one_or_none()
+            
+        except Exception as e:
+            logger.error(f"Error getting document by ID: {e}")
+            return None
+    
+    async def list_by_user(
+        self,
+        user_id: str,
+        skip: int = 0,
+        limit: int = 100,
+        search: Optional[str] = None,
+        tags: Optional[List[str]] = None
+    ) -> List[Document]:
+        """
+        List documents for a user with filtering.
+        
+        Args:
+            user_id: User ID
+            skip: Number to skip
+            limit: Maximum to return
+            search: Search query
+            tags: Filter by tags
+            
+        Returns:
+            List of documents
+        """
+        try:
+            query = select(Document).where(Document.user_id == user_id)
+            
+            # Apply search filter
+            if search:
+                search_filter = or_(
+                    Document.title.ilike(f"%{search}%"),
+                    Document.content.ilike(f"%{search}%")
+                )
+                query = query.where(search_filter)
+            
+            # Apply tags filter
+            if tags:
+                # Note: This is a simple implementation
+                # For production, use proper JSONB operators
+                for tag in tags:
+                    query = query.where(Document.tags.contains([tag]))
+            
+            # Apply pagination
+            query = query.offset(skip).limit(limit)
+            query = query.order_by(Document.created_at.desc())
+            
+            result = await self.session.execute(query)
+            return result.scalars().all()
+            
+        except Exception as e:
+            logger.error(f"Error listing documents: {e}")
+            return []
+    
+    async def update(self, document_id: str, update_data: Dict) -> Optional[Document]:
+        """
+        Update document.
+        
+        Args:
+            document_id: Document ID
+            update_data: Dictionary of fields to update
+            
+        Returns:
+            Updated document or None
+        """
+        try:
+            result = await self.session.execute(
+                select(Document).where(Document.id == document_id)
+            )
+            document = result.scalar_one_or_none()
+            
+            if not document:
+                return None
+            
+            for key, value in update_data.items():
+                if hasattr(document, key):
+                    setattr(document, key, value)
+            
+            document.updated_at = datetime.utcnow()
+            
+            await self.session.flush()
+            
+            logger.info(f"Document updated: {document_id}")
+            
+            return document
+            
+        except Exception as e:
+            logger.error(f"Error updating document: {e}")
+            raise
+    
+    async def delete(self, document_id: str, user_id: str) -> bool:
+        """
+        Delete document (with user authorization check).
+        
+        Args:
+            document_id: Document ID
+            user_id: User ID (for authorization)
+            
+        Returns:
+            True if successful
+        """
+        try:
+            document = await self.get_by_id(document_id, user_id)
+            
+            if not document:
+                return False
+            
+            await self.session.delete(document)
+            await self.session.flush()
+            
+            logger.info(f"Document deleted: {document_id}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error deleting document: {e}")
+            return False
+    
+    async def count_user_documents(
+        self,
+        user_id: str,
+        search: Optional[str] = None,
+        tags: Optional[List[str]] = None
+    ) -> int:
+        """
+        Count documents for a user.
+        
+        Args:
+            user_id: User ID
+            search: Search query
+            tags: Filter by tags
+            
+        Returns:
+            Document count
+        """
+        try:
+            query = select(func.count(Document.id)).where(Document.user_id == user_id)
+            
+            if search:
+                search_filter = or_(
+                    Document.title.ilike(f"%{search}%"),
+                    Document.content.ilike(f"%{search}%")
+                )
+                query = query.where(search_filter)
+            
+            if tags:
+                for tag in tags:
+                    query = query.where(Document.tags.contains([tag]))
+            
+            result = await self.session.execute(query)
+            return result.scalar_one()
+            
+        except Exception as e:
+            logger.error(f"Error counting documents: {e}")
+            return 0
+```
+
+---
+
+### **📁 database/repositories/suggestion_repository.py**
+
+```python
+"""
+Suggestion Repository
+Data access layer for Suggestion model
+"""
+from typing import Optional, List, Dict
+from datetime import datetime, timedelta
+from sqlalchemy import select, func, and_, desc
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models.database_models import Suggestion
+from utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+
+class SuggestionRepository:
+    """Repository for Suggestion operations"""
+    
+    def __init__(self, session: AsyncSession):
+        self.session = session
+    
+    async def create(
+        self,
+        user_id: str,
+        suggestion_type: str,
+        original_text: str,
+        suggested_text: str,
+        position: int,
+        document_id: Optional[str] = None,
+        confidence_score: Optional[float] = None
+    ) -> Suggestion:
+        """
+        Create a new suggestion.
+        
+        Args:
+            user_id: User ID
+            suggestion_type: Type of suggestion
+            original_text: Original text
+            suggested_text: Suggested correction
+            position: Position in text
+            document_id: Optional document ID
+            confidence_score: Optional confidence score
+            
+        Returns:
+            Created suggestion
+        """
+        try:
+            suggestion = Suggestion(
+                user_id=user_id,
+                document_id=document_id,
+                suggestion_type=suggestion_type,
+                original_text=original_text,
+                suggested_text=suggested_text,
+                position=position,
+                confidence_score=confidence_score
+            )
+            
+            self.session.add(suggestion)
+            await self.session.flush()
+            
+            return suggestion
+            
+        except Exception as e:
+            logger.error(f"Error creating suggestion: {e}")
+            raise
+    
+    async def count_user_suggestions(
+        self,
+        user_id: str,
+        start_date: datetime
+    ) -> int:
+        """
+        Count suggestions for a user since a date.
+        
+        Args:
+            user_id: User ID
+            start_date: Start date
+            
+        Returns:
+            Count of suggestions
+        """
+        try:
+            result = await self.session.execute(
+                select(func.count(Suggestion.id)).where(
+                    and_(
+                        Suggestion.user_id == user_id,
+                        Suggestion.created_at >= start_date
+                    )
+                )
+            )
+            return result.scalar_one()
+            
+        except Exception as e:
+            logger.error(f"Error counting suggestions: {e}")
+            return 0
+    
+    async def count_accepted_suggestions(
+        self,
+        user_id: str,
+        start_date: datetime
+    ) -> int:
+        """
+        Count accepted suggestions for a user.
+        
+        Args:
+            user_id: User ID
+            start_date: Start date
+            
+        Returns:
+            Count of accepted suggestions
+        """
+        try:
+            result = await self.session.execute(
+                select(func.count(Suggestion.id)).where(
+                    and_(
+                        Suggestion.user_id == user_id,
+                        Suggestion.accepted == True,
+                        Suggestion.created_at >= start_date
+                    )
+                )
+            )
+            return result.scalar_one()
+            
+        except Exception as e:
+            logger.error(f"Error counting accepted suggestions: {e}")
+            return 0
+    
+    async def get_error_breakdown(
+        self,
+        user_id: str,
+        start_date: datetime
+    ) -> Dict[str, int]:
+        """
+        Get breakdown of errors by type.
+        
+        Args:
+            user_id: User ID
+            start_date: Start date
+            
+        Returns:
+            Dictionary with error counts by type
+        """
+        try:
+            result = await self.session.execute(
+                select(
+                    Suggestion.suggestion_type,
+                    func.count(Suggestion.id)
+                ).where(
+                    and_(
+                        Suggestion.user_id == user_id,
+                        Suggestion.created_at >= start_date
+                    )
+                ).group_by(Suggestion.suggestion_type)
+            )
+            
+            breakdown = {}
+            for row in result:
+                breakdown[row[0]] = row[1]
+            
+            return breakdown
+            
+        except Exception as e:
+            logger.error(f"Error getting error breakdown: {e}")
+            return {}
+    
+    async def get_most_common_errors(
+        self,
+        user_id: str,
+        start_date: datetime,
+        limit: int = 10
+    ) -> List[Dict]:
+        """
+        Get most common errors for a user.
+        
+        Args:
+            user_id: User ID
+            start_date: Start date
+            limit: Maximum number to return
+            
+        Returns:
+            List of most common errors
+        """
+        try:
+            result = await self.session.execute(
+                select(
+                    Suggestion.original_text,
+                    Suggestion.suggestion_type,
+                    func.count(Suggestion.id).label('count')
+                ).where(
+                    and_(
+                        Suggestion.user_id == user_id,
+                        Suggestion.created_at >= start_date
+                    )
+                ).group_by(
+                    Suggestion.original_text,
+                    Suggestion.suggestion_type
+                ).order_by(desc('count')).limit(limit)
+            )
+            
+            errors = []
+            for row in result:
+                errors.append({
+                    "error": row[0],
+                    "type": row[1],
+                    "count": row[2]
+                })
+            
+            return errors
+            
+        except Exception as e:
+            logger.error(f"Error getting most common errors: {e}")
+            return []
+    
+    async def get_daily_usage(
+        self,
+        user_id: str,
+        start_date: datetime,
+        end_date: datetime
+    ) -> List[Dict]:
+        """
+        Get daily usage statistics.
+        
+        Args:
+            user_id: User ID
+            start_date: Start date
+            end_date: End date
+            
+        Returns:
+            List of daily usage data
+        """
+        try:
+            # This is a simplified version
+            # In production, use proper date grouping functions
+            result = await self.session.execute(
+                select(
+                    func.date(Suggestion.created_at).label('date'),
+                    func.count(Suggestion.id).label('count')
+                ).where(
+                    and_(
+                        Suggestion.user_id == user_id,
+                        Suggestion.created_at >= start_date,
+                        Suggestion.created_at <= end_date
+                    )
+                ).group_by('date').order_by('date')
+            )
+            
+            usage = []
+            for row in result:
+                usage.append({
+                    "date": row[0].isoformat() if row[0] else None,
+                    "count": row[1]
+                })
+            
+            return usage
+            
+        except Exception as e:
+            logger.error(f"Error getting daily usage: {e}")
+            return []
+    
+    async def get_feature_usage(
+        self,
+        user_id: str,
+        start_date: datetime,
+        end_date: datetime
+    ) -> Dict[str, int]:
+        """
+        Get feature usage breakdown.
+        
+        Args:
+            user_id: User ID
+            start_date: Start date
+            end_date: End date
+            
+        Returns:
+            Dictionary with feature usage counts
+        """
+        try:
+            result = await self.session.execute(
+                select(
+                    Suggestion.suggestion_type,
+                    func.count(Suggestion.id)
+                ).where(
+                    and_(
+                        Suggestion.user_id == user_id,
+                        Suggestion.created_at >= start_date,
+                        Suggestion.created_at <= end_date
+                    )
+                ).group_by(Suggestion.suggestion_type)
+            )
+            
+            usage = {}
+            for row in result:
+                usage[row[0]] = row[1]
+            
+            return usage
+            
+        except Exception as e:
+            logger.error(f"Error getting feature usage: {e}")
+            return {}
+    
+    async def get_avg_response_time(
+        self,
+        user_id: str,
+        start_date: datetime,
+        end_date: datetime
+    ) -> float:
+        """
+        Get average response time (placeholder).
+        
+        Args:
+            user_id: User ID
+            start_date: Start date
+            end_date: End date
+            
+        Returns:
+            Average response time in milliseconds
+        """
+        # This would need a separate table to track response times
+        # For now, return placeholder
+        return 150.0
+    
+    async def get_error_trends(
+        self,
+        user_id: str,
+        days: int = 90,
+        error_type: Optional[str] = None
+    ) -> List[Dict]:
+        """
+        Get error trends over time.
+        
+        Args:
+            user_id: User ID
+            days: Number of days to analyze
+            error_type: Optional filter by error type
+            
+        Returns:
+            List of trend data
+        """
+        try:
+            start_date = datetime.utcnow() - timedelta(days=days)
+            
+            query = select(
+                func.date(Suggestion.created_at).label('date'),
+                func.count(Suggestion.id).label('count')
+            ).where(
+                and_(
+                    Suggestion.user_id == user_id,
+                    Suggestion.created_at >= start_date
+                )
+            )
+            
+            if error_type:
+                query = query.where(Suggestion.suggestion_type == error_type)
+            
+            query = query.group_by('date').order_by('date')
+            
+            result = await self.session.execute(query)
+            
+            trends = []
+            for row in result:
+                trends.append({
+                    "date": row[0].isoformat() if row[0] else None,
+                    "count": row[1]
+                })
+            
+            return trends
+            
+        except Exception as e:
+            logger.error(f"Error getting error trends: {e}")
+            return []
+    
+    async def get_period_stats(
+        self,
+        user_id: str,
+        start_date: datetime,
+        end_date: datetime
+    ) -> Dict:
+        """
+        Get statistics for a time period.
+        
+        Args:
+            user_id: User ID
+            start_date: Start date
+            end_date: End date
+            
+        Returns:
+            Dictionary with period statistics
+        """
+        try:
+            total_suggestions = await self.count_user_suggestions(user_id, start_date)
+            accepted_suggestions = await self.count_accepted_suggestions(user_id, start_date)
+            
+            acceptance_rate = (
+                (accepted_suggestions / total_suggestions * 100)
+                if total_suggestions > 0 else 0
+            )
+            
+            return {
+                "avg_errors": total_suggestions / max(1, (end_date - start_date).days),
+                "acceptance_rate": acceptance_rate
+            }
+            
+        except Exception as e:
+            logger.error(f"Error getting period stats: {e}")
+            return {"avg_errors": 0, "acceptance_rate": 0}
+    
+    async def get_first_check_date(self, user_id: str) -> Optional[datetime]:
+        """
+        Get date of first check for a user.
+        
+        Args:
+            user_id: User ID
+            
+        Returns:
+            First check date or None
+        """
+        try:
+            result = await self.session.execute(
+                select(func.min(Suggestion.created_at)).where(
+                    Suggestion.user_id == user_id
+                )
+            )
+            return result.scalar_one_or_none()
+            
+        except Exception as e:
+            logger.error(f"Error getting first check date: {e}")
+            return None
+```
+
+---
+
+## **SEGMENT 14: Configuration Files**
+
+### **📁 requirements.txt**
+
+```txt
+# FastAPI and server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Database
+sqlalchemy==2.0.23
+asyncpg==0.29.0
+alembic==1.12.1
+psycopg2-binary==2.9.9
+
+# Redis/Cache
+redis==5.0.1
+hiredis==2.2.3
+
+# Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.1.1
+pydantic[email]==2.5.0
+python-dotenv==1.0.0
+
+# ML and NLP
+transformers==4.35.2
+torch==2.1.1
+language-tool-python==2.7.1
+pyspellchecker==0.7.3
+textstat==0.7.3
+
+# Text processing
+nltk==3.8.1
+spacy==3.7.2
+
+# PDF/Document processing
+PyPDF2==3.0.1
+python-docx==1.1.0
+
+# HTTP clients
+httpx==0.25.1
+aiohttp==3.9.1
+
+# Utilities
+pydantic-settings==2.1.0
+python-dateutil==2.8.2
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+httpx==0.25.1
+
+# Development
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1
+isort==5.12.0
+
+# Monitoring and logging
+prometheus-client==0.19.0
+```
+
+---
+
+### **📁 .env.example**
+
+```env
+# Application
+DEBUG=True
+ENVIRONMENT=development
+PROJECT_NAME=Grammarly-like Backend
+VERSION=1.0.0
+
+# Server
+HOST=0.0.0.0
+PORT=8000
+WORKERS=4
+
+# CORS
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8000
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/grammarly_db
+DB_POOL_SIZE=10
+DB_MAX_OVERFLOW=20
+DB_ECHO=False
+
+# Redis
+REDIS_URL=redis://localhost:6379/0
+CACHE_TTL=3600
+CACHE_ENABLED=True
+
+# Security
+SECRET_KEY=your-secret-key-change-in-production-please-use-strong-key
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Rate Limiting
+RATE_LIMIT_PER_MINUTE=60
+RATE_LIMIT_PER_HOUR=1000
+RATE_LIMIT_ENABLED=True
+
+# AI Models
+OPENAI_API_KEY=
+HUGGINGFACE_API_KEY=
+MODEL_CACHE_DIR=./static/models
+
+# ML Models
+GRAMMAR_MODEL_NAME=prithivida/grammar_error_correcter_v1
+TONE_MODEL_NAME=cardiffnlp/twitter-roberta-base-sentiment
+SPELL_CHECKER_LANGUAGE=en
+MAX_TEXT_LENGTH=10000
+
+# Logging
+LOG_LEVEL=INFO
+LOG_FILE=./logs/app.log
+LOG_TO_FILE=True
+
+# File Upload
+MAX_UPLOAD_SIZE=10485760
+UPLOAD_DIR=./uploads
+
+# Analytics
+ENABLE_ANALYTICS=True
+ANALYTICS_BATCH_SIZE=100
+
+# Performance
+REQUEST_TIMEOUT=30
+MAX_CONCURRENT_REQUESTS=100
+```
+
+---
+
+### **📁 .gitignore**
+
+```gitignore
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads
+uploads/
+static/models/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ML Models (optional - uncomment if models are large)
+# *.pth
+# *.bin
+# *.h5
+
+# Documentation
+docs/_build/
+
+# Backup files
+*.bak
+*.tmp
+```
+
+---
+
+### **📁 Dockerfile**
+
+```dockerfile
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Download language models (optional, can be done at runtime)
+RUN python -c "import nltk; nltk.download('punkt')"
+
+# Copy application code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p logs uploads static/models
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Run application
+CMD ["python", "main.py"]
+```
+
+---
+
+### **📁 docker-compose.yml**
+
+```yaml
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: grammarly_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: grammarly_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: grammarly_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Application
+  app:
+    build: .
+    container_name: grammarly_app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/grammarly_db
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=True
+      - ENVIRONMENT=development
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      - ./static/models:/app/static/models
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+```
+
+---
+
+### **📁 README.md**
+
+```markdown
+# Grammarly-like Backend API
+
+A comprehensive writing assistant API similar to Grammarly, built with FastAPI and modern ML models.
+
+## Features
+
+- **Spelling Check**: Detect and correct spelling errors
+- **Grammar Check**: Identify grammatical issues with detailed explanations
+- **Tone Analysis**: Analyze writing tone and sentiment
+- **Readability**: Calculate readability scores and metrics
+- **AI Rewrite**: Rewrite text with different styles
+- **Document Management**: Store and manage documents
+- **User Analytics**: Track writing improvement over time
+
+## Technology Stack
+
+- **Framework**: FastAPI
+- **Database**: PostgreSQL with SQLAlchemy
+- **Cache**: Redis
+- **ML Models**: Transformers, LanguageTool, PySpellChecker
+- **Authentication**: JWT tokens
+- **Deployment**: Docker
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.11+
+- PostgreSQL 15+
+- Redis 7+
+- Docker (optional)
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/grammarly-backend.git
+cd grammarly-backend/backend
+```
+
+2. Create virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+5. Initialize database:
+```bash
+# Database will be created automatically on first run
+```
+
+6. Run the application:
+```bash
+python main.py
+```
+
+The API will be available at `http://localhost:8000`
+
+### Using Docker
+
+```bash
+docker-compose up -d
+```
+
+## API Documentation
+
+Once running, visit:
+- **Interactive Docs**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+
+## API Endpoints
+
+### Spelling
+- `POST /api/v1/spelling/` - Check spelling
+- `POST /api/v1/spelling/suggestions` - Get suggestions
+- `POST /api/v1/spelling/batch` - Batch spelling check
+
+### Grammar
+- `POST /api/v1/grammar/` - Check grammar
+- `POST /api/v1/grammar/detailed` - Detailed grammar check
+- `POST /api/v1/grammar/correct` - Auto-correct grammar
+
+### Tone
+- `POST /api/v1/tone/` - Analyze tone
+- `POST /api/v1/tone/detailed` - Detailed tone analysis
+- `POST /api/v1/tone/suggestions` - Get tone adjustment suggestions
+
+### Readability
+- `POST /api/v1/readability/` - Check readability
+- `POST /api/v1/readability/detailed` - Detailed readability analysis
+- `POST /api/v1/readability/suggestions` - Get readability suggestions
+
+### AI Rewrite
+- `POST /api/v1/rewrite/` - Rewrite text
+- `POST /api/v1/rewrite/paraphrase` - Generate paraphrases
+- `POST /api/v1/rewrite/simplify` - Simplify text
+- `POST /api/v1/rewrite/expand` - Expand text
+
+### Users
+- `POST /api/v1/users/register` - Register user
+- `POST /api/v1/users/login` - Login
+- `GET /api/v1/users/me` - Get profile
+- `PUT /api/v1/users/me` - Update profile
+
+### Documents
+- `POST /api/v1/documents/` - Create document
+- `GET /api/v1/documents/` - List documents
+- `GET /api/v1/documents/{id}` - Get document
+- `PUT /api/v1/documents/{id}` - Update document
+- `DELETE /api/v1/documents/{id}` - Delete document
+
+### Analytics
+- `GET /api/v1/analytics/usage` - Get usage statistics
+- `GET /api/v1/analytics/user-analytics` - Get user analytics
+- `GET /api/v1/analytics/error-trends` - Get error trends
+
+## Project Structure
+
+```
+backend/
+├── app.py                  # Main application
+├── main.py                 # Entry point
+├── config.py              # Configuration
+├── routers/               # API endpoints
+├── services/              # Business logic
+├── models/                # Data models
+├── utils/                 # Utilities
+├── core/                  # Core functionality
+├── ml_models/             # ML model management
+├── database/              # Database layer
+└── tests/                 # Tests
+```
+
+## Configuration
+
+Key configuration options in `.env`:
+
+- `DATABASE_URL`: PostgreSQL connection string
+- `REDIS_URL`: Redis connection string
+- `SECRET_KEY`: JWT secret key
+- `OPENAI_API_KEY`: OpenAI API key (optional)
+- `RATE_LIMIT_PER_MINUTE`: Rate limiting
+- `MAX_TEXT_LENGTH`: Maximum text length
+
+## Development
+
+### Running Tests
+
+```bash
+pytest
+```
+
+### Code Formatting
+
+```bash
+black .
+isort .
+flake8 .
+```
+
+### Database Migrations
+
+```bash
+alembic revision --autogenerate -m "Description"
+alembic upgrade head
+```
+
+## Performance
+
+- **Rate Limiting**: 60 requests/minute, 1000 requests/hour
+- **Caching**: Redis caching for improved performance
+- **Async Processing**: Asynchronous request handling
+- **Connection Pooling**: Database connection pooling
+
+## Security
+
+- JWT token authentication
+- Password hashing with bcrypt
+- API key support
+- CORS configuration
+- Input validation
+- Rate limiting
+
+## Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For issues and questions, please open an issue on GitHub.
+
+## Acknowledgments
+
+- FastAPI framework
+- HuggingFace Transformers
+- LanguageTool
+- All contributors
+```
+
+---
+
+### **📁 alembic.ini**
+
+```ini
+# A generic, single database configuration.
+
+[alembic]
+# path to migration scripts
+script_location = migrations
+
+# template used to generate migration files
+# file_template = %%(rev)s_%%(slug)s
+
+# sys.path path, will
+
+
 
 
 
