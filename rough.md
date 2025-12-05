@@ -1,11 +1,199 @@
 
-I'll extend your Grammarly-like application structure with all the missing components needed for a real-world application, while preserving your learning-focused organization. Let me provide this in segments due to the extensive content.
 
-## **SEGMENT 1: Complete Directory Structure + Core Application Files**
+## Setting up a Python development environment:
+This ensures you have a consistent and isolated development space for your projects:
+a) installing Python
+Download the latest version of ```Python``` from the official website
+During installation (when using Windows), ensure you check the box to "```Add Python to PATH```" so you can
+run Python commands from the command line. 
+If you are using windows, then also ensure you install ```WSL``` (Windows Subsystem for Linux) - this lets you run ```linux commands``` directly from windows
+
+b) Install an IDE (e.g VS Code), 
+c) Install VS Code extensions e.g (prettier formatters, autocomplete and extensions)
+d) Install AI helper (e.g Copilot, Codium extension)
+e) Install a virtual environment manager e.g venv
+f) Install python extension on the vs code to be able to run python directly from the vs code. Then click  ▶️ to run python
+
+
+## Set up a Virtual Environment: (Why virtual environments?)
+They isolate project dependencies, preventing conflicts between different projects and ensuring your code runs consistently.
+ 
+### Tools for managing virtual environments:
+- venv (built-in in Python 3.3+)
+- virtualenv (third-party library)
+
+## How to create and activate virtual environment
+### Option I:
+- Create project folder and open the folder in your terminal
+- Launch virtual environment using command: ```pip install pipenv``` (if you get an error use ```sudo apt install pipenv```)
+- Then activate the virtual environment using command: ```pipenv shell```
+if you get error, unstall the older version of pipenv using this command:  ```sudo apt remove pipenv```
+
+Then re- install new version using this command:
+- ```pip install --user pipenv```
+- Then ```sudo apt install pipenv```
+Then re-activate virtual environment using command:  ```pipenv shell```
+
+
+### Option II:
+Create project folder and open the folder in your terminal
+Launch virtual environment using command: ```python3 -m venv venv```
+Then activate the virtual environment using command:
+```.\venv\Scripts\activate #(for windows)```
+or
+```source venv/bin/activate #(for mac/ linux os)```
+
+## Then create requirements.txt file. 
+### Option I:
+- Use command:   ```pip freeze > requirements.txt```
+- To install everything listed in the requirements.txt, 
+Use command:   ```pip install -r .\requirements.txt```
+
+## Nb:
+If you run into version compatibility issues while working on your project, simply install the available version first. Then, update the version in your ```requirements.txt``` file to the one compatible with your project, and reinstall the dependencies using the updated requirements.txt
+
+### Option II:
+Install pipreqs using this command: 
+```pip install pipreqs``` 
+Pipreqs is a tool that automatically generates a requirements.txt file for your Python project by scanning your project folder for all the libraries your code is importing.
+
+Then run the pipreqs tool on the current directory using this command:
+```pipreqs . ```
+Then install all the Python packages listed inside your requirements.txt file using this command:
+```pip install -r requirements.txt```
+
+
+## Install Dependencies
+(Frameworks that you will use for your project e,g Faker, Pandas, Django, Rest, Flask e.t.c).
+Use ```pip``` which is the recommended Python's package installer. Ensure you do this after activating your virtual environment.
+
+## In our case, we are going to use:
+- `fastapi` to build Backend API
+- `uvicorn` as the ASGI server to run FastAPI
+- `language-tool-python` for grammar and spelling correction
+- `textstat` for readability scoring
+- `vaderSentiment` for tone and sentiment analysis
+- `transformers` and `torch` for text summarization using the BART model
+
+We are going to install all the libraries using pip command e.g:  
+```bash
+pip install --upgrade pip
+pip install <dependency-name>  
+```
+
+To be able to run language-too-python on ubuntu, you need to also install `Java` version 8+  
+```bash
+sudo apt install default-jre
+```
+if you need specific version of Java, un-install the version installed using the command:
+```bash
+sudo apt remove default-jre
+sudo apt autoremove
+```
+then install the needed version by specifying the version using command e.g
+```bash
+sudo apt update
+sudo apt install openjdk-21-jre
+```
+Confirm if installation is successful using command `java -version
+
+---
+
+Your API runs at:
+👉 `http://127.0.0.1:8000/analyze` 
+To run it locally: We can run it locally using Uvicorn e.g  
+```bash
+uvicorn main:app --reload  # if your main app is named main.py  
+or
+uvicorn app:app --reload  # if your main app is named app.py  
+```
+Ensure you `cd` to the directory where the `main.py` or `app.py` is located before starting the uvicorn server  
+* `main`: refers to the name of your Python file (e.g., `main.py`).
+* `app`: refers to the FastAPI instance you created within that file (e.g., `app = FastAPI()`).
+* `--reload`: (optional) enables automatic reloading of the server when code changes are detected, which is useful during development.  
+
+**Verify the fastapi Server is running**
+Once running, you can verify your server by checking the interactive fastapi documentation. i.e  
+
+Open your browser and navigate to: http://127.0.0.1:8000/docs. This will confirm the API is up and ready to receive requests from your frontend  
+
+Ensure `fastapi` and `uvicorn` are installed for the backend server to run.  
+
+```Bash
+pip install fastapi uvicorn
+```
+---
+## You can test your endpoint to see if **Grammar, Engagement, Readability, and Tone**
+are responding correctly before proceeding with frontend work. You can do it on Postman or Thunderclient.  
+
+**We are going to do it on thunderclient**
+
+**Step 1: Install Thunder Client**
+Thunder client is a vs code `extension`. To install it:  
+- Go to vscode- then extensions
+- Search for thunder client and install it
+- It should appear on the side of the vscode after installation, click on it to open it  
+
+**Step 2: Create a New Request**
+
+1. In Thunder Client, click **New Request**
+2. Choose method: **POST**
+3. In the URL field, e.g ours is:
+
+```
+http://127.0.0.1:8000/analyze
+```
+
+**Step 3: Add the JSON body**
+
+1. Click the **Body** tab
+2. Select **JSON**
+3. Paste your test text inside:
+
+```json
+{
+  "text": "This is a sample text that may contains grammar issues and also we want to check engagement and tone."
+}
+```
+
+**Step 4: Hit SEND**
+
+Click the **Send** button.
+
+Your API will return something like:
+
+```json
+{
+  "grammar": [
+      {
+          "message": "Possible grammar error",
+          "context": "text around the issue",
+          "suggestions": ["suggestion1", "suggestion2"]
+      }
+  ],
+  "readability": {
+      "flesch": 65.2,
+      "grade_level": 7.3,
+      "reading_time": 0.12
+  },
+  "tone": {
+      "tone": "Neutral",
+      "score": 0.05
+  },
+  "engagement": {
+      "summary": "A short summary generated from your text."
+  }
+}
+```
+You've now tested:
+- .
+- .
+- .
 
 ### **📁 Complete Directory Tree**
 
 ```
+#Grammarly-like-app
 project/
 │
 ├── backend/
@@ -10348,6 +10536,5387 @@ script_location = migrations
 # file_template = %%(rev)s_%%(slug)s
 
 # sys.path path, will
+
+be prepended to sys.path if present.
+# defaults to the current working directory.
+prepend_sys_path = .
+
+# timezone to use when rendering the date within the migration file
+# as well as the filename.
+# If specified, requires the python-dateutil library that can be
+# installed by adding `alembic[tz]` to the pip requirements
+# string value is passed to dateutil.tz.gettz()
+# leave blank for localtime
+# timezone =
+
+# max length of characters to apply to the
+# "slug" field
+# truncate_slug_length = 40
+
+# set to 'true' to run the environment during
+# the 'revision' command, regardless of autogenerate
+# revision_environment = false
+
+# set to 'true' to allow .pyc and .pyo files without
+# a source .py file to be detected as revisions in the
+# versions/ directory
+# sourceless = false
+
+# version location specification; This defaults
+# to migrations/versions.  When using multiple version
+# directories, initial revisions must be specified with --version-path.
+# The path separator used here should be the separator specified by "version_path_separator" below.
+# version_locations = %(here)s/bar:%(here)s/bat:migrations/versions
+
+# version path separator; As mentioned above, this is the character used to split
+# version_locations. The default within new alembic.ini files is "os", which uses os.pathsep.
+# If this key is omitted entirely, it falls back to the legacy behavior of splitting on spaces and/or commas.
+# Valid values for version_path_separator are:
+#
+# version_path_separator = :
+# version_path_separator = ;
+# version_path_separator = space
+version_path_separator = os  # Use os.pathsep. Default configuration used for new projects.
+
+# the output encoding used when revision files
+# are written from script.py.mako
+# output_encoding = utf-8
+
+sqlalchemy.url = postgresql://user:password@localhost:5432/grammarly_db
+
+
+[post_write_hooks]
+# post_write_hooks defines scripts or Python functions that are run
+# on newly generated revision scripts.  See the documentation for further
+# detail and examples
+
+# format using "black" - use the console_scripts runner, against the "black" entrypoint
+# hooks = black
+# black.type = console_scripts
+# black.entrypoint = black
+# black.options = -l 79 REVISION_SCRIPT_FILENAME
+
+# Logging configuration
+[loggers]
+keys = root,sqlalchemy,alembic
+
+[handlers]
+keys = console
+
+[formatters]
+keys = generic
+
+[logger_root]
+level = WARN
+handlers = console
+qualname =
+
+[logger_sqlalchemy]
+level = WARN
+handlers =
+qualname = sqlalchemy.engine
+
+[logger_alembic]
+level = INFO
+handlers =
+qualname = alembic
+
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+
+[formatter_generic]
+format = %(levelname)-5.5s [%(name)s] %(message)s
+datefmt = %H:%M:%S
+```
+
+---
+
+### **📁 tests/conftest.py**
+
+```python
+"""
+Pytest configuration and fixtures
+"""
+import pytest
+import asyncio
+from typing import AsyncGenerator
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+
+from models.database_models import Base
+from core.database import get_db
+from app import app
+
+# Test database URL
+TEST_DATABASE_URL = "postgresql+asyncpg://user:password@localhost:5432/grammarly_test_db"
+
+
+@pytest.fixture(scope="session")
+def event_loop():
+    """Create event loop for async tests"""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest.fixture(scope="session")
+async def test_engine():
+    """Create test database engine"""
+    engine = create_async_engine(TEST_DATABASE_URL, echo=False)
+    
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    
+    yield engine
+    
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    
+    await engine.dispose()
+
+
+@pytest.fixture
+async def test_db(test_engine) -> AsyncGenerator[AsyncSession, None]:
+    """Create test database session"""
+    async_session = async_sessionmaker(
+        test_engine,
+        class_=AsyncSession,
+        expire_on_commit=False
+    )
+    
+    async with async_session() as session:
+        yield session
+        await session.rollback()
+
+
+@pytest.fixture
+def override_get_db(test_db):
+    """Override database dependency"""
+    async def _override_get_db():
+        yield test_db
+    
+    app.dependency_overrides[get_db] = _override_get_db
+    yield
+    app.dependency_overrides.clear()
+```
+
+---
+
+## 🖥️ 4. FRONTEND (React + Bootstrap)  
+
+### 1. Install Node.js and npm
+
+  * **Check Installation:**
+    ```bash
+    node -v
+    npm -v
+    ```
+  * If not installed, download and install the **LTS (Long Term Support) version** from the [Node.js official website](https://nodejs.org/).
+  * or use terminal commandline e.g
+```bash
+    sudo apt install nodejs npm
+```
+
+-----
+
+### 2. Create React App (Recommended: Use Vite)
+
+For faster setup and development, **Vite** is the modern standard, replacing `create-react-app`.
+
+  * **Navigate to Project Root:** e.g  
+    ```bash
+    cd writewise
+    ```
+  * **Create Vite Project:**
+    ```bash
+    npm create vite@latest frontend -- --template react
+    ```
+    (This creates the app using the official React template.)
+  * **Go into Frontend Folder:**
+    ```bash
+    cd frontend
+    ```
+  * **Install Node Modules:**
+    ```bash
+    npm install
+    ```
+Vite works with node version 20 and above. If you get error installing vite then,
+
+✅ Remove old Node
+✅ Install latest Node
+
+### **STEP 1 — Remove the old Node**
+
+```bash
+sudo apt remove nodejs npm -y
+```
+
+### Then Remove all old Node files
+
+```bash
+sudo apt remove --purge nodejs libnode-dev npm -y
+sudo apt autoremove -y
+```
+
+> `--purge` ensures config files and headers are removed.
+> `autoremove` cleans any leftover dependencies.
+
+### Then Clean the apt cache
+
+```bash
+sudo apt clean
+sudo rm -rf /var/cache/apt/archives/nodejs_*.deb
+```
+
+This prevents the broken `.deb` from being reused.
+
+
+### **STEP 2 — Install Node 20 (or any new version you want)**
+
+Copy/paste these:
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+```
+if you want another version, just change `_20.x` with the version you want  
+
+### **STEP 3 — Confirm**
+
+```bash
+node -v
+npm -v
+```
+
+You will now see Node 20 installed (or the new version you indicated).
+
+
+# 🟢 After Node 20 is installed → Vite will work
+
+Try again:
+
+```bash
+npm create vite@latest frontend -- --template react
+```
+
+-----
+
+### 3. Install Dependencies and Configuration
+
+Install core libraries, making sure you are inside the `frontend` directory.
+
+  * **Install Bootstrap for Styling:**
+    ```bash
+    npm install bootstrap
+    ```
+  * **Import Bootstrap CSS:** Add the following line to your main entry file (usually **`src/main.jsx`** or **`src/index.js`**):
+    ```javascript
+    import 'bootstrap/dist/css/bootstrap.min.css';
+    ```
+  * **Optional: Install Axios for HTTP requests:**
+    ```bash
+    npm install axios
+    ```
+-----
+
+### 5. Connect Frontend to Backend (Environment Variables)
+
+Create an environment variable to securely store your API URL.
+
+  * In the **`frontend`** folder, create a **`.env`** file:
+      * **If using Vite:** Variables must be prefixed with `VITE_`.
+        ```
+        VITE_API_URL=http://127.0.0.1:8000/analyze
+        ```
+      * **If using create-react-app (CRA):** Variables must be prefixed with `REACT_APP_`.
+        ```
+        REACT_APP_API_URL=http://127.0.0.1:8000/analyze
+        ```
+  * **Access in your React App:**
+    ```javascript
+    // If using Vite
+    const API_URL = import.meta.env.VITE_API_URL; 
+
+    // If using CRA
+    const API_URL = process.env.REACT_APP_API_URL;
+    ```
+
+-----
+
+### 6. Run React Locally
+
+  * **Make sure your backend is running** at `http://127.0.0.1:8000` for local testing.
+  * **Start the Development Server:**
+    ```bash
+    cd frontend
+    npm run dev  # If using Vite
+    # OR
+    npm start    # If using create-react-app
+    ```
+
+The app will typically open at `http://localhost:5173` (Vite) or `http://localhost:3000` (CRA).
+
+-----
+
+### 7. Deployment Notes
+
+  * **Update `.env`:** Replace the local URL with your **Render backend URL** before deploying.
+  * **Deployment Platforms:** You can deploy the frontend to **Vercel, Netlify, or GitHub Pages.**
+  * **Crucial Step: CORS:** Ensure **CORS is properly configured** and enabled in your FastAPI backend to allow the deployed frontend to communicate with the API.  
+
+---
+
+I'll help you create a comprehensive React frontend for the Grammarly-like application. Let me provide the complete structure with all necessary files.
+
+## **FRONTEND STRUCTURE**
+
+```
+frontend/
+├── public/
+│   ├── index.html
+│   ├── favicon.ico
+│   └── manifest.json
+│
+├── src/
+│   ├── api/
+│   │   ├── client.js
+│   │   ├── auth.js
+│   │   ├── spelling.js
+│   │   ├── grammar.js
+│   │   ├── tone.js
+│   │   ├── readability.js
+│   │   ├── rewrite.js
+│   │   ├── documents.js
+│   │   └── analytics.js
+│   │
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── Button.jsx
+│   │   │   ├── Input.jsx
+│   │   │   ├── Card.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   ├── Spinner.jsx
+│   │   │   ├── Alert.jsx
+│   │   │   └── Tooltip.jsx
+│   │   │
+│   │   ├── layout/
+│   │   │   ├── Header.jsx
+│   │   │   ├── Sidebar.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   └── Layout.jsx
+│   │   │
+│   │   ├── editor/
+│   │   │   ├── TextEditor.jsx
+│   │   │   ├── IssueHighlight.jsx
+│   │   │   ├── SuggestionCard.jsx
+│   │   │   └── EditorToolbar.jsx
+│   │   │
+│   │   ├── analysis/
+│   │   │   ├── SpellingPanel.jsx
+│   │   │   ├── GrammarPanel.jsx
+│   │   │   ├── TonePanel.jsx
+│   │   │   ├── ReadabilityPanel.jsx
+│   │   │   └── OverallScore.jsx
+│   │   │
+│   │   ├── documents/
+│   │   │   ├── DocumentList.jsx
+│   │   │   ├── DocumentCard.jsx
+│   │   │   └── DocumentUpload.jsx
+│   │   │
+│   │   ├── analytics/
+│   │   │   ├── StatCard.jsx
+│   │   │   ├── TrendChart.jsx
+│   │   │   ├── ErrorBreakdown.jsx
+│   │   │   └── UsageStats.jsx
+│   │   │
+│   │   └── auth/
+│   │       ├── LoginForm.jsx
+│   │       ├── RegisterForm.jsx
+│   │       └── ProtectedRoute.jsx
+│   │
+│   ├── pages/
+│   │   ├── Home.jsx
+│   │   ├── Editor.jsx
+│   │   ├── Documents.jsx
+│   │   ├── Analytics.jsx
+│   │   ├── Settings.jsx
+│   │   ├── Login.jsx
+│   │   └── Register.jsx
+│   │
+│   ├── context/
+│   │   ├── AuthContext.jsx
+│   │   ├── EditorContext.jsx
+│   │   └── ThemeContext.jsx
+│   │
+│   ├── hooks/
+│   │   ├── useAuth.js
+│   │   ├── useDebounce.js
+│   │   ├── useLocalStorage.js
+│   │   └── useTextAnalysis.js
+│   │
+│   ├── utils/
+│   │   ├── constants.js
+│   │   ├── helpers.js
+│   │   └── validators.js
+│   │
+│   ├── styles/
+│   │   ├── global.css
+│   │   ├── variables.css
+│   │   └── components.css
+│   │
+│   ├── App.jsx
+│   ├── index.js
+│   └── routes.js
+│
+├── package.json
+├── .env.example
+├── .gitignore
+└── README.md
+```
+
+---
+
+## **SEGMENT 1: Configuration & Setup Files**
+
+### **📁 package.json**
+
+```json
+{
+  "name": "grammarly-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "axios": "^1.6.2",
+    "react-query": "^3.39.3",
+    "zustand": "^4.4.7",
+    "chart.js": "^4.4.0",
+    "react-chartjs-2": "^5.2.0",
+    "draft-js": "^0.11.7",
+    "react-draft-wysiwyg": "^1.15.0",
+    "react-markdown": "^9.0.1",
+    "react-icons": "^4.12.0",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0",
+    "framer-motion": "^10.16.5",
+    "react-hot-toast": "^2.4.1",
+    "react-tooltip": "^5.25.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.7",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.1",
+    "tailwindcss": "^3.3.6",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "lint": "eslint src --ext js,jsx",
+    "format": "prettier --write \"src/**/*.{js,jsx,css}\""
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
+```
+
+---
+
+### **📁 vite.config.js**
+
+```javascript
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@components': path.resolve(__dirname, './src/components'),
+      '@pages': path.resolve(__dirname, './src/pages'),
+      '@api': path.resolve(__dirname, './src/api'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
+      '@utils': path.resolve(__dirname, './src/utils'),
+      '@context': path.resolve(__dirname, './src/context'),
+      '@styles': path.resolve(__dirname, './src/styles'),
+    },
+  },
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    },
+  },
+});
+```
+
+---
+
+### **📁 tailwind.config.js**
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e',
+          600: '#16a34a',
+          700: '#15803d',
+          800: '#166534',
+          900: '#14532d',
+        },
+        secondary: {
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          300: '#d8b4fe',
+          400: '#c084fc',
+          500: '#a855f7',
+          600: '#9333ea',
+          700: '#7e22ce',
+          800: '#6b21a8',
+          900: '#581c87',
+        },
+        error: {
+          light: '#fee2e2',
+          main: '#ef4444',
+          dark: '#dc2626',
+        },
+        warning: {
+          light: '#fed7aa',
+          main: '#f59e0b',
+          dark: '#d97706',
+        },
+        success: {
+          light: '#d1fae5',
+          main: '#10b981',
+          dark: '#059669',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['Fira Code', 'monospace'],
+      },
+      boxShadow: {
+        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+      },
+    },
+  },
+  plugins: [],
+}
+```
+
+---
+
+### **📁 .env.example**
+
+```env
+VITE_API_BASE_URL=http://localhost:8000
+VITE_APP_NAME=Grammarly-like
+VITE_ENABLE_ANALYTICS=true
+```
+
+---
+
+### **📁 .gitignore**
+
+```gitignore
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Production
+build/
+dist/
+
+# Misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Cache
+.eslintcache
+```
+
+---
+
+### **📁 public/index.html**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#22c55e" />
+    <meta
+      name="description"
+      content="AI-powered writing assistant for better content"
+    />
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Grammarly-like - AI Writing Assistant</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
+```
+
+---
+
+### **📁 public/manifest.json**
+
+```json
+{
+  "short_name": "Grammarly-like",
+  "name": "Grammarly-like Writing Assistant",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#22c55e",
+  "background_color": "#ffffff"
+}
+```
+
+---
+
+## **SEGMENT 2: API Layer**
+
+### **📁 src/api/client.js**
+
+```javascript
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
+// Create axios instance
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request interceptor
+apiClient.interceptors.request.use(
+  (config) => {
+    // Add auth token if available
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // Add API key if available
+    const apiKey = localStorage.getItem('api_key');
+    if (apiKey) {
+      config.headers['X-API-Key'] = apiKey;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor
+apiClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response) {
+      // Handle specific error codes
+      switch (error.response.status) {
+        case 401:
+          // Unauthorized - clear token and redirect to login
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          window.location.href = '/login';
+          break;
+        case 429:
+          // Rate limit exceeded
+          console.error('Rate limit exceeded. Please try again later.');
+          break;
+        case 500:
+          console.error('Server error. Please try again later.');
+          break;
+        default:
+          break;
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default apiClient;
+
+// Helper functions
+export const handleApiError = (error) => {
+  if (error.response) {
+    return {
+      message: error.response.data.message || 'An error occurred',
+      status: error.response.status,
+      details: error.response.data.details || {},
+    };
+  } else if (error.request) {
+    return {
+      message: 'No response from server. Please check your connection.',
+      status: 0,
+    };
+  } else {
+    return {
+      message: error.message || 'An unexpected error occurred',
+      status: 0,
+    };
+  }
+};
+```
+
+---
+
+### **📁 src/api/auth.js**
+
+```javascript
+import apiClient, { handleApiError } from './client';
+
+export const authAPI = {
+  // Register new user
+  register: async (userData) => {
+    try {
+      const response = await apiClient.post('/api/v1/users/register', userData);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Login user
+  login: async (credentials) => {
+    try {
+      const response = await apiClient.post('/api/v1/users/login', credentials);
+      
+      // Store tokens
+      if (response.data.access_token) {
+        localStorage.setItem('access_token', response.data.access_token);
+        localStorage.setItem('refresh_token', response.data.refresh_token);
+      }
+      
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Logout user
+  logout: () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
+  },
+
+  // Get current user profile
+  getCurrentUser: async () => {
+    try {
+      const response = await apiClient.get('/api/v1/users/me');
+      
+      // Store user data
+      localStorage.setItem('user', JSON.stringify(response.data));
+      
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Update user profile
+  updateProfile: async (userData) => {
+    try {
+      const response = await apiClient.put('/api/v1/users/me', userData);
+      
+      // Update stored user data
+      localStorage.setItem('user', JSON.stringify(response.data));
+      
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Refresh access token
+  refreshToken: async (refreshToken) => {
+    try {
+      const response = await apiClient.post('/api/v1/users/refresh-token', {
+        refresh_token: refreshToken,
+      });
+      
+      // Update access token
+      if (response.data.access_token) {
+        localStorage.setItem('access_token', response.data.access_token);
+      }
+      
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Check if user is authenticated
+  isAuthenticated: () => {
+    return !!localStorage.getItem('access_token');
+  },
+};
+```
+
+---
+
+### **📁 src/api/spelling.js**
+
+```javascript
+import apiClient, { handleApiError } from './client';
+
+export const spellingAPI = {
+  // Check spelling
+  checkSpelling: async (text) => {
+    try {
+      const response = await apiClient.post('/api/v1/spelling/', { text });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Get spelling suggestions for a word
+  getSuggestions: async (word, maxSuggestions = 5) => {
+    try {
+      const response = await apiClient.post('/api/v1/spelling/suggestions', null, {
+        params: { word, max_suggestions: maxSuggestions },
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Batch spelling check
+  batchCheck: async (texts) => {
+    try {
+      const response = await apiClient.post('/api/v1/spelling/batch', { texts });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+};
+```
+
+---
+
+### **📁 src/api/grammar.js**
+
+```javascript
+import apiClient, { handleApiError } from './client';
+
+export const grammarAPI = {
+  // Check grammar
+  checkGrammar: async (text) => {
+    try {
+      const response = await apiClient.post('/api/v1/grammar/', { text });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Detailed grammar check
+  checkGrammarDetailed: async (text, ruleTypes = null, includeExplanations = true) => {
+    try {
+      const response = await apiClient.post(
+        '/api/v1/grammar/detailed',
+        {
+          text,
+          rule_types: ruleTypes,
+        },
+        {
+          params: { include_explanations: includeExplanations },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Auto-correct grammar
+  correctGrammar: async (text, autoApply = true) => {
+    try {
+      const response = await apiClient.post(
+        '/api/v1/grammar/correct',
+        { text },
+        {
+          params: { auto_apply: autoApply },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+};
+```
+
+---
+
+### **📁 src/api/tone.js**
+
+```javascript
+import apiClient, { handleApiError } from './client';
+
+export const toneAPI = {
+  // Analyze tone
+  analyzeTone: async (text) => {
+    try {
+      const response = await apiClient.post('/api/v1/tone/', { text });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Detailed tone analysis
+  analyzeToneDetailed: async (text, targetTone = null, includeSentiment = true) => {
+    try {
+      const response = await apiClient.post('/api/v1/tone/detailed', {
+        text,
+        target_tone: targetTone,
+        include_sentiment: includeSentiment,
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Get tone suggestions
+  getToneSuggestions: async (text, targetTone) => {
+    try {
+      const response = await apiClient.post(
+        '/api/v1/tone/suggestions',
+        { text },
+        {
+          params: { target_tone: targetTone },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Compare tones
+  compareTones: async (originalText, modifiedText) => {
+    try {
+      const response = await apiClient.post('/api/v1/tone/compare', {
+        original_text: originalText,
+        modified_text: modifiedText,
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+};
+```
+
+---
+
+### **📁 src/api/readability.js**
+
+```javascript
+import apiClient, { handleApiError } from './client';
+
+export const readabilityAPI = {
+  // Check readability
+  checkReadability: async (text) => {
+    try {
+      const response = await apiClient.post('/api/v1/readability/', { text });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Detailed readability check
+  checkReadabilityDetailed: async (text, targetGradeLevel = null) => {
+    try {
+      const response = await apiClient.post('/api/v1/readability/detailed', {
+        text,
+        target_grade_level: targetGradeLevel,
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Get readability suggestions
+  getSuggestions: async (text, targetGradeLevel = null) => {
+    try {
+      const response = await apiClient.post(
+        '/api/v1/readability/suggestions',
+        { text },
+        {
+          params: { target_grade_level: targetGradeLevel },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Analyze sentence complexity
+  analyzeSentenceComplexity: async (text) => {
+    try {
+      const response = await apiClient.post('/api/v1/readability/sentence-complexity', {
+        text,
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+};
+```
+
+---
+
+Let me continue with more API files and then move to components.
+
+## **SEGMENT 3: API Layer (Continued)**
+
+### **📁 src/api/rewrite.js**
+
+```javascript
+import apiClient, { handleApiError } from './client';
+
+export const rewriteAPI = {
+  // Rewrite text
+  rewriteText: async (text, style = 'improve', preserveMeaning = true) => {
+    try {
+      const response = await apiClient.post('/api/v1/rewrite/', {
+        text,
+        style,
+        preserve_meaning: preserveMeaning,
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Paraphrase text
+  paraphraseText: async (text, numVariations = 3, creativityLevel = 0.7) => {
+    try {
+      const response = await apiClient.post('/api/v1/rewrite/paraphrase', {
+        text,
+        num_variations: numVariations,
+        creativity_level: creativityLevel,
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Simplify text
+  simplifyText: async (text, targetGradeLevel = 8) => {
+    try {
+      const response = await apiClient.post(
+        '/api/v1/rewrite/simplify',
+        { text },
+        {
+          params: { target_grade_level: targetGradeLevel },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Expand text
+  expandText: async (text, expansionFactor = 1.5) => {
+    try {
+      const response = await apiClient.post(
+        '/api/v1/rewrite/expand',
+        { text },
+        {
+          params: { expansion_factor: expansionFactor },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Rewrite with specific style
+  rewriteWithStyle: async (text, targetTone, targetStyle) => {
+    try {
+      const response = await apiClient.post(
+        '/api/v1/rewrite/style',
+        { text },
+        {
+          params: {
+            target_tone: targetTone,
+            target_style: targetStyle,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+};
+```
+
+---
+
+### **📁 src/api/documents.js**
+
+```javascript
+import apiClient, { handleApiError } from './client';
+
+export const documentsAPI = {
+  // Create document
+  createDocument: async (documentData) => {
+    try {
+      const response = await apiClient.post('/api/v1/documents/', documentData);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Upload document file
+  uploadDocument: async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await apiClient.post('/api/v1/documents/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // List documents
+  listDocuments: async (skip = 0, limit = 20, search = null, tags = null) => {
+    try {
+      const params = { skip, limit };
+      if (search) params.search = search;
+      if (tags && tags.length > 0) params.tags = tags;
+
+      const response = await apiClient.get('/api/v1/documents/', { params });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Get document by ID
+  getDocument: async (documentId) => {
+    try {
+      const response = await apiClient.get(`/api/v1/documents/${documentId}`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Update document
+  updateDocument: async (documentId, updateData) => {
+    try {
+      const response = await apiClient.put(
+        `/api/v1/documents/${documentId}`,
+        updateData
+      );
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Delete document
+  deleteDocument: async (documentId) => {
+    try {
+      await apiClient.delete(`/api/v1/documents/${documentId}`);
+      return { success: true };
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Analyze document
+  analyzeDocument: async (documentId, fullAnalysis = true) => {
+    try {
+      const response = await apiClient.post(
+        `/api/v1/documents/${documentId}/analyze`,
+        null,
+        {
+          params: { full_analysis: fullAnalysis },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+};
+```
+
+---
+
+### **📁 src/api/analytics.js**
+
+```javascript
+import apiClient, { handleApiError } from './client';
+
+export const analyticsAPI = {
+  // Get usage statistics
+  getUsageStats: async (startDate = null, endDate = null) => {
+    try {
+      const params = {};
+      if (startDate) params.start_date = startDate;
+      if (endDate) params.end_date = endDate;
+
+      const response = await apiClient.get('/api/v1/analytics/usage', { params });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Get user analytics
+  getUserAnalytics: async (period = '30d') => {
+    try {
+      const response = await apiClient.get('/api/v1/analytics/user-analytics', {
+        params: { period },
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Get error trends
+  getErrorTrends: async (errorType = null) => {
+    try {
+      const params = {};
+      if (errorType) params.error_type = errorType;
+
+      const response = await apiClient.get('/api/v1/analytics/error-trends', {
+        params,
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Get improvement metrics
+  getImprovementMetrics: async () => {
+    try {
+      const response = await apiClient.get('/api/v1/analytics/improvement-metrics');
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  // Track event
+  trackEvent: async (eventType, eventData) => {
+    try {
+      const response = await apiClient.post('/api/v1/analytics/track-event', {
+        event_type: eventType,
+        event_data: eventData,
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+};
+```
+
+---
+
+## **SEGMENT 4: Context Providers**
+
+### **📁 src/context/AuthContext.jsx**
+
+```javascript
+import React, { createContext, useState, useEffect } from 'react';
+import { authAPI } from '@api/auth';
+
+export const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Initialize auth state
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
+
+        // Verify token is still valid
+        if (authAPI.isAuthenticated()) {
+          try {
+            const currentUser = await authAPI.getCurrentUser();
+            setUser(currentUser);
+          } catch (error) {
+            // Token invalid, clear auth
+            authAPI.logout();
+            setUser(null);
+          }
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initAuth();
+  }, []);
+
+  const login = async (credentials) => {
+    try {
+      setError(null);
+      const data = await authAPI.login(credentials);
+      const currentUser = await authAPI.getCurrentUser();
+      setUser(currentUser);
+      return { success: true };
+    } catch (error) {
+      setError(error.message);
+      return { success: false, error: error.message };
+    }
+  };
+
+  const register = async (userData) => {
+    try {
+      setError(null);
+      await authAPI.register(userData);
+      // Auto-login after registration
+      const loginResult = await login({
+        email: userData.email,
+        password: userData.password,
+      });
+      return loginResult;
+    } catch (error) {
+      setError(error.message);
+      return { success: false, error: error.message };
+    }
+  };
+
+  const logout = () => {
+    authAPI.logout();
+    setUser(null);
+  };
+
+  const updateUser = async (userData) => {
+    try {
+      setError(null);
+      const updatedUser = await authAPI.updateProfile(userData);
+      setUser(updatedUser);
+      return { success: true };
+    } catch (error) {
+      setError(error.message);
+      return { success: false, error: error.message };
+    }
+  };
+
+  const value = {
+    user,
+    loading,
+    error,
+    login,
+    register,
+    logout,
+    updateUser,
+    isAuthenticated: !!user,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+```
+
+---
+
+### **📁 src/context/EditorContext.jsx**
+
+```javascript
+import React, { createContext, useState, useCallback } from 'react';
+import { spellingAPI } from '@api/spelling';
+import { grammarAPI } from '@api/grammar';
+import { toneAPI } from '@api/tone';
+import { readabilityAPI } from '@api/readability';
+
+export const EditorContext = createContext();
+
+export const EditorProvider = ({ children }) => {
+  const [text, setText] = useState('');
+  const [analysis, setAnalysis] = useState({
+    spelling: null,
+    grammar: null,
+    tone: null,
+    readability: null,
+  });
+  const [loading, setLoading] = useState({
+    spelling: false,
+    grammar: false,
+    tone: false,
+    readability: false,
+  });
+  const [selectedIssue, setSelectedIssue] = useState(null);
+
+  // Analyze text
+  const analyzeText = useCallback(async (textToAnalyze) => {
+    if (!textToAnalyze || textToAnalyze.trim().length === 0) {
+      return;
+    }
+
+    setLoading({
+      spelling: true,
+      grammar: true,
+      tone: true,
+      readability: true,
+    });
+
+    try {
+      const [spelling, grammar, tone, readability] = await Promise.all([
+        spellingAPI.checkSpelling(textToAnalyze).catch(() => null),
+        grammarAPI.checkGrammar(textToAnalyze).catch(() => null),
+        toneAPI.analyzeTone(textToAnalyze).catch(() => null),
+        readabilityAPI.checkReadability(textToAnalyze).catch(() => null),
+      ]);
+
+      setAnalysis({
+        spelling,
+        grammar,
+        tone,
+        readability,
+      });
+    } catch (error) {
+      console.error('Analysis error:', error);
+    } finally {
+      setLoading({
+        spelling: false,
+        grammar: false,
+        tone: false,
+        readability: false,
+      });
+    }
+  }, []);
+
+  // Update text and trigger analysis
+  const updateText = useCallback((newText) => {
+    setText(newText);
+  }, []);
+
+  // Apply suggestion
+  const applySuggestion = useCallback((issue, suggestion) => {
+    // Apply the suggestion to the text
+    const { position, length } = issue;
+    const before = text.substring(0, position);
+    const after = text.substring(position + length);
+    const newText = before + suggestion + after;
+    
+    setText(newText);
+    setSelectedIssue(null);
+  }, [text]);
+
+  // Clear analysis
+  const clearAnalysis = useCallback(() => {
+    setAnalysis({
+      spelling: null,
+      grammar: null,
+      tone: null,
+      readability: null,
+    });
+  }, []);
+
+  const value = {
+    text,
+    setText: updateText,
+    analysis,
+    loading,
+    selectedIssue,
+    setSelectedIssue,
+    analyzeText,
+    applySuggestion,
+    clearAnalysis,
+  };
+
+  return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;
+};
+```
+
+---
+
+### **📁 src/context/ThemeContext.jsx**
+
+```javascript
+import React, { createContext, useState, useEffect } from 'react';
+
+export const ThemeContext = createContext();
+
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    // Load theme from localStorage
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+    
+    // Apply theme to document
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
+  const value = {
+    theme,
+    toggleTheme,
+    isDark: theme === 'dark',
+  };
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+};
+```
+
+---
+
+## **SEGMENT 5: Custom Hooks**
+
+### **📁 src/hooks/useAuth.js**
+
+```javascript
+import { useContext } from 'react';
+import { AuthContext } from '@context/AuthContext';
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  
+  return context;
+};
+```
+
+---
+
+### **📁 src/hooks/useDebounce.js**
+
+```javascript
+import { useState, useEffect } from 'react';
+
+export const useDebounce = (value, delay = 500) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+```
+
+---
+
+### **📁 src/hooks/useLocalStorage.js**
+
+```javascript
+import { useState, useEffect } from 'react';
+
+export const useLocalStorage = (key, initialValue) => {
+  // Get stored value or use initial value
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error('Error reading from localStorage:', error);
+      return initialValue;
+    }
+  });
+
+  // Update localStorage when value changes
+  const setValue = (value) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.error('Error writing to localStorage:', error);
+    }
+  };
+
+  return [storedValue, setValue];
+};
+```
+
+---
+
+### **📁 src/hooks/useTextAnalysis.js**
+
+```javascript
+import { useState, useEffect, useCallback } from 'react';
+import { useDebounce } from './useDebounce';
+import { spellingAPI } from '@api/spelling';
+import { grammarAPI } from '@api/grammar';
+import { toneAPI } from '@api/tone';
+import { readabilityAPI } from '@api/readability';
+
+export const useTextAnalysis = (text, delay = 1000) => {
+  const [analysis, setAnalysis] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  const debouncedText = useDebounce(text, delay);
+
+  const analyzeText = useCallback(async (textToAnalyze) => {
+    if (!textToAnalyze || textToAnalyze.trim().length === 0) {
+      setAnalysis(null);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const [spelling, grammar, tone, readability] = await Promise.allSettled([
+        spellingAPI.checkSpelling(textToAnalyze),
+        grammarAPI.checkGrammar(textToAnalyze),
+        toneAPI.analyzeTone(textToAnalyze),
+        readabilityAPI.checkReadability(textToAnalyze),
+      ]);
+
+      setAnalysis({
+        spelling: spelling.status === 'fulfilled' ? spelling.value : null,
+        grammar: grammar.status === 'fulfilled' ? grammar.value : null,
+        tone: tone.status === 'fulfilled' ? tone.value : null,
+        readability: readability.status === 'fulfilled' ? readability.value : null,
+      });
+    } catch (err) {
+      setError(err.message || 'Failed to analyze text');
+      console.error('Text analysis error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    analyzeText(debouncedText);
+  }, [debouncedText, analyzeText]);
+
+  return { analysis, loading, error, reanalyze: () => analyzeText(text) };
+};
+```
+
+---
+
+## **SEGMENT 6: Common Components**
+
+### **📁 src/components/common/Button.jsx**
+
+```javascript
+import React from 'react';
+import clsx from 'clsx';
+
+const Button = ({
+  children,
+  variant = 'primary',
+  size = 'md',
+  loading = false,
+  disabled = false,
+  fullWidth = false,
+  onClick,
+  type = 'button',
+  className = '',
+  ...props
+}) => {
+  const baseStyles = 'font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+  
+  const variants = {
+    primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
+    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
+    outline: 'border-2 border-primary-600 text-primary-600 hover:bg-primary-50 focus:ring-primary-500',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+    ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
+  };
+  
+  const sizes = {
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-4 py-2 text-base',
+    lg: 'px-6 py-3 text-lg',
+  };
+
+  return (
+    <button
+      type={type}
+      disabled={disabled || loading}
+      onClick={onClick}
+      className={clsx(
+        baseStyles,
+        variants[variant],
+        sizes[size],
+        fullWidth && 'w-full',
+        loading && 'cursor-wait',
+        className
+      )}
+      {...props}
+    >
+      {loading ? (
+        <div className="flex items-center justify-center">
+          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+          Loading...
+        </div>
+      ) : (
+        children
+      )}
+    </button>
+  );
+};
+
+export default Button;
+```
+
+---
+
+### **📁 src/components/common/Input.jsx**
+
+```javascript
+import React from 'react';
+import clsx from 'clsx';
+
+const Input = ({
+  label,
+  error,
+  helperText,
+  icon,
+  fullWidth = false,
+  className = '',
+  ...props
+}) => {
+  return (
+    <div className={clsx('mb-4', fullWidth && 'w-full')}>
+      {label && (
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {label}
+        </label>
+      )}
+      
+      <div className="relative">
+        {icon && (
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            {icon}
+          </div>
+        )}
+        
+        <input
+          className={clsx(
+            'block w-full rounded-lg border transition-colors',
+            'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+            icon && 'pl-10',
+            error
+              ? 'border-red-500 focus:ring-red-500'
+              : 'border-gray-300',
+            'px-4 py-2',
+            className
+          )}
+          {...props}
+        />
+      </div>
+      
+      {error && (
+        <p className="mt-1 text-sm text-red-600">{error}</p>
+      )}
+      
+      {helperText && !error && (
+        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
+      )}
+    </div>
+  );
+};
+
+export default Input;
+```
+
+---
+
+### **📁 src/components/common/Card.jsx**
+
+```javascript
+import React from 'react';
+import clsx from 'clsx';
+
+const Card = ({
+  children,
+  title,
+  subtitle,
+  actions,
+  hover = false,
+  padding = 'md',
+  className = '',
+  ...props
+}) => {
+  const paddings = {
+    none: '',
+    sm: 'p-3',
+    md: 'p-6',
+    lg: 'p-8',
+  };
+
+  return (
+    <div
+      className={clsx(
+        'bg-white rounded-lg border border-gray-200 shadow-sm',
+        hover && 'hover:shadow-md transition-shadow duration-200',
+        paddings[padding],
+        className
+      )}
+      {...props}
+    >
+      {(title || actions) && (
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            {title && (
+              <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+            )}
+            {subtitle && (
+              <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
+            )}
+          </div>
+          
+          {actions && <div className="flex items-center space-x-2">{actions}</div>}
+        </div>
+      )}
+      
+      {children}
+    </div>
+  );
+};
+
+export default Card;
+```
+
+---
+
+### **📁 src/components/common/Modal.jsx**
+
+```javascript
+import React, { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiX } from 'react-icons/fi';
+import Button from './Button';
+
+const Modal = ({
+  isOpen,
+  onClose,
+  title,
+  children,
+  footer,
+  size = 'md',
+  closeOnOverlayClick = true,
+}) => {
+  const sizes = {
+    sm: 'max-w-md',
+    md: 'max-w-lg',
+    lg: 'max-w-2xl',
+    xl: 'max-w-4xl',
+    full: 'max-w-full mx-4',
+  };
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Overlay */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={closeOnOverlayClick ? onClose : undefined}
+          />
+
+          {/* Modal */}
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className={`bg-white rounded-lg shadow-xl w-full ${sizes[size]}`}
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                  <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+                  <button
+                    onClick={onClose}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <FiX size={24} />
+                  </button>
+                </div>
+
+                {/* Content */}
+                <div className="p-6">{children}</div>
+
+                {/* Footer */}
+                {footer && (
+                  <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+                    {footer}
+                  </div>
+                )}
+              </motion.div>
+            </div>
+          </div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+
+export default Modal;
+```
+
+---
+
+Let me continue with more components in the next response.
+
+## **SEGMENT 7: Common Components (Continued)**
+
+### **📁 src/components/common/Spinner.jsx**
+
+```javascript
+import React from 'react';
+import clsx from 'clsx';
+
+const Spinner = ({ size = 'md', className = '' }) => {
+  const sizes = {
+    sm: 'w-4 h-4 border-2',
+    md: 'w-8 h-8 border-3',
+    lg: 'w-12 h-12 border-4',
+    xl: 'w-16 h-16 border-4',
+  };
+
+  return (
+    <div
+      className={clsx(
+        'border-primary-600 border-t-transparent rounded-full animate-spin',
+        sizes[size],
+        className
+      )}
+    />
+  );
+};
+
+export default Spinner;
+```
+
+---
+
+### **📁 src/components/common/Alert.jsx**
+
+```javascript
+import React from 'react';
+import clsx from 'clsx';
+import { FiAlertCircle, FiCheckCircle, FiInfo, FiXCircle } from 'react-icons/fi';
+
+const Alert = ({ type = 'info', title, message, onClose, className = '' }) => {
+  const types = {
+    success: {
+      bg: 'bg-green-50',
+      border: 'border-green-200',
+      text: 'text-green-800',
+      icon: <FiCheckCircle className="text-green-500" />,
+    },
+    error: {
+      bg: 'bg-red-50',
+      border: 'border-red-200',
+      text: 'text-red-800',
+      icon: <FiXCircle className="text-red-500" />,
+    },
+    warning: {
+      bg: 'bg-yellow-50',
+      border: 'border-yellow-200',
+      text: 'text-yellow-800',
+      icon: <FiAlertCircle className="text-yellow-500" />,
+    },
+    info: {
+      bg: 'bg-blue-50',
+      border: 'border-blue-200',
+      text: 'text-blue-800',
+      icon: <FiInfo className="text-blue-500" />,
+    },
+  };
+
+  const config = types[type];
+
+  return (
+    <div
+      className={clsx(
+        'rounded-lg border p-4',
+        config.bg,
+        config.border,
+        className
+      )}
+    >
+      <div className="flex items-start">
+        <div className="flex-shrink-0 mt-0.5">{config.icon}</div>
+        
+        <div className="ml-3 flex-1">
+          {title && (
+            <h3 className={clsx('text-sm font-medium', config.text)}>{title}</h3>
+          )}
+          {message && (
+            <p className={clsx('text-sm mt-1', config.text)}>{message}</p>
+          )}
+        </div>
+        
+        {onClose && (
+          <button
+            onClick={onClose}
+            className={clsx('ml-3 flex-shrink-0', config.text, 'hover:opacity-75')}
+          >
+            <FiXCircle size={20} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Alert;
+```
+
+---
+
+### **📁 src/components/common/Tooltip.jsx**
+
+```javascript
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const Tooltip = ({ children, content, position = 'top' }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  const positions = {
+    top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
+    bottom: 'top-full left-1/2 -translate-x-1/2 mt-2',
+    left: 'right-full top-1/2 -translate-y-1/2 mr-2',
+    right: 'left-full top-1/2 -translate-y-1/2 ml-2',
+  };
+
+  return (
+    <div className="relative inline-block">
+      <div
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+      >
+        {children}
+      </div>
+
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.1 }}
+            className={`absolute ${positions[position]} z-50 pointer-events-none`}
+          >
+            <div className="bg-gray-900 text-white text-sm rounded-lg px-3 py-2 shadow-lg max-w-xs">
+              {content}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default Tooltip;
+```
+
+---
+
+## **SEGMENT 8: Layout Components**
+
+### **📁 src/components/layout/Header.jsx**
+
+```javascript
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiEdit3, FiUser, FiSettings, FiLogOut, FiMenu } from 'react-icons/fi';
+import { useAuth } from '@hooks/useAuth';
+import Button from '@components/common/Button';
+
+const Header = ({ onMenuClick }) => {
+  const { user, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  return (
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Left section */}
+          <div className="flex items-center">
+            <button
+              onClick={onMenuClick}
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 mr-2"
+            >
+              <FiMenu size={24} />
+            </button>
+            
+            <Link to="/" className="flex items-center space-x-2">
+              <FiEdit3 className="text-primary-600" size={28} />
+              <span className="text-xl font-bold text-gray-900">
+                Grammarly-like
+              </span>
+            </Link>
+          </div>
+
+          {/* Right section */}
+          <div className="flex items-center space-x-4">
+            {isAuthenticated ? (
+              <>
+                <Link to="/editor">
+                  <Button variant="primary" size="sm">
+                    New Document
+                  </Button>
+                </Link>
+
+                <div className="relative group">
+                  <button className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100">
+                    <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center text-white font-medium">
+                      {user?.full_name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                  </button>
+
+                  {/* Dropdown menu */}
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <div className="p-3 border-b border-gray-200">
+                      <p className="font-medium text-gray-900">{user?.full_name}</p>
+                      <p className="text-sm text-gray-500 truncate">{user?.email}</p>
+                    </div>
+
+                    <div className="py-2">
+                      <Link
+                        to="/settings"
+                        className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50 text-gray-700"
+                      >
+                        <FiSettings size={18} />
+                        <span>Settings</span>
+                      </Link>
+
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50 text-red-600 w-full text-left"
+                      >
+                        <FiLogOut size={18} />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost" size="sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button variant="primary" size="sm">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
+```
+
+---
+
+### **📁 src/components/layout/Sidebar.jsx**
+
+```javascript
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import {
+  FiHome,
+  FiEdit3,
+  FiFileText,
+  FiBarChart2,
+  FiSettings,
+} from 'react-icons/fi';
+import clsx from 'clsx';
+
+const Sidebar = ({ isOpen, onClose }) => {
+  const navItems = [
+    { path: '/', icon: FiHome, label: 'Home' },
+    { path: '/editor', icon: FiEdit3, label: 'Editor' },
+    { path: '/documents', icon: FiFileText, label: 'Documents' },
+    { path: '/analytics', icon: FiBarChart2, label: 'Analytics' },
+    { path: '/settings', icon: FiSettings, label: 'Settings' },
+  ];
+
+  return (
+    <>
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={clsx(
+          'fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-white border-r border-gray-200 z-40 transition-transform duration-300',
+          'md:translate-x-0',
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        )}
+      >
+        <nav className="p-4 space-y-2">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              onClick={onClose}
+              className={({ isActive }) =>
+                clsx(
+                  'flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors',
+                  isActive
+                    ? 'bg-primary-50 text-primary-600 font-medium'
+                    : 'text-gray-700 hover:bg-gray-50'
+                )
+              }
+            >
+              <item.icon size={20} />
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+        </nav>
+      </aside>
+    </>
+  );
+};
+
+export default Sidebar;
+```
+
+---
+
+### **📁 src/components/layout/Footer.jsx**
+
+```javascript
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { FiGithub, FiTwitter, FiLinkedin } from 'react-icons/fi';
+
+const Footer = () => {
+  return (
+    <footer className="bg-gray-50 border-t border-gray-200 mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Brand */}
+          <div className="col-span-1">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">
+              Grammarly-like
+            </h3>
+            <p className="text-gray-600 text-sm">
+              AI-powered writing assistant to help you write better content.
+            </p>
+          </div>
+
+          {/* Product */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-3">Product</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/editor" className="text-gray-600 hover:text-primary-600 text-sm">
+                  Editor
+                </Link>
+              </li>
+              <li>
+                <Link to="/documents" className="text-gray-600 hover:text-primary-600 text-sm">
+                  Documents
+                </Link>
+              </li>
+              <li>
+                <Link to="/analytics" className="text-gray-600 hover:text-primary-600 text-sm">
+                  Analytics
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-3">Company</h4>
+            <ul className="space-y-2">
+              <li>
+                <a href="#" className="text-gray-600 hover:text-primary-600 text-sm">
+                  About
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-600 hover:text-primary-600 text-sm">
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-gray-600 hover:text-primary-600 text-sm">
+                  Contact
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Social */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-3">Follow Us</h4>
+            <div className="flex space-x-4">
+              
+                href="#"
+                className="text-gray-600 hover:text-primary-600"
+                aria-label="GitHub"
+              >
+                <FiGithub size={20} />
+              </a>
+              
+                href="#"
+                className="text-gray-600 hover:text-primary-600"
+                aria-label="Twitter"
+              >
+                <FiTwitter size={20} />
+              </a>
+              
+                href="#"
+                className="text-gray-600 hover:text-primary-600"
+                aria-label="LinkedIn"
+              >
+                <FiLinkedin size={20} />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-200 mt-8 pt-8 text-center">
+          <p className="text-gray-600 text-sm">
+            © {new Date().getFullYear()} Grammarly-like. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
+```
+
+---
+
+### **📁 src/components/layout/Layout.jsx**
+
+```javascript
+import React, { useState } from 'react';
+import Header from './Header';
+import Sidebar from './Sidebar';
+import Footer from './Footer';
+
+const Layout = ({ children, showSidebar = true }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Header onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
+      
+      <div className="flex flex-1">
+        {showSidebar && (
+          <Sidebar
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+          />
+        )}
+        
+        <main
+          className={`flex-1 ${showSidebar ? 'md:ml-64' : ''} transition-all duration-300`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {children}
+          </div>
+        </main>
+      </div>
+      
+      <Footer />
+    </div>
+  );
+};
+
+export default Layout;
+```
+
+---
+
+## **SEGMENT 9: Editor Components**
+
+### **📁 src/components/editor/TextEditor.jsx**
+
+```javascript
+import React, { useEffect, useRef, useState } from 'react';
+import { useDebounce } from '@hooks/useDebounce';
+import IssueHighlight from './IssueHighlight';
+
+const TextEditor = ({ value, onChange, analysis, onIssueClick }) => {
+  const editorRef = useRef(null);
+  const [cursorPosition, setCursorPosition] = useState(0);
+
+  const debouncedValue = useDebounce(value, 500);
+
+  // Track cursor position
+  const handleSelectionChange = () => {
+    if (editorRef.current) {
+      const position = editorRef.current.selectionStart;
+      setCursorPosition(position);
+    }
+  };
+
+  // Get all issues combined
+  const getAllIssues = () => {
+    const issues = [];
+
+    if (analysis?.spelling?.issues) {
+      issues.push(
+        ...analysis.spelling.issues.map((issue) => ({
+          ...issue,
+          type: 'spelling',
+          severity: 'medium',
+        }))
+      );
+    }
+
+    if (analysis?.grammar?.issues) {
+      issues.push(
+        ...analysis.grammar.issues.map((issue) => ({
+          ...issue,
+          type: 'grammar',
+          severity: issue.severity || 'medium',
+        }))
+      );
+    }
+
+    // Sort by position
+    return issues.sort((a, b) => a.position - b.position);
+  };
+
+  const issues = getAllIssues();
+
+  return (
+    <div className="relative h-full">
+      {/* Editor with highlights */}
+      <div className="relative h-full">
+        {/* Highlight layer */}
+        <div className="absolute inset-0 pointer-events-none z-10 p-4 font-mono text-transparent whitespace-pre-wrap break-words overflow-hidden">
+          <IssueHighlight text={value} issues={issues} onIssueClick={onIssueClick} />
+        </div>
+
+        {/* Actual textarea */}
+        <textarea
+          ref={editorRef}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onSelect={handleSelectionChange}
+          onClick={handleSelectionChange}
+          onKeyUp={handleSelectionChange}
+          placeholder="Start typing or paste your text here..."
+          className="absolute inset-0 w-full h-full p-4 font-mono text-gray-900 bg-transparent resize-none focus:outline-none z-20"
+          style={{
+            caretColor: 'black',
+          }}
+        />
+      </div>
+
+      {/* Stats bar */}
+      <div className="absolute bottom-0 left-0 right-0 bg-gray-50 border-t border-gray-200 px-4 py-2 flex items-center justify-between text-sm text-gray-600">
+        <div className="flex items-center space-x-4">
+          <span>{value.split(/\s+/).filter(Boolean).length} words</span>
+          <span>{value.length} characters</span>
+          <span>{value.split(/[.!?]+/).filter(Boolean).length} sentences</span>
+        </div>
+
+        {issues.length > 0 && (
+          <div className="flex items-center space-x-4">
+            <span className="text-red-600">{issues.length} issues found</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default TextEditor;
+```
+
+---
+
+### **📁 src/components/editor/IssueHighlight.jsx**
+
+```javascript
+import React from 'react';
+import clsx from 'clsx';
+
+const IssueHighlight = ({ text, issues, onIssueClick }) => {
+  if (!issues || issues.length === 0) {
+    return <span>{text}</span>;
+  }
+
+  // Create segments of text with highlights
+  const segments = [];
+  let lastIndex = 0;
+
+  issues.forEach((issue, index) => {
+    const { position, length = issue.error_text?.length || issue.word?.length || 0 } = issue;
+
+    // Add text before the issue
+    if (position > lastIndex) {
+      segments.push({
+        text: text.substring(lastIndex, position),
+        isIssue: false,
+      });
+    }
+
+    // Add the issue
+    segments.push({
+      text: text.substring(position, position + length),
+      isIssue: true,
+      issue,
+      index,
+    });
+
+    lastIndex = position + length;
+  });
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    segments.push({
+      text: text.substring(lastIndex),
+      isIssue: false,
+    });
+  }
+
+  const getIssueColor = (type, severity) => {
+    if (type === 'spelling') return 'bg-red-200 border-b-2 border-red-500';
+    if (type === 'grammar') {
+      if (severity === 'high') return 'bg-red-200 border-b-2 border-red-500';
+      if (severity === 'medium') return 'bg-yellow-200 border-b-2 border-yellow-500';
+      return 'bg-blue-200 border-b-2 border-blue-500';
+    }
+    return 'bg-blue-200 border-b-2 border-blue-500';
+  };
+
+  return (
+    <span>
+      {segments.map((segment, idx) =>
+        segment.isIssue ? (
+          <span
+            key={idx}
+            className={clsx(
+              'cursor-pointer pointer-events-auto',
+              getIssueColor(segment.issue.type, segment.issue.severity)
+            )}
+            onClick={() => onIssueClick && onIssueClick(segment.issue)}
+            title={segment.issue.rule_description || segment.issue.word}
+          >
+            {segment.text}
+          </span>
+        ) : (
+          <span key={idx}>{segment.text}</span>
+        )
+      )}
+    </span>
+  );
+};
+
+export default IssueHighlight;
+```
+
+---
+
+### **📁 src/components/editor/SuggestionCard.jsx**
+
+```javascript
+import React from 'react';
+import { FiX, FiCheck } from 'react-icons/fi';
+import Button from '@components/common/Button';
+import Card from '@components/common/Card';
+
+const SuggestionCard = ({ issue, onApply, onDismiss }) => {
+  if (!issue) return null;
+
+  const getSuggestions = () => {
+    if (issue.suggestions) return issue.suggestions;
+    if (issue.replacements) return issue.replacements;
+    return [];
+  };
+
+  const suggestions = getSuggestions();
+
+  const getIssueTitle = () => {
+    if (issue.type === 'spelling') return 'Spelling Error';
+    if (issue.type === 'grammar') return 'Grammar Issue';
+    return 'Issue';
+  };
+
+  const getIssueDescription = () => {
+    if (issue.rule_description) return issue.rule_description;
+    if (issue.message) return issue.message;
+    return 'No description available';
+  };
+
+  return (
+    <Card padding="md" className="mb-4">
+      <div className="flex items-start justify-between mb-3">
+        <div>
+          <h4 className="font-medium text-gray-900">{getIssueTitle()}</h4>
+          <p className="text-sm text-gray-600 mt-1">{getIssueDescription()}</p>
+        </div>
+        
+        <button
+          onClick={onDismiss}
+          className="text-gray-400 hover:text-gray-600"
+        >
+          <FiX size={20} />
+        </button>
+      </div>
+
+      {/* Original text */}
+      <div className="mb-3">
+        <p className="text-sm text-gray-500 mb-1">Original:</p>
+        <div className="bg-red-50 border border-red-200 rounded px-3 py-2">
+          <span className="text-red-900 font-medium line-through">
+            {issue.error_text || issue.matchedText || issue.word}
+          </span>
+        </div>
+      </div>
+
+      {/* Suggestions */}
+      {suggestions.length > 0 && (
+        <div>
+          <p className="text-sm text-gray-500 mb-2">Suggestions:</p>
+          <div className="space-y-2">
+            {suggestions.slice(0, 3).map((suggestion, index) => (
+              <button
+                key={index}
+                onClick={() => onApply(issue, suggestion)}
+                className="w-full bg-green-50 border border-green-200 rounded px-3 py-2 text-left hover:bg-green-100 transition-colors flex items-center justify-between group"
+              >
+                <span className="text-green-900 font-medium">{suggestion}</span>
+                <FiCheck className="text-green-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Context */}
+      {issue.context && (
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <p className="text-sm text-gray-500 mb-1">Context:</p>
+          <p className="text-sm text-gray-700 italic">"{issue.context}"</p>
+        </div>
+      )}
+
+      {/* Explanation */}
+      {issue.explanation && (
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <p className="text-sm text-gray-500 mb-1">Explanation:</p>
+          <p className="text-sm text-gray-700">{issue.explanation}</p>
+        </div>
+      )}
+    </Card>
+  );
+};
+
+export default SuggestionCard;
+```
+
+---
+
+### **📁 src/components/editor/EditorToolbar.jsx**
+
+```javascript
+import React from 'react';
+import {
+  FiSave,
+  FiDownload,
+  FiCopy,
+  FiRefreshCw,
+  FiZap,
+} from 'react-icons/fi';
+import Button from '@components/common/Button';
+import Tooltip from '@components/common/Tooltip';
+
+const EditorToolbar = ({
+  onSave,
+  onExport,
+  onCopy,
+  onReanalyze,
+  onRewrite,
+  isAnalyzing,
+  hasUnsavedChanges,
+}) => {
+  return (
+    <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      <div className="flex items-center space-x-2">
+        <Tooltip content="Save document">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onSave}
+            className="relative"
+          >
+            <FiSave size={18} />
+            {hasUnsavedChanges && (
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+            )}
+          </Button>
+        </Tooltip>
+
+        <Tooltip content="Export document">
+          <Button variant="ghost" size="sm" onClick={onExport}>
+            <FiDownload size={18} />
+          </Button>
+        </Tooltip>
+
+        <Tooltip content="Copy to clipboard">
+          <Button variant="ghost" size="sm" onClick={onCopy}>
+            <FiCopy size={18} />
+          </Button>
+        </Tooltip>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Tooltip content="Reanalyze text">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onReanalyze}
+            loading={isAnalyzing}
+          >
+            <FiRefreshCw size={18} />
+          </Button>
+        </Tooltip>
+
+        <Tooltip content="AI Rewrite">
+          <Button variant="primary" size="sm" onClick={onRewrite}>
+            <FiZap size={18} className="mr-2" />
+            Rewrite
+          </Button>
+        </Tooltip>
+      </div>
+    </div>
+  );
+};
+
+export default EditorToolbar;
+```
+
+---
+
+Let me continue with the Analysis components and Pages in the next response.
+
+## **SEGMENT 10: Analysis Components**
+
+### **📁 src/components/analysis/SpellingPanel.jsx**
+
+```javascript
+import React from 'react';
+import { FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
+import Card from '@components/common/Card';
+import Spinner from '@components/common/Spinner';
+
+const SpellingPanel = ({ analysis, loading, onIssueClick }) => {
+  if (loading) {
+    return (
+      <Card title="Spelling" padding="md">
+        <div className="flex items-center justify-center py-8">
+          <Spinner size="md" />
+        </div>
+      </Card>
+    );
+  }
+
+  if (!analysis) {
+    return (
+      <Card title="Spelling" padding="md">
+        <p className="text-gray-500 text-center py-8">
+          Type some text to check spelling
+        </p>
+      </Card>
+    );
+  }
+
+  const { issues = [], total_issues = 0 } = analysis;
+
+  return (
+    <Card
+      title="Spelling"
+      subtitle={`${total_issues} ${total_issues === 1 ? 'issue' : 'issues'} found`}
+      padding="md"
+    >
+      {total_issues === 0 ? (
+        <div className="flex items-center justify-center py-8 text-green-600">
+          <FiCheckCircle size={24} className="mr-2" />
+          <span className="font-medium">No spelling errors found!</span>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {issues.map((issue, index) => (
+            <div
+              key={index}
+              onClick={() => onIssueClick(issue)}
+              className="p-3 border border-gray-200 rounded-lg hover:border-primary-500 cursor-pointer transition-colors"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <FiAlertCircle className="text-red-500" size={16} />
+                    <span className="font-medium text-gray-900 line-through">
+                      {issue.word}
+                    </span>
+                  </div>
+                  
+                  {issue.suggestions && issue.suggestions.length > 0 && (
+                    <div className="ml-6">
+                      <p className="text-sm text-gray-500 mb-1">Suggestions:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {issue.suggestions.slice(0, 3).map((suggestion, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-1 bg-green-50 text-green-700 text-sm rounded"
+                          >
+                            {suggestion}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {issue.context && (
+                    <p className="text-xs text-gray-500 mt-2 italic">
+                      "{issue.context}"
+                    </p>
+                  )}
+                </div>
+                
+                <span className="text-xs text-gray-400">
+                  {Math.round(issue.confidence * 100)}% confident
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+};
+
+export default SpellingPanel;
+```
+
+---
+
+### **📁 src/components/analysis/GrammarPanel.jsx**
+
+```javascript
+import React from 'react';
+import { FiAlertTriangle, FiCheckCircle } from 'react-icons/fi';
+import Card from '@components/common/Card';
+import Spinner from '@components/common/Spinner';
+import clsx from 'clsx';
+
+const GrammarPanel = ({ analysis, loading, onIssueClick }) => {
+  if (loading) {
+    return (
+      <Card title="Grammar" padding="md">
+        <div className="flex items-center justify-center py-8">
+          <Spinner size="md" />
+        </div>
+      </Card>
+    );
+  }
+
+  if (!analysis) {
+    return (
+      <Card title="Grammar" padding="md">
+        <p className="text-gray-500 text-center py-8">
+          Type some text to check grammar
+        </p>
+      </Card>
+    );
+  }
+
+  const { issues = [], total_issues = 0, critical_issues = 0 } = analysis;
+
+  const getSeverityColor = (severity) => {
+    switch (severity) {
+      case 'high':
+        return 'text-red-600 bg-red-50 border-red-200';
+      case 'medium':
+        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'low':
+        return 'text-blue-600 bg-blue-50 border-blue-200';
+      default:
+        return 'text-gray-600 bg-gray-50 border-gray-200';
+    }
+  };
+
+  return (
+    <Card
+      title="Grammar"
+      subtitle={
+        <>
+          {total_issues} {total_issues === 1 ? 'issue' : 'issues'} found
+          {critical_issues > 0 && (
+            <span className="text-red-600 ml-2">
+              ({critical_issues} critical)
+            </span>
+          )}
+        </>
+      }
+      padding="md"
+    >
+      {total_issues === 0 ? (
+        <div className="flex items-center justify-center py-8 text-green-600">
+          <FiCheckCircle size={24} className="mr-2" />
+          <span className="font-medium">No grammar errors found!</span>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {issues.map((issue, index) => (
+            <div
+              key={index}
+              onClick={() => onIssueClick(issue)}
+              className={clsx(
+                'p-3 border rounded-lg cursor-pointer transition-colors',
+                'hover:shadow-md',
+                getSeverityColor(issue.severity)
+              )}
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center space-x-2">
+                  <FiAlertTriangle size={16} />
+                  <span className="font-medium text-sm uppercase">
+                    {issue.category || 'Grammar'}
+                  </span>
+                </div>
+                <span className="text-xs px-2 py-1 rounded bg-white">
+                  {issue.severity}
+                </span>
+              </div>
+
+              <p className="text-sm mb-2">{issue.rule_description}</p>
+
+              <div className="space-y-2">
+                <div className="bg-white rounded p-2">
+                  <p className="text-xs text-gray-500 mb-1">Original:</p>
+                  <span className="line-through text-sm">{issue.error_text}</span>
+                </div>
+
+                {issue.suggestions && issue.suggestions.length > 0 && (
+                  <div className="bg-white rounded p-2">
+                    <p className="text-xs text-gray-500 mb-1">Suggestions:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {issue.suggestions.map((suggestion, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-1 bg-green-100 text-green-800 text-sm rounded"
+                        >
+                          {suggestion}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {issue.context && (
+                <p className="text-xs text-gray-600 mt-2 italic">
+                  "{issue.context}"
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+};
+
+export default GrammarPanel;
+```
+
+---
+
+### **📁 src/components/analysis/TonePanel.jsx**
+
+```javascript
+import React from 'react';
+import { FiSmile, FiFrown, FiMeh } from 'react-icons/fi';
+import Card from '@components/common/Card';
+import Spinner from '@components/common/Spinner';
+
+const TonePanel = ({ analysis, loading }) => {
+  if (loading) {
+    return (
+      <Card title="Tone" padding="md">
+        <div className="flex items-center justify-center py-8">
+          <Spinner size="md" />
+        </div>
+      </Card>
+    );
+  }
+
+  if (!analysis) {
+    return (
+      <Card title="Tone" padding="md">
+        <p className="text-gray-500 text-center py-8">
+          Type some text to analyze tone
+        </p>
+      </Card>
+    );
+  }
+
+  const { primary_tone, tone_scores = {}, sentiment, formality_score = 0.5 } = analysis;
+
+  const getSentimentIcon = () => {
+    if (!sentiment) return <FiMeh />;
+    
+    if (sentiment.score > 0.3) return <FiSmile className="text-green-600" />;
+    if (sentiment.score < -0.3) return <FiFrown className="text-red-600" />;
+    return <FiMeh className="text-gray-600" />;
+  };
+
+  const getSentimentLabel = () => {
+    if (!sentiment) return 'Neutral';
+    return sentiment.label || 'Neutral';
+  };
+
+  const formatToneLabel = (tone) => {
+    return tone.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+  };
+
+  return (
+    <Card title="Tone Analysis" padding="md">
+      {/* Primary Tone */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-gray-700">Primary Tone</span>
+          <span className="text-lg font-bold text-primary-600">
+            {formatToneLabel(primary_tone)}
+          </span>
+        </div>
+      </div>
+
+      {/* Sentiment */}
+      {sentiment && (
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-2">
+              {getSentimentIcon()}
+              <span className="font-medium">Sentiment</span>
+            </div>
+            <span className="text-sm font-medium capitalize">
+              {getSentimentLabel()}
+            </span>
+          </div>
+          
+          <div className="mt-2">
+            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className={`h-full transition-all duration-300 ${
+                  sentiment.score > 0 ? 'bg-green-500' : 'bg-red-500'
+                }`}
+                style={{
+                  width: `${Math.abs(sentiment.score) * 100}%`,
+                  marginLeft: sentiment.score < 0 ? 'auto' : '0',
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formality Score */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-gray-700">Formality</span>
+          <span className="text-sm font-medium">
+            {formality_score > 0.6 ? 'Formal' : formality_score < 0.4 ? 'Casual' : 'Neutral'}
+          </span>
+        </div>
+        
+        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary-500 transition-all duration-300"
+            style={{ width: `${formality_score * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Tone Scores */}
+      <div>
+        <h4 className="text-sm font-medium text-gray-700 mb-3">Tone Breakdown</h4>
+        <div className="space-y-2">
+          {Object.entries(tone_scores)
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, 5)
+            .map(([tone, score]) => (
+              <div key={tone}>
+                <div className="flex items-center justify-between text-sm mb-1">
+                  <span className="capitalize">{formatToneLabel(tone)}</span>
+                  <span className="font-medium">{Math.round(score * 100)}%</span>
+                </div>
+                <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary-400 transition-all duration-300"
+                    style={{ width: `${score * 100}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+export default TonePanel;
+```
+
+---
+
+### **📁 src/components/analysis/ReadabilityPanel.jsx**
+
+```javascript
+import React from 'react';
+import { FiBookOpen, FiClock } from 'react-icons/fi';
+import Card from '@components/common/Card';
+import Spinner from '@components/common/Spinner';
+
+const ReadabilityPanel = ({ analysis, loading }) => {
+  if (loading) {
+    return (
+      <Card title="Readability" padding="md">
+        <div className="flex items-center justify-center py-8">
+          <Spinner size="md" />
+        </div>
+      </Card>
+    );
+  }
+
+  if (!analysis) {
+    return (
+      <Card title="Readability" padding="md">
+        <p className="text-gray-500 text-center py-8">
+          Type some text to check readability
+        </p>
+      </Card>
+    );
+  }
+
+  const {
+    grade_level = 0,
+    reading_time_minutes = 0,
+    difficulty_level = 'standard',
+    word_count = 0,
+    sentence_count = 0,
+    avg_words_per_sentence = 0,
+    recommendations = [],
+  } = analysis;
+
+  const getDifficultyColor = () => {
+    switch (difficulty_level) {
+      case 'very_easy':
+      case 'easy':
+        return 'text-green-600 bg-green-50';
+      case 'fairly_easy':
+      case 'standard':
+        return 'text-blue-600 bg-blue-50';
+      case 'fairly_difficult':
+      case 'difficult':
+        return 'text-yellow-600 bg-yellow-50';
+      case 'very_difficult':
+        return 'text-red-600 bg-red-50';
+      default:
+        return 'text-gray-600 bg-gray-50';
+    }
+  };
+
+  const formatDifficulty = (level) => {
+    return level.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+  };
+
+  return (
+    <Card title="Readability" padding="md">
+      {/* Key Metrics */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center space-x-2 mb-1">
+            <FiBookOpen className="text-primary-600" size={20} />
+            <span className="text-sm text-gray-600">Grade Level</span>
+          </div>
+          <p className="text-2xl font-bold text-gray-900">
+            {grade_level.toFixed(1)}
+          </p>
+        </div>
+
+        <div className="p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center space-x-2 mb-1">
+            <FiClock className="text-primary-600" size={20} />
+            <span className="text-sm text-gray-600">Reading Time</span>
+          </div>
+          <p className="text-2xl font-bold text-gray-900">
+            {reading_time_minutes.toFixed(1)} min
+          </p>
+        </div>
+      </div>
+
+      {/* Difficulty Level */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-gray-700">Difficulty</span>
+          <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor()}`}>
+            {formatDifficulty(difficulty_level)}
+          </span>
+        </div>
+      </div>
+
+      {/* Text Stats */}
+      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+        <h4 className="text-sm font-medium text-gray-700 mb-3">Text Statistics</h4>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Words:</span>
+            <span className="font-medium">{word_count}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Sentences:</span>
+            <span className="font-medium">{sentence_count}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Avg. words/sentence:</span>
+            <span className="font-medium">{avg_words_per_sentence.toFixed(1)}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Recommendations */}
+      {recommendations && recommendations.length > 0 && (
+        <div>
+          <h4 className="text-sm font-medium text-gray-700 mb-3">
+            Recommendations
+          </h4>
+          <ul className="space-y-2">
+            {recommendations.map((rec, index) => (
+              <li key={index} className="flex items-start space-x-2 text-sm">
+                <span className="text-primary-600 mt-0.5">•</span>
+                <span className="text-gray-700">{rec}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </Card>
+  );
+};
+
+export default ReadabilityPanel;
+```
+
+---
+
+### **📁 src/components/analysis/OverallScore.jsx**
+
+```javascript
+import React from 'react';
+import Card from '@components/common/Card';
+import { FiTrendingUp, FiTrendingDown } from 'react-icons/fi';
+
+const OverallScore = ({ analysis }) => {
+  if (!analysis) return null;
+
+  // Calculate overall score based on all analyses
+  const calculateOverallScore = () => {
+    let score = 100;
+    
+    // Deduct for spelling errors
+    if (analysis.spelling) {
+      score -= Math.min(20, analysis.spelling.total_issues * 2);
+    }
+    
+    // Deduct for grammar errors
+    if (analysis.grammar) {
+      score -= Math.min(30, analysis.grammar.total_issues * 3);
+    }
+    
+    // Adjust for readability
+    if (analysis.readability) {
+      const gradeLevel = analysis.readability.grade_level;
+      if (gradeLevel > 14 || gradeLevel < 6) {
+        score -= 10;
+      }
+    }
+    
+    return Math.max(0, Math.round(score));
+  };
+
+  const score = calculateOverallScore();
+
+  const getScoreColor = () => {
+    if (score >= 90) return 'text-green-600 bg-green-50 border-green-200';
+    if (score >= 70) return 'text-blue-600 bg-blue-50 border-blue-200';
+    if (score >= 50) return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+    return 'text-red-600 bg-red-50 border-red-200';
+  };
+
+  const getScoreLabel = () => {
+    if (score >= 90) return 'Excellent';
+    if (score >= 70) return 'Good';
+    if (score >= 50) return 'Fair';
+    return 'Needs Improvement';
+  };
+
+  const getTrendIcon = () => {
+    // This would compare with previous score in a real app
+    return <FiTrendingUp className="text-green-600" />;
+  };
+
+  return (
+    <Card padding="md" className="mb-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">
+            Overall Score
+          </h3>
+          <p className="text-sm text-gray-600">
+            Based on spelling, grammar, and readability
+          </p>
+        </div>
+
+        <div className="text-center">
+          <div className={`inline-flex items-center justify-center w-24 h-24 rounded-full border-4 ${getScoreColor()}`}>
+            <span className="text-3xl font-bold">{score}</span>
+          </div>
+          <p className={`mt-2 font-medium ${getScoreColor().split(' ')[0]}`}>
+            {getScoreLabel()}
+          </p>
+        </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
+        <div className="text-center">
+          <p className="text-2xl font-bold text-gray-900">
+            {analysis.spelling?.total_issues || 0}
+          </p>
+          <p className="text-sm text-gray-600">Spelling</p>
+        </div>
+        <div className="text-center">
+          <p className="text-2xl font-bold text-gray-900">
+            {analysis.grammar?.total_issues || 0}
+          </p>
+          <p className="text-sm text-gray-600">Grammar</p>
+        </div>
+        <div className="text-center">
+          <p className="text-2xl font-bold text-gray-900">
+            {analysis.readability?.grade_level?.toFixed(1) || 'N/A'}
+          </p>
+          <p className="text-sm text-gray-600">Grade Level</p>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+export default OverallScore;
+```
+
+---
+
+Let me continue with the Documents and Analytics components, and then the main Pages in the next response.
+
+
+## **SEGMENT 11: Documents & Analytics Components**
+
+### **📁 src/components/documents/DocumentList.jsx**
+
+```javascript
+import React from 'react';
+import DocumentCard from './DocumentCard';
+import Spinner from '@components/common/Spinner';
+
+const DocumentList = ({ documents, loading, onDocumentClick, onDocumentDelete }) => {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!documents || documents.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500 text-lg mb-4">No documents found</p>
+        <p className="text-gray-400 text-sm">
+          Create your first document to get started
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {documents.map((document) => (
+        <DocumentCard
+          key={document.id}
+          document={document}
+          onClick={() => onDocumentClick(document)}
+          onDelete={() => onDocumentDelete(document.id)}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default DocumentList;
+```
+
+---
+
+### **📁 src/components/documents/DocumentCard.jsx**
+
+```javascript
+import React, { useState } from 'react';
+import { FiFileText, FiTrash2, FiEdit, FiMoreVertical, FiClock } from 'react-icons/fi';
+import { formatDistanceToNow } from 'date-fns';
+import Card from '@components/common/Card';
+import clsx from 'clsx';
+
+const DocumentCard = ({ document, onClick, onDelete }) => {
+  const [showMenu, setShowMenu] = useState(false);
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to delete this document?')) {
+      onDelete();
+    }
+    setShowMenu(false);
+  };
+
+  const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  return (
+    <Card
+      hover
+      className="cursor-pointer relative"
+      onClick={onClick}
+    >
+      {/* Menu Button */}
+      <div className="absolute top-4 right-4">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowMenu(!showMenu);
+          }}
+          className="p-1 rounded hover:bg-gray-100"
+        >
+          <FiMoreVertical size={18} />
+        </button>
+
+        {/* Dropdown Menu */}
+        {showMenu && (
+          <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onClick();
+                setShowMenu(false);
+              }}
+              className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50 w-full text-left"
+            >
+              <FiEdit size={16} />
+              <span>Edit</span>
+            </button>
+            <button
+              onClick={handleDelete}
+              className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50 w-full text-left text-red-600"
+            >
+              <FiTrash2 size={16} />
+              <span>Delete</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Icon */}
+      <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
+        <FiFileText className="text-primary-600" size={24} />
+      </div>
+
+      {/* Title */}
+      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        {document.title}
+      </h3>
+
+      {/* Preview */}
+      <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+        {truncateText(document.content, 120)}
+      </p>
+
+      {/* Tags */}
+      {document.tags && document.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {document.tags.slice(0, 3).map((tag, index) => (
+            <span
+              key={index}
+              className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
+            >
+              {tag}
+            </span>
+          ))}
+          {document.tags.length > 3 && (
+            <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+              +{document.tags.length - 3}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Footer */}
+      <div className="flex items-center justify-between text-sm text-gray-500 pt-4 border-t border-gray-200">
+        <div className="flex items-center space-x-1">
+          <FiClock size={14} />
+          <span>
+            {formatDistanceToNow(new Date(document.updated_at), { addSuffix: true })}
+          </span>
+        </div>
+        <span>{document.word_count} words</span>
+      </div>
+    </Card>
+  );
+};
+
+export default DocumentCard;
+```
+
+---
+
+### **📁 src/components/documents/DocumentUpload.jsx**
+
+```javascript
+import React, { useRef, useState } from 'react';
+import { FiUpload, FiFile, FiX } from 'react-icons/fi';
+import Button from '@components/common/Button';
+import Card from '@components/common/Card';
+
+const DocumentUpload = ({ onUpload, acceptedFormats = ['.txt', '.doc', '.docx', '.pdf'] }) => {
+  const fileInputRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setSelectedFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+
+    setUploading(true);
+    try {
+      await onUpload(selectedFile);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error('Upload error:', error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <Card padding="md">
+      <div
+        className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          dragActive
+            ? 'border-primary-500 bg-primary-50'
+            : 'border-gray-300 hover:border-gray-400'
+        }`}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+      >
+        <FiUpload className="mx-auto text-gray-400 mb-4" size={48} />
+
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          Upload Document
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Drag and drop your file here, or click to browse
+        </p>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={acceptedFormats.join(',')}
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+
+        {!selectedFile ? (
+          <Button
+            variant="outline"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Browse Files
+          </Button>
+        ) : (
+          <div className="mt-4">
+            <div className="flex items-center justify-center space-x-2 p-3 bg-gray-50 rounded-lg mb-4">
+              <FiFile className="text-primary-600" size={20} />
+              <span className="text-sm font-medium">{selectedFile.name}</span>
+              <button
+                onClick={() => setSelectedFile(null)}
+                className="ml-2 text-gray-400 hover:text-gray-600"
+              >
+                <FiX size={18} />
+              </button>
+            </div>
+
+            <div className="flex space-x-2 justify-center">
+              <Button
+                variant="outline"
+                onClick={() => setSelectedFile(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleUpload}
+                loading={uploading}
+              >
+                Upload
+              </Button>
+            </div>
+          </div>
+        )}
+
+        <p className="text-xs text-gray-500 mt-4">
+          Supported formats: {acceptedFormats.join(', ')}
+        </p>
+      </div>
+    </Card>
+  );
+};
+
+export default DocumentUpload;
+```
+
+---
+
+### **📁 src/components/analytics/StatCard.jsx**
+
+```javascript
+import React from 'react';
+import Card from '@components/common/Card';
+import { FiTrendingUp, FiTrendingDown } from 'react-icons/fi';
+
+const StatCard = ({ title, value, change, icon: Icon, trend = 'up' }) => {
+  const isPositive = trend === 'up';
+
+  return (
+    <Card padding="md" hover>
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <p className="text-sm text-gray-600 mb-1">{title}</p>
+          <p className="text-3xl font-bold text-gray-900 mb-2">{value}</p>
+          
+          {change !== undefined && (
+            <div className={`flex items-center space-x-1 text-sm ${
+              isPositive ? 'text-green-600' : 'text-red-600'
+            }`}>
+              {isPositive ? <FiTrendingUp size={16} /> : <FiTrendingDown size={16} />}
+              <span>{Math.abs(change)}%</span>
+              <span className="text-gray-500">vs last period</span>
+            </div>
+          )}
+        </div>
+
+        {Icon && (
+          <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+            <Icon className="text-primary-600" size={24} />
+          </div>
+        )}
+      </div>
+    </Card>
+  );
+};
+
+export default StatCard;
+```
+
+---
+
+### **📁 src/components/analytics/TrendChart.jsx**
+
+```javascript
+import React from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import Card from '@components/common/Card';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
+
+const TrendChart = ({ data, title }) => {
+  const chartData = {
+    labels: data.map(d => d.date),
+    datasets: [
+      {
+        label: 'Errors',
+        data: data.map(d => d.count),
+        borderColor: 'rgb(34, 197, 94)',
+        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        fill: true,
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)',
+        },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+    },
+  };
+
+  return (
+    <Card title={title} padding="md">
+      <div style={{ height: '300px' }}>
+        <Line data={chartData} options={options} />
+      </div>
+    </Card>
+  );
+};
+
+export default TrendChart;
+```
+
+---
+
+### **📁 src/components/analytics/ErrorBreakdown.jsx**
+
+```javascript
+import React from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+import Card from '@components/common/Card';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+const ErrorBreakdown = ({ data }) => {
+  const chartData = {
+    labels: Object.keys(data),
+    datasets: [
+      {
+        data: Object.values(data),
+        backgroundColor: [
+          'rgba(239, 68, 68, 0.8)',
+          'rgba(245, 158, 11, 0.8)',
+          'rgba(59, 130, 246, 0.8)',
+          'rgba(34, 197, 94, 0.8)',
+          'rgba(168, 85, 247, 0.8)',
+        ],
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+    },
+  };
+
+  return (
+    <Card title="Error Breakdown" padding="md">
+      <div style={{ height: '300px' }}>
+        <Doughnut data={chartData} options={options} />
+      </div>
+
+      <div className="mt-6 space-y-2">
+        {Object.entries(data).map(([type, count], index) => (
+          <div key={type} className="flex items-center justify-between text-sm">
+            <div className="flex items-center space-x-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{
+                  backgroundColor: chartData.datasets[0].backgroundColor[index],
+                }}
+              />
+              <span className="capitalize text-gray-700">{type}</span>
+            </div>
+            <span className="font-medium text-gray-900">{count}</span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+};
+
+export default ErrorBreakdown;
+```
+
+---
+
+### **📁 src/components/analytics/UsageStats.jsx**
+
+```javascript
+import React from 'react';
+import Card from '@components/common/Card';
+import { FiActivity, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
+
+const UsageStats = ({ stats }) => {
+  if (!stats) return null;
+
+  const {
+    total_api_calls = 0,
+    feature_usage = {},
+    avg_response_time_ms = 0,
+  } = stats;
+
+  return (
+    <Card title="Usage Statistics" padding="md">
+      <div className="space-y-6">
+        {/* Total API Calls */}
+        <div className="flex items-center justify-between p-4 bg-primary-50 rounded-lg">
+          <div className="flex items-center space-x-3">
+            <FiActivity className="text-primary-600" size={24} />
+            <div>
+              <p className="text-sm text-gray-600">Total API Calls</p>
+              <p className="text-2xl font-bold text-gray-900">{total_api_calls}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Average Response Time */}
+        <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+          <div className="flex items-center space-x-3">
+            <FiCheckCircle className="text-blue-600" size={24} />
+            <div>
+              <p className="text-sm text-gray-600">Avg Response Time</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {avg_response_time_ms.toFixed(0)}ms
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Feature Usage */}
+        <div>
+          <h4 className="text-sm font-medium text-gray-700 mb-3">
+            Feature Usage
+          </h4>
+          <div className="space-y-3">
+            {Object.entries(feature_usage).map(([feature, count]) => (
+              <div key={feature}>
+                <div className="flex items-center justify-between text-sm mb-1">
+                  <span className="capitalize text-gray-700">{feature}</span>
+                  <span className="font-medium text-gray-900">{count}</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary-500"
+                    style={{
+                      width: `${(count / total_api_calls) * 100}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+export default UsageStats;
+```
+
+---
+
+## **SEGMENT 12: Auth Components**
+
+### **📁 src/components/auth/LoginForm.jsx**
+
+```javascript
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { FiMail, FiLock } from 'react-icons/fi';
+import { useAuth } from '@hooks/useAuth';
+import Input from '@components/common/Input';
+import Button from '@components/common/Button';
+import Alert from '@components/common/Alert';
+
+const LoginForm = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const result = await login(formData);
+      
+      if (result.success) {
+        navigate('/editor');
+      } else {
+        setError(result.error || 'Login failed. Please try again.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  return (
+    <div className="w-full max-w-md">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+        <p className="text-gray-600">Sign in to your account to continue</p>
+      </div>
+
+      {error && (
+        <Alert type="error" message={error} onClose={() => setError('')} className="mb-6" />
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="you@example.com"
+          icon={<FiMail className="text-gray-400" />}
+          required
+          fullWidth
+        />
+
+        <Input
+          label="Password"
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="••••••••"
+          icon={<FiLock className="text-gray-400" />}
+          required
+          fullWidth
+        />
+
+        <div className="flex items-center justify-between">
+          <label className="flex items-center">
+            <input type="checkbox" className="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+            <span className="ml-2 text-sm text-gray-600">Remember me</span>
+          </label>
+
+          <a href="#" className="text-sm text-primary-600 hover:text-primary-700">
+            Forgot password?
+          </a>
+        </div>
+
+        <Button
+          type="submit"
+          variant="primary"
+          fullWidth
+          loading={loading}
+        >
+          Sign In
+        </Button>
+
+        <p className="text-center text-sm text-gray-600">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+            Sign up
+          </Link>
+        </p>
+      </form>
+    </div>
+  );
+};
+
+export default LoginForm;
+```
+
+---
+
+### **📁 src/components/auth/RegisterForm.jsx**
+
+```javascript
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { FiMail, FiLock, FiUser } from 'react-icons/fi';
+import { useAuth } from '@hooks/useAuth';
+import Input from '@components/common/Input';
+import Button from '@components/common/Button';
+import Alert from '@components/common/Alert';
+
+const RegisterForm = () => {
+  const navigate = useNavigate();
+  const { register } = useAuth();
+  const [formData, setFormData] = useState({
+    full_name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    // Validate password strength
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const result = await register({
+        full_name: formData.full_name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (result.success) {
+        navigate('/editor');
+      } else {
+        setError(result.error || 'Registration failed. Please try again.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  return (
+    <div className="w-full max-w-md">
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
+        <p className="text-gray-600">Start improving your writing today</p>
+      </div>
+
+      {error && (
+        <Alert type="error" message={error} onClose={() => setError('')} className="mb-6" />
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <Input
+          label="Full Name"
+          type="text"
+          name="full_name"
+          value={formData.full_name}
+          onChange={handleChange}
+          placeholder="John Doe"
+          icon={<FiUser className="text-gray-400" />}
+          required
+          fullWidth
+        />
+
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="you@example.com"
+          icon={<FiMail className="text-gray-400" />}
+          required
+          fullWidth
+        />
+
+        <Input
+          label="Password"
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="••••••••"
+          icon={<FiLock className="text-gray-400" />}
+          helperText="Must be at least 8 characters"
+          required
+          fullWidth
+        />
+
+        <Input
+          label="Confirm Password"
+          type="password"
+          name="confirmPassword"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          placeholder="••••••••"
+          icon={<FiLock className="text-gray-400" />}
+          required
+          fullWidth
+        />
+
+        <Button
+          type="submit"
+          variant="primary"
+          fullWidth
+          loading={loading}
+        >
+          Create Account
+        </Button>
+
+        <p className="text-center text-sm text-gray-600">
+          Already have an account?{' '}
+          <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+            Sign in
+          </Link>
+        </p>
+      </form>
+    </div>
+  );
+};
+
+export default RegisterForm;
+```
+
+---
+
+### **📁 src/components/auth/ProtectedRoute.jsx**
+
+```javascript
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '@hooks/useAuth';
+import Spinner from '@components/common/Spinner';
+
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+export default ProtectedRoute;
+```
+
+---
+
+Let me continue with the main Pages in the next response.
+
+## **SEGMENT 13: Main Pages**
+
+### **📁 src/pages/Home.jsx**
+
+```javascript
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { FiEdit3, FiCheckCircle, FiZap, FiBarChart2 } from 'react-icons/fi';
+import Layout from '@components/layout/Layout';
+import Button from '@components/common/Button';
+import Card from '@components/common/Card';
+
+const Home = () => {
+  const features = [
+    {
+      icon: FiEdit3,
+      title: 'Smart Writing Assistant',
+      description: 'Real-time grammar, spelling, and style suggestions as you type.',
+    },
+    {
+      icon: FiCheckCircle,
+      title: 'Advanced Grammar Check',
+      description: 'Catch complex grammatical errors and get detailed explanations.',
+    },
+    {
+      icon: FiZap,
+      title: 'AI-Powered Rewrite',
+      description: 'Improve clarity and tone with intelligent text rewriting.',
+    },
+    {
+      icon: FiBarChart2,
+      title: 'Writing Analytics',
+      description: 'Track your progress and improve your writing over time.',
+    },
+  ];
+
+  return (
+    <Layout showSidebar={false}>
+      {/* Hero Section */}
+      <div className="text-center py-20">
+        <h1 className="text-5xl font-bold text-gray-900 mb-6">
+          Write Better with AI
+        </h1>
+        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          Professional writing assistant powered by advanced AI. Check grammar,
+          improve style, and enhance your writing instantly.
+        </p>
+        <div className="flex items-center justify-center space-x-4">
+          <Link to="/register">
+            <Button variant="primary" size="lg">
+              Get Started Free
+            </Button>
+          </Link>
+          <Link to="/editor">
+            <Button variant="outline" size="lg">
+              Try Editor
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Features Grid */}
+      <div className="py-20">
+        <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+          Powerful Features
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, index) => (
+            <Card key={index} padding="md" hover>
+              <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
+                <feature.icon className="text-primary-600" size={24} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600 text-sm">{feature.description}</p>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Stats Section */}
+      <div className="py-20 bg-primary-50 rounded-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+          <div>
+            <p className="text-4xl font-bold text-primary-600 mb-2">10M+</p>
+            <p className="text-gray-600">Words Checked</p>
+          </div>
+          <div>
+            <p className="text-4xl font-bold text-primary-600 mb-2">50K+</p>
+            <p className="text-gray-600">Active Users</p>
+          </div>
+          <div>
+            <p className="text-4xl font-bold text-primary-600 mb-2">99.9%</p>
+            <p className="text-gray-600">Accuracy Rate</p>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="py-20 text-center">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          Ready to Improve Your Writing?
+        </h2>
+        <p className="text-xl text-gray-600 mb-8">
+          Join thousands of writers who trust our AI-powered assistant.
+        </p>
+        <Link to="/register">
+          <Button variant="primary" size="lg">
+            Start Writing Better Today
+          </Button>
+        </Link>
+      </div>
+    </Layout>
+  );
+};
+
+export default Home;
+```
+
+---
+
+### **📁 src/pages/Editor.jsx**
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import Layout from '@components/layout/Layout';
+import TextEditor from '@components/editor/TextEditor';
+import EditorToolbar from '@components/editor/EditorToolbar';
+import SuggestionCard from '@components/editor/SuggestionCard';
+import SpellingPanel from '@components/analysis/SpellingPanel';
+import GrammarPanel from '@components/analysis/GrammarPanel';
+import TonePanel from '@components/analysis/TonePanel';
+import ReadabilityPanel from '@components/analysis/ReadabilityPanel';
+import OverallScore from '@components/analysis/OverallScore';
+import Modal from '@components/common/Modal';
+import Input from '@components/common/Input';
+import Button from '@components/common/Button';
+import { useDebounce } from '@hooks/useDebounce';
+import { useTextAnalysis } from '@hooks/useTextAnalysis';
+import { documentsAPI } from '@api/documents';
+import { rewriteAPI } from '@api/rewrite';
+
+const Editor = () => {
+  const navigate = useNavigate();
+  const [text, setText] = useState('');
+  const [selectedIssue, setSelectedIssue] = useState(null);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showRewriteModal, setShowRewriteModal] = useState(false);
+  const [documentTitle, setDocumentTitle] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [rewriting, setRewriting] = useState(false);
+
+  const debouncedText = useDebounce(text, 1000);
+  const { analysis, loading, reanalyze } = useTextAnalysis(debouncedText);
+
+  const handleSave = async () => {
+    if (!documentTitle.trim()) {
+      toast.error('Please enter a document title');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await documentsAPI.createDocument({
+        title: documentTitle,
+        content: text,
+        tags: [],
+      });
+      
+      toast.success('Document saved successfully!');
+      setShowSaveModal(false);
+      setDocumentTitle('');
+    } catch (error) {
+      toast.error('Failed to save document');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleExport = () => {
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `document-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Document exported!');
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Copied to clipboard!');
+    } catch (error) {
+      toast.error('Failed to copy text');
+    }
+  };
+
+  const handleRewrite = async (style = 'improve') => {
+    if (!text.trim()) {
+      toast.error('Please enter some text first');
+      return;
+    }
+
+    setRewriting(true);
+    try {
+      const result = await rewriteAPI.rewriteText(text, style);
+      setText(result.rewritten_text);
+      toast.success('Text rewritten successfully!');
+      setShowRewriteModal(false);
+    } catch (error) {
+      toast.error('Failed to rewrite text');
+    } finally {
+      setRewriting(false);
+    }
+  };
+
+  const handleApplySuggestion = (issue, suggestion) => {
+    const { position, length = issue.error_text?.length || issue.word?.length || 0 } = issue;
+    const before = text.substring(0, position);
+    const after = text.substring(position + length);
+    const newText = before + suggestion + after;
+    
+    setText(newText);
+    setSelectedIssue(null);
+    toast.success('Suggestion applied!');
+  };
+
+  return (
+    <Layout>
+      <div className="h-[calc(100vh-12rem)]">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+          {/* Editor Section - 2 columns */}
+          <div className="lg:col-span-2 flex flex-col h-full">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col h-full">
+              <EditorToolbar
+                onSave={() => setShowSaveModal(true)}
+                onExport={handleExport}
+                onCopy={handleCopy}
+                onReanalyze={reanalyze}
+                onRewrite={() => setShowRewriteModal(true)}
+                isAnalyzing={loading.spelling || loading.grammar}
+                hasUnsavedChanges={text.length > 0}
+              />
+              
+              <div className="flex-1 relative">
+                <TextEditor
+                  value={text}
+                  onChange={setText}
+                  analysis={analysis}
+                  onIssueClick={setSelectedIssue}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Analysis Panel - 1 column */}
+          <div className="space-y-6 overflow-y-auto h-full">
+            {/* Overall Score */}
+            {analysis && <OverallScore analysis={analysis} />}
+
+            {/* Current Issue Card */}
+            {selectedIssue && (
+              <SuggestionCard
+                issue={selectedIssue}
+                onApply={handleApplySuggestion}
+                onDismiss={() => setSelectedIssue(null)}
+              />
+            )}
+
+            {/* Analysis Panels */}
+            <SpellingPanel
+              analysis={analysis?.spelling}
+              loading={loading.spelling}
+              onIssueClick={setSelectedIssue}
+            />
+
+            <GrammarPanel
+              analysis={analysis?.grammar}
+              loading={loading.grammar}
+              onIssueClick={setSelectedIssue}
+            />
+
+            <TonePanel
+              analysis={analysis?.tone}
+              loading={loading.tone}
+            />
+
+            <ReadabilityPanel
+              analysis={analysis?.readability}
+              loading={loading.readability}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Save Modal */}
+      <Modal
+        isOpen={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+        title="Save Document"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setShowSaveModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleSave} loading={saving}>
+              Save
+            </Button>
+          </>
+        }
+      >
+        <Input
+          label="Document Title"
+          value={documentTitle}
+          onChange={(e) => setDocumentTitle(e.target.value)}
+          placeholder="Enter document title"
+          fullWidth
+        />
+      </Modal>
+
+      {/* Rewrite Modal */}
+      <Modal
+        isOpen={showRewriteModal}
+        onClose={() => setShowRewriteModal(false)}
+        title="AI Rewrite"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">Choose a rewriting style:</p>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              variant="outline"
+              onClick={() => handleRewrite('improve')}
+              loading={rewriting}
+              fullWidth
+            >
+              Improve
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => handleRewrite('simplify')}
+              loading={rewriting}
+              fullWidth
+            >
+              Simplify
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => handleRewrite('formal')}
+              loading={rewriting}
+              fullWidth
+            >
+              Formal
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => handleRewrite('casual')}
+              loading={rewriting}
+              fullWidth
+            >
+              Casual
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </Layout>
+  );
+};
+
+export default Editor;
+```
+
+---
+
+### **📁 src/pages/Documents.jsx**
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { FiPlus, FiSearch, FiUpload } from 'react-icons/fi';
+import Layout from '@components/layout/Layout';
+import DocumentList from '@components/documents/DocumentList';
+import DocumentUpload from '@components/documents/DocumentUpload';
+import Button from '@components/common/Button';
+import Input from '@components/common/Input';
+import Modal from '@components/common/Modal';
+import { documentsAPI } from '@api/documents';
+
+const Documents = () => {
+  const navigate = useNavigate();
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showUploadModal, setShowUploadModal] = useState(false);
+
+  useEffect(() => {
+    loadDocuments();
+  }, [searchQuery]);
+
+  const loadDocuments = async () => {
+    setLoading(true);
+    try {
+      const result = await documentsAPI.listDocuments(0, 20, searchQuery || null);
+      setDocuments(result.documents || []);
+    } catch (error) {
+      toast.error('Failed to load documents');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDocumentClick = (document) => {
+    navigate(`/editor?doc=${document.id}`);
+  };
+
+  const handleDocumentDelete = async (documentId) => {
+    try {
+      await documentsAPI.deleteDocument(documentId);
+      toast.success('Document deleted successfully');
+      loadDocuments();
+    } catch (error) {
+      toast.error('Failed to delete document');
+    }
+  };
+
+  const handleUpload = async (file) => {
+    try {
+      await documentsAPI.uploadDocument(file);
+      toast.success('Document uploaded successfully!');
+      setShowUploadModal(false);
+      loadDocuments();
+    } catch (error) {
+      toast.error('Failed to upload document');
+    }
+  };
+
+  return (
+    <Layout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">My Documents</h1>
+            <p className="text-gray-600 mt-1">
+              Manage and organize your writing projects
+            </p>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowUploadModal(true)}
+            >
+              <FiUpload className="mr-2" />
+              Upload
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => navigate('/editor')}
+            >
+              <FiPlus className="mr-2" />
+              New Document
+            </Button>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="max-w-md">
+          <Input
+            placeholder="Search documents..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            icon={<FiSearch className="text-gray-400" />}
+          />
+        </div>
+
+        {/* Documents List */}
+        <DocumentList
+          documents={documents}
+          loading={loading}
+          onDocumentClick={handleDocumentClick}
+          onDocumentDelete={handleDocumentDelete}
+        />
+      </div>
+
+      {/* Upload Modal */}
+      <Modal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        title="Upload Document"
+        size="lg"
+      >
+        <DocumentUpload onUpload={handleUpload} />
+      </Modal>
+    </Layout>
+  );
+};
+
+export default Documents;
+```
+
+---
+
+### **📁 src/pages/Analytics.jsx**
+
+```javascript
+import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
+import {
+  FiFileText,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiTrendingUp,
+} from 'react-icons/fi';
+import Layout from '@components/layout/Layout';
+import StatCard from '@components/analytics/StatCard';
+import TrendChart from '@components/analytics/TrendChart';
+import ErrorBreakdown from '@components/analytics/ErrorBreakdown';
+import UsageStats from '@components/analytics/UsageStats';
+import Card from '@components/common/Card';
+import Spinner from '@components/common/Spinner';
+import { analyticsAPI } from '@api/analytics';
+
+const Analytics = () => {
+  const [analytics, setAnalytics] = useState(null);
+  const [usageStats, setUsageStats] = useState(null);
+  const [errorTrends, setErrorTrends] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState('30d');
+
+  useEffect(() => {
+    loadAnalytics();
+  }, [period]);
+
+  const loadAnalytics = async () => {
+    setLoading(true);
+    try {
+      const [analyticsData, usageData, trendsData] = await Promise.all([
+        analyticsAPI.getUserAnalytics(period),
+        analyticsAPI.getUsageStats(),
+        analyticsAPI.getErrorTrends(),
+      ]);
+
+      setAnalytics(analyticsData);
+      setUsageStats(usageData);
+      setErrorTrends(trendsData);
+    } catch (error) {
+      toast.error('Failed to load analytics');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center py-20">
+          <Spinner size="lg" />
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
+            <p className="text-gray-600 mt-1">
+              Track your writing progress and improvements
+            </p>
+          </div>
+
+          {/* Period Selector */}
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+            <option value="1y">Last year</option>
+          </select>
+        </div>
+
+        {/* Stats Cards */}
+        {analytics && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <StatCard
+              title="Total Checks"
+              value={analytics.total_checks}
+              icon={FiFileText}
+              trend="up"
+              change={12}
+            />
+            <StatCard
+              title="Errors Found"
+              value={analytics.total_errors_found}
+              icon={FiAlertCircle}
+              trend="down"
+              change={8}
+            />
+            <StatCard
+              title="Errors Corrected"
+              value={analytics.errors_corrected}
+              icon={FiCheckCircle}
+              trend="up"
+              change={15}
+            />
+            <StatCard
+              title="Writing Score"
+              value={analytics.writing_score.toFixed(1)}
+              icon={FiTrendingUp}
+              trend="up"
+              change={5}
+            />
+          </div>
+        )}
+
+        {/* Charts Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {errorTrends && (
+            <TrendChart
+              data={errorTrends.trends}
+              title="Error Trends Over Time"
+            />
+          )}
+
+          {analytics?.error_breakdown && (
+            <ErrorBreakdown data={analytics.error_breakdown} />
+          )}
+        </div>
+
+        {/* Usage Stats and Improvement */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {usageStats && <UsageStats stats={usageStats} />}
+
+          {analytics?.most_common_errors && (
+            <Card title="Most Common Errors" padding="md">
+              <div className="space-y-3">
+                {analytics.most_common_errors.slice(0, 5).map((error, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">{error.error}</p>
+                      <p className="text-sm text-gray-500 capitalize">{error.type}</p>
+                    </div>
+                    <span className="text-lg font-bold text-primary-600">
+                      {error.count}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+        </div>
+
+        {/* Improvement Section */}
+        <Card title="Your Progress" padding="md">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+              <div>
+                <p className="text-sm text-gray-600">Improvement Rate</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {analytics?.improvement_rate.toFixed(1)}%
+                </p>
+              </div>
+              <FiTrendingUp className="text-green-600" size={40} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Checks This Period</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {analytics?.total_checks || 0}
+                </p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Correction Rate</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {((analytics?.errors_corrected / analytics?.total_errors_found) * 100).toFixed(1)}%
+                </p>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </Layout>
+  );
+};
+
+export default Analytics;
+```
+
+---
+
+### **📁 src/pages/Settings.jsx**
+
+```javascript
+import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { FiUser, FiBell, FiLock, FiGlobe } from 'react-icons/fi';
+import Layout from '@components/layout/Layout';
+import Card from '@components/common/Card';
+import Input from '@components/common/Input';
+import Button from '@components/common/Button';
+import { useAuth } from '@hooks/useAuth';
+
+const Settings = () => {
+  const { user, updateUser } = useAuth();
+  const [activeTab, setActiveTab] = useState('profile');
+  const [loading, setLoading] = useState(false);
+  const [profileData, setProfileData] = useState({
+    full_name: user?.full_name || '',
+    email: user?.email || '',
+  });
+
+  const tabs = [
+    { id: 'profile', label: 'Profile', icon: FiUser },
+    { id: 'notifications', label: 'Notifications', icon: FiBell },
+    { id: 'security', label: 'Security', icon: FiLock },
+    { id: 'preferences', label: 'Preferences', icon: FiGlobe },
+  ];
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const result = await updateUser(profileData);
+      if (result.success) {
+        toast.success('Profile updated successfully!');
+      } else {
+        toast.error(result.error || 'Failed to update profile');
+      }
+    } catch (error) {
+      toast.error('An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'profile':
+        return (
+          <Card title="Profile Information" padding="md">
+            <form onSubmit={handleUpdateProfile} className="space-y-6">
+              <Input
+                label="Full Name"
+                value={profileData.full_name}
+                onChange={(e) =>
+                  setProfileData({ ...profileData, full_name: e.target.value })
+                }
+                fullWidth
+              />
+
+              <Input
+                label="Email"
+                type="email"
+                value={profileData.email}
+                onChange={(e) =>
+                  setProfileData({ ...profileData, email: e.target.value })
+                }
+                fullWidth
+              />
+
+              <div className="flex justify-end">
+                <Button type="submit" variant="primary" loading={loading}>
+                  Save Changes
+                </Button>
+              </div>
+            </form>
+          </Card>
+        );
+
+      case 'notifications':
+        return (
+          <Card title="Notification Settings" padding="md">
+            <div className="space-y-4">
+              <label className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-gray-900">Email Notifications</p>
+                  <p className="text-sm text-gray-500">
+                    Receive email updates about your writing
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  defaultChecked
+                />
+              </label>
+
+              <label className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-gray-900">Writing Tips</p>
+                  <p className="text-sm text-gray-500">
+                    Get weekly writing improvement tips
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                />
+              </label>
+
+              <label className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-gray-900">Product Updates</p>
+                  <p className="text-sm text-gray-500">
+                    Stay informed about new features
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  defaultChecked
+                />
+              </label>
+            </div>
+          </Card>
+        );
+
+      case 'security':
+        return (
+          <Card title="Security Settings" padding="md">
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-medium text-gray-900 mb-4">Change Password</h3>
+                <div className="space-y-4">
+                  <Input
+                    label="Current Password"
+                    type="password"
+                    fullWidth
+                  />
+                  <Input
+                    label="New Password"
+                    type="password"
+                    fullWidth
+                  />
+                  <Input
+                    label="Confirm New Password"
+                    type="password"
+                    fullWidth
+                  />
+                  <Button variant="primary">Update Password</Button>
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-gray-200">
+                <h3 className="font-medium text-gray-900 mb-4">Two-Factor Authentication</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Add an extra layer of security to your account
+                </p>
+                <Button variant="outline">Enable 2FA</Button>
+              </div>
+            </div>
+          </Card>
+        );
+
+      case 'preferences':
+        return (
+          <Card title="Preferences" padding="md">
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Language
+                </label>
+                <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                  <option>English (US)</option>
+                  <option>English (UK)</option>
+                  <option>Spanish</option>
+                  <option>French</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Writing Style
+                </label>
+                <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                  <option>Professional</option>
+                  <option>Casual</option>
+                  <option>Academic</option>
+                  <option>Creative</option>
+                </select>
+              </div>
+
+              <label className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-gray-900">Auto-save</p>
+                  <p className="text-sm text-gray-500">
+                    Automatically save documents as you type
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  defaultChecked
+                />
+              </label>
+
+              <label className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-gray-900">Real-time checking</p>
+                  <p className="text-sm text-gray-500">
+                    Check grammar and spelling as you type
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary
+
 
 
 
