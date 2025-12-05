@@ -26,6 +26,7 @@ project/
 │   │   ├── analytics.py
 │   │   ├── user.py
 │   │   ├── document.py
+│   │   ├── auth.py
 │   │
 │   ├── services/
 │   │   ├── __init__.py
@@ -39,6 +40,9 @@ project/
 │   │   ├── context_service.py
 │   │   ├── plagiarism_service.py
 │   │   ├── style_service.py
+│   │   ├── auth_service.py
+│   │   ├── user_service.py
+│   │   ├── document_service.py
 │   │
 │   ├── models/
 │   │   ├── __init__.py
@@ -47,6 +51,7 @@ project/
 │   │   ├── database_models.py
 │   │   ├── enums.py
 │   │   ├── error_models.py
+│   │   ├── token_models.py
 │   │
 │   ├── utils/
 │   │   ├── __init__.py
@@ -59,6 +64,8 @@ project/
 │   │   ├── rate_limiter.py
 │   │   ├── error_handler.py
 │   │   ├── metrics.py
+│   │   ├── crypto.py
+│   │   ├── file_utils.py
 │   │
 │   ├── core/
 │   │   ├── __init__.py
@@ -66,6 +73,7 @@ project/
 │   │   ├── database.py
 │   │   ├── middleware.py
 │   │   ├── exceptions.py
+│   │   ├── auth_backend.py
 │   │
 │   ├── ml_models/
 │   │   ├── __init__.py
@@ -74,20 +82,25 @@ project/
 │   │   ├── tone_model.py
 │   │   ├── spell_checker.py
 │   │   ├── style_analyzer.py
+│   │   ├── embeddings.py
+│   │   ├── tokenizer.py
 │   │
 │   ├── database/
 │   │   ├── __init__.py
 │   │   ├── connection.py
+│   │   ├── migrations_helper.py
 │   │   ├── repositories/
 │   │   │   ├── __init__.py
 │   │   │   ├── user_repository.py
 │   │   │   ├── document_repository.py
 │   │   │   ├── suggestion_repository.py
+│   │   │   ├── base_repository.py
 │   │
 │   ├── api/
 │   │   ├── __init__.py
 │   │   ├── dependencies.py
 │   │   ├── middleware.py
+│   │   ├── router_registry.py
 │   │
 │   ├── tests/
 │   │   ├── __init__.py
@@ -97,6 +110,9 @@ project/
 │   │   ├── test_tone.py
 │   │   ├── test_readability.py
 │   │   ├── test_services.py
+│   │   ├── test_auth.py
+│   │   ├── test_user.py
+│   │   ├── test_document.py
 │   │
 │   ├── migrations/
 │   │   ├── versions/
