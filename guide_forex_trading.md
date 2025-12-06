@@ -60,7 +60,7 @@ Pick one with:
 * Kraken Pro Futures
 * Bitget
 
-**Check:**
+**Check:**  
 • If it's regulated in your country  
 • KYC/AML requirements  
 • Withdrawal security features (2FA, anti-phishing code)  
@@ -86,16 +86,16 @@ Create separate accounts:
 
 Understand each section on the futures page:
 
-**Order types:**
-• Market
-• Limit
-• Stop-loss
-• Take-profit
-• Trailing stop
+**Order types:**  
+• Market  
+• Limit  
+• Stop-loss  
+• Take-profit  
+• Trailing stop  
 
-**Margin types:**
-• **Cross margin** – shares all funds
-• **Isolated margin** – risk is isolated per trade (best for beginners)
+**Margin types:**  
+• **Cross margin** – shares all funds  
+• **Isolated margin** – risk is isolated per trade (best for beginners)  
 
 Other key areas:  
 • Leverage slider  
