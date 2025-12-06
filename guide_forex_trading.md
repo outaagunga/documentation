@@ -14,9 +14,9 @@ Because crypto futures involve leverage and liquidation risks, this guide emphas
 Futures are contracts to buy or sell a cryptocurrency at a future price.
 You don’t own the crypto — you trade price movements.
 
-You can trade:
-• **Perpetual futures** (no expiry; most popular)
-• **Dated futures** (expire quarterly)
+You can trade:  
+• **Perpetual futures** (no expiry; most popular)  
+• **Dated futures** (expire quarterly)  
 
 **Key terms you must understand:**
 
@@ -46,13 +46,13 @@ Your first goal is **capital preservation**, not profits.
 
 ### **3. Choose a Reliable Futures Exchange** 🏛️
 
-Pick one with:
-✔ Strong security track record
-✔ Good liquidity
-✔ Low fees
-✔ Easy UI for beginners
+Pick one with:  
+✔ Strong security track record  
+✔ Good liquidity  
+✔ Low fees  
+✔ Easy UI for beginners  
 
-**Popular options include:**
+**Popular options include:**  
 
 * Binance Futures
 * Bybit
@@ -61,9 +61,9 @@ Pick one with:
 * Bitget
 
 **Check:**
-• If it's regulated in your country
-• KYC/AML requirements
-• Withdrawal security features (2FA, anti-phishing code)
+• If it's regulated in your country  
+• KYC/AML requirements  
+• Withdrawal security features (2FA, anti-phishing code)  
 
 ---
 
@@ -76,9 +76,9 @@ Enable:
 * Anti-phishing code
 * Strong password management
 
-Create separate accounts:
-• **Spot wallet** (depositing funds)
-• **Futures wallet** (margin only)
+Create separate accounts:  
+• **Spot wallet** (depositing funds)  
+• **Futures wallet** (margin only)  
 
 ---
 
@@ -97,11 +97,11 @@ Understand each section on the futures page:
 • **Cross margin** – shares all funds
 • **Isolated margin** – risk is isolated per trade (best for beginners)
 
-Other key areas:
-• Leverage slider
-• Open orders
-• Positions
-• Margin ratio / liquidation price
+Other key areas:  
+• Leverage slider  
+• Open orders  
+• Positions  
+• Margin ratio / liquidation price  
 
 👉 *Practice on the testnet/demo account before real money.*
 
@@ -115,16 +115,16 @@ Other key areas:
 
 ---
 
-### **7. Learn Basic Technical Analysis** 📊
+### **7. Learn Basic Technical Analysis** 📊  
 
-You don’t need to be an expert yet, but learn the basics:
+You don’t need to be an expert yet, but learn the basics:  
 
-• Support & resistance
-• Trendlines
-• Candlestick patterns
-• Moving averages (MA50, MA200)
-• RSI (overbought/oversold)
-• Volume
+• Support & resistance  
+• Trendlines  
+• Candlestick patterns  
+• Moving averages (MA50, MA200)  
+• RSI (overbought/oversold)  
+• Volume  
 
 These help you avoid impulsive entries.
 
@@ -155,14 +155,14 @@ Choose one simple, consistent approach:
 * Keep leverage **2×–5×** maximum as a beginner.
 * Risk only **1–2%** of your account per trade.
 
-Always place:
-• Stop-loss
-• Take-profit
+Always place:  
+• Stop-loss  
+• Take-profit  
 
-Avoid holding overnight during:
-• Big news announcements
-• Major FOMC events
-• High volatility times
+Avoid holding overnight during:  
+• Big news announcements  
+• Major FOMC events  
+• High volatility times  
 
 ---
 
@@ -176,12 +176,12 @@ Use tiny amounts (**$5–$20 equivalent**):
 * Choose Isolated margin
 * Enter with a limit order
 
-Place:
-• Stop-loss
-• Take-profit
+Place:  
+• Stop-loss  
+• Take-profit  
 
-Monitor your margin ratio
-Close manually or let TP/SL hit
+Monitor your margin ratio  
+Close manually or let TP/SL hit  
 
 ---
 
@@ -200,16 +200,16 @@ This is how beginners become profitable.
 
 ---
 
-### **12. Gradually Scale Up** 📈
+### **12. Gradually Scale Up** 📈  
 
-As you get consistent:
+As you get consistent:  
 
-* Increase position size slowly
-* Explore more advanced setups:
-  • Open interest analysis
-  • Funding rate sentiment
-  • Market maker behavior
-  • Order book liquidity
+* Increase position size slowly  
+* Explore more advanced setups:  
+  • Open interest analysis  
+  • Funding rate sentiment  
+  • Market maker behavior  
+  • Order book liquidity  
 
 Never jump straight to high leverage or large positions.
 
