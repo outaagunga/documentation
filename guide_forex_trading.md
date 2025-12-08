@@ -179,9 +179,9 @@ Use tiny amounts (**$5–$20 equivalent**):
 * Identify the `trend`
 * Ensure these `indicators` confirm the same:
 * **NB:** Start with RSI to easily identify- just check if `below 30` or `above 70`  
-    * ✓ Moving averages (MA50, MA200)
-    * ✓ RSI (overbought/oversold)- When `below 30` enter buy trade/ `above 70` enter sell trade
+    * ✓ RSI (overbought/oversold)- when `below 30` enter buy trade/ `above 70` enter sell trade  
     * ✓ MACD (for mementum strength/ shifts)- `fast_line crosses upwards` at 0 point enter buy trade/ `crosses downwards` at 0 point enter sell trade  
+    * ✓ Moving averages (MA20 is above MA50- buy trade/ MA20 is below MA50- sell trade)  
 * Set `leverage` to 2× or 3×
 * Choose `Isolated margin`
 * Enter with a `stop limit order` (so that order is executed when the price reaches at desired point)  
