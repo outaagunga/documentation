@@ -124,6 +124,7 @@ You don’t need to be an expert yet, but learn the basics:
 • Candlestick patterns  
 • Moving averages (MA50, MA200)  
 • RSI (overbought/oversold)  
+• MACD (for mementum strength/ shifts)  
 • Volume  
 
 These help you avoid impulsive entries.
@@ -170,16 +171,33 @@ Avoid holding overnight during:
 
 Use tiny amounts (**$5–$20 equivalent**):
 
-* Open a BTC/ETH chart
+* Access Futures Trading Interface
+* Navigate to Derivatives → USDT-M Futures (Bookmark this page for quick access)  
+* Open e.g a BTC/ETH chart
+* Select Perpetual Contract (no expiry, ideal for swing and day trading)  
 * Identify the trend
+* Ensure these indicators confirm the same:  
+* Moving averages (MA50, MA200)
+* RSI (overbought/oversold)- When below 30 enter buy trade/ above 70 enter sell trade    
+• MACD (for mementum strength/ shifts)- fast_line crosses upwards at 0 point enter buy trade/ crosses downward at 0 point enter sell trade  
 * Set leverage to 2× or 3×
 * Choose Isolated margin
-* Enter with a limit order
+* Enter with a `stop limit order` (so that order is executed when the price reaches at desired point)  
 
 Place:  
-• Stop-loss  
-• Take-profit  
-
+• Stop-loss (slightly below or above surpoort/ resistance levels)  
+• Take-profit ()  
+Counter check to confirm everything is correct i.e 
+✓ Correct trading pair  
+✓ Position direction (Long/Short)  
+✓ Margin mode (Isolated)  
+✓ Leverage setting  
+✓ Stop price and limit price (for stop-limit orders)  
+✓ Stop Loss price  
+✓ Take Profit price(s)  
+✓ Position size (check notional value)  
+✓ Sufficient margin balance  
+Then execute the trade  
 Monitor your margin ratio  
 Close manually or let TP/SL hit  
 
