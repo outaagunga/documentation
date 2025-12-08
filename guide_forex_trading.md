@@ -233,7 +233,8 @@ As you get consistent:
   • Market maker behavior  
   • Order book liquidity  
 
-Never jump straight to high leverage or large positions.
+Never jump straight to high leverage or large positions.  
+
 ---
 
 ## ✅ **Pine Script v5: Forex Entry Strategy with Alerts**
