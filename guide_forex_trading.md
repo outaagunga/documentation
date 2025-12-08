@@ -234,11 +234,92 @@ As you get consistent:
   • Order book liquidity  
 
 Never jump straight to high leverage or large positions.
-
 ---
 
----
+## ✅ **Pine Script v5: Forex Entry Strategy with Alerts**
+Here is a clean, ready-to-paste **TradingView Pine Script v5** that implements your full strategy:
 
+* RSI < 30 for BUY (RSI > 70 for SELL)  
+* MACD fast line crosses signal line  
+* MA20 above MA50 for BUY (below for SELL)  
+* Alerts for BUY + SELL entries  
+* Clear chart signals  
+
+```pine
+//@version=5
+indicator("RSI + MACD + MA20/50 Strategy", overlay=true, timeframe="", timeframe_gaps=true)
+
+// === Inputs ===
+rsiLength = input.int(14, "RSI Length")
+maFastLen = input.int(20, "MA Fast (20)")
+maSlowLen = input.int(50, "MA Slow (50)")
+
+// === Indicators ===
+// RSI
+rsi = ta.rsi(close, rsiLength)
+
+// MA20 & MA50
+ma20 = ta.sma(close, maFastLen)
+ma50 = ta.sma(close, maSlowLen)
+
+// MACD
+macdFast = input.int(12, "MACD Fast Length")
+macdSlow = input.int(26, "MACD Slow Length")
+macdSignal = input.int(9, "MACD Signal Length")
+
+macdValue = ta.ema(close, macdFast) - ta.ema(close, macdSlow)
+signalLine = ta.ema(macdValue, macdSignal)
+macdCrossUp = ta.crossover(macdValue, signalLine)
+macdCrossDown = ta.crossunder(macdValue, signalLine)
+
+// === BUY Conditions ===
+buy_rsi = rsi < 30
+buy_macd = macdCrossUp
+buy_trend = ma20 > ma50
+
+buySignal = buy_rsi and buy_macd and buy_trend
+
+// === SELL Conditions ===
+sell_rsi = rsi > 70
+sell_macd = macdCrossDown
+sell_trend = ma20 < ma50
+
+sellSignal = sell_rsi and sell_macd and sell_trend
+
+// === Plot MAs ===
+plot(ma20, color=color.new(color.green, 0), linewidth=2, title="MA20")
+plot(ma50, color=color.new(color.red, 0), linewidth=2, title="MA50")
+
+// === Plot BUY/SELL markers ===
+plotshape(buySignal, title="BUY Signal", style=plot.shape.labelup, 
+     color=color.green, size=size.large, text="BUY")
+
+plotshape(sellSignal, title="SELL Signal", style=plot.shape.labeldown, 
+     color=color.red, size=size.large, text="SELL")
+
+// === Alerts ===
+alertcondition(buySignal, title="BUY Alert", 
+     message="BUY: RSI < 30 + MACD Bullish Cross + MA20 > MA50")
+
+alertcondition(sellSignal, title="SELL Alert", 
+     message="SELL: RSI > 70 + MACD Bearish Cross + MA20 < MA50")
+```  
+
+## 📌 **How to Use Alerts**  
+
+After adding the script to your chart:  
+1. Click **Alerts** (top right)  
+2. Choose this script from the dropdown  
+3. Select:  
+   * **BUY Alert**  
+   * **SELL Alert**  
+4. Set notification type (popup, app, email)  
+5. Save  
+
+TradingView will now notify you automatically when the conditions align.  
+---
+---
+---
 ---
 ## Daily Forex Trading Template
 
