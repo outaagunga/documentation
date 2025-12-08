@@ -179,8 +179,8 @@ Use tiny amounts (**$5–$20 equivalent**):
 * Identify the `overall trend` on higher timeframe i.e if price is above `Moving Average` set to 50 EMA- `uptrend`/ when price is below- `downtrend`
 * Draw a `support` & `resistance` levels on a `higher` timeframes (if trading 4hr- draw it in `1D`/ if trading 15min- draw it on `1 Hr` and if trading on 1Hr draw it on `4Hr`)   
 * Use these `indicators` to help confirm: 
-    * ✓ RSI set to 14 (overbought/oversold)- when `below 30` enter buy trade/ `above 70` enter sell trade. (when this forms around support/ resistance- possible reversal)  
-    * ✓ MACD set to 12,26,9 (for mementum strength/ shifts)- `fast_line crosses upwards` at 0 point enter buy trade/ `crosses downwards` at 0 point enter sell trade   
+    * ✓ RSI set to 14 SMA (overbought/oversold)- when `below 30` enter buy trade/ `above 70` enter sell trade. (when this forms around support/ resistance- possible reversal)  
+    * ✓ MACD set to 12,26,9 EMA (for mementum strength/ shifts)- `fast_line crosses upwards` at 0 point enter buy trade/ `crosses downwards` at 0 point enter sell trade   
 * Set `leverage` to 2× or 3×
 * Choose `Isolated margin`
 * Enter with a `stop limit order` (so that order is executed when the price reaches at desired point)  
