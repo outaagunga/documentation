@@ -109,9 +109,10 @@ Other key areas:
 
 ### **6. Fund Your Account Safely** 💰
 
-* Deposit crypto (USDT is most common for futures)
-* Transfer a small portion of your funds into the futures wallet
-* Use only what you can afford to lose
+* Deposit crypto (USDT is most common for futures)  
+* Deposit USDT directly if available to avoid conversion fees  
+* Transfer a small portion of your funds into the futures wallet  
+* Use only what you can afford to lose  
 
 ---
 
@@ -176,7 +177,8 @@ Use tiny amounts (**$5–$20 equivalent**):
 * Open desired currency pair `e.g a BTC/ETH chart`
 * Select `Perpetual Contract` (no expiry, ideal for swing and day trading)  
 * Identify the `trend`
-* Ensure these `indicators` confirm the same:  
+* Ensure these `indicators` confirm the same:
+* **NB:** Start with RSI to easily identify- just check if `below 30` or `above 70`  
     * ✓ Moving averages (MA50, MA200)
     * ✓ RSI (overbought/oversold)- When `below 30` enter buy trade/ `above 70` enter sell trade
     * ✓ MACD (for mementum strength/ shifts)- `fast_line crosses upwards` at 0 point enter buy trade/ `crosses downwards` at 0 point enter sell trade  
@@ -185,8 +187,8 @@ Use tiny amounts (**$5–$20 equivalent**):
 * Enter with a `stop limit order` (so that order is executed when the price reaches at desired point)  
 
 Place:  
-    * Stop-loss (slightly below or above surpoort/ resistance levels)  
-    * Take-profit (set to 1:2 Risk-Reward Ratio)  
+    * `Stop-loss` (slightly below or above surpoort/ resistance levels)  
+    * `Take-profit` (set to 1:2 Risk-Reward Ratio)  
    ,   
 Counter check to confirm everything is correct i.e 
   - ✓ Correct trading pair  
