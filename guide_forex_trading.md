@@ -318,6 +318,7 @@ After adding the script to your chart:
 5. Save  
 
 TradingView will now notify you automatically when the conditions align.  
+
 ---
 ---
 ---
