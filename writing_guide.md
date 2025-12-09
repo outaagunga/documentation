@@ -6,24 +6,24 @@
 ```
 ### My Writing **Outline** Template
 **My Audience**
-Who are they? (job title, age, pain point)__________
-What do they want?_____________
-What frustrates them daily?_____________
-What are they trying to avoid?___________
-What do they hope to achieve?____________
-The phrases they repeat?____________
-Complaints they have?_______________
-Jargon they use?______________
-What they mean even when they don’t say it clearly?_______________
-Using their words:
-“I feel stuck” — use it.
-“I’m overwhelmed with content” — use that.
-“I need clients, not likes” — use that line.
-Match thier Tone and Energy
-Speak to their Emotions, Not Just Logic
-Would they say it this way?
-Would they understand this immediately?
-Would they care about this point?
+- Who are they? (job title, age, pain point)__________
+- What do they want?_____________
+- What frustrates them daily?_____________
+- What are they trying to avoid?___________
+- What do they hope to achieve?____________
+- The phrases they repeat?____________
+- Complaints they have?_______________
+- Jargon they use?______________
+- What they mean even when they don’t say it clearly?_______________
+- Using their words e.g:
+	- “I feel stuck” — use it.
+	- “I’m overwhelmed with content” — use that.
+	- “I need clients, not likes” — use that line.
+- Match thier Tone and Energy
+- Speak to their Emotions, Not Just Logic
+- Would they say it this way?
+- Would they understand this immediately?
+- Would they care about this point?
 
 **Outline**
 - Topic ______________  
