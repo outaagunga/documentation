@@ -6,26 +6,19 @@
 ```
 ### My Writing **Outline** Template
 **My Audience**
-- Who are they? (job title, age, pain point)__________
+- Who are they? (role, age, pain point)__________
+- Reader's current emotional state: (e.g., Skeptical, Desperate, Confused, Hopeful)__________
 - What do they want?_____________
-- What frustrates them daily?_____________
+- What frustrates them daily? (obstacles/friction)_____________
 - What are they trying to avoid?___________
 - What do they hope to achieve?____________
-- The phrases they repeat?____________
+- The phrases they often repeat/ their own words: (e.g., "I feel stuck," "Need clients, not likes")?____________
 - Complaints they have?_______________
-- Jargon they use?______________
 - What they mean even when they don’t say it clearly?_______________
-- Using their words e.g:
-	- “I feel stuck” — use it.
-	- “I’m overwhelmed with content” — use that.
-	- “I need clients, not likes” — use that line.
-- Match thier Tone and Energy
-- Speak to their Emotions, Not Just Logic
-- Would they say it this way?
-- Would they understand this immediately?
-- Would they care about this point?
+- Tone and Energy (match thier desired feelings/ Emotions)_____________
+- Litmus Test: Would they understand this immediately? Would they care about this point? Would they say it this way? _________
 
-**Outline**
+**Outline (Blueprint)**
 - Topic ______________  
 - Target Audience _______________  
 - Geography (e.g Kenya or Global) _____________
