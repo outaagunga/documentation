@@ -24,7 +24,9 @@
 - Geography (e.g Kenya or Global) _____________
 - Search Intent (e.g why do people search this .... it is for Informational / Transactional / Navigational / Commercial Investigation e.tc) _______________  
 - My Goal/ Purpose is to (e.g Educate / Sell / Entertain / Build Authority / Drive Action) _____________
-- Total number of words ______________  
+- Total number of words ______________
+- Pitfalls to avoid? (Jargon, Rambling, Over-explaining, Keyword stuffing, Missing transitions)
+- What makes this article different from top-ranking content?__________________
   
 Title (Primary Keyword) (Craft a compelling, keyword-optimized title)
 Introduction
