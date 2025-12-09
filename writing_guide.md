@@ -1,4 +1,12 @@
 # Writing  
+**Some of the useful prompts**
+> 1.	Give bulleted outline with placeholders to help me do the task  
+> 2.	Using the outline, help me come up with the content. Do it in segments. Your output should be human friendly.  
+> 3.	Which part of the content sounds more robotic. Suggest a more human, conversational alternative for each identified instance  
+> 4.	Perfect the match of this content to the task deliverables  
+> 5.	Fine tune this into a perfection. Your output should be human friendly  
+
+
 **How to use it**  
 > This is the [insert topic or question].  
 > Help me come up with outline based on this my template [insert your outline template]  
