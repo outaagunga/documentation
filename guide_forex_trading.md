@@ -1,4 +1,78 @@
 
+**Precision Forex Trading Checklist (RSI • MA • MACD • Multi-TF Confluence)**
+
+**CHECKLIST BEFORE ENTERING ANY TRADE**
+
+## **1. Trend Confirmation (Higher Timeframe First)**
+
+* **Is the Daily chart showing a clear trend?**
+
+  * Price is *cleanly* above the 50 MA → bullish environment
+  * Price is *cleanly* below the 50 MA → bearish environment
+
+* **Is the Daily 50 MA sloping in the trend direction?**
+
+  * Upward slope → validates buys
+  * Downward slope → validates sells
+
+---
+
+## **2. Multi-Timeframe Confluence**
+
+* **Are the Daily and 4H 50 MAs aligned?**
+
+  * Both pointing up → strong buy bias
+  * Both pointing down → strong sell bias
+
+* **Has the 4H price pulled back to or near its 50 MA?**
+
+  * Yes → potential high-probability entry zone
+  * No → skip the setup
+
+---
+
+## **3. Momentum & Oscillator Confirmation**
+
+* **RSI levels confirm your bias?**
+
+  * For **buys** → RSI has touched or dipped near **45**
+  * For **sells** → RSI has reached or tested **55**
+
+* **MACD confirmation:**
+
+  * Has the MACD histogram printed the **first bar** in your trade direction?
+
+---
+
+## **4. Risk Management & News Filter**
+
+* **News check:**
+
+  * No high-impact events scheduled in the next **4 hours** (NFP, CPI, interest rate decisions, etc.)
+
+* **Stop loss:**
+
+  * SL is calculated and placed *before* entering
+
+* **Take profit:**
+
+  * TP set at **minimum 2:1 RR**, or
+  * Trailing-stop plan is ready and defined
+
+* **Position size:**
+
+  * Proper lot size calculated based on **1% risk per trade**
+
+* **Daily loss limit check:**
+
+  * Have I already reached my daily loss limit?
+
+    * **Yes → stop trading immediately**
+    * **No → proceed if all criteria are met**
+
+---
+
+
 # 🚀 **Beginner-Friendly Step-by-Step guide to Start Trading Cryptocurrency Futures**
 
 Because crypto futures involve leverage and liquidation risks, this guide emphasizes both skill building and risk control.
