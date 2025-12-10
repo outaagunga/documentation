@@ -33,12 +33,18 @@ Precision Forex Trading Checklist (RSI • MA • MACD • Multi-TF Confluence)
 
 * **RSI levels confirm your bias?**
 
-  * For **buys** → RSI has touched or dipped near **45**
-  * For **sells** → RSI has reached or tested **55**
+  * For **buys** → RSI has touched or dipped near **40-50**
+  * For **sells** → RSI has reached or tested **50-60**
 
 * **MACD confirmation:**
 
   * Has the MACD histogram printed the **first bar** in your trade direction?
+
+* **Structure filter:**
+
+  * Is price making clean **higher-highs/higher-lows** (for buys) or
+  * **lower-highs/lower-lows** (for sells)?
+  * If **unclear**- avoid trade  
 
 
 ## **4. Risk Management & News Filter**
@@ -46,6 +52,11 @@ Precision Forex Trading Checklist (RSI • MA • MACD • Multi-TF Confluence)
 * **News check:**
 
   * No high-impact events scheduled in the next **4 hours** (NFP, CPI, interest rate decisions, etc.)
+    
+* **Correlation expossure check:**
+
+  * Never take more than 2 positions that share the same currency (e.g USD, GBP, JPY, etc.)  
+
 
 * **Stop loss:**
 
