@@ -38,6 +38,8 @@ Precision Forex Trading Checklist (RSI • MA • MACD • Multi-TF Confluence)
 
 * **MACD confirmation:**
 
+  * MACD above zero → For Buys?
+  * MACD below zero → For Sells?
   * Has the MACD histogram printed the **first bar** in your trade direction?
 
 * **Structure filter:**
