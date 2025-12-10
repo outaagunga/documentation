@@ -1,9 +1,9 @@
 
-**Precision Forex Trading Checklist (RSI • MA • MACD • Multi-TF Confluence)**
 
 **CHECKLIST BEFORE ENTERING ANY TRADE**
+Precision Forex Trading Checklist (RSI • MA • MACD • Multi-TF Confluence)
 
-## **1. Trend Confirmation (Higher Timeframe First)**
+## **`1. Trend Confirmation (Higher Timeframe First)**
 
 * **Is the Daily chart showing a clear trend?**
 
@@ -15,7 +15,6 @@
   * Upward slope → validates buys
   * Downward slope → validates sells
 
----
 
 ## **2. Multi-Timeframe Confluence**
 
@@ -29,7 +28,6 @@
   * Yes → potential high-probability entry zone
   * No → skip the setup
 
----
 
 ## **3. Momentum & Oscillator Confirmation**
 
@@ -42,7 +40,6 @@
 
   * Has the MACD histogram printed the **first bar** in your trade direction?
 
----
 
 ## **4. Risk Management & News Filter**
 
@@ -68,7 +65,7 @@
   * Have I already reached my daily loss limit?
 
     * **Yes → stop trading immediately**
-    * **No → proceed if all criteria are met**
+    * **No → proceed if all criteria are met**`
 
 ---
 
