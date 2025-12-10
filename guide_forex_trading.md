@@ -7,10 +7,10 @@ Precision Forex Trading Checklist (RSI • MA • MACD • Multi-TF Confluence)
 
 * **Is the Daily chart showing a clear trend?**
 
-  * Price is *cleanly* above the 50 MA → bullish environment
-  * Price is *cleanly* below the 50 MA → bearish environment
+  * Price is *cleanly* above the 50 SMA → bullish environment
+  * Price is *cleanly* below the 50 SMA → bearish environment
 
-* **Is the Daily 50 MA sloping in the trend direction?**
+* **Is the Daily 50 SMA sloping in the trend direction?**
 
   * Upward slope → validates buys
   * Downward slope → validates sells
