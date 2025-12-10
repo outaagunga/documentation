@@ -18,12 +18,12 @@ Precision Forex Trading Checklist (RSI • MA • MACD • Multi-TF Confluence)
 
 ## **2. Multi-Timeframe Confluence**
 
-* **Are the Daily and 4H 50 MAs aligned?**
+* **Are the Daily and 4H trends aligned?**
 
-  * Both pointing up → strong buy bias
-  * Both pointing down → strong sell bias
+  * Daily bullish + 4H showing higher-high structure → strong buy bias  
+  * Daily bearish + 4H showing lower-low structure → strong sell bias  
 
-* **Has the 4H price pulled back to or near its 50 MA?**
+* **Has the price at 1H timeframe pulled back to or near support/ resistance?-->Our Entry Zone**
 
   * Yes → potential high-probability entry zone
   * No → skip the setup
