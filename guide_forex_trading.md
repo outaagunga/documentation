@@ -1,9 +1,9 @@
 
 
-**CHECKLIST BEFORE ENTERING ANY TRADE**
+**CHECKLIST BEFORE ENTERING ANY TRADE**  
 Precision Forex Trading Checklist (RSI • MA • MACD • Multi-TF Confluence)
 
-## **`1. Trend Confirmation (Higher Timeframe First)**
+## **1. Trend Confirmation (Higher Timeframe First)**
 
 * **Is the Daily chart showing a clear trend?**
 
@@ -65,7 +65,7 @@ Precision Forex Trading Checklist (RSI • MA • MACD • Multi-TF Confluence)
   * Have I already reached my daily loss limit?
 
     * **Yes → stop trading immediately**
-    * **No → proceed if all criteria are met**`
+    * **No → proceed if all criteria are met**  
 
 ---
 
