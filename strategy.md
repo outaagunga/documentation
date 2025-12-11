@@ -199,6 +199,11 @@ Choose one:
 - TP mid-range or opposite edge  
 
 ---
+# Strategy: 3  
+
+
+
+
 
 
 
