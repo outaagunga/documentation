@@ -132,6 +132,8 @@ After trade closes, evaluate:
 This is the simplest and safest way for beginners to trade the HTF wick concept.  
 
 ---  
+---  
+---  
 
 # Strategy: 2  
 
