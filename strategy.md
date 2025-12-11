@@ -186,7 +186,7 @@ Choose one:
 
 ### 📌 STEP 8 — Review After the Trade  
 * ☐ Did I trade only at the edges?  
-* ☐ Did I wait for Stoch RSI + candle confirmation?  
+* ☐ Did I wait for RSI + candle confirmation?  
 * ☐ Did I avoid trading in the middle?  
 * ☐ Did I follow SL/TP rules?  
 
@@ -194,7 +194,7 @@ Choose one:
 - Clear range  
 - Flat 200 EMA  
 - Edges only  
-- Stoch RSI confirmation  
+- RSI confirmation  
 - Simple SL outside range  
 - TP mid-range or opposite edge  
 
