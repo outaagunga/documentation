@@ -142,10 +142,12 @@ This is the simplest and safest way for beginners to trade the HTF wick concept.
 ### 📌 STEP 1 — Identify the Range (H1/H4)  
 * ☐ Mark clear Support zone  
 * ☐ Mark clear Resistance zone  
-* ☐ Range box must be obvious and wide enough (> 25 pips)  
+* ☐ Range width must be obvious and wide enough (not less than 40 pips)  
 
 ### 📌 STEP 2 — Check Market Condition  
-* ☐ Is the 200 EMA flat?  
+* ☐ Is the 200 EMA flat?
+* ☐ No major trend on Daily timeframe (price not making strong higher highs/lower lows)  
+* ☐ Price has touched Support/Resistance atleast 2 times?  
 * ☐ Is price bouncing between Support/Resistance?  
 * If “yes” → proceed.  
 * If “no” → skip.  
@@ -153,13 +155,15 @@ This is the simplest and safest way for beginners to trade the HTF wick concept.
 ### 📌 STEP 3 — Prepare for Trade at the Edges  
 BUY Setup  
 * ☐ Wait for price to touch Support  
-* ☐ Confirm Stoch RSI oversold (<20)  
+* ☐ Confirm RSI oversold (below 30)  
 * ☐ Look for bullish rejection candle  
+* ☐ Rejection candle pattern is clear (pin bar, engulfing, hammer/star)
 
 SELL Setup  
 * ☐ Wait for price to touch Resistance  
-* ☐ Confirm Stoch RSI overbought (>80)  
-* ☐ Look for bearish rejection candle  
+* ☐ Confirm RSI overbought (above 70)  
+* ☐ Look for bearish rejection candle
+* ☐ Rejection candle pattern is clear (pin bar, engulfing, hammer/star)  
 
 ### 📌 STEP 4 — Entry  
 * ☐ Enter **only after** the rejection candle closes  
