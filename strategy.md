@@ -41,7 +41,7 @@ If **BUY BIAS** → expect price to push DOWN first (form bottom wick)
 
 Switch to **5-minute or 15-minute chart**:  
 
-* ☐ Mark the most recent unmitigated FVG  
+* ☐ Mark the most recent unmitigated FVG located near previous swing high/low  
 
 If **SELLING:**  
 
