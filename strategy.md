@@ -199,8 +199,78 @@ Choose one:
 - TP mid-range or opposite edge  
 
 ---
+---
+--- 
 # Strategy: 3  
 
+## Quick Reference: Choppy Market Trading Strategy
+
+### SETUP (Do Once)
+- **Timeframe**: 4-hour chart
+- **Pairs**: EUR/USD, GBP/USD, or USD/JPY only
+- **Indicators**: 
+  - Bollinger Bands (20, 2)
+  - RSI (14)
+  - Moving Average (50)
+
+---
+
+### STEP 1: Open Chart & Identify Market Type
+- Look at the chart - is price moving sideways in a range?
+- Check if Bollinger Bands are parallel (not widening/narrowing rapidly)
+- If yes = ranging/choppy market → continue
+- If no = skip trading today
+
+---
+
+### STEP 2: Wait for Price to Reach Extreme Zones
+- **For BUY**: Wait for price to touch/cross lower Bollinger Band
+- **For SELL**: Wait for price to touch/cross upper Bollinger Band
+- Set price alerts if not there yet and walk away
+
+---
+
+### STEP 3: Check RSI Confirmation
+- **For BUY**: RSI must be below 30 (oversold)
+- **For SELL**: RSI must be above 70 (overbought)
+- If RSI is between 30-70 → No trade, wait
+
+---
+
+### STEP 4: Wait for Reversal Candle
+- **For BUY**: Wait for a strong green/bullish candle at lower band
+- **For SELL**: Wait for a strong red/bearish candle at upper band
+- Patience! Don't jump in immediately
+
+---
+
+### STEP 5: Enter Trade
+- Enter when the next candle opens after the reversal candle
+- Enter only 1% of your account risk
+
+---
+
+### STEP 6: Set Stop Loss Immediately
+- **For BUY**: Place stop loss 20-30 pips below the lower Bollinger Band
+- **For SELL**: Place stop loss 20-30 pips above the upper Bollinger Band
+
+---
+
+### STEP 7: Set Take Profit
+- **Target 1** (50% position): Middle MA line
+- **Target 2** (remaining 50%): Opposite Bollinger Band (but exit 10-20 pips before)
+
+---
+
+### STEP 8: Walk Away
+- Don't watch every tick
+- Let the trade run
+- Check only 2-3 times per day
+
+---
+---
+---
+# Strategy: 4
 
 
 
