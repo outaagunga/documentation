@@ -271,6 +271,89 @@ Choose one:
 ---
 ---
 # Strategy: 4
+## Quick Reference: Daily Candle Entry Strategy (Beginner-Friendly)
+
+### SETUP (Do Once)
+
+* **Timeframe**: Daily chart to identify zones, drop to 5-min or 15-min for entries
+* **Pairs / Markets**: Any liquid market (Forex, indices, crypto)
+* **Indicators**: None required (price-action based), optional small EMA for structure reference
+
+---
+
+### STEP 1: Mark Daily Candle Close
+
+* Wait for the **previous daily candle to fully close**
+* Draw a horizontal line at the **closing price**
+* This will be your **key reference zone**
+
+---
+
+### STEP 2: Determine Bias
+
+* **Bullish daily close** → look to **buy below the close**
+* **Bearish daily close** → look to **sell above the close**
+* Do not trade against the daily bias
+
+---
+
+### STEP 3: Drop to Lower Timeframe
+
+* Use **5-minute or 15-minute charts**
+* Watch how price behaves around the daily close zone
+
+---
+
+### STEP 4: Wait for Entry Signal
+
+* **For BUY below bullish close**:
+
+  * Price dips below daily close line
+  * Look for small **rejection candles**, **wicks**, or minor **structure shift**
+* **For SELL above bearish close**:
+
+  * Price rises above daily close line
+  * Look for small **rejection candles**, **wicks**, or minor **structure shift**
+* Optional: Enter at **imbalance / liquidity grab** if visible
+
+---
+
+### STEP 5: Enter Trade
+
+* Enter when the lower timeframe shows **confirmation of reversal**
+* Risk **1–2% of account per trade**
+
+---
+
+### STEP 6: Set Stop Loss Immediately
+
+* Place stop loss **just beyond the wick or structure extreme**
+* Typically **5–10 pips for Forex**, adjust for volatility
+
+---
+
+### STEP 7: Set Take Profit
+
+* Target **1:2 or 1:3 risk-reward ratio**
+* Optionally use next **minor swing high/low** on lower timeframe as TP
+
+---
+
+### STEP 8: Walk Away
+
+* Mark your levels and **don’t over-monitor**
+* Let price move
+* Adjust TP if market structure changes, but do not chase trades
+
+---
+
+This method simplifies daily candle entries, uses **low-risk zones**, and gives beginners a **structured way to trade without relying on complex indicators**.
+
+
+---
+---
+---
+# Strategy: 5
 
 
 
