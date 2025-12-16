@@ -9,7 +9,7 @@
   * Predict likely interview questions
   * Give sample answers
   * Create a cheat sheet you can refer to during the interview.
-  * Convert these into short interview-ready answers  
+  * Convert these into short interview-ready answers grouped by theme. Do it in segment if your limits doesn't allow to do it all at once  
 
 ### **2. Create a Quick-Reference Notes Page**
 
