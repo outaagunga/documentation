@@ -12,6 +12,13 @@
   - **Thunder Client** (API testing)
   - **Prettier** (code formatting)
   - **Python** (IntelliSense and code completion)
+  - Live preview/ Live server  
+  - Tailwind CSS IntelliSense  
+  - Auto rename tag
+  - Auto close tag
+  - Path intellisence
+  - Es lint
+  - Git lense
   - **WSL** (Windows Subsystem for Linux integration)
 
 ## 3. Install WSL (Windows Subsystem for Linux)
