@@ -3,6 +3,12 @@
 ```
 https://youtubetotranscript.com/
 ```
+---
+> I want you to act as my personal learning assistant  
+> I’ll provide YouTube transcript. Your job is to summarize it into bullted step by step points so that I can understand and follow along the concept without having to watch the video again.  
+
+---
+
 > I want you to act as my personal learning assistant  
 > I’ll provide a YouTube transcript or summary. Your job is to extract and explain the main concept as clearly as possible.
 > Please do the following:
