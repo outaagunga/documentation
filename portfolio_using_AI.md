@@ -1,5 +1,4 @@
 
-```markdown
 # Building a Portfolio Website Using AI
 
 We will build a portfolio website to showcase our work by leveraging different AI platforms. The workflow combines template inspiration, UI generation, and code development.
@@ -93,6 +92,5 @@ Here’s a more polished version of your steps for creating a talking video usin
 
 ## Download and Share
 
-- Export the final video and use it as you wish—for tutorials, social media, marketing, or training.
-```
+- Export the final video and use it as you wish—for tutorials, social media, marketing, or training.  
 
