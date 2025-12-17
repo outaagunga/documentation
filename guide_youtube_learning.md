@@ -5,7 +5,7 @@ https://youtubetotranscript.com/
 ```
 ---
 > I want you to act as my personal learning assistant  
-> I’ll provide YouTube transcript. Your job is to summarize it into bullted step by step points so that I can understand and follow along the concept without having to watch the video again. Do it in segments if your limit or memory does not allow you to do it all at once.    
+> Based on the YouTube transcript attached, your job is to summarize it into bullted step by step points so that I can understand and follow along the concept without having to watch the video again. Do it in segments if your limit or memory does not allow you to do it all at once.    
 
 ---
 
