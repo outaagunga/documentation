@@ -33,6 +33,10 @@
 - Click to open the Linux terminal
 - Alternatively, open Ubuntu directly from VS Code using the integrated terminal
 
+### **To access Linux files manually/ using GUI**  
+
+* **Click on `This pc`** — Then--> `linux`--> `Ubuntu` --> `home` --> `user e.g outa`    
+
 ### **Essential Linux Commands**
 
 * **`ls`** — Lists all files and folders in the current directory.
