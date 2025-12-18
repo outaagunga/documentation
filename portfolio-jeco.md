@@ -1,17 +1,5 @@
 
-Great choice—this layout is clean, professional, and perfect for a first (or even mid-level) portfolio 👍
-
-I’ve **generated the first segment: `index.html`**, closely inspired by the screenshot you shared and aligned with your project structure (HTML / CSS / JS separated).
-
-### What this segment covers
-
-* Sidebar navigation (like the image)
-* Hero section with name highlight and CTA buttons
-* Section placeholders: About, Experience, Projects, Skills, Education, Contact
-* Clean semantic HTML
-* Ready for responsiveness and JS enhancements
-
-### Suggested project structure (final)
+### Suggested project structure  
 
 ```
 /portfolio
@@ -30,6 +18,8 @@ I’ve **generated the first segment: `index.html`**, closely inspired by the sc
 ├── resume/
 │   └── Varad_Bhogayata_Resume.pdf
 ```
+---
+
 **index.html**  
 
 ```html
@@ -124,25 +114,8 @@ I’ve **generated the first segment: `index.html`**, closely inspired by the sc
 </html>
 ```
 
-### Next segments (I recommend this order)
-
-1. **Segment 2:** `css/style.css`
-
-   * Color palette matching the green theme
-   * Sidebar layout
-   * Responsive design (tablet & mobile)
-2. **Segment 3:** `js/main.js`
-
-   * Smooth scrolling
-   * Active nav highlight
-   * Mobile menu toggle
-3. **Segment 4:**
-
-   * Polished project cards
-   * Skills section UI
-   * Accessibility + performance tips
-
-👉 **Tell me to continue with Segment 2 (CSS)** and I’ll build a fully responsive stylesheet that matches the UI in your screenshot exactly.
+---   
+**styles.css** 
 
 ```css
 /* ==============================
@@ -389,6 +362,71 @@ form textarea {
   min-height: 120px;
 }
 
+
+/* ==============================
+   UI Polish & Animations
+================================ */
+
+/* Active nav link */
+.sidebar nav a.active {
+  background: #f0fdfa;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* Smooth transitions globally */
+a, button, .card {
+  transition: all 0.3s ease;
+}
+
+/* Hero entrance animation */
+.hero h1,
+.hero h3,
+.hero p,
+.hero .socials,
+.hero .cta {
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards;
+}
+
+.hero h3 { animation-delay: 0.1s; }
+.hero p { animation-delay: 0.2s; }
+.hero .socials { animation-delay: 0.3s; }
+.hero .cta { animation-delay: 0.4s; }
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section reveal on scroll */
+.section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+
+.section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Button micro-interactions */
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Project card hover polish */
+.card:hover {
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
+
 /* ==============================
    Responsive
 ================================ */
@@ -431,7 +469,9 @@ form textarea {
   }
 }
 ```
+---  
 
+**main.js**  
 ```js
 /* ==============================
    Portfolio JavaScript
@@ -504,6 +544,26 @@ if (form) {
     form.reset();
   });
 }
+/* ==============================
+   Reveal Sections on Scroll
+================================ */
+const revealSections = document.querySelectorAll('.section');
+
+const revealOnScroll = () => {
+  const triggerBottom = window.innerHeight * 0.85;
+
+  revealSections.forEach(section => {
+    const sectionTop = section.getBoundingClientRect().top;
+
+    if (sectionTop < triggerBottom) {
+      section.classList.add('visible');
+    }
+  });
+};
+
+window.addEventListener('scroll', revealOnScroll);
+revealOnScroll();
+
 ```
 
 
