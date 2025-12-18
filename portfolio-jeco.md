@@ -168,13 +168,12 @@
 **index.html**  
 
 ```html
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Varad Bhogayata | Portfolio</title>
+  <title>Outa Agunga | Portfolio</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -183,7 +182,7 @@
 <body>
   <aside class="sidebar">
     <div class="profile">
-      <img src="images/profile.jpg" alt="Profile" />
+      <img src="images\profile.png" alt="Profile" />
       <h2>Varad</h2>
     </div>
     <nav>
@@ -193,21 +192,21 @@
       <a href="#skills">Skills</a>
       <a href="#education">Education</a>
       <a href="#contact">Contact</a>
-      <a href="resume/Varad_Bhogayata_Resume.pdf" target="_blank">Resume</a>
+      <a href="resume/outa-cv.pdf" target="_blank">Resume</a>
     </nav>
   </aside>
 
   <main class="content">
     <section class="hero" id="about">
-      <h1>Hi, I'm <span>Varad Bhogayata.</span></h1>
+      <h1>Hi, I'm <span> Outa Agunga </span></h1>
       <h3>A Python Developer</h3>
       <p>
         Self-driven, quick starter, passionate programmer with a curious mind who enjoys
         solving complex and challenging real-world problems.
       </p>
       <div class="socials">
-        <a href="#">LinkedIn</a>
-        <a href="#">GitHub</a>
+        <a href="http://www.linkedin.com/in/outa-agunga-1a5630354">LinkedIn</a>
+        <a href="https://github.com/outaagunga"> GitHub </a>
       </div>
       <div class="cta">
         <a href="#projects" class="btn primary">Read More</a>
