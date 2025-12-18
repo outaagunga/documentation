@@ -49,8 +49,11 @@ cd my_project
 # Create project files    
 touch main.py  
 
-# Delete directory    
-rm -r <directory-name>   
+# Delete directory or File    
+rm -r <directory-name>
+
+# To get file path      
+pwd <file-name>  
 ```
 
 ## 6. Update Ubuntu System
