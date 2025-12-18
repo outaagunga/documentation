@@ -48,6 +48,9 @@ cd my_project
 
 # Create project files    
 touch main.py  
+
+# Delete directory    
+rm -r <directory-name>   
 ```
 
 ## 6. Update Ubuntu System
