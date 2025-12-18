@@ -1,5 +1,150 @@
 
-### Suggested project structure  
+## Workflow: Building & Hosting a Personal Portfolio Website
+
+### 1. Buy a Domain Name
+
+* Choose a domain registrar (e.g. **Namecheap**, **Truehost**, or any other trusted provider)
+* Search for your desired domain name (e.g. `yourname.dev`, `yourname.com`)
+* **Tip:**
+
+  * Search on Google or YouTube for **promo/discount codes** before checkout to save money
+* Create an account and fill in your personal details on the domain platform
+* Complete payment
+
+  * In Kenya, you can use **M-Pesa GlobalPay** (if supported by the provider)
+* Download and keep the **payment/transaction receipt** for future reference
+
+---
+
+### 2. Build Your Portfolio Website
+
+* Create your portfolio using:
+
+  * **HTML** (structure)
+  * **CSS** (styling & responsiveness)
+  * **JavaScript** (interactivity)
+* Organize your project properly (e.g. `/css`, `/js`, `/images`)
+* Test responsiveness on different screen sizes
+* Initialize Git and push the project to **GitHub**
+
+  ```bash
+  git init
+  git add .
+  git commit -m "Initial portfolio commit"
+  git branch -M main
+  git remote add origin <your-repo-url>
+  git push -u origin main
+  ```
+
+---
+
+## Hosting Option 1: GitHub Pages (Free)
+
+### 3. Deploy Using GitHub Pages
+
+* Open your portfolio repository on GitHub
+* Go to **Settings → Pages**
+* Under **Source**:
+
+  * Select **Deploy from a branch**
+  * Choose the **main** branch
+  * Select **/root**
+* Click **Save**
+* GitHub will generate a live URL like:
+
+  ```
+  https://username.github.io/repository-name
+  ```
+
+### 4. Enable HTTPS
+
+* In **Settings → Pages**
+* Ensure **“Enforce HTTPS”** is checked (auto-enabled once DNS is correct)
+
+---
+
+### 5. Connect a Custom Domain (e.g. Namecheap)
+
+> Only do this if you purchased a domain
+
+#### A. Add Custom Domain on GitHub
+
+* In **Settings → Pages**
+* Enter your domain (e.g. `www.yourdomain.com`)
+* Save — GitHub will create a **CNAME** file automatically
+
+#### B. Configure DNS on Namecheap
+
+* Log in to **Namecheap**
+* Go to **Domain List → Manage → Advanced DNS**
+* Add the following DNS records (these records you can obtain from github help docs):
+
+**A Records (for root domain)**
+
+| Type | Host | Value (IP Address) |
+| ---- | ---- | ------------------ |
+| A    | @    | 185.199.108.153    |
+| A    | @    | 185.199.109.153    |
+| A    | @    | 185.199.110.153    |
+| A    | @    | 185.199.111.153    |
+
+**CNAME Record (for www)**
+
+| Type  | Host | Value                |
+| ----- | ---- | -------------------- |
+| CNAME | www  | `username.github.io` |
+
+> **NB:**  
+> * **CNAME target is NOT your domain name**
+> * It must point to `username.github.io`
+
+* Save changes and wait **5–30 minutes** (sometimes up to 24 hours)
+* Return to GitHub Pages settings and confirm the domain is active with HTTPS enabled
+
+---
+
+## Hosting Option 2: Vercel (Recommended for Modern Projects)
+
+### 6. Deploy Using Vercel
+
+* Go to **vercel.com** and sign up (use GitHub for easiest setup)
+* Click **New Project**
+* Import your **portfolio GitHub repository**
+* Configure:
+
+  * Framework preset: **Other / Static**
+  * Build command: *(leave empty)*
+  * Output directory: *(leave empty)*
+* Click **Deploy**
+* Vercel will generate a live URL (e.g. `https://portfolio.vercel.app`)
+
+---
+
+### 7. Connect Custom Domain on Vercel
+
+* Go to **Project Settings → Domains**
+* Add your domain (e.g. `yourdomain.com`)
+* Vercel will show required DNS records
+* Log in to your domain provider (Namecheap / Truehost)
+* Add the DNS records exactly as provided by Vercel
+* Once verified, HTTPS is enabled automatically
+
+---
+
+## Final Notes & Best Practices
+
+* GitHub Pages → Best for **simple static portfolios**
+* Vercel → Better for **performance, auto-deployments, and scalability**
+* Always:
+
+  * Keep your GitHub repo clean
+  * Use meaningful commit messages
+  * Test on mobile and desktop
+* Update your portfolio regularly as you grow 🚀
+
+---
+
+### Project structure  
 
 ```
 /portfolio
