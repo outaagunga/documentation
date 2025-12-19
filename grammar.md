@@ -10731,7 +10731,7 @@ For faster setup and development, **Vite** is the modern standard, replacing `cr
     ```
   * **Create Vite Project:**
     ```bash
-    npm create vite@latest frontend -- --template react
+    npm create vite@latest --template react
     ```
     (This creates the app using the official React template.)
   * **Go into Frontend Folder:**
@@ -10798,7 +10798,7 @@ You will now see Node 20 installed (or the new version you indicated).
 Try again:
 
 ```bash
-npm create vite@latest frontend -- --template react
+npm create vite@latest --template react
 ```
 
 -----
