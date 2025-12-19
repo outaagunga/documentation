@@ -1,5 +1,5 @@
 
-## 1️⃣ High-Level Structure
+### Project Structure
 
 ```plaintext
 portfolio/
@@ -9,7 +9,7 @@ portfolio/
 │   │   ├── profile/
 │   │   ├── projects/
 │   │   └── blog/
-│   ├── favicon/
+│   ├── favicon.ico
 │   └── index.html
 │
 ├── src/
@@ -21,69 +21,66 @@ portfolio/
 │   ├── components/
 │   │   ├── Navbar/
 │   │   │   ├── Navbar.jsx
-│   │   │   ├── Navbar.css
-│   │   │   ├── Navbar.js
+│   │   │   └── Navbar.css
 │   │   │
 │   │   ├── Header/
 │   │   │   ├── Header.jsx
-│   │   │   ├── Header.css
-│   │   │   ├── Header.js
+│   │   │   └── Header.css
 │   │   │
 │   │   ├── Hero/
 │   │   │   ├── Hero.jsx
-│   │   │   └── hero.css
+│   │   │   └── Hero.css
 │   │   │
 │   │   ├── Home/
 │   │   │   ├── Home.jsx
-│   │   │   └── home.css
+│   │   │   └── Home.css
 │   │   │
 │   │   ├── About/
 │   │   │   ├── About.jsx
-│   │   │   └── about.css
+│   │   │   └── About.css
 │   │   │
 │   │   ├── Skills/
 │   │   │   ├── Skills.jsx
-│   │   │   └── skills.css
+│   │   │   └── Skills.css
 │   │   │
 │   │   ├── Projects/
 │   │   │   ├── Projects.jsx
-│   │   │   ├── ProjectCard.jsx
-│   │   │   └── projects.css
+│   │   │   └── Projects.css
 │   │   │
 │   │   ├── Blog/
 │   │   │   ├── Blog.jsx
-│   │   │   ├── BlogCard.jsx
-│   │   │   └── blog.css
+│   │   │   └── Blog.css
 │   │   │
 │   │   ├── Contact/
 │   │   │   ├── Contact.jsx
-│   │   │   └── contact.css
+│   │   │   └── Contact.css
 │   │   │
 │   │   ├── Footer/
 │   │   │   ├── Footer.jsx
-│   │   │   ├── Footer.css
-│   │   │   ├── Footer.js
+│   │   │   └── Footer.css
 │   │   │
-│   │   ├── ui/
-│   │   │   ├── Button.jsx
-│   │   │   ├── Card.jsx
-│   │   │   ├── Tag.jsx
-│   │   │   └── Modal.jsx
-│   │       ├── FadeIn.jsx
-│   │       └── Container.jsx
-│   ├── data/
-│   │   ├── projects.js
-│   │   ├── skills.js
-│   │   └── blog.js
+│   │   └── ui/
+│   │       ├── Button.jsx
+│   │       ├── Card.jsx
+│   │       ├── Tag.jsx
+│   │       └── Modal.jsx
 │   │
 │   ├── script/
-│   │   ├── useScrollAnimation.js
-│   │   ├── useIntersection.js
-│   │   └── useForm.js
-│   │   ├── dom.js
-│   │   ├── animations.js
-│   │   ├── validators.js
-│   │   └── constants.js
+│   │   ├── data/
+│   │   │   ├── projects.js
+│   │   │   ├── skills.js
+│   │   │   └── blog.js
+│   │   │
+│   │   ├── hooks/
+│   │   │   ├── useScrollAnimation.js
+│   │   │   ├── useIntersection.js
+│   │   │   └── useForm.js
+│   │   │
+│   │   └── utils/
+│   │       ├── dom.js
+│   │       ├── animations.js
+│   │       ├── validators.js
+│   │       └── constants.js
 │   │
 │   ├── styles/
 │   │   ├── base/
