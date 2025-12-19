@@ -10807,6 +10807,11 @@ npm create vite@latest --template react
 
 Install core libraries, making sure you are inside the `frontend` directory.
 
+  * **Install react and react-dom:**
+    ```bash
+    npm install  
+    npm install react react-dom  
+    ```
   * **Install Bootstrap for Styling:**
     ```bash
     npm install bootstrap
