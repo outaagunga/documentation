@@ -57,7 +57,10 @@ touch main.py
 rm -r <directory-name>
 
 # To get file path      
-pwd <file-name>  
+pwd <file-name>
+
+# To rename file or folder
+mv "old name" "new name"  #e.g mv Appp.js App.js  
 ```
 
 ## 6. Update Ubuntu System
