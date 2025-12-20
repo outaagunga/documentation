@@ -18,12 +18,14 @@ portfolio/
 │   │   ├── About.jsx
 │   │   ├── Skills.jsx
 │   │   ├── Projects.jsx
+│   │   ├── Blog.jsx
 │   │   ├── Contact.jsx
 │   │   └── Footer.jsx
 │   │
 │   ├── data/
 │   │   ├── projects.js
 │   │   └── skills.js
+│   │   ├── blog.js
 │   │
 │   ├── styles/
 │   │   ├── global.css
