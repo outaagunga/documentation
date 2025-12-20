@@ -22,6 +22,9 @@ portfolio/
 │   │   ├── Contact.jsx
 │   │   └── Footer.jsx
 │   │
+│   ├── hooks/
+│   │   ├── useInView.js
+│   │
 │   ├── data/
 │   │   ├── projects.js
 │   │   └── skills.js
@@ -679,7 +682,37 @@ const Footer = () => {
 };
 
 export default Footer;
-```  
+```
+---  
+## src/hooks/useInView.js  
+```js
+import { useEffect, useRef, useState } from 'react';
+
+export const useInView = (threshold = 0.3) => {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect(); // run once
+        }
+      },
+      { threshold }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return [ref, visible];
+};
+
+```
+
 ---
 
 ## ✅ `src/styles/global.css`
