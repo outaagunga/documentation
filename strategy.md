@@ -1,8 +1,9 @@
 
-give bulleted summary of this [e.g transcript]:  
-give a simplified version that actually works for beginners  
-give a step-by-step checklist  
-Give your output in this format  
+- give bulleted summary of this [e.g transcript]:  
+- give a simplified version that actually works for beginners  
+- give a step-by-step checklist  
+- Give your output in this format
+- I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.  
 
 Here is a **clean, beginner-friendly, step-by-step checklist** you can follow every time before entering a trade using the simplified HTF wick strategy.  
 
