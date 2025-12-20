@@ -38,14 +38,10 @@ portfolio/
 ├── vite.config.js
 └── README.md
 ```
----
-Perfect. Thanks for sharing the full code. Since it’s a complete HTML + CSS + JS portfolio, we’ll need to break this down into **React components, data files, and modular CSS** in segments.
-
-Here’s the plan for conversion:
 
 ---
 
-### **Segment 1: Project Structure & Base Setup**
+### **main.jsx**
 
 **1. `main.jsx`** – Vite entry point:
 
@@ -98,6 +94,7 @@ export default App;
 **3. `index.html`** – Keep in `public/index.html`:
 
 ```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -110,6 +107,7 @@ export default App;
 </head>
 <body>
   <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
 ```
@@ -118,82 +116,58 @@ export default App;
 
 ### **Segment 2: Navbar Component (`Navbar.jsx`)**
 
-We will convert **hamburger menu, scroll effect, active link highlighting** to React with `useState` and `useEffect`.
-
 ```jsx
 import React, { useState, useEffect } from 'react';
 import '../styles/components.css';
 
 const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
+  const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 100);
-
-      // Highlight active section
-      const sections = document.querySelectorAll('section[id]');
-      sections.forEach(section => {
-        const top = section.offsetTop - 100;
-        const bottom = top + section.offsetHeight;
-        if (window.scrollY >= top && window.scrollY < bottom) {
-          setActiveSection(section.getAttribute('id'));
-        }
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleLinkClick = () => setMenuOpen(false);
+  const links = [
+    { label: 'Home', href: '#home' },
+    { label: 'About', href: '#about' },
+    { label: 'Skills', href: '#skills' },
+    { label: 'Projects', href: '#projects' },
+    { label: 'Blog', href: '#blog' },
+    { label: 'Contact', href: '#contact' }
+  ];
 
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+    <header className="navbar">
       <div className="nav-container">
-        <div className="logo">OA.</div>
-        <ul className={`nav-links ${menuOpen ? 'active' : ''}`}>
-          {['home','about','skills','projects','blog','contact'].map(section => (
-            <li key={section}>
-              <a
-                href={`#${section}`}
-                className={activeSection === section ? 'active' : ''}
-                onClick={handleLinkClick}
-              >
-                {section.charAt(0).toUpperCase() + section.slice(1)}
-              </a>
-            </li>
+        <a href="#home" className="nav-logo">
+          Outa<span>.</span>
+        </a>
+
+        <nav className={`nav-links ${open ? 'open' : ''}`}>
+          {links.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={() => setOpen(false)}
+            >
+              {link.label}
+            </a>
           ))}
-        </ul>
-        <div
-          className={`hamburger ${menuOpen ? 'active' : ''}`}
-          onClick={() => setMenuOpen(!menuOpen)}
+        </nav>
+
+        <button
+          className={`nav-toggle ${open ? 'open' : ''}`}
+          onClick={() => setOpen(!open)}
+          aria-label="Toggle navigation"
         >
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+          <span />
+          <span />
+          <span />
+        </button>
       </div>
-    </nav>
+    </header>
   );
 };
 
 export default Navbar;
+
 ```
-
----
-
-✅ **At this point, we have:**
-
-* `main.jsx` & `App.jsx` set up
-* `Navbar.jsx` ready with scroll, mobile menu, and active highlighting
-* `index.html` prepared
-* Global styles can be imported via `global.css`
-
----
-Perfect! Let's convert **Hero** and **About** sections into React components. We'll also make them dynamic where possible, preparing them for later props or data files if needed.
 
 ---
 
@@ -262,10 +236,11 @@ export default Hero;
 
 ### **2. About Component (`About.jsx`)**
 
-We’ll make the **text dynamic** by storing it in an array of paragraphs. This allows future data-driven updates.
+dynamic text by storing them in an array of paragraphs. This allows future data-driven updates.
 
 ```jsx
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import '../styles/components.css';
 
 const aboutText = [
@@ -300,20 +275,7 @@ const About = () => {
 };
 
 export default About;
-```
-
----
-
-### ✅ **Notes for Hero + About**
-
-* Parallax effect is handled in `Hero.jsx`.
-* Fade-in animations will still work via CSS (`.fade-in`).
-* About text is dynamic and ready for future CMS/data integration.
-* `about-image` is ready for profile images from `/public/images/profile`.
-
----
-Great! Let’s convert the **Skills** and **Projects** sections into React components. I’ll also structure them to use **data files** (`skills.js` and `projects.js`) so the components are fully dynamic and reusable.
-
+```  
 ---
 
 ### **1. `skills.js` (data file)**
@@ -364,7 +326,7 @@ export const skills = [
 ### **2. Skills Component (`Skills.jsx`)**
 
 ```jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { skills } from '../data/skills';
 import '../styles/components.css';
 
@@ -457,7 +419,7 @@ export const projects = [
 ### **4. Projects Component (`Projects.jsx`)**
 
 ```jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { projects } from '../data/projects';
 import '../styles/components.css';
 
@@ -494,20 +456,7 @@ const Projects = () => {
 };
 
 export default Projects;
-```
-
----
-
-### ✅ **Notes for Skills + Projects**
-
-* Both components are fully **data-driven** via `skills.js` and `projects.js`.
-* Responsive grid and hover effects are handled by existing CSS (`components.css`).
-* Easy to extend: add more skills or projects by updating the respective data file.
-* Project `size` (small, medium, large) dynamically sets the grid span classes.
-
----
-Perfect! Let's convert the **Blog**, **Contact**, and **Footer** sections into React components, including the contact form logic using React state and handlers. We'll also use a `blog.js` data file for dynamic rendering.
-
+```  
 ---
 
 ### **1. `blog.js` (data file)**
@@ -536,14 +485,13 @@ export const blogPosts = [
     link: '#'
   }
 ];
-```
-
+```  
 ---
 
 ### **2. Blog Component (`Blog.jsx`)**
 
 ```jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { blogPosts } from '../data/blog';
 import '../styles/components.css';
 
@@ -581,7 +529,7 @@ export default Blog;
 ### **3. Contact Component (`Contact.jsx`)**
 
 ```jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/components.css';
 
 const Contact = () => {
@@ -707,7 +655,7 @@ export default Contact;
 ### **4. Footer Component (`Footer.jsx`)**
 
 ```jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/components.css';
 
 const Footer = () => {
@@ -729,26 +677,7 @@ const Footer = () => {
 };
 
 export default Footer;
-```
-
----
-
-### ✅ **Notes for Blog + Contact + Footer**
-
-1. **Blog**: Fully dynamic using `blog.js`.
-2. **Contact**: Form validation and notifications handled via React state.
-3. **Footer**: Simple static component with social links.
-4. **Styling**: All styles come from `components.css`. Hover, grid, and responsive design remain functional.
-5. **Notifications**: Inline React-based alerts replace the previous JS DOM notifications.
-
----
-Excellent catch — and you’re **100% right** 👍
-The **segments are not complete yet** without `global.css` and `components.css`.
-
-Let’s fix that properly **before wiring**.
-
-Below are **production-ready** versions of both files that fully support **all components we’ve built** (Hero, About, Skills, Projects, Blog, Contact, Footer, Navbar).
-
+```  
 ---
 
 ## ✅ `src/styles/global.css`
@@ -881,6 +810,107 @@ img {
 This file styles **every component** we created.
 
 ```css
+
+/* ================= NAVBAR ================= */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 8%;
+}
+
+.nav-logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.nav-logo span {
+  color: var(--primary);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  font-weight: 500;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #fff;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* Hamburger */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-toggle span {
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .nav-toggle {
+    display: flex;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #0a0a0a;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem 0;
+    display: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+}
+
+
+
 /* ================= HERO ================= */
 .hero {
   min-height: 100vh;
