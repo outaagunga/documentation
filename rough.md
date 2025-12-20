@@ -127,6 +127,8 @@ import '../styles/components.css';
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState('home');
+  const [scrolled, setScrolled] = useState(false);
 
   const links = [
     { label: 'Home', href: '#home' },
@@ -137,18 +139,57 @@ const Navbar = () => {
     { label: 'Contact', href: '#contact' }
   ];
 
+  /* ===== Detect scroll for navbar background ===== */
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  /* ===== Highlight active section ===== */
+  useEffect(() => {
+  const sections = document.querySelectorAll('section[id]');
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setActive(entry.target.id);
+        }
+      });
+    },
+    {
+      root: null,
+      rootMargin: '-50% 0px -50% 0px', // 🔥 KEY FIX
+      threshold: 0
+    }
+  );
+
+  sections.forEach(section => observer.observe(section));
+  return () => observer.disconnect();
+}, []);
+
+
+  /* ===== Prevent body scroll when menu open ===== */
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : 'auto';
+  }, [open]);
+
   return (
-    <header className="navbar">
+    <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="nav-container">
         <a href="#home" className="nav-logo">
           Outa<span>.</span>
         </a>
 
         <nav className={`nav-links ${open ? 'open' : ''}`}>
-          {links.map((link) => (
+          {links.map(link => (
             <a
               key={link.href}
               href={link.href}
+              className={active === link.href.substring(1) ? 'active' : ''}
               onClick={() => setOpen(false)}
             >
               {link.label}
@@ -171,6 +212,7 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
 ```
 
