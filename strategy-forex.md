@@ -4,7 +4,7 @@
 - give a step-by-step checklist  
 - Give your output in this format
 - I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.  
-
+---  
 **Support Resistance Channels- by LonesomeTheBlue**    
 - Pivot Period --> 10  
 - Loopback Period -->292  
