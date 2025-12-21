@@ -13,7 +13,8 @@ set the indicator to:
 - Maximum Channel Width -->5  
 **Quick**  
 - RSI set to 14 SMA (overbought/oversold)- when `below 30` enter buy trade/ `above 70` enter sell trade. (when this forms around support/ resistance- possible reversal)
-- MACD set to 12,26,9 EMA (for mementum strength/ shifts)- `fast_line crosses upwards` at 0 point enter buy trade/ `crosses downwards` at 0 point enter sell trade 
+- MACD set to 12,26,9 EMA (for mementum strength/ shifts)- `fast_line crosses upwards` at 0 point enter buy trade/ `crosses downwards` at 0 point enter sell trade
+- Alerts and pine script on strategy: 6 below  
 
 ---
 
@@ -494,6 +495,128 @@ This method simplifies daily candle entries, uses **low-risk zones**, and gives 
 ---
 # Strategy: 6  
 
+Once the alert fires, you **do not rush**. You go through a checklist.
+
+### A. Price Action (mandatory)
+
+You must see **one of these**:
+
+For BUY (RSI < 30):
+
+* Bullish engulfing
+* Pin bar / hammer
+* Strong rejection wick at support
+* Higher low forming
+
+For SELL (RSI > 70):
+
+* Bearish engulfing
+* Shooting star
+* Rejection at resistance
+* Lower high forming
+
+If price action is weak → **no trade**  
+
+### B. One extra confirmation (optional but powerful)
+
+Pick **one**, not all:
+
+* MACD crossover in direction of trade
+* Volume spike at reversal
+* No major news (NFP, CPI, FOMC)
+
+
+### C. Stop Loss & Take Profit
+**Stop Loss (always first)**
+
+* Buy → below recent swing low
+* Sell → above recent swing high
+
+### D. Take Profit (keep it realistic)
+
+* Minimum **1:2 risk-to-reward**
+* Or next support/resistance level  
+
+
+## Pine Script  
+
+```pinescript
+//@version=5
+indicator("RSI Alert – Oversold & Overbought", overlay=false)
+
+// === INPUTS ===
+rsiLength = input.int(14, title="RSI Length")
+oversoldLevel = input.int(30, title="Oversold Level")
+overboughtLevel = input.int(70, title="Overbought Level")
+
+// === RSI CALCULATION ===
+rsiValue = ta.rsi(close, rsiLength)
+
+// === CONDITIONS ===
+rsiOversold = ta.crossunder(rsiValue, oversoldLevel)
+rsiOverbought = ta.crossover(rsiValue, overboughtLevel)
+
+// === ALERT CONDITIONS ===
+alertcondition(
+     rsiOversold,
+     title="RSI Oversold Alert",
+     message="RSI crossed BELOW 30 on {{ticker}} ({{interval}}). Look for BUY confirmation."
+)
+
+alertcondition(
+     rsiOverbought,
+     title="RSI Overbought Alert",
+     message="RSI crossed ABOVE 70 on {{ticker}} ({{interval}}). Look for SELL confirmation."
+)
+
+// === VISUALS ===
+plot(rsiValue, title="RSI", color=color.blue, linewidth=2)
+hline(oversoldLevel, "Oversold", color=color.green)
+hline(overboughtLevel, "Overbought", color=color.red)
+
+plotshape(
+     rsiOversold,
+     title="Oversold Signal",
+     location=location.bottom,
+     style=shape.labelup,
+     text="RSI < 30",
+     color=color.green,
+     textcolor=color.white
+)
+
+plotshape(
+     rsiOverbought,
+     title="Overbought Signal",
+     location=location.top,
+     style=shape.labeldown,
+     text="RSI > 70",
+     color=color.red,
+     textcolor=color.white
+)
+```  
+
+## How to activate alerts  
+
+After pasting and saving the script on the trading view:
+
+1. Click **Indicators → Your Script**
+2. Click the **⏰ Alert icon**
+3. Under **Condition**, select:
+
+   * `RSI Oversold Alert`
+   * OR `RSI Overbought Alert`
+4. Choose:
+
+   * “Once per bar close” ✅ (recommended)
+5. Enable:
+
+   * App notification
+   * Email (optional)
+6. Click **Create**
+
+Now TradingView will notify you automatically 🎯
+
+---  
 
 
 
