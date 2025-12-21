@@ -354,8 +354,137 @@ This method simplifies daily candle entries, uses **low-risk zones**, and gives 
 ---
 ---
 ---
-# Strategy: 5
 
+# Strategy: 5  
+---
+
+### SETUP (Do Once)
+
+* **Timeframes**:
+
+  * Daily (D1) → direction
+  * 1 Hour (1H) → entry
+* **Pairs**: EUR/USD, GBP/USD, USD/JPY, USD/CAD
+* **Indicators**:
+
+  * Session Indicator (Asia, London, New York)
+* **Risk**: 1% per trade
+* **RR**: Fixed 1:3
+
+---
+
+### STEP 1: Check Direction on Daily (Very Simple)
+
+* Open **Daily chart**
+* Look only at the **last 2 candles**
+
+  * **Bullish bias**:
+
+    * Today’s candle closed **above yesterday’s high**
+  * **Bearish bias**:
+
+    * Today’s candle closed **below yesterday’s low**
+* If neither → **NO TRADE**
+* Do **not** analyze trends, HH/HL, or patterns
+
+---
+
+### STEP 2: Mark Yesterday’s Range
+
+* On the **Daily chart**:
+
+  * Draw a horizontal line at **yesterday’s high**
+  * Draw a horizontal line at **yesterday’s low**
+* This box is your **only trading area**
+* Do nothing else on Daily
+
+---
+
+### STEP 3: Go to 1H Before London Open
+
+* Switch to **1H timeframe**
+* Be on charts **before London opens**
+* Turn on **Session Indicator**
+* Focus only on:
+
+  * End of **Asian session**
+  * Start of **London session**
+
+---
+
+### STEP 4: Wait for Liquidity Sweep (Key Beginner Rule)
+
+* **Bullish setup**:
+
+  * Price dips below **yesterday’s low** OR **Asian low**
+  * Then closes back **inside the range**
+* **Bearish setup**:
+
+  * Price moves above **yesterday’s high** OR **Asian high**
+  * Then closes back **inside the range**
+* If no sweep → **NO TRADE**
+
+---
+
+### STEP 5: Confirm With Candle Close (No Structure Needed)
+
+* **Bullish trade**:
+
+  * A strong **bullish candle** closes after the sweep
+* **Bearish trade**:
+
+  * A strong **bearish candle** closes after the sweep
+* Do **not** wait for break of structure
+* Candle close is enough for beginners
+
+---
+
+### STEP 6: Enter Trade
+
+* Enter **at the close** of the confirmation candle
+* Risk **only 1%**
+* One trade per pair per day (max)
+
+---
+
+### STEP 7: Set Stop Loss & Take Profit
+
+* **Stop Loss**:
+
+  * BUY → below the sweep low
+  * SELL → above the sweep high
+* **Take Profit**:
+
+  * Fixed **1:3 Risk–Reward**
+* No trailing stop
+* No moving TP
+
+---
+
+### STEP 8: Walk Away
+
+* Once trade is placed:
+
+  * Do not manage
+  * Do not watch lower timeframes
+* Check result later
+
+---
+
+## Beginner Rules (Very Important)
+
+* Trade **only London session**
+* Skip days with:
+
+  * Big news (NFP, CPI, FOMC)
+  * Very small daily candles
+* Journal **every trade**
+* Judge strategy only after **30 trades**  
+
+---
+---
+---
+# Strategy: 6  
 
 
 
