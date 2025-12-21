@@ -5,7 +5,14 @@
 - Give your output in this format
 - I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.  
 
-Here is a **clean, beginner-friendly, step-by-step checklist** you can follow every time before entering a trade using the simplified HTF wick strategy.  
+**Support Resistance Channels- by LonesomeTheBlue**    
+- Pivot Period --> 10  
+- Loopback Period -->292  
+- Number of S/R to show -->6  
+- Maximum Channel Width -->5  
+
+- RSI set to 14 SMA (overbought/oversold)- when `below 30` enter buy trade/ `above 70` enter sell trade. (when this forms around support/ resistance- possible reversal)  
+- MACD set to 12,26,9 EMA (for mementum strength/ shifts)- `fast_line crosses upwards` at 0 point enter buy trade/ `crosses downwards` at 0 point enter sell trade 
 
 ---
 
