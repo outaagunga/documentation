@@ -1236,6 +1236,216 @@ https://www.youtube.com/watch?v=S2HaCa0b-bY
 - Trail remaining position with opposite MACD crossover
 ---
 
+**pinescript for strategy: 7**  
+```pinescript
+//@version=5
+strategy("MACD Money Map", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.1)
+
+// ========== INPUTS ==========
+// MACD Settings
+fastLength = input.int(12, "Fast Length", minval=1, group="MACD Settings")
+slowLength = input.int(26, "Slow Length", minval=1, group="MACD Settings")
+signalSmoothing = input.int(9, "Signal Smoothing", minval=1, group="MACD Settings")
+macdSource = input.source(close, "Source", group="MACD Settings")
+
+// System 1: Trend System
+useTrendSystem = input.bool(true, "Enable Trend System", group="System 1: Trend")
+minMacdLevel = input.float(0.5, "Min MACD Level for Entry", step=0.1, group="System 1: Trend")
+confirmCandles = input.int(2, "Confirmation Candles After Crossover", minval=1, maxval=5, group="System 1: Trend")
+
+// System 2: Reversal System
+useReversalSystem = input.bool(true, "Enable Reversal System", group="System 2: Reversal")
+lookbackPeriod = input.int(14, "Divergence Lookback Period", minval=5, group="System 2: Reversal")
+histogramConfirm = input.bool(true, "Require Histogram Confirmation", group="System 2: Reversal")
+
+// System 3: Multi-Timeframe
+useMultiTimeframe = input.bool(true, "Enable Multi-Timeframe Filter", group="System 3: MTF")
+higherTF1 = input.timeframe("240", "Higher Timeframe 1", group="System 3: MTF")
+higherTF2 = input.timeframe("D", "Higher Timeframe 2", group="System 3: MTF")
+
+// Risk Management
+riskRewardRatio = input.float(2.0, "Risk:Reward Ratio", minval=1.0, step=0.1, group="Risk Management")
+moveToBreakeven = input.bool(true, "Move to Breakeven at 1R", group="Risk Management")
+atrMultiplier = input.float(1.5, "ATR Multiplier for Stop Loss", step=0.1, group="Risk Management")
+atrLength = input.int(14, "ATR Length", group="Risk Management")
+
+// ========== MACD CALCULATION ==========
+[macdLine, signalLine, histLine] = ta.macd(macdSource, fastLength, slowLength, signalSmoothing)
+
+// Higher Timeframe MACD
+[macdHTF1, signalHTF1, histHTF1] = request.security(syminfo.tickerid, higherTF1, ta.macd(macdSource, fastLength, slowLength, signalSmoothing))
+[macdHTF2, signalHTF2, histHTF2] = request.security(syminfo.tickerid, higherTF2, ta.macd(macdSource, fastLength, slowLength, signalSmoothing))
+
+// ========== SYSTEM 1: TREND SYSTEM ==========
+// Zero line rules
+aboveZero = macdLine > 0
+belowZero = macdLine < 0
+
+// Crossovers
+bullCross = ta.crossover(macdLine, signalLine)
+bearCross = ta.crossunder(macdLine, signalLine)
+
+// Far from zero requirement
+bullCrossFar = bullCross and macdLine > minMacdLevel
+bearCrossFar = bearCross and macdLine < -minMacdLevel
+
+// Confirmation candles
+var int bullCrossConfirmCount = 0
+var int bearCrossConfirmCount = 0
+
+if bullCrossFar
+    bullCrossConfirmCount := 1
+else if bullCrossConfirmCount > 0 and bullCrossConfirmCount < confirmCandles and macdLine > signalLine
+    bullCrossConfirmCount += 1
+else if macdLine < signalLine
+    bullCrossConfirmCount := 0
+
+if bearCrossFar
+    bearCrossConfirmCount := 1
+else if bearCrossConfirmCount > 0 and bearCrossConfirmCount < confirmCandles and macdLine < signalLine
+    bearCrossConfirmCount += 1
+else if macdLine > signalLine
+    bearCrossConfirmCount := 0
+
+trendLongSignal = useTrendSystem and aboveZero and bullCrossConfirmCount == confirmCandles
+trendShortSignal = useTrendSystem and belowZero and bearCrossConfirmCount == confirmCandles
+
+// ========== SYSTEM 2: REVERSAL SYSTEM ==========
+// Pivot detection
+pivotHigh = ta.pivothigh(high, lookbackPeriod, lookbackPeriod)
+pivotLow = ta.pivotlow(low, lookbackPeriod, lookbackPeriod)
+macdPivotHigh = ta.pivothigh(macdLine, lookbackPeriod, lookbackPeriod)
+macdPivotLow = ta.pivotlow(macdLine, lookbackPeriod, lookbackPeriod)
+
+// Divergence detection
+var float lastPriceHigh = na
+var float lastMacdHigh = na
+var float lastPriceLow = na
+var float lastMacdLow = na
+
+if not na(pivotHigh)
+    lastPriceHigh := high[lookbackPeriod]
+if not na(macdPivotHigh)
+    lastMacdHigh := macdLine[lookbackPeriod]
+if not na(pivotLow)
+    lastPriceLow := low[lookbackPeriod]
+if not na(macdPivotLow)
+    lastMacdLow := macdLine[lookbackPeriod]
+
+// Bearish divergence: higher price high, lower MACD high
+bearishDiv = not na(pivotHigh) and not na(lastPriceHigh) and 
+             not na(macdPivotHigh) and not na(lastMacdHigh) and
+             high[lookbackPeriod] > lastPriceHigh and 
+             macdLine[lookbackPeriod] < lastMacdHigh
+
+// Bullish divergence: lower price low, higher MACD low
+bullishDiv = not na(pivotLow) and not na(lastPriceLow) and 
+             not na(macdPivotLow) and not na(lastMacdLow) and
+             low[lookbackPeriod] < lastPriceLow and 
+             macdLine[lookbackPeriod] > lastMacdLow
+
+// Histogram patterns
+histFlipBull = histLine > 0 and histLine[1] <= 0
+histFlipBear = histLine < 0 and histLine[1] >= 0
+histShrinking = math.abs(histLine) < math.abs(histLine[1]) and math.abs(histLine[1]) < math.abs(histLine[2])
+
+// Reversal signals with histogram confirmation
+reversalLongSignal = useReversalSystem and bullishDiv and (not histogramConfirm or histFlipBull)
+reversalShortSignal = useReversalSystem and bearishDiv and (not histogramConfirm or histFlipBear)
+
+// ========== SYSTEM 3: MULTI-TIMEFRAME CONFIRMATION ==========
+htf1Bullish = macdHTF1 > 0
+htf1Bearish = macdHTF1 < 0
+htf2Bullish = macdHTF2 > 0
+htf2Bearish = macdHTF2 < 0
+
+mtfLongConfirm = not useMultiTimeframe or (htf1Bullish and htf2Bullish)
+mtfShortConfirm = not useMultiTimeframe or (htf1Bearish and htf2Bearish)
+
+// ========== COMBINED SIGNALS ==========
+longSignal = (trendLongSignal or reversalLongSignal) and mtfLongConfirm
+shortSignal = (trendShortSignal or reversalShortSignal) and mtfShortConfirm
+
+// ========== RISK MANAGEMENT ==========
+atr = ta.atr(atrLength)
+longStopLoss = low - (atr * atrMultiplier)
+shortStopLoss = high + (atr * atrMultiplier)
+
+var float entryPrice = na
+var float stopPrice = na
+var float targetPrice = na
+var bool positionActive = false
+
+// ========== STRATEGY EXECUTION ==========
+if longSignal and strategy.position_size == 0
+    entryPrice := close
+    stopPrice := longStopLoss
+    riskAmount = entryPrice - stopPrice
+    targetPrice := entryPrice + (riskAmount * riskRewardRatio)
+    strategy.entry("Long", strategy.long)
+    strategy.exit("Long Exit", "Long", stop=stopPrice, limit=targetPrice)
+    positionActive := true
+
+if shortSignal and strategy.position_size == 0
+    entryPrice := close
+    stopPrice := shortStopLoss
+    riskAmount = stopPrice - entryPrice
+    targetPrice := entryPrice - (riskAmount * riskRewardRatio)
+    strategy.entry("Short", strategy.short)
+    strategy.exit("Short Exit", "Short", stop=stopPrice, limit=targetPrice)
+    positionActive := true
+
+// Move to breakeven
+if moveToBreakeven and strategy.position_size > 0
+    riskAmount = entryPrice - stopPrice
+    if close >= entryPrice + riskAmount
+        strategy.exit("Long Exit", "Long", stop=entryPrice, limit=targetPrice)
+
+if moveToBreakeven and strategy.position_size < 0
+    riskAmount = stopPrice - entryPrice
+    if close <= entryPrice - riskAmount
+        strategy.exit("Short Exit", "Short", stop=entryPrice, limit=targetPrice)
+
+// Trail with opposite crossover
+if strategy.position_size > 0 and bearCross
+    strategy.close("Long", comment="MACD Exit")
+    positionActive := false
+
+if strategy.position_size < 0 and bullCross
+    strategy.close("Short", comment="MACD Exit")
+    positionActive := false
+
+// ========== PLOTTING ==========
+// MACD in separate pane
+hline(0, "Zero Line", color=color.gray, linestyle=hline.style_dashed)
+hline(minMacdLevel, "Upper Threshold", color=color.green, linestyle=hline.style_dotted)
+hline(-minMacdLevel, "Lower Threshold", color=color.red, linestyle=hline.style_dotted)
+
+plot(macdLine, "MACD", color=color.blue, linewidth=2)
+plot(signalLine, "Signal", color=color.orange, linewidth=2)
+plot(histLine, "Histogram", color=histLine >= 0 ? color.green : color.red, style=plot.style_histogram)
+
+// Entry signals on chart
+plotshape(longSignal, "Long Signal", shape.triangleup, location.belowbar, color.new(color.green, 0), size=size.small)
+plotshape(shortSignal, "Short Signal", shape.triangledown, location.abovebar, color.new(color.red, 0), size=size.small)
+
+// Divergence markers
+plotshape(bullishDiv, "Bullish Divergence", shape.labelup, location.belowbar, color.new(color.aqua, 30), text="DIV", size=size.tiny)
+plotshape(bearishDiv, "Bearish Divergence", shape.labeldown, location.abovebar, color.new(color.fuchsia, 30), text="DIV", size=size.tiny)
+
+// ========== ALERTS ==========
+alertcondition(longSignal, "Long Entry", "MACD Money Map: Long Signal")
+alertcondition(shortSignal, "Short Entry", "MACD Money Map: Short Signal")
+alertcondition(bullishDiv, "Bullish Divergence", "MACD Money Map: Bullish Divergence Detected")
+alertcondition(bearishDiv, "Bearish Divergence", "MACD Money Map: Bearish Divergence Detected")
+```
+---
+---
+---
+
+Strategy: 8  
+
+
 
 
 
