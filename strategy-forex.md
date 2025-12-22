@@ -14,6 +14,7 @@ set the indicator to:
 **Quick**  
 - RSI set to 14 SMA (overbought/oversold)- when `below 30` enter buy trade/ `above 70` enter sell trade. (when this forms around support/ resistance- possible reversal)
 - MACD set to 12,26,9 EMA (for mementum strength/ shifts)- `fast_line crosses upwards` at 0 point enter buy trade/ `crosses downwards` at 0 point enter sell trade
+- When marking support/ resistance manually, Only mark zones that led to 50+ pip moves (or 0.5%+ on stocks)
 - Alerts and pine script on strategy: 6 below  
 
 ---
@@ -1149,7 +1150,91 @@ Before you go live:
 ---
 
 **You're now set up.** But remember: **The script is only 20% of success.** The other 80% is your discipline, risk management, and ability to sit on your hands when conditions aren't right. Most traders fail because they overtrade, not because their strategy is bad.
+---
+---
+---
+# Strategy: 7  
+https://www.youtube.com/watch?v=S2HaCa0b-bY 
+# MACD Money Map: 3-System Trading Strategy
 
+## SYSTEM 1: THE TREND SYSTEM
+**Catches big moves that run for days or weeks**
+
+### Zero Line Foundation
+- MACD above zero = ONLY look for buy trades
+- MACD below zero = ONLY look for sell trades
+- Never fight this rule—it's your trend compass
+
+### Crossover Entry
+- Only take crossovers far from zero line (above +0.5 or below -0.5)
+- Crossovers near zero are in the "chop zone"—avoid them
+- Wait 2-3 candles after crossover before entering to confirm it's real
+- Above zero + bullish crossover above +0.5 = continuation long entry
+- Below zero + bearish crossover below -0.5 = continuation short entry
+
+## SYSTEM 2: THE REVERSAL SYSTEM
+**Catches major turning points before they happen**
+
+### Divergence Detection
+- Bearish divergence: Price makes higher high, MACD makes lower high = reversal coming
+- Bullish divergence: Price makes lower low, MACD makes higher low = bottom forming
+- Draw lines on both price and MACD to spot disagreement
+- Never trade divergence alone—wait for histogram confirmation
+
+### Histogram Confirmation (3 Key Patterns)
+- **The Flip**: First green bar after red bars (or vice versa) = momentum shift
+- **The Shrinking Tower**: Bars getting smaller = move running out of gas
+- **The Zero Bounce**: Histogram bounces away from zero = trend still strong
+- Entry: Divergence spotted + histogram pattern appears = take the trade
+
+## SYSTEM 3: THE CONFIRMATION SYSTEM
+**Filters out losing trades**
+
+### Triple Timeframe Stack
+- **Daily**: Which side of zero? Sets your bias
+- **4-Hour**: Crossover or divergence? That's your signal
+- **1-Hour**: Histogram confirming? That's your trigger
+- All three must align—if not, pass on the trade
+- Use 4x multiplier (e.g., 15min/1hr/4hr or 1hr/4hr/daily)
+
+### Price Action Confirmation
+- Crossovers at support/resistance have higher win rates
+- Look for MACD signals + candlestick patterns (hammer, engulfing, etc.)
+- Wait for MACD crossover AFTER trendline breaks, not before
+
+## 5-MINUTE MORNING SCAN ROUTINE
+
+**Step 1: Check the Trend** (5 seconds)
+- Look at daily MACD—above or below zero?
+- That's your bias for the entire day
+
+**Step 2: Find the Setup**
+- Scan for crossovers far from zero (System 1 trend trades)
+- Scan for divergence forming (System 2 reversal trades)
+- Mark your top 3 setups
+
+**Step 3: Confirm Everything**
+- Check all three timeframes align
+- Confirm price is at key level
+- Confirm histogram pattern present
+- If anything missing, skip the trade
+
+## TRADE EXECUTION RULES
+
+**Entry**
+- Enter at candle close, never mid-candle
+
+**Stop Loss**
+- Place at recent swing high (for shorts) or swing low (for longs)
+
+**Target**
+- Always 2x your risk (2R)
+
+**Trade Management**
+- Take half profit at target
+- Move stop to breakeven on remaining position
+- Trail remaining position with opposite MACD crossover
+---
 
 
 
