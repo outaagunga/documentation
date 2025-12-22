@@ -732,6 +732,180 @@ bgcolor(uptrend and not noTrend ? color.new(color.green, 95) :
         downtrend and not noTrend ? color.new(color.red, 95) : 
         color.new(color.gray, 97), title="Trend Background")
 ```
+Script Version: 3  
+
+```pinescript
+//@version=5
+indicator("RSI Strategy - High Frequency Version", overlay=true)
+
+// ═══════════════════════════════════════════════════════
+// INPUTS
+// ═══════════════════════════════════════════════════════
+rsiLength = input.int(14, title="RSI Length", minval=1)
+rsiOversold = input.int(35, title="RSI Oversold Level") // Slightly loosened
+rsiOverbought = input.int(65, title="RSI Overbought Level") // Slightly loosened
+emaLength = input.int(200, title="Trend Filter EMA")
+atrLength = input.int(14, title="ATR Length for Stop Loss")
+atrMultiplier = input.float(1.5, title="ATR Multiplier for SL")
+
+// MACD Settings
+macdFast = input.int(12, title="MACD Fast Length")
+macdSlow = input.int(26, title="MACD Slow Length")
+macdSignal = input.int(9, title="MACD Signal Length")
+
+// ═══════════════════════════════════════════════════════
+// CALCULATIONS
+// ═══════════════════════════════════════════════════════
+rsiValue = ta.rsi(close, rsiLength)
+ema200 = ta.ema(close, emaLength)
+atr = ta.atr(atrLength)
+
+// MACD State (Modified to check for "is bullish" rather than "just crossed")
+[macdLine, signalLine, macdHist] = ta.macd(close, macdFast, macdSlow, macdSignal)
+isMacdBullish = macdLine > signalLine
+isMacdBearish = macdLine < signalLine
+
+// Price Action Patterns
+bullishEngulfing = close > open and close[1] < open[1] and close > open[1] and open < close[1]
+bearishEngulfing = close < open and close[1] > open[1] and close < open[1] and open > close[1]
+
+bodySize = math.abs(close - open)
+lowerWick = open < close ? open - low : close - low
+upperWick = open > close ? high - open : high - close
+isHammer = lowerWick > bodySize * 1.5 and upperWick < bodySize * 0.5
+isShootingStar = upperWick > bodySize * 1.5 and lowerWick < bodySize * 0.5
+
+// ═══════════════════════════════════════════════════════
+// SIGNAL CONDITIONS
+// ═══════════════════════════════════════════════════════
+// BUY: Price > EMA AND MACD is Bullish AND (RSI Low OR Price Action)
+// This captures the bounce more effectively.
+buyCondition = close > ema200 and 
+               isMacdBullish and 
+               rsiValue < 45 and // Increased threshold to catch pullbacks
+               (bullishEngulfing or isHammer)
+
+// SELL: Price < EMA AND MACD is Bearish AND (RSI High OR Price Action)
+sellCondition = close < ema200 and 
+                isMacdBearish and 
+                rsiValue > 55 and // Decreased threshold to catch pullbacks
+                (bearishEngulfing or isShootingStar)
+
+// ═══════════════════════════════════════════════════════
+// VISUALS & ALERTS
+// ═══════════════════════════════════════════════════════
+plot(ema200, title="200 EMA", color=color.new(color.orange, 0), linewidth=2)
+
+plotshape(buyCondition, title="BUY", location=location.belowbar, style=shape.labelup, text="BUY", color=color.green, textcolor=color.white, size=size.normal)
+plotshape(sellCondition, title="SELL", location=location.abovebar, style=shape.labeldown, text="SELL", color=color.red, textcolor=color.white, size=size.normal)
+
+// Alert logic
+alertcondition(buyCondition, title="New Buy Signal", message="Strategic Buy Setup")
+alertcondition(sellCondition, title="New Sell Signal", message="Strategic Sell Setup")
+```
+
+Script Version: 4  
+```pinescript
+//@version=5
+indicator("RSI Pullback Strategy (3–5 Trades/Day)", overlay=true)
+
+// ═════════════════════════════
+// INPUTS
+// ═════════════════════════════
+rsiLength = input.int(14)
+rsiBuyLevel = input.int(40)
+rsiSellLevel = input.int(60)
+
+emaLength = input.int(200)
+atrLength = input.int(14)
+atrMultiplier = input.float(1.2)
+
+maxTradesPerDay = input.int(5)
+minBarsBetweenTrades = input.int(10)
+
+// MACD
+[macdLine, signalLine, macdHist] = ta.macd(close, 12, 26, 9)
+
+// ═════════════════════════════
+// CALCULATIONS
+// ═════════════════════════════
+rsi = ta.rsi(close, rsiLength)
+ema200 = ta.ema(close, emaLength)
+atr = ta.atr(atrLength)
+
+// Trend
+uptrend = close > ema200
+downtrend = close < ema200
+noTrend = math.abs(close - ema200) < atr * 0.4
+
+// Momentum
+macdBullish = macdLine > signalLine and macdHist > macdHist[1]
+macdBearish = macdLine < signalLine and macdHist < macdHist[1]
+
+// Price Action (simplified)
+bullishCandle = close > open
+bearishCandle = close < open
+
+// ═════════════════════════════
+// DAILY TRADE LIMITER
+// ═════════════════════════════
+var int tradesToday = 0
+var int lastTradeBar = na
+
+newDay = ta.change(time("D"))
+if newDay
+    tradesToday := 0
+
+canTrade = tradesToday < maxTradesPerDay and
+           (na(lastTradeBar) or bar_index - lastTradeBar > minBarsBetweenTrades)
+
+// ═════════════════════════════
+// ENTRY CONDITIONS
+// ═════════════════════════════
+buyCondition =
+    canTrade and
+    uptrend and
+    not noTrend and
+    rsi < rsiBuyLevel and
+    macdBullish and
+    bullishCandle
+
+sellCondition =
+    canTrade and
+    downtrend and
+    not noTrend and
+    rsi > rsiSellLevel and
+    macdBearish and
+    bearishCandle
+
+// ═════════════════════════════
+// EXECUTION LOGIC
+// ═════════════════════════════
+if buyCondition
+    tradesToday += 1
+    lastTradeBar := bar_index
+
+if sellCondition
+    tradesToday += 1
+    lastTradeBar := bar_index
+
+// ═════════════════════════════
+// VISUALS
+// ═════════════════════════════
+plot(ema200, color=color.orange, linewidth=2)
+
+plotshape(buyCondition, title="BUY", location=location.belowbar,
+     color=color.green, style=shape.labelup, text="BUY")
+
+plotshape(sellCondition, title="SELL", location=location.abovebar,
+     color=color.red, style=shape.labeldown, text="SELL")
+
+bgcolor(
+    uptrend and not noTrend ? color.new(color.green, 92) :
+    downtrend and not noTrend ? color.new(color.red, 92) :
+    color.new(color.gray, 96)
+)
+```
 
 ## How to activate alerts  
 
