@@ -497,49 +497,47 @@ This method simplifies daily candle entries, uses **low-risk zones**, and gives 
 
 Once the alert fires, you **do not rush**. You go through a checklist.
 
-### A. Price Action (mandatory)
+### A. Trend Filter (Non-negotiable)  
+* Price above 200 EMA = buy trade only
+* Price below 200 EMA = sell trade only
+* Price within ±50 pips of 200 EMA = no trade (indecision zone)
 
-You must see **one of these**:
+### B. RSI Signal
+* RSI < 30 (for buy in uptrend only)
+* RSI > 70 (for sell in downtrend only)
 
-For BUY (RSI < 30):
+### C. Price Action (mandatory)
+For BUY (Pick one):
+* Bullish engulfing (body must be 1.5x average candle)
+* Rejection wick (wick must be 2x body size minimum)
 
-* Bullish engulfing
-* Pin bar / hammer
-* Strong rejection wick at support
-* Higher low forming
+For SELL (Pick one):
+* Bearish engulfing (body must be 1.5x average candle)
+* Rejection wick (wick must be 2x body size minimum)
 
-For SELL (RSI > 70):
+If no price action is met → **no trade**  
 
-* Bearish engulfing
-* Shooting star
-* Rejection at resistance
-* Lower high forming
+### D. One extra confirmation (Pick only one- not all)
+* MACD crossover in direction of trade or
+* MACD histogram must flip in trade direction of trade or
+* Volume spike towards the direction of trade  
 
-If price action is weak → **no trade**  
+### E. Entry (Where to enter trade)
+* For Buy: Must be at support zone (previous low/demand area)
+* Sell: Must be at resistance zone (previous high/supply area)
+  
+### F. Stop Loss & Take Profit
+**Stop Loss**
+* For Buy → below recent swing low
+* For Sell → above recent swing high
 
-### B. One extra confirmation (optional but powerful)
-
-Pick **one**, not all:
-
-* MACD crossover in direction of trade
-* Volume spike at reversal
-* No major news (NFP, CPI, FOMC)
-
-
-### C. Stop Loss & Take Profit
-**Stop Loss (always first)**
-
-* Buy → below recent swing low
-* Sell → above recent swing high
-
-### D. Take Profit (keep it realistic)
-
-* Minimum **1:2 risk-to-reward**
-* Or next support/resistance level  
+**Take Profit**
+* Minimum **1:2 risk-to-reward** or
+* Next support/resistance level  
 
 
 ## Pine Script  
-
+Script Version: 1  
 ```pinescript
 //@version=5
 indicator("RSI Alert – Oversold & Overbought", overlay=false)
@@ -594,6 +592,146 @@ plotshape(
      textcolor=color.white
 )
 ```  
+Script Version: 2  
+```pinescript
+//@version=5
+indicator("RSI Strategy with Trend & Momentum Filter", overlay=true)
+
+// ═══════════════════════════════════════════════════════
+// INPUTS
+// ═══════════════════════════════════════════════════════
+rsiLength = input.int(14, title="RSI Length", minval=1)
+rsiOversold = input.int(30, title="RSI Oversold Level")
+rsiOverbought = input.int(70, title="RSI Overbought Level")
+emaLength = input.int(200, title="Trend Filter EMA")
+atrLength = input.int(14, title="ATR Length for Stop Loss")
+atrMultiplier = input.float(1.5, title="ATR Multiplier for SL")
+
+// MACD Settings
+macdFast = input.int(12, title="MACD Fast Length")
+macdSlow = input.int(26, title="MACD Slow Length")
+macdSignal = input.int(9, title="MACD Signal Length")
+
+// ═══════════════════════════════════════════════════════
+// CALCULATIONS
+// ═══════════════════════════════════════════════════════
+rsiValue = ta.rsi(close, rsiLength)
+ema200 = ta.ema(close, emaLength)
+atr = ta.atr(atrLength)
+
+// MACD
+[macdLine, signalLine, macdHist] = ta.macd(close, macdFast, macdSlow, macdSignal)
+macdBullish = ta.crossover(macdLine, signalLine)
+macdBearish = ta.crossunder(macdLine, signalLine)
+
+// Price Action Patterns
+bullishEngulfing = close > open and close[1] < open[1] and close > open[1] and open < close[1]
+bearishEngulfing = close < open and close[1] > open[1] and close < open[1] and open > close[1]
+
+// Hammer (bullish rejection)
+bodySize = math.abs(close - open)
+lowerWick = open < close ? open - low : close - low
+upperWick = open > close ? high - open : high - close
+isHammer = lowerWick > bodySize * 2 and upperWick < bodySize * 0.3
+
+// Shooting Star (bearish rejection)
+isShootingStar = upperWick > bodySize * 2 and lowerWick < bodySize * 0.3
+
+// ═══════════════════════════════════════════════════════
+// TREND FILTER
+// ═══════════════════════════════════════════════════════
+uptrend = close > ema200
+downtrend = close < ema200
+noTrend = math.abs(close - ema200) < (atr * 0.5)
+
+// ═══════════════════════════════════════════════════════
+// SIGNAL CONDITIONS
+// ═══════════════════════════════════════════════════════
+// BUY Signal: RSI oversold + uptrend + price action + MACD bullish
+buyCondition = rsiValue < rsiOversold and 
+               uptrend and 
+               not noTrend and
+               (bullishEngulfing or isHammer) and 
+               macdBullish
+
+// SELL Signal: RSI overbought + downtrend + price action + MACD bearish  
+sellCondition = rsiValue > rsiOverbought and 
+                downtrend and 
+                not noTrend and
+                (bearishEngulfing or isShootingStar) and 
+                macdBearish
+
+// ═══════════════════════════════════════════════════════
+// STOP LOSS & TAKE PROFIT LEVELS
+// ═══════════════════════════════════════════════════════
+var float buyStopLoss = na
+var float buyTakeProfit1 = na
+var float buyTakeProfit2 = na
+
+var float sellStopLoss = na
+var float sellTakeProfit1 = na
+var float sellTakeProfit2 = na
+
+if buyCondition
+    buyStopLoss := close - (atr * atrMultiplier)
+    buyTakeProfit1 := close + (atr * atrMultiplier * 1.5)
+    buyTakeProfit2 := close + (atr * atrMultiplier * 2.5)
+
+if sellCondition
+    sellStopLoss := close + (atr * atrMultiplier)
+    sellTakeProfit1 := close - (atr * atrMultiplier * 1.5)
+    sellTakeProfit2 := close - (atr * atrMultiplier * 2.5)
+
+// ═══════════════════════════════════════════════════════
+// ALERTS
+// ═══════════════════════════════════════════════════════
+alertcondition(buyCondition, 
+     title="BUY Signal", 
+     message="🟢 BUY SIGNAL on {{ticker}} {{interval}}\n✅ RSI Oversold\n✅ Uptrend (>200EMA)\n✅ Bullish Pattern\n✅ MACD Bullish\nSL: {{plot_0}}\nTP1: {{plot_1}}\nTP2: {{plot_2}}")
+
+alertcondition(sellCondition, 
+     title="SELL Signal", 
+     message="🔴 SELL SIGNAL on {{ticker}} {{interval}}\n✅ RSI Overbought\n✅ Downtrend (<200EMA)\n✅ Bearish Pattern\n✅ MACD Bearish\nSL: {{plot_3}}\nTP1: {{plot_4}}\nTP2: {{plot_5}}")
+
+// ═══════════════════════════════════════════════════════
+// VISUALS
+// ═══════════════════════════════════════════════════════
+// Plot EMA on chart
+plot(ema200, title="200 EMA", color=color.new(color.orange, 0), linewidth=2)
+
+// Plot signals
+plotshape(buyCondition, 
+     title="BUY", 
+     location=location.belowbar, 
+     style=shape.labelup, 
+     text="BUY",
+     color=color.new(color.green, 0), 
+     textcolor=color.white, 
+     size=size.normal)
+
+plotshape(sellCondition, 
+     title="SELL", 
+     location=location.abovebar, 
+     style=shape.labeldown, 
+     text="SELL",
+     color=color.new(color.red, 0), 
+     textcolor=color.white, 
+     size=size.normal)
+
+// Plot stop loss and take profit levels
+plot(buyStopLoss, title="Buy SL", color=color.new(color.red, 70), style=plot.style_cross)
+plot(buyTakeProfit1, title="Buy TP1", color=color.new(color.green, 70), style=plot.style_cross)
+plot(buyTakeProfit2, title="Buy TP2", color=color.new(color.green, 50), style=plot.style_cross)
+
+plot(sellStopLoss, title="Sell SL", color=color.new(color.red, 70), style=plot.style_cross)
+plot(sellTakeProfit1, title="Sell TP1", color=color.new(color.green, 70), style=plot.style_cross)
+plot(sellTakeProfit2, title="Sell TP2", color=color.new(color.green, 50), style=plot.style_cross)
+
+// Background color for trend
+bgcolor(uptrend and not noTrend ? color.new(color.green, 95) : 
+        downtrend and not noTrend ? color.new(color.red, 95) : 
+        color.new(color.gray, 97), title="Trend Background")
+```
 
 ## How to activate alerts  
 
