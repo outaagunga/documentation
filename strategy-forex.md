@@ -1536,7 +1536,6 @@ higherTF1 = input.timeframe("240", "Higher Timeframe 1", group="System 3: MTF")
 higherTF2 = input.timeframe("D", "Higher Timeframe 2", group="System 3: MTF")
 
 // Display Options
-signalSize = input.string("Normal", "Signal Size", options=["Tiny", "Small", "Normal", "Large"], group="Display")
 showLabels = input.bool(true, "Show Signal Labels", group="Display")
 showDivergence = input.bool(true, "Show Divergence", group="Display")
 showStopLoss = input.bool(true, "Show Stop Loss Levels", group="Display")
@@ -1655,78 +1654,78 @@ if shortSignal
     riskAmount = shortStop - shortEntry
     shortTarget := shortEntry - (riskAmount * riskRewardRatio)
 
-// ========== SIZE MAPPING ==========
-shapeSize = signalSize == "Tiny" ? size.tiny : 
-            signalSize == "Small" ? size.small :
-            signalSize == "Normal" ? size.normal : size.large
-
 // ========== PLOTTING ON PRICE CHART ==========
 
 // Entry Signals - Arrows
 plotshape(longSignal, "Long Entry", shape.triangleup, location.belowbar, 
-     color.new(color.green, 0), size=shapeSize)
+     color.new(color.green, 0), size=size.normal)
 plotshape(shortSignal, "Short Entry", shape.triangledown, location.abovebar, 
-     color.new(color.red, 0), size=shapeSize)
+     color.new(color.red, 0), size=size.normal)
 
 // Entry Labels
-if showLabels and longSignal
-    label.new(bar_index, low, "BUY\n" + str.tostring(close, format.mintick), 
-         style=label.style_label_up, color=color.new(color.green, 20), 
-         textcolor=color.white, size=size.small)
+plotshape(showLabels and longSignal, "Long Label", shape.labelup, location.belowbar, 
+     color.new(color.green, 20), text="BUY", textcolor=color.white, size=size.small)
 
-if showLabels and shortSignal
-    label.new(bar_index, high, "SELL\n" + str.tostring(close, format.mintick), 
-         style=label.style_label_down, color=color.new(color.red, 20), 
-         textcolor=color.white, size=size.small)
+plotshape(showLabels and shortSignal, "Short Label", shape.labeldown, location.abovebar, 
+     color.new(color.red, 20), text="SELL", textcolor=color.white, size=size.small)
 
 // Divergence Markers
-if showDivergence
-    plotshape(bullishDiv, "Bullish Divergence", shape.diamond, location.belowbar, 
-         color.new(color.aqua, 30), size=size.tiny, text="DIV")
-    plotshape(bearishDiv, "Bearish Divergence", shape.diamond, location.abovebar, 
-         color.new(color.fuchsia, 30), size=size.tiny, text="DIV")
+plotshape(showDivergence and bullishDiv, "Bullish Divergence", shape.diamond, location.belowbar, 
+     color.new(color.aqua, 30), size=size.tiny, text="DIV")
+plotshape(showDivergence and bearishDiv, "Bearish Divergence", shape.diamond, location.abovebar, 
+     color.new(color.fuchsia, 30), size=size.tiny, text="DIV")
 
 // Stop Loss Lines
-if showStopLoss
-    var line longStopLine = na
-    var line shortStopLine = na
-    
-    if longSignal
-        if not na(longStopLine)
-            line.delete(longStopLine)
-        longStopLine := line.new(bar_index, longStop, bar_index + 20, longStop, 
-             color=color.new(color.red, 0), width=2, style=line.style_dashed)
-        label.new(bar_index + 20, longStop, "SL: " + str.tostring(longStop, format.mintick), 
-             style=label.style_label_left, color=color.red, textcolor=color.white, size=size.tiny)
-    
-    if shortSignal
-        if not na(shortStopLine)
-            line.delete(shortStopLine)
-        shortStopLine := line.new(bar_index, shortStop, bar_index + 20, shortStop, 
-             color=color.new(color.red, 0), width=2, style=line.style_dashed)
-        label.new(bar_index + 20, shortStop, "SL: " + str.tostring(shortStop, format.mintick), 
-             style=label.style_label_left, color=color.red, textcolor=color.white, size=size.tiny)
+var line longStopLine = na
+var line shortStopLine = na
+var label longStopLabel = na
+var label shortStopLabel = na
+
+if longSignal and showStopLoss
+    if not na(longStopLine)
+        line.delete(longStopLine)
+    if not na(longStopLabel)
+        label.delete(longStopLabel)
+    longStopLine := line.new(bar_index, longStop, bar_index + 20, longStop, 
+         color=color.new(color.red, 0), width=2, style=line.style_dashed)
+    longStopLabel := label.new(bar_index + 20, longStop, "SL: " + str.tostring(longStop, format.mintick), 
+         style=label.style_label_left, color=color.red, textcolor=color.white, size=size.tiny)
+
+if shortSignal and showStopLoss
+    if not na(shortStopLine)
+        line.delete(shortStopLine)
+    if not na(shortStopLabel)
+        label.delete(shortStopLabel)
+    shortStopLine := line.new(bar_index, shortStop, bar_index + 20, shortStop, 
+         color=color.new(color.red, 0), width=2, style=line.style_dashed)
+    shortStopLabel := label.new(bar_index + 20, shortStop, "SL: " + str.tostring(shortStop, format.mintick), 
+         style=label.style_label_left, color=color.red, textcolor=color.white, size=size.tiny)
 
 // Target Lines
-if showTargets
-    var line longTargetLine = na
-    var line shortTargetLine = na
-    
-    if longSignal
-        if not na(longTargetLine)
-            line.delete(longTargetLine)
-        longTargetLine := line.new(bar_index, longTarget, bar_index + 20, longTarget, 
-             color=color.new(color.green, 0), width=2, style=line.style_solid)
-        label.new(bar_index + 20, longTarget, "TP: " + str.tostring(longTarget, format.mintick), 
-             style=label.style_label_left, color=color.green, textcolor=color.white, size=size.tiny)
-    
-    if shortSignal
-        if not na(shortTargetLine)
-            line.delete(shortTargetLine)
-        shortTargetLine := line.new(bar_index, shortTarget, bar_index + 20, shortTarget, 
-             color=color.new(color.green, 0), width=2, style=line.style_solid)
-        label.new(bar_index + 20, shortTarget, "TP: " + str.tostring(shortTarget, format.mintick), 
-             style=label.style_label_left, color=color.green, textcolor=color.white, size=size.tiny)
+var line longTargetLine = na
+var line shortTargetLine = na
+var label longTargetLabel = na
+var label shortTargetLabel = na
+
+if longSignal and showTargets
+    if not na(longTargetLine)
+        line.delete(longTargetLine)
+    if not na(longTargetLabel)
+        label.delete(longTargetLabel)
+    longTargetLine := line.new(bar_index, longTarget, bar_index + 20, longTarget, 
+         color=color.new(color.green, 0), width=2, style=line.style_solid)
+    longTargetLabel := label.new(bar_index + 20, longTarget, "TP: " + str.tostring(longTarget, format.mintick), 
+         style=label.style_label_left, color=color.green, textcolor=color.white, size=size.tiny)
+
+if shortSignal and showTargets
+    if not na(shortTargetLine)
+        line.delete(shortTargetLine)
+    if not na(shortTargetLabel)
+        label.delete(shortTargetLabel)
+    shortTargetLine := line.new(bar_index, shortTarget, bar_index + 20, shortTarget, 
+         color=color.new(color.green, 0), width=2, style=line.style_solid)
+    shortTargetLabel := label.new(bar_index + 20, shortTarget, "TP: " + str.tostring(shortTarget, format.mintick), 
+         style=label.style_label_left, color=color.green, textcolor=color.white, size=size.tiny)
 
 // ========== BACKGROUND COLORING ==========
 // Subtle background to show trend direction
