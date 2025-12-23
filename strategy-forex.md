@@ -3,7 +3,8 @@
 - give a simplified version that actually works for beginners  
 - give a step-by-step checklist  
 - Give your output in this format
-- I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.  
+- I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.
+- Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---  
 **Support Resistance Channels- by LonesomeTheBlue**    
 set the indicator to:  
