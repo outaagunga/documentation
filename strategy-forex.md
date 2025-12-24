@@ -24,7 +24,13 @@
 * For RSI and RSI hook use `ta.lowest(rsiValue, 5) < rsiOS and rsiHookUp`
 * For filtering Out "Doji" Fakes: By requiring `close > open` for buys and `close < open` for sells
 * For Rejection Candles: If the `bottom wick` is more than 25% of the total candle size, it is flagged as a `Bullish Rejection`
-* For Support & Resistance: Use `nearSupport = ta.lowest(low, 10) == low or not na(support)` and `nearResistance = ta.highest(high, 10) == high or not na(resistance)`  
+* For Support & Resistance: Use `nearSupport = ta.lowest(low, 10) == low or not na(support)` and `nearResistance = ta.highest(high, 10) == high or not na(resistance)`
+* For trend filter  `emaFast = ta.ema(close, emaFastLen)`  
+                    `emaSlow = ta.ema(close, emaSlowLen)`  
+
+                    `// Trend direction`  
+                    `upTrend   = close > emaSlow and emaFast > emaSlow and emaSlow > emaSlow[1]`  
+                    `downTrend = close < emaSlow and emaFast < emaSlow and emaSlow < emaSlow[1]`  
 
 **Backtesting:**
 * Ensure the signals are calculated on every bar so they remain visible when scrolling back through historical data."
