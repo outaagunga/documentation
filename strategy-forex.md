@@ -23,7 +23,7 @@
 * For volume cimax use `vol> ta.sma(volume, 5)`
 * For RSI hook use `rsiHookUp = rsiValue > rsiValue[1] // RSI is moving up` or `rsiHookDn = rsiValue < rsiValue[1] // RSI is moving down`
 * For filtering Out "Doji" Fakes: By requiring `close > open` for buys and `close < open` for sells
-* For Rejection Candles: If the `bottom wick` is more than 50% of the total candle size, it is flagged as a `Bullish Rejection`
+* For Rejection Candles: If the `bottom wick` is more than 40% of the total candle size, it is flagged as a `Bullish Rejection`
 * For Support & Resistance: Use `ta.pivothigh` and `ta.pivotlow`  
 
 **Backtesting:**
