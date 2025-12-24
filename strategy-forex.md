@@ -1799,7 +1799,159 @@ alertcondition(bearishDiv, "Bearish Divergence", "💎 MACD Money Map: Bearish D
 ---
 
 Strategy: 8  
+- 1.  
+```pinescript
+//@version=5
+strategy("RSI + S/R Rejection Strategy", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
 
+// --- Input Settings ---
+rsiLength = input.int(14, "RSI Length")
+rsiOverbought = input.int(70, "RSI Overbought Level")
+rsiOversold = input.int(30, "RSI Oversold Level")
+useRSIFilter = input.bool(true, "Use RSI Filter?")
+
+// Pivot Settings for Support/Resistance
+pivotLookback = input.int(5, "S/R Pivot Lookback")
+wickSizePercent = input.float(50.0, "Min Wick Size % of Candle Range", minval=0.0, maxval=100.0)
+
+// --- Indicators ---
+rsiValue = ta.rsi(close, rsiLength)
+
+// Identify Support and Resistance via Pivots
+pivotHigh = ta.pivothigh(high, pivotLookback, pivotLookback)
+pivotLow = ta.pivotlow(low, pivotLookback, pivotLookback)
+
+// Track the most recent levels
+var float lastResistance = na
+var float lastSupport = na
+
+if not na(pivotHigh)
+    lastResistance := pivotHigh
+if not na(pivotLow)
+    lastSupport := pivotLow
+
+// --- Rejection Candle Logic ---
+candleRange = high - low
+upperWick = high - math.max(open, close)
+lowerWick = math.min(open, close) - low
+
+isBullishRejection = lowerWick > (candleRange * (wickSizePercent / 100))
+isBearishRejection = upperWick > (candleRange * (wickSizePercent / 100))
+
+// --- Entry Conditions ---
+// RSI Logic (can be toggled off)
+rsiLongConf = not useRSIFilter or (rsiValue < rsiOversold)
+rsiShortConf = not useRSIFilter or (rsiValue > rsiOverbought)
+
+// Price touching S/R (within a small threshold)
+touchingSupport = low <= lastSupport
+touchingResistance = high >= lastResistance
+
+longCondition = touchingSupport and rsiLongConf and isBullishRejection
+shortCondition = touchingResistance and rsiShortConf and isBearishRejection
+
+// --- Execution ---
+if longCondition
+    strategy.entry("Long", strategy.long)
+
+if shortCondition
+    strategy.entry("Short", strategy.short)
+
+// --- Visuals (Plotting) ---
+plotshape(longCondition, title="Buy Signal", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small, text="BUY")
+plotshape(shortCondition, title="Sell Signal", style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small, text="SELL")
+
+// Plot S/R lines for visual confirmation
+plot(lastResistance, "Resistance Level", color=color.new(color.red, 50), style=plot.style_linebr)
+plot(lastSupport, "Support Level", color=color.new(color.green, 50), style=plot.style_linebr)
+
+// --- Alerts ---
+alertcondition(longCondition, title="Long Signal Alert", message="RSI/Support Bullish Rejection on {{ticker}}")
+alertcondition(shortCondition, title="Short Signal Alert", message="RSI/Resistance Bearish Rejection on {{ticker}}")
+
+```
+**How the Logic Works**
+
+* **Support & Resistance:** The script uses `ta.pivothigh` and `ta.pivotlow`. These identify the "peaks" and "valleys" on your chart. When price returns to these levels, it triggers the first part of your logic.
+* **Rejection Candles:** Instead of just looking for a green or red candle, the script calculates the **wick size**. If the bottom wick is more than 50% of the total candle size (customizable in settings), it is flagged as a "Bullish Rejection."
+* **RSI Toggle:** In the **Settings > Inputs** tab, you will find a checkbox for "Use RSI Filter." Unchecking this will allow the strategy to fire signals based purely on price action at S/R levels.
+* **Visuals:** I have added horizontal lines that track the last known support and resistance levels so you can see exactly what the script is reacting to.
+
+- 2.  
+```pinescript
+//@version=5
+strategy("RSI + S/R + Trend Filter", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
+
+// --- Input Settings ---
+rsiLength = input.int(14, "RSI Length")
+rsiOverbought = input.int(70, "RSI Overbought Level")
+rsiOversold = input.int(30, "RSI Oversold Level")
+useRSIFilter = input.bool(true, "Use RSI Filter?")
+
+// Trend Filter Settings
+useTrendFilter = input.bool(true, "Use EMA 200 Trend Filter?")
+emaTrendLen = input.int(200, "EMA Trend Length")
+
+// Pivot Settings for Support/Resistance
+pivotLookback = input.int(5, "S/R Pivot Lookback")
+wickSizePercent = input.float(40.0, "Min Wick Size % (Rejection)", minval=0.0, maxval=100.0)
+
+// --- Indicators ---
+rsiValue = ta.rsi(close, rsiLength)
+emaTrend = ta.ema(close, emaTrendLen)
+
+// Identify Support and Resistance
+pivotHigh = ta.pivothigh(high, pivotLookback, pivotLookback)
+pivotLow = ta.pivotlow(low, pivotLookback, pivotLookback)
+
+var float lastResistance = na
+var float lastSupport = na
+if not na(pivotHigh)
+    lastResistance := pivotHigh
+if not na(pivotLow)
+    lastSupport := pivotLow
+
+// --- Rejection & Trend Logic ---
+candleRange = high - low
+upperWick = high - math.max(open, close)
+lowerWick = math.min(open, close) - low
+
+isBullishRejection = lowerWick > (candleRange * (wickSizePercent / 100))
+isBearishRejection = upperWick > (candleRange * (wickSizePercent / 100))
+
+// Trend Confirmation Logic
+isUptrend = not useTrendFilter or (close > emaTrend)
+isDowntrend = not useTrendFilter or (close < emaTrend)
+
+// --- Entry Conditions ---
+rsiLongConf = not useRSIFilter or (rsiValue < rsiOversold)
+rsiShortConf = not useRSIFilter or (rsiValue > rsiOverbought)
+
+longCondition = (low <= lastSupport) and rsiLongConf and isBullishRejection and isUptrend
+shortCondition = (high >= lastResistance) and rsiShortConf and isBearishRejection and isDowntrend
+
+// --- Execution ---
+if longCondition
+    strategy.entry("Long", strategy.long)
+
+if shortCondition
+    strategy.entry("Short", strategy.short)
+
+// --- Visuals ---
+plot(emaTrend, "Trend EMA", color=color.new(color.gray, 50), linewidth=2)
+plotshape(longCondition, title="Buy Signal", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small, text="BUY")
+plotshape(shortCondition, title="Sell Signal", style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small, text="SELL")
+
+// Alerts
+alertcondition(longCondition, "Trend-Aligned Long", "Bullish Rejection at Support + Trend")
+alertcondition(shortCondition, "Trend-Aligned Short", "Bearish Rejection at Resistance + Trend")
+
+```
+---
+---
+---
+
+Strategy: 9  
 
 
 
