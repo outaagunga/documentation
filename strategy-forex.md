@@ -13,6 +13,8 @@
 * **Long Entry (Buy):** Trigger when the RSI (14) is below 30 (oversold) AND the MACD Line (12, 26) crosses over the Signal Line (9).
 * **Short Entry (Sell):** Trigger when the RSI (14) is above 70 (overbought) AND the MACD Line crosses under the Signal Line.
 * **Trend Filter:** Since I want to trade pullbacks, only trigger Buy signals if the price is above the 200-period EMA, and Sell signals if the price is below the 200-period EMA.
+* RSI shoul lookback atleast 2 bars when the MACD crosses so that it doest become too strict  
+
 
 **Visual Requirements:**
 * Use `plotshape()` to mark entries on the chart. Use a small green 'up' triangle for Buys and a small red 'down' triangle for Sells.
@@ -24,6 +26,9 @@
 
 **Alert:**
 * add an alert to this script so i get notification when signal occurs."
+
+**On/Off switch:**
+* add on/ off switch on RSI, MACD and Trend Filter so that i can toggle them on/ off."
 ```
 ---
 **Support Resistance Channels- by LonesomeTheBlue**    
