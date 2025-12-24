@@ -6,7 +6,7 @@
 - I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
-```pinescript
+
 "Create a Pine Script V5 strategy for TradingView that identifies entry and exit signals based on RSI and MACD.
 
 **Logic Requirements:**
@@ -29,7 +29,7 @@
 
 **On/Off switch:**
 * add on/ off switch on RSI, MACD and Trend Filter so that i can toggle them on/ off."
-```
+
 ---
 **Support Resistance Channels- by LonesomeTheBlue**    
 set the indicator to:  
