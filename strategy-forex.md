@@ -27,10 +27,9 @@
 * For Support & Resistance: Use `nearSupport = ta.lowest(low, 10) == low or not na(support)` and `nearResistance = ta.highest(high, 10) == high or not na(resistance)`
 * For trend filter  `emaFast = ta.ema(close, emaFastLen)`  
                     `emaSlow = ta.ema(close, emaSlowLen)`  
-
-                    `// Trend direction`  
-                    `upTrend   = close > emaSlow and emaFast > emaSlow and emaSlow > emaSlow[1]`  
-                    `downTrend = close < emaSlow and emaFast < emaSlow and emaSlow < emaSlow[1]`  
+  // Trend direction
+  `upTrend   = close > emaSlow and emaFast > emaSlow and emaSlow > emaSlow[1]`  
+  `downTrend = close < emaSlow and emaFast < emaSlow and emaSlow < emaSlow[1]`  
 
 **Backtesting:**
 * Ensure the signals are calculated on every bar so they remain visible when scrolling back through historical data."
