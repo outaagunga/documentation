@@ -20,6 +20,11 @@
 * Use `plotshape()` to mark entries on the chart. Use a small green 'up' triangle for Buys and a small red 'down' triangle for Sells.
 * Set the location to `location.belowbar` for buys and `location.abovebar` for sells so they stay clear of the candles.
 * Ensure the script uses `force_overlay = true` so the shapes appear on the price chart, not in a separate pane.
+* For volume cimax use `vol> ta.sma(volume, 5)`
+* For RSI hook use `rsiHookUp = rsiValue > rsiValue[1] // RSI is moving up` or `rsiHookDn = rsiValue < rsiValue[1] // RSI is moving down`
+* For filtering Out "Doji" Fakes: By requiring close > open for buys and close < open for sells
+* For Rejection Candles: If the bottom wick is more than 50% of the total candle size, it is flagged as a `Bullish Rejection`
+* For Support & Resistance: Use `ta.pivothigh` and `ta.pivotlow`  
 
 **Backtesting:**
 * Ensure the signals are calculated on every bar so they remain visible when scrolling back through historical data."
