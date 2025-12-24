@@ -15,7 +15,6 @@
 * **Trend Filter:** Since I want to trade pullbacks, only trigger Buy signals if the price is above the 200-period EMA, and Sell signals if the price is below the 200-period EMA.
 * RSI shoul lookback atleast 2 bars when the MACD crosses so that it doest become too strict  
 
-
 **Visual Requirements:**
 * Use `plotshape()` to mark entries on the chart. Use a small green 'up' triangle for Buys and a small red 'down' triangle for Sells.
 * Set the location to `location.belowbar` for buys and `location.abovebar` for sells so they stay clear of the candles.
@@ -27,11 +26,12 @@
 * For Support & Resistance: Use `emaSupportZone = close > emaSlow and low <= emaFast` and  `emaResistanceZone = close < emaSlow and high >= emaFast`  
 `nearSupport = emaSupportZone`  
 `nearResistance = emaResistanceZone`  
-* For trend filter  `emaFast = ta.ema(close, emaFastLen)`  
+* For trend filter (if trading breakout)  `emaFast = ta.ema(close, emaFastLen)`  
                     `emaSlow = ta.ema(close, emaSlowLen)`  
   // Trend direction
   `upTrend   = close > emaSlow and emaFast > emaSlow and emaSlow > emaSlow[1]`  
-  `downTrend = close < emaSlow and emaFast < emaSlow and emaSlow < emaSlow[1]`  
+  `downTrend = close < emaSlow and emaFast < emaSlow and emaSlow < emaSlow[1]`
+* For trend filter (if trading pullbacks) `upTrend = emaSlow > emaSlow[1]` and `downTrend = emaSlow < emaSlow[1]`  
 
 **Backtesting:**
 * Ensure the signals are calculated on every bar so they remain visible when scrolling back through historical data."
