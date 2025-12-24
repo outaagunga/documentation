@@ -5,7 +5,23 @@
 - Give your output in this format
 - I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
----  
+---
+```pinescript
+"Create a Pine Script V5 strategy for TradingView that identifies entry and exit signals based on RSI and MACD.
+**Logic Requirements:**
+* **Long Entry (Buy):** Trigger when the RSI (14) is below 30 (oversold) AND the MACD Line (12, 26) crosses over the Signal Line (9).
+* **Short Entry (Sell):** Trigger when the RSI (14) is above 70 (overbought) AND the MACD Line crosses under the Signal Line.
+* **Trend Filter:** Since I want to trade pullbacks, only trigger Buy signals if the price is above the 200-period EMA, and Sell signals if the price is below the 200-period EMA.
+
+**Visual Requirements:**
+* Use `plotshape()` to mark entries on the chart. Use a small green 'up' triangle for Buys and a small red 'down' triangle for Sells.
+* Set the location to `location.belowbar` for buys and `location.abovebar` for sells so they stay clear of the candles.
+* Ensure the script uses `force_overlay = true` so the shapes appear on the price chart, not in a separate pane.
+
+**Backtesting:**
+* Ensure the signals are calculated on every bar so they remain visible when scrolling back through historical data."
+```
+---
 **Support Resistance Channels- by LonesomeTheBlue**    
 set the indicator to:  
 - Pivot Period --> 10
