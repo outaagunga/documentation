@@ -21,6 +21,9 @@
 
 **Backtesting:**
 * Ensure the signals are calculated on every bar so they remain visible when scrolling back through historical data."
+
+**Alert:**
+* add an alert to this script so i get notification when signal occurs."
 ```
 ---
 **Support Resistance Channels- by LonesomeTheBlue**    
