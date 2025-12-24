@@ -8,6 +8,7 @@
 ---
 ```pinescript
 "Create a Pine Script V5 strategy for TradingView that identifies entry and exit signals based on RSI and MACD.
+
 **Logic Requirements:**
 * **Long Entry (Buy):** Trigger when the RSI (14) is below 30 (oversold) AND the MACD Line (12, 26) crosses over the Signal Line (9).
 * **Short Entry (Sell):** Trigger when the RSI (14) is above 70 (overbought) AND the MACD Line crosses under the Signal Line.
