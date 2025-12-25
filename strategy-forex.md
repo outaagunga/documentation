@@ -29,8 +29,8 @@
 >   * Support/Resistance (EMA zone) filter
 
 > ### 📈 Trend Definition
-> * **Uptrend:** `emaSlow > emaSlow[1]`
-> * **Downtrend:** `emaSlow < emaSlow[1]`
+> * **Uptrend:** `emaSlow >= ta.lowest(emaSlow, 3)` This allows for brief moments where the EMA flattens 
+> * **Downtrend:** `emaSlow <= ta.highest(emaSlow, 3)`
 
 > ### 🟢 Long Entry (Buy Conditions)
 > A Buy signal triggers **only when all enabled filters pass**:
@@ -45,7 +45,7 @@
 > 4. **EMA Support Zone**
 >    * `low <= emaFast and close > emaSlow` This ensures the price "dipped" into the support area but stayed above the long-term trend  
 > 5. **Trend Filter**
->    * `emaSlow >= ta.lowest(emaSlow, 3)` This allows for brief moments where the EMA flattens  
+>    * Price must be in uptrend  
 
 > ### 🔴 Short Entry (Sell Conditions)
 > The other way round:
