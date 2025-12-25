@@ -29,20 +29,20 @@
 >   * Support/Resistance (EMA zone) filter
 
 > ### 📈 Trend Definition
-> * **Uptrend:** `emaSlow >= ta.lowest(emaSlow, 3)` This allows for brief moments where the EMA flattens 
-> * **Downtrend:** `emaSlow <= ta.highest(emaSlow, 3)`
+> * **Uptrend:** `emaSlow > ta.lowest(emaSlow, 3) and (emaFast > emaSlow)` This allows for brief moments where the EMA flattens 
+> * **Downtrend:** `emaSlow < ta.highest(emaSlow, 3) and (emaFast < emaSlow)`
 
 > ### 🟢 Long Entry (Buy Conditions)
 > A Buy signal triggers **only when all enabled filters pass**:
 
 > 1. **Volume Lookback**
->    * `ta.highest(volume > ta.sma(volume, 5)*0.8) ? 1 : 0, volLookback) == 1` volume must have been more than 80% at least once during ... 
+>    * `ta.highest(volume > ta.sma(volume, 5)*0.8) ? 1 : 0, volLookback) == 1` volume must have been more than 80% at least once during ... On a higher timeframe increase `5` to atleast `20`  
 > 2. **RSI Hook**
 >      example logic: `(rsi >= rsi[1]) and (rsi > rsi[1] or rsi > rsi[2]) and (rsi > ta.lowest(rsi, 3))`
 > 3. **Bullish Rejection Candle**
 >    * `((math.min(open, close) - low) > (high - math.max(open, close))) or (close > high[1])`
 > 4. **EMA Support Zone**
->    * `(close > emaSlow) and ((low <= emaFast * 1.002) or (low[1] <= emaFast * 1.002))` This allows price pull back to or near the fast EMA within the last 1–2 bars  
+>    * `(close > emaSlow) and (ta.lowest(low, 3) <= emaFast * 1.002)` This allows price pull back to or near the fast EMA within the last 1–3 bars. If on higher time frame (e.g day or weekly) or trading volatile items like crypto increase `0.002` to `0.1`  
 > 5. **Trend Filter**
 >    * Price must be in uptrend  
 
