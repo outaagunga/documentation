@@ -7,10 +7,6 @@
 - trend → pullback → rejection → continuation (pullback strategy)  
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
-Great idea to fine-tune the prompt first—this will massively improve the quality of the Pine Script you get.
-
-Below is a **clean, unambiguous, AI-optimized version of your prompt**, followed by **why these changes help** and **optional clarifications you can add if needed**.
-
 ---
 
 > Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals** using **RSI, trend, volume, and price action**.
