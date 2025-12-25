@@ -11,6 +11,7 @@
 
 > Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals** using **RSI, trend, volume, and price action**.
 > The script must calculate signals on **every historical bar** so they remain visible when scrolling back.
+> Remember Pine Script doesn't allow multi-line function calls. Everything needs to be on one line
 
 > ### 🔹 Inputs & Settings
 
