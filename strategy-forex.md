@@ -18,6 +18,7 @@
 > * RSI length (default 14)
 > * emaFastLen (default 20)
 > * emaSlowLen (default 50)
+> * ATR length (default: 14)
 > * On/Off toggle (boolean input) for **each filter**:
 
 >   * Volume lookback filter
@@ -38,15 +39,14 @@
 >    * `volume > ta.sma(volume, 5)` must have been true at least once within the last `volLookback` bars
 > 2. **RSI Hook**
 >    * RSI was falling during pullback and is now turning upward
->      (example logic: `rsi[1] < rsi[2] and rsi > rsi[1]`)
+>      (example logic: `RSI is rising now OR RSI is higher than its value 1–2 bars ago`)
 > 3. **Candle Direction Filter**
 >    * Current candle must be **bullish** (`close > open`)
 > 4. **Bullish Rejection Candle**
 >    * Bottom wick > **Upper wick** 
 >      `((math.min(open, close) - low) > (high - math.max(open, close)))`
 > 5. **EMA Support Zone**
->    * `close > emaSlow`
->    * `low <= emaFast`
+>    * `close is within a small distance of emaFast`
 > 6. **Trend Filter**
 >    * Market must be in an **uptrend**
 
