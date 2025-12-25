@@ -40,7 +40,11 @@
 > 2. **RSI Hook**
 >      example logic: `(rsi >= rsi[1]) and (rsi > rsi[1] or rsi > rsi[2]) and (rsi > ta.lowest(rsi, 3))`
 > 3. **Bullish Rejection Candle**
->    * `((math.min(open, close) - low) > (high - math.max(open, close))) or (close > high[1])`
+>    * `bullReject_wick = (math.min(open, close) - low) > (high - math.max(open, close))` //Wick-based rejection (absorption)
+>    * `bullReject_structure = (low < low[1]) and (close > low[1])` //Structure-based rejection (failed breakdown)
+>    * `bullReject_momentum = close > high[1]` //Momentum resolution after rejection
+>    * `bullishRejection = bullReject_wick or bullReject_structure or bullReject_momentum` //Final behavior-based rejection condition
+>    * `validRejection = bullishRejection and (math.abs(close - open) > ta.atr(14) * 0.2)`
 > 4. **EMA Support Zone**
 >    * `(close > emaSlow) and (ta.lowest(low, 3) <= emaFast * 1.002)` This allows price pull back to or near the fast EMA within the last 1–3 bars. If on higher time frame (e.g day or weekly) or trading volatile items like crypto increase `0.002` to `0.1`  
 > 5. **Trend Filter**
