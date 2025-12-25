@@ -23,7 +23,6 @@
 
 >   * Volume lookback filter
 >   * RSI hook filter
->   * Candle direction filter
 >   * Rejection wick filter
 >   * Trend filter
 >   * Support/Resistance (EMA zone) filter
@@ -36,19 +35,18 @@
 > A Buy signal triggers **only when all enabled filters pass**:
 
 > 1. **Volume Lookback**
->    * `volume > ta.sma(volume, 5)` must have been true at least once within the last `volLookback` bars
+>    * `ta.highest(volume > ta.sma(volume, 5) ? 1 : 0, volLookback) == 1` volume must have been true at least once during ... 
 > 2. **RSI Hook**
->    * RSI was falling during pullback and is now turning upward
->      example logic: `(rsi > rsi[1]) or (rsi > rsi[2])`
+>      example logic: `(rsi >= rsi[1]) and (rsi > rsi[1] or rsi > rsi[2]) and (rsi > ta.lowest(rsi, 3))`
 > 3. **Bullish Rejection Candle**
->    * `Bottom wick > Upper wick OR close > high[1]`
+>    * `((math.min(open, close) - low) > (high - math.max(open, close))) or (close > high[1])`
 > 4. **EMA Support Zone**
->    * `low <= emaFast * 1.002 OR low[1] <= emaFast` This allows price pull back to or near the fast EMA within the last 1–2 bars  
+>    * `(close > emaSlow) and ((low <= emaFast * 1.002) or (low[1] <= emaFast * 1.002))` This allows price pull back to or near the fast EMA within the last 1–2 bars  
 > 5. **Trend Filter**
 >    * Price must be in uptrend  
 
 > ### 🔴 Short Entry (Sell Conditions)
-> The other way round:
+> Short conditions must be the exact logical inverse of long conditions, including EMA buffers and RSI logic:
 
 > ### 📊 Visual Requirements
 > * `overlay = true`
