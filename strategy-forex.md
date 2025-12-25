@@ -40,15 +40,12 @@
 > 2. **RSI Hook**
 >    * RSI was falling during pullback and is now turning upward
 >      (example logic: `RSI is rising now OR RSI is higher than its value 1–2 bars ago`)
-> 3. **Candle Direction Filter**
->    * Current candle must be **bullish** (`close > open`)
-> 4. **Bullish Rejection Candle**
->    * Bottom wick > **Upper wick** 
->      `((math.min(open, close) - low) > (high - math.max(open, close)))`
-> 5. **EMA Support Zone**
->    * `close is within a small distance of emaFast`
-> 6. **Trend Filter**
->    * Market must be in an **uptrend**
+> 3. **Bullish Rejection Candle**
+>    * `Bottom wick > Upper wick OR close > high[1]`
+> 4. **EMA Support Zone**
+>    * `low <= emaFast and close > emaSlow` This ensures the price "dipped" into the support area but stayed above the long-term trend  
+> 5. **Trend Filter**
+>    * `emaSlow >= ta.lowest(emaSlow, 3)` This allows for brief moments where the EMA flattens  
 
 > ### 🔴 Short Entry (Sell Conditions)
 > The other way round:
