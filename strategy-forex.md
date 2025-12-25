@@ -36,7 +36,7 @@
 > A Buy signal triggers **only when all enabled filters pass**:
 
 > 1. **Volume Lookback**
->    * `ta.highest(volume > ta.sma(volume, 5) ? 1 : 0, volLookback) == 1` volume must have been true at least once during ... 
+>    * `ta.highest(volume > ta.sma(volume, 5)*0.8 ? 1 : 0, volLookback) == 1` volume must have been more than 80% at least once during ... 
 > 2. **RSI Hook**
 >      example logic: `(rsi >= rsi[1]) and (rsi > rsi[1] or rsi > rsi[2]) and (rsi > ta.lowest(rsi, 3))`
 > 3. **Bullish Rejection Candle**
