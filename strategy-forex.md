@@ -8,7 +8,7 @@
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
 
-"Create a Pine Script V5 strategy for TradingView that identifies entry and exit signals based on RSI and MACD.
+"Create a Pine Script V5 strategy for TradingView that identifies entry and exit signals [trading method e.g pullbacks] based on RSI and MACD.
 
 **Logic Requirements:**
 * **Long Entry (Buy):** Trigger when the RSI (14) is below 30 (oversold) AND the MACD Line (12, 26) crosses over the Signal Line (9).
@@ -20,9 +20,11 @@
 * Use `plotshape()` to mark entries on the chart. Use a small green 'up' triangle for Buys and a small red 'down' triangle for Sells.
 * Set the location to `location.belowbar` for buys and `location.abovebar` for sells so they stay clear of the candles.
 * Ensure the script uses `overlay = true` so the shapes appear on the price chart, not in a separate pane.
-* For volume cimax use `ta.highest(volume, 3) > ta.sma(volume, 5)`
-* For RSI and RSI hook use `rsiHookUp = rsiValue > rsiValue[1] or rsiValue[1] > rsiValue[2]` and `rsiHookDown = rsiValue < rsiValue[1] or rsiValue[1] < rsiValue[2]`  
-* For filtering Out "Doji" Fakes: By requiring `close > open` for buys and `close < open` for sells
+* Create two EMA inputs: `emaFastLen` and `emaSlowLen`. Use `plot()` for `emaFast` (Orange) and `emaSlow` (Blue)   
+* Display a `table.new(position.top_right, 2, 3)` showing `Entry`, `SL`, and `TP`. Update values ONLY when a new signal triggers     
+* For volume climax use `volume > ta.sma(volume, 5)`  
+* For RSI hook = RSI changing direction after pullback    
+* For filtering Out "Doji" Fakes: Filter weak candles by requiring bullish/bearish candle direction  
 * For Rejection Candles: If the `bottom wick` is more than 25% of the total candle size, it is flagged as a `Bullish Rejection`
 * For Support & Resistance: Use `emaSupportZone = close > emaSlow and low <= emaFast` and  `emaResistanceZone = close < emaSlow and high >= emaFast`  
 `nearSupport = emaSupportZone`  
@@ -41,7 +43,7 @@
 * add an alert to this script so i get notification when signal occurs."
 
 **On/Off switch:**
-* add on/ off switch on RSI, MACD and Trend Filter so that i can toggle them on/ off."
+* add on/ off switch on `filters` so that i can toggle them on/ off."
 
 ---
 **Support Resistance Channels- by LonesomeTheBlue**    
