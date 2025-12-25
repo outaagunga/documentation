@@ -56,8 +56,8 @@
 >   * emaSlow → **Blue**
 
 > * Entry markers:
->   * Buy → small **green triangle up** (`location.belowbar`)
->   * Sell → small **red triangle down** (`location.abovebar`)
+>   * Buy → `size=size.tiny` **green triangle up** (`location.belowbar`) use `title=""` to removes the text labels 
+>   * Sell → `size=size.tiny` **red triangle down** (`location.abovebar`) `title=""` to removes the text labels 
 > Use `plotshape()` for entries.
 
 > ### 📋 Trade Info Table
