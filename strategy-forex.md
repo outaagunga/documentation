@@ -4,6 +4,7 @@
 - give a step-by-step checklist  
 - Give your output in this format
 - I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.
+- Which part of the code is ambiguous  
 - trend → pullback → rejection → continuation (pullback strategy)  
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
