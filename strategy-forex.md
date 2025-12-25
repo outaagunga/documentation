@@ -39,7 +39,7 @@
 >    * `volume > ta.sma(volume, 5)` must have been true at least once within the last `volLookback` bars
 > 2. **RSI Hook**
 >    * RSI was falling during pullback and is now turning upward
->      example logic: `(rsi > rsi[1]) or (rsi[1] > rsi[2])`
+>      example logic: `(rsi > rsi[1]) or (rsi > rsi[2])`
 > 3. **Bullish Rejection Candle**
 >    * `Bottom wick > Upper wick OR close > high[1]`
 > 4. **EMA Support Zone**
