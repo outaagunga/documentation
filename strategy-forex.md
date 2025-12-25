@@ -20,7 +20,7 @@
 > * emaSlowLen (default 50)
 > * On/Off toggle (boolean input) for **each filter**:
 
->   * Volume filter
+>   * Volume lookback filter
 >   * RSI hook filter
 >   * Candle direction filter
 >   * Rejection wick filter
@@ -34,16 +34,16 @@
 > ### 🟢 Long Entry (Buy Conditions)
 > A Buy signal triggers **only when all enabled filters pass**:
 
-> 1. **Volume Climax**
->    * `volume > ta.sma(volume, 5)`
+> 1. **Volume Lookback**
+>    * `volume > ta.sma(volume, 5)` must have been true at least once within the last `volLookback` bars
 > 2. **RSI Hook**
 >    * RSI was falling during pullback and is now turning upward
 >      (example logic: `rsi[1] < rsi[2] and rsi > rsi[1]`)
 > 3. **Candle Direction Filter**
 >    * Current candle must be **bullish** (`close > open`)
 > 4. **Bullish Rejection Candle**
->    * Bottom wick > **25%** of total candle range
->      `(open - low) or (close - low) > 0.25 * (high - low)`
+>    * Bottom wick > **Upper wick** 
+>      `((math.min(open, close) - low) > (high - math.max(open, close)))`
 > 5. **EMA Support Zone**
 >    * `close > emaSlow`
 >    * `low <= emaFast`
@@ -69,8 +69,8 @@
 >   `table.new(position.top_right, 2, 3)`
 > * Display:
 >   * Entry Price
->   * Stop Loss
->   * Take Profit
+>   * Stop Loss `(use 1.5 * ATR)`
+>   * Take Profit `(use 3.0 * ATR)`
 > * Table updates **only when a new signal occurs**
 
 > ### ⏰ Alerts
