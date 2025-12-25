@@ -7,44 +7,87 @@
 - trend → pullback → rejection → continuation (pullback strategy)  
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
+Great idea to fine-tune the prompt first—this will massively improve the quality of the Pine Script you get.
 
-"Create a Pine Script V5 strategy for TradingView that identifies entry and exit signals [trading method e.g pullbacks] based on RSI and MACD.
+Below is a **clean, unambiguous, AI-optimized version of your prompt**, followed by **why these changes help** and **optional clarifications you can add if needed**.
 
-**Logic Requirements:**
-* **Long Entry (Buy):** Trigger when the RSI (14) is below 30 (oversold) AND the MACD Line (12, 26) crosses over the Signal Line (9).
-* **Short Entry (Sell):** Trigger when the RSI (14) is above 70 (overbought) AND the MACD Line crosses under the Signal Line.
-* **Trend Filter:** Since I want to trade pullbacks, only trigger Buy signals if the price is above the 200-period EMA, and Sell signals if the price is below the 200-period EMA.
-* RSI shoul lookback atleast 2 bars when the MACD crosses so that it doest become too strict  
+---
 
-**Visual Requirements:**
-* Use `plotshape()` to mark entries on the chart. Use a small green 'up' triangle for Buys and a small red 'down' triangle for Sells.
-* Set the location to `location.belowbar` for buys and `location.abovebar` for sells so they stay clear of the candles.
-* Ensure the script uses `overlay = true` so the shapes appear on the price chart, not in a separate pane.
-* Create two EMA inputs: `emaFastLen` and `emaSlowLen`. Use `plot()` for `emaFast` (Orange) and `emaSlow` (Blue)   
-* Display a `table.new(position.top_right, 2, 3)` showing `Entry`, `SL`, and `TP`. Update values ONLY when a new signal triggers     
-* For volume climax use `volume > ta.sma(volume, 5)`  
-* For RSI hook = RSI changing direction after pullback    
-* For filtering Out "Doji" Fakes: Filter weak candles by requiring bullish/bearish candle direction  
-* For Rejection Candles: If the `bottom wick` is more than 25% of the total candle size, it is flagged as a `Bullish Rejection`
-* For Support & Resistance: Use `emaSupportZone = close > emaSlow and low <= emaFast` and  `emaResistanceZone = close < emaSlow and high >= emaFast`  
-`nearSupport = emaSupportZone`  
-`nearResistance = emaResistanceZone`  
-* For trend filter (if trading breakout)  `emaFast = ta.ema(close, emaFastLen)`  
-                    `emaSlow = ta.ema(close, emaSlowLen)`  
-  // Trend direction
-  `upTrend   = close > emaSlow and emaFast > emaSlow and emaSlow > emaSlow[1]`  
-  `downTrend = close < emaSlow and emaFast < emaSlow and emaSlow < emaSlow[1]`
-* For trend filter (if trading pullbacks) `upTrend = emaSlow > emaSlow[1]` and `downTrend = emaSlow < emaSlow[1]`  
+> Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals** using **RSI, trend, volume, and price action**.
+> The script must calculate signals on **every historical bar** so they remain visible when scrolling back.
 
-**Backtesting:**
-* Ensure the signals are calculated on every bar so they remain visible when scrolling back through historical data."
+> ### 🔹 Inputs & Settings
 
-**Alert:**
-* add an alert to this script so i get notification when signal occurs."
+> * RSI length (default 14)
+> * emaFastLen (default 20)
+> * emaSlowLen (default 50)
+> * On/Off toggle (boolean input) for **each filter**:
 
-**On/Off switch:**
-* add on/ off switch on `filters` so that i can toggle them on/ off."
+>   * Volume filter
+>   * RSI hook filter
+>   * Candle direction filter
+>   * Rejection wick filter
+>   * Trend filter
+>   * Support/Resistance (EMA zone) filter
 
+> ### 📈 Trend Definition
+> * **Uptrend:** `emaSlow > emaSlow[1]`
+> * **Downtrend:** `emaSlow < emaSlow[1]`
+
+> ### 🟢 Long Entry (Buy Conditions)
+> A Buy signal triggers **only when all enabled filters pass**:
+
+> 1. **Volume Climax**
+>    * `volume > ta.sma(volume, 5)`
+> 2. **RSI Hook**
+>    * RSI was falling during pullback and is now turning upward
+>      (example logic: `rsi[1] < rsi[2] and rsi > rsi[1]`)
+> 3. **Candle Direction Filter**
+>    * Current candle must be **bullish** (`close > open`)
+> 4. **Bullish Rejection Candle**
+>    * Bottom wick > **25%** of total candle range
+>      `(open - low) or (close - low) > 0.25 * (high - low)`
+> 5. **EMA Support Zone**
+>    * `close > emaSlow`
+>    * `low <= emaFast`
+> 6. **Trend Filter**
+>    * Market must be in an **uptrend**
+
+> ### 🔴 Short Entry (Sell Conditions)
+> The other way round:
+
+> ### 📊 Visual Requirements
+> * `overlay = true`
+> * Plot EMAs:
+>   * emaFast → **Orange**
+>   * emaSlow → **Blue**
+
+> * Entry markers:
+>   * Buy → small **green triangle up** (`location.belowbar`)
+>   * Sell → small **red triangle down** (`location.abovebar`)
+> Use `plotshape()` for entries.
+
+> ### 📋 Trade Info Table
+> * Create a table using:
+>   `table.new(position.top_right, 2, 3)`
+> * Display:
+>   * Entry Price
+>   * Stop Loss
+>   * Take Profit
+> * Table updates **only when a new signal occurs**
+
+> ### ⏰ Alerts
+> * Add alert conditions for:
+>   * Buy signal
+>   * Sell signal
+> Alerts must trigger **once per signal**.
+
+> ### 📝 Code Quality
+> * Clean, readable structure
+> * Clear comments explaining each filter
+> * Use functions where appropriate
+
+---
 ---
 **Support Resistance Channels- by LonesomeTheBlue**    
 set the indicator to:  
