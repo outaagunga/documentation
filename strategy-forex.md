@@ -39,11 +39,11 @@
 >    * `volume > ta.sma(volume, 5)` must have been true at least once within the last `volLookback` bars
 > 2. **RSI Hook**
 >    * RSI was falling during pullback and is now turning upward
->      (example logic: `RSI is rising now OR RSI is higher than its value 1–2 bars ago`)
+>      example logic: `(rsi > rsi[1]) or (rsi[1] > rsi[2])`
 > 3. **Bullish Rejection Candle**
 >    * `Bottom wick > Upper wick OR close > high[1]`
 > 4. **EMA Support Zone**
->    * `low <= emaFast and close > emaSlow` This ensures the price "dipped" into the support area but stayed above the long-term trend  
+>    * `low <= emaFast * 1.002 OR low[1] <= emaFast` This allows price pull back to or near the fast EMA within the last 1–2 bars  
 > 5. **Trend Filter**
 >    * Price must be in uptrend  
 
