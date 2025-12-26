@@ -56,7 +56,7 @@
 > * RSI makes a higher low over the same lookback window  
 > * Divergence must rely on fixed lookback comparisons only  
 > * Divergence must be evaluated only as a setup filter and gated by trend and EMA support in the final entry condition  
->    * `bullDiv = low < ta.lowest(low, 3)[1] and rsi > ta.lowest(rsi, 3)[1]`   
+>    * `hiddenBullDiv = ta.lowest(low, 5) > ta.lowest(low, 10)[5] and ta.lowest(rsi, 5) < ta.lowest(rsi, 10)[5]`   
 
 > 4. **Bullish Rejection Candle** (Entry Trigger)  
 > * The rejection candle provides the entry trigger or momentum confirmation, confirming demand absorption  
@@ -72,7 +72,7 @@
 >    * `(not useTrendFilter or upTrend) and`  
 >    * `(not useEmaZoneFilter or emaSupport) and`  
 >    * `(not useRsiFilter or rsiHook) and`  
->    * `(not useDivergenceFilter or bullDiv) and`  
+>    * `(not useDivergenceFilter or hiddenBullDiv) and`  
 >    * `(not useRejectionFilter or validRejection)`  
 
 > ### 🔴 Short Entry (Sell Conditions)  
