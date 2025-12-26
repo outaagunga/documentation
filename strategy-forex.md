@@ -13,7 +13,7 @@
 **new version  
 ```pinescript
     > Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals**.  
-    > The script must evaluate signals on every confirmed historical bar using only current and past data so they remain visible when scrolling back.  
+    > The script must evaluate signals on every confirmed historical bar using only current and past data so they remain visible when scrolling back. Add On/Off toggle (boolean input) for each filter so that i can turn them on/ off.  
     > Remember Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
     > # 🧩 PULLBACK TRADING STRATEGY  
     > ## 1️⃣ MARKET REGIME FILTER (MANDATORY)
