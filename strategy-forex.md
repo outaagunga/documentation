@@ -87,6 +87,29 @@
 
 ---
 ---
+```pinescript
+// --- Detailed Momentum Divergence Logic ---
+
+// 1. Identify previous pivot lows/highs
+pivotLow  = ta.pivotlow(low, 5, 5)
+pivotHigh = ta.pivothigh(high, 5, 5)
+
+// 2. Capture RSI at those pivots
+rsiAtPivotLow  = ta.valuewhen(pivotLow, rsiVal, 0)
+priceAtPivotLow = ta.valuewhen(pivotLow, low, 0)
+
+rsiAtPivotHigh  = ta.valuewhen(pivotHigh, rsiVal, 0)
+priceAtPivotHigh = ta.valuewhen(pivotHigh, high, 0)
+
+// 3. Define Divergence (One-Line)
+// Long: Current price is lower than previous pivot, but current RSI is higher than previous pivot RSI
+longDivergence  = low < priceAtPivotLow and rsiVal > rsiAtPivotLow
+
+// Short: Current price is higher than previous pivot, but current RSI is lower than previous pivot RSI
+shortDivergence = high > priceAtPivotHigh and rsiVal < rsiAtPivotHigh
+```
+---
+---
 **Support Resistance Channels- by LonesomeTheBlue**    
 set the indicator to:  
 - Pivot Period --> 10
