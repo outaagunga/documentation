@@ -22,9 +22,9 @@
 > * ATR length (default: 14)
 > * On/Off toggle (boolean input) for **each filter**:
 
->   * Volume lookback filter
->   * RSI hook filter
->   * Rejection wick filter
+>   * Volume filter
+>   * RSI filter
+>   * Rejection candle filter
 >   * Trend filter
 >   * Support/Resistance (EMA zone) filter
 
