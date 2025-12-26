@@ -12,226 +12,226 @@
 ---
 **new version  
 ```pinescript
-> Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals**.  
-> The script must evaluate signals on every confirmed historical bar using only current and past data so they remain visible when scrolling back.  
-> Remember Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
-> # 🧩 PULLBACK TRADING STRATEGY  
-> ## 1️⃣ MARKET REGIME FILTER (MANDATORY)
-> ### 1.1 Core Variables (Bar-Based)
-```text
-emaFast = EMA(close, 20)
-emaSlow = EMA(close, 50)
-atr = ATR(14)
-```
-
-> ### 1.2 Trend Persistence (No Lookahead)
-> **EMA slope over fixed window**
-```text
-emaSlowRising = emaSlow > emaSlow[5]
-```
-
-> ### 1.3 EMA Separation (Anti-Chop)
-```text
-emaSeparation = abs(emaFast - emaSlow)
-trendStrength = emaSeparation >= atr * 0.5
-```
-
-> ### 1.4 Uptrend Qualification
-```text
-upTrend =
-    emaFast > emaSlow and
-    emaSlowRising and
-    close > emaSlow and
-    trendStrength
-```
-> 📌 **Important**
-> This is a *state*, not an entry signal.
-
-> ## 2️⃣ CONTEXT: VALID PULLBACK LOCATION
-> ### 2.1 Prior Expansion Detection
-> This Ensures price moved **away** before pulling back
-```text
-recentHigh = highest(high, 10)
-expansionFromEMA = recentHigh - emaFast
-hadExpansion = expansionFromEMA >= atr * 1.0
-```
-
-> ### 2.2 EMA Zone Definition
-```text
-emaZoneHigh = emaFast
-emaZoneLow = emaSlow - atr * 0.3
-```
-
-> ### 2.3 Pullback Location Check
-```text
-pullbackLow = lowest(low, pullbackBars)
-inEmaZone =
-    pullbackLow <= emaZoneHigh and
-    pullbackLow >= emaZoneLow
-```
-> `pullbackBars` should be small and fixed (e.g. 5–8).
-
-> ### 2.4 Pullback Quality (Momentum Filter)
-```text
-bearishMomentum =
-    close < open and
-    (open - close) > atr * 0.5
-```
-
-```text
-controlledPullback = not bearishMomentum
-```
-> 📌 This avoids deep momentum sell-offs.
-
-> ### 2.5 Pullback Context State
-```text
-validPullbackContext =
-    upTrend and
-    hadExpansion and
-    inEmaZone and
-    controlledPullback
-```
-
-> ## 3️⃣ SETUP FILTERS (TIME-LIMITED)
-> ## 3.1 RSI State Filter (MANDATORY)
-```text
-rsi = RSI(close, 14)
-```
-
-> ### RSI Conditions
-```text
-rsiAboveFloor = rsi > 40
-```
-
-```text
-rsiPullbackLow = lowest(rsi, pullbackBars)
-rsiHigherLow = rsiPullbackLow > rsiPullbackLow[pullbackBars]
-```
-
-```text
-rsiTurningUp = rsi >= rsi[1] + 2
-```
-
-> ### RSI Setup Valid
-```text
-validRSI =
-    rsiAboveFloor and
-    rsiHigherLow and
-    rsiTurningUp
-```
-> 📌 This removes noisy RSI hooks.
-
-> ## 3.2 Momentum Divergence (OPTIONAL)
-> **Same-bar divergence only**
-```text
-priceLowerLow = low < low[pullbackBars]
-rsiHigherLowSameBar = rsi > rsi[pullbackBars]
-```
-
-```text
-bullishDivergence =
-    priceLowerLow and
-    rsiHigherLowSameBar and
-    inEmaZone
-```
-> 📌 No rolling windows → no fake divergence.
-
-> ## 4️⃣ TRIGGER: REJECTION + CONFIRMATION
-> ### 4.1 Rejection Candle Logic
-> **Candle metrics**
-```text
-body = abs(close - open)
-range = high - low
-lowerWick = min(open, close) - low
-```
-
-> ### Rejection Conditions (Score-Based)
-```text
-wickReject = lowerWick >= body * 1.2
-```
-
-```text
-structureReject =
-    low < lowest(low[1], pullbackBars) and
-    close > lowest(low[1], pullbackBars)
-```
-
-```text
-closeStrong = close >= low + range * 0.7
-```
-
-> ### Rejection Valid (2 of 3)
-```text
-rejectionScore =
-    wickReject +
-    structureReject +
-    closeStrong
-```
-
-```text
-validRejection = rejectionScore >= 2
-```
-> 📌 Pine supports boolean → int coercion.
-
-> ### 4.2 Confirmation Candle (Next Bar)
-```text
-confirmation =
-    close > high[1] and
-    validRejection[1]
-```
-
-> ## 5️⃣ FINAL LONG ENTRY CONDITION
-```text
-longEntry =
-    validPullbackContext and
-    validRSI and
-    (not useDivergence or bullishDivergence) and
-    confirmation
-```
-> 📌 Entry occurs **on bar close**.
-
-> ## 6️⃣ TIME & STRUCTURE INVALIDATION
-> ### Pullback Duration Control
-```text
-pullbackTooLong = pullbackBars > 8
-```
-
-> ### Hard Invalidation Rules
-```text
-invalidateSetup =
-    close < emaSlow or
-    rsi < 40 or
-    pullbackTooLong
-```
-> 📌 If invalid → no signals allowed.
-
-> ## 7️⃣ STOP & TARGET LOGIC (STRUCTURE-BASED)
-> ### Stop Loss
-```text
-stopPrice = pullbackLow - atr * 0.3
-```
-> ### Targets
-```text
-risk = entryPrice - stopPrice
-tp1 = entryPrice + risk * 1.5
-tp2 = entryPrice + risk * 3.0
-```
-
-> ## 8️⃣ SHORT LOGIC (MIRRORED, EXPLICIT)
-> Use **separate variables**, not `!longLogic`:
-> * Downtrend:
-
-  ```text
-  emaFast < emaSlow
-  emaSlow < emaSlow[5]
-  close < emaSlow
-  emaSeparation >= atr * 0.5
-  ```
-> * Pullback into EMA resistance
-> * RSI below 60 but above 30
-> * Bearish rejection + confirmation
-> * Stops above pullback high
-> 📌 Never flip signs mechanically.
+    > Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals**.  
+    > The script must evaluate signals on every confirmed historical bar using only current and past data so they remain visible when scrolling back.  
+    > Remember Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
+    > # 🧩 PULLBACK TRADING STRATEGY  
+    > ## 1️⃣ MARKET REGIME FILTER (MANDATORY)
+    > ### 1.1 Core Variables (Bar-Based)
+    ```text
+    emaFast = EMA(close, 20)
+    emaSlow = EMA(close, 50)
+    atr = ATR(14)
+    ```
+    
+    > ### 1.2 Trend Persistence (No Lookahead)
+    > **EMA slope over fixed window**
+    ```text
+    emaSlowRising = emaSlow > emaSlow[5]
+    ```
+    
+    > ### 1.3 EMA Separation (Anti-Chop)
+    ```text
+    emaSeparation = abs(emaFast - emaSlow)
+    trendStrength = emaSeparation >= atr * 0.5
+    ```
+    
+    > ### 1.4 Uptrend Qualification
+    ```text
+    upTrend =
+        emaFast > emaSlow and
+        emaSlowRising and
+        close > emaSlow and
+        trendStrength
+    ```
+    > 📌 **Important**
+    > This is a *state*, not an entry signal.
+    
+    > ## 2️⃣ CONTEXT: VALID PULLBACK LOCATION
+    > ### 2.1 Prior Expansion Detection
+    > This Ensures price moved **away** before pulling back
+    ```text
+    recentHigh = highest(high, 10)
+    expansionFromEMA = recentHigh - emaFast
+    hadExpansion = expansionFromEMA >= atr * 1.0
+    ```
+    
+    > ### 2.2 EMA Zone Definition
+    ```text
+    emaZoneHigh = emaFast
+    emaZoneLow = emaSlow - atr * 0.3
+    ```
+    
+    > ### 2.3 Pullback Location Check
+    ```text
+    pullbackLow = lowest(low, pullbackBars)
+    inEmaZone =
+        pullbackLow <= emaZoneHigh and
+        pullbackLow >= emaZoneLow
+    ```
+    > `pullbackBars` should be small and fixed (e.g. 5–8).
+    
+    > ### 2.4 Pullback Quality (Momentum Filter)
+    ```text
+    bearishMomentum =
+        close < open and
+        (open - close) > atr * 0.5
+    ```
+    
+    ```text
+    controlledPullback = not bearishMomentum
+    ```
+    > 📌 This avoids deep momentum sell-offs.
+    
+    > ### 2.5 Pullback Context State
+    ```text
+    validPullbackContext =
+        upTrend and
+        hadExpansion and
+        inEmaZone and
+        controlledPullback
+    ```
+    
+    > ## 3️⃣ SETUP FILTERS (TIME-LIMITED)
+    > ## 3.1 RSI State Filter (MANDATORY)
+    ```text
+    rsi = RSI(close, 14)
+    ```
+    
+    > ### RSI Conditions
+    ```text
+    rsiAboveFloor = rsi > 40
+    ```
+    
+    ```text
+    rsiPullbackLow = lowest(rsi, pullbackBars)
+    rsiHigherLow = rsiPullbackLow > rsiPullbackLow[pullbackBars]
+    ```
+    
+    ```text
+    rsiTurningUp = rsi >= rsi[1] + 2
+    ```
+    
+    > ### RSI Setup Valid
+    ```text
+    validRSI =
+        rsiAboveFloor and
+        rsiHigherLow and
+        rsiTurningUp
+    ```
+    > 📌 This removes noisy RSI hooks.
+    
+    > ## 3.2 Momentum Divergence (OPTIONAL)
+    > **Same-bar divergence only**
+    ```text
+    priceLowerLow = low < low[pullbackBars]
+    rsiHigherLowSameBar = rsi > rsi[pullbackBars]
+    ```
+    
+    ```text
+    bullishDivergence =
+        priceLowerLow and
+        rsiHigherLowSameBar and
+        inEmaZone
+    ```
+    > 📌 No rolling windows → no fake divergence.
+    
+    > ## 4️⃣ TRIGGER: REJECTION + CONFIRMATION
+    > ### 4.1 Rejection Candle Logic
+    > **Candle metrics**
+    ```text
+    body = abs(close - open)
+    range = high - low
+    lowerWick = min(open, close) - low
+    ```
+    
+    > ### Rejection Conditions (Score-Based)
+    ```text
+    wickReject = lowerWick >= body * 1.2
+    ```
+    
+    ```text
+    structureReject =
+        low < lowest(low[1], pullbackBars) and
+        close > lowest(low[1], pullbackBars)
+    ```
+    
+    ```text
+    closeStrong = close >= low + range * 0.7
+    ```
+    
+    > ### Rejection Valid (2 of 3)
+    ```text
+    rejectionScore =
+        wickReject +
+        structureReject +
+        closeStrong
+    ```
+    
+    ```text
+    validRejection = rejectionScore >= 2
+    ```
+    > 📌 Pine supports boolean → int coercion.
+    
+    > ### 4.2 Confirmation Candle (Next Bar)
+    ```text
+    confirmation =
+        close > high[1] and
+        validRejection[1]
+    ```
+    
+    > ## 5️⃣ FINAL LONG ENTRY CONDITION
+    ```text
+    longEntry =
+        validPullbackContext and
+        validRSI and
+        (not useDivergence or bullishDivergence) and
+        confirmation
+    ```
+    > 📌 Entry occurs **on bar close**.
+    
+    > ## 6️⃣ TIME & STRUCTURE INVALIDATION
+    > ### Pullback Duration Control
+    ```text
+    pullbackTooLong = pullbackBars > 8
+    ```
+    
+    > ### Hard Invalidation Rules
+    ```text
+    invalidateSetup =
+        close < emaSlow or
+        rsi < 40 or
+        pullbackTooLong
+    ```
+    > 📌 If invalid → no signals allowed.
+    
+    > ## 7️⃣ STOP & TARGET LOGIC (STRUCTURE-BASED)
+    > ### Stop Loss
+    ```text
+    stopPrice = pullbackLow - atr * 0.3
+    ```
+    > ### Targets
+    ```text
+    risk = entryPrice - stopPrice
+    tp1 = entryPrice + risk * 1.5
+    tp2 = entryPrice + risk * 3.0
+    ```
+    
+    > ## 8️⃣ SHORT LOGIC (MIRRORED, EXPLICIT)
+    > Use **separate variables**, not `!longLogic`:
+    > * Downtrend:
+    
+      ```text
+      emaFast < emaSlow
+      emaSlow < emaSlow[5]
+      close < emaSlow
+      emaSeparation >= atr * 0.5
+      ```
+    > * Pullback into EMA resistance
+    > * RSI below 60 but above 30
+    > * Bearish rejection + confirmation
+    > * Stops above pullback high
+    > 📌 Never flip signs mechanically.
 ```
 ---
 ---
