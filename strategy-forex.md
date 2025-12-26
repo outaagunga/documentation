@@ -13,7 +13,7 @@
 **new version**
 ```pinescript
 > Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals** using **RSI, trend, Divergence momentum, and price action**.  
-> The script must calculate signals on **every historical bar** so they remain visible when scrolling back.  
+> The script must evaluate signals on every confirmed historical bar using only current and past data so they remain visible when scrolling back.  
 > Remember Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 
 > ### 🔹 Inputs & Settings  
@@ -47,7 +47,6 @@
 
 > 2. **RSI** (Setup Filter)  
 > * Be above a mid-level threshold (e.g., 40)  
-> * Have made a recent low  
 > * Show upward momentum resumption (RSI turning up)  
 >      example logic: `rsiHook = rsi >= rsi[1] and rsi[1] < rsi[2] and rsi > ta.lowest(rsi, 3) and rsi > 40`  
 
@@ -56,16 +55,16 @@
 > * Price makes a lower low relative to recent structure  
 > * RSI makes a higher low over the same lookback window  
 > * Divergence must rely on fixed lookback comparisons only  
-> * Divergence is valid **only when trend and EMA support filters pass**  
+> * Divergence must be evaluated only as a setup filter and gated by trend and EMA support in the final entry condition  
 >    * `bullDiv = low < ta.lowest(low, 3)[1] and rsi > ta.lowest(rsi, 3)[1]`   
 
 > 4. **Bullish Rejection Candle** (Entry Trigger)  
-> * The rejection candle is the **final entry trigger**, confirming demand absorption  
+> * The rejection candle provides the entry trigger or momentum confirmation, confirming demand absorption  
 >    * `bullReject_wick = (math.min(open, close) - low) > (high - math.max(open, close))` //Wick-based rejection (absorption)  
 >    * `bullReject_structure = (low < low[1]) and (close > low[1])` //Structure-based rejection (failed breakdown)  
 >    * `bullReject_momentum = close > high[1]` //Momentum resolution after rejection  
 >    * `bullishRejection = bullReject_wick or bullReject_structure or bullReject_momentum` //Final behavior-based rejection condition  
->    * `validRejection = bullishRejection and (math.abs(close - open) > ta.atr(14) * 0.2)`  
+>    * `validRejection = bullishRejection and (math.abs(close - open) > ta.atr(atrLen) * 0.2)`  
 
 > 5. **Final Long (bullish) Entry Condition** (Entry)  
 > * Execute long entry on bar close only    
@@ -74,13 +73,13 @@
 >    * `(not useEmaZoneFilter or emaSupport) and`  
 >    * `(not useRsiFilter or rsiHook) and`  
 >    * `(not useDivergenceFilter or bullDiv) and`  
->    * `(not useRejectionFilter or validBullReject)`  
+>    * `(not useRejectionFilter or validRejection)`  
 
 > ### 🔴 Short Entry (Sell Conditions)  
 > * Short logic must follow the **same structure** as long trades:  
 > * Context → Setup → Trigger  
 > * Operate **only in downtrends**  
-> * Use mirrored logic **conceptually**, not mechanically  
+> * Use mirrored logic conceptually, not mechanically (define bearish RSI zones, EMA resistance, divergence, and rejection logic explicitly)  
 
 > ### 📊 Visual Requirements  
 > * `overlay = true`  
