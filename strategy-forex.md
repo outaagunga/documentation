@@ -10,7 +10,232 @@
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
 ---
-**new version**
+**new version  
+```pinescript
+> Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals**.  
+> The script must evaluate signals on every confirmed historical bar using only current and past data so they remain visible when scrolling back.  
+> Remember Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
+> # 🧩 PULLBACK TRADING STRATEGY  
+> ## 1️⃣ MARKET REGIME FILTER (MANDATORY)
+> ### 1.1 Core Variables (Bar-Based)
+```text
+emaFast = EMA(close, 20)
+emaSlow = EMA(close, 50)
+atr = ATR(14)
+```
+
+> ### 1.2 Trend Persistence (No Lookahead)
+> **EMA slope over fixed window**
+```text
+emaSlowRising = emaSlow > emaSlow[5]
+```
+
+> ### 1.3 EMA Separation (Anti-Chop)
+```text
+emaSeparation = abs(emaFast - emaSlow)
+trendStrength = emaSeparation >= atr * 0.5
+```
+
+> ### 1.4 Uptrend Qualification
+```text
+upTrend =
+    emaFast > emaSlow and
+    emaSlowRising and
+    close > emaSlow and
+    trendStrength
+```
+> 📌 **Important**
+> This is a *state*, not an entry signal.
+
+> ## 2️⃣ CONTEXT: VALID PULLBACK LOCATION
+> ### 2.1 Prior Expansion Detection
+> This Ensures price moved **away** before pulling back
+```text
+recentHigh = highest(high, 10)
+expansionFromEMA = recentHigh - emaFast
+hadExpansion = expansionFromEMA >= atr * 1.0
+```
+
+> ### 2.2 EMA Zone Definition
+```text
+emaZoneHigh = emaFast
+emaZoneLow = emaSlow - atr * 0.3
+```
+
+> ### 2.3 Pullback Location Check
+```text
+pullbackLow = lowest(low, pullbackBars)
+inEmaZone =
+    pullbackLow <= emaZoneHigh and
+    pullbackLow >= emaZoneLow
+```
+> `pullbackBars` should be small and fixed (e.g. 5–8).
+
+> ### 2.4 Pullback Quality (Momentum Filter)
+```text
+bearishMomentum =
+    close < open and
+    (open - close) > atr * 0.5
+```
+
+```text
+controlledPullback = not bearishMomentum
+```
+> 📌 This avoids deep momentum sell-offs.
+
+> ### 2.5 Pullback Context State
+```text
+validPullbackContext =
+    upTrend and
+    hadExpansion and
+    inEmaZone and
+    controlledPullback
+```
+
+> ## 3️⃣ SETUP FILTERS (TIME-LIMITED)
+> ## 3.1 RSI State Filter (MANDATORY)
+```text
+rsi = RSI(close, 14)
+```
+
+> ### RSI Conditions
+```text
+rsiAboveFloor = rsi > 40
+```
+
+```text
+rsiPullbackLow = lowest(rsi, pullbackBars)
+rsiHigherLow = rsiPullbackLow > rsiPullbackLow[pullbackBars]
+```
+
+```text
+rsiTurningUp = rsi >= rsi[1] + 2
+```
+
+> ### RSI Setup Valid
+```text
+validRSI =
+    rsiAboveFloor and
+    rsiHigherLow and
+    rsiTurningUp
+```
+> 📌 This removes noisy RSI hooks.
+
+> ## 3.2 Momentum Divergence (OPTIONAL)
+> **Same-bar divergence only**
+```text
+priceLowerLow = low < low[pullbackBars]
+rsiHigherLowSameBar = rsi > rsi[pullbackBars]
+```
+
+```text
+bullishDivergence =
+    priceLowerLow and
+    rsiHigherLowSameBar and
+    inEmaZone
+```
+> 📌 No rolling windows → no fake divergence.
+
+> ## 4️⃣ TRIGGER: REJECTION + CONFIRMATION
+> ### 4.1 Rejection Candle Logic
+> **Candle metrics**
+```text
+body = abs(close - open)
+range = high - low
+lowerWick = min(open, close) - low
+```
+
+> ### Rejection Conditions (Score-Based)
+```text
+wickReject = lowerWick >= body * 1.2
+```
+
+```text
+structureReject =
+    low < lowest(low[1], pullbackBars) and
+    close > lowest(low[1], pullbackBars)
+```
+
+```text
+closeStrong = close >= low + range * 0.7
+```
+
+> ### Rejection Valid (2 of 3)
+```text
+rejectionScore =
+    wickReject +
+    structureReject +
+    closeStrong
+```
+
+```text
+validRejection = rejectionScore >= 2
+```
+> 📌 Pine supports boolean → int coercion.
+
+> ### 4.2 Confirmation Candle (Next Bar)
+```text
+confirmation =
+    close > high[1] and
+    validRejection[1]
+```
+
+> ## 5️⃣ FINAL LONG ENTRY CONDITION
+```text
+longEntry =
+    validPullbackContext and
+    validRSI and
+    (not useDivergence or bullishDivergence) and
+    confirmation
+```
+> 📌 Entry occurs **on bar close**.
+
+> ## 6️⃣ TIME & STRUCTURE INVALIDATION
+> ### Pullback Duration Control
+```text
+pullbackTooLong = pullbackBars > 8
+```
+
+> ### Hard Invalidation Rules
+```text
+invalidateSetup =
+    close < emaSlow or
+    rsi < 40 or
+    pullbackTooLong
+```
+> 📌 If invalid → no signals allowed.
+
+> ## 7️⃣ STOP & TARGET LOGIC (STRUCTURE-BASED)
+> ### Stop Loss
+```text
+stopPrice = pullbackLow - atr * 0.3
+```
+> ### Targets
+```text
+risk = entryPrice - stopPrice
+tp1 = entryPrice + risk * 1.5
+tp2 = entryPrice + risk * 3.0
+```
+
+> ## 8️⃣ SHORT LOGIC (MIRRORED, EXPLICIT)
+> Use **separate variables**, not `!longLogic`:
+> * Downtrend:
+
+  ```text
+  emaFast < emaSlow
+  emaSlow < emaSlow[5]
+  close < emaSlow
+  emaSeparation >= atr * 0.5
+  ```
+> * Pullback into EMA resistance
+> * RSI below 60 but above 30
+> * Bearish rejection + confirmation
+> * Stops above pullback high
+> 📌 Never flip signs mechanically.
+```
+---
+---
+**other version**
 ```pinescript
 > Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals** using **RSI, trend, Divergence momentum, and price action**.  
 > The script must evaluate signals on every confirmed historical bar using only current and past data so they remain visible when scrolling back.  
@@ -2195,7 +2420,201 @@ alertcondition(shortCondition, "Trend-Aligned Short", "Bearish Rejection at Resi
 
 Strategy: 9  
 
+# 🧠 INSTITUTIONAL-STYLE RULESET
 
+*(Pullback Continuation Strategy)*
+
+---
+
+## 1️⃣ MARKET REGIME FILTER (MANDATORY)
+
+> **Purpose:** Decide *if* we are allowed to trade — not *where*.
+
+### 1.1 Trend Qualification
+
+**Uptrend is valid only if ALL are true:**
+
+1. **EMA Alignment**
+
+   * EMA(20) > EMA(50)
+
+2. **Trend Persistence**
+
+   * EMA(50) has been rising for **at least 5 bars**
+
+3. **Price Acceptance**
+
+   * Close is above EMA(50)
+
+4. **Trend Strength (Anti-Chop)**
+
+   * Distance between EMA(20) and EMA(50) ≥ **0.5 × ATR(14)**
+
+📌 **Why this matters**
+
+* Prevents trading during EMA compression
+* Eliminates false trends
+* Institutional systems *do not trade transitions*
+
+---
+
+### 1.2 No-Trade Conditions (Explicit)
+
+**Do NOT trade if:**
+
+* EMA(20) and EMA(50) are flat or converging
+* Price is oscillating around EMA(50)
+* ATR is expanding while EMA slope is flat (volatility chop)
+
+---
+
+## 2️⃣ CONTEXT: PULLBACK LOCATION (MANDATORY)
+
+> **Purpose:** Ensure we are buying *discounts* inside a valid trend.
+
+### 2.1 Valid Pullback Definition
+
+A pullback is valid ONLY if:
+
+1. **Prior Expansion Exists**
+
+   * Price moved **≥ 1.0 × ATR above EMA(20)** within the last 10 bars
+
+2. **Controlled Retracement**
+
+   * Price retraces into the **EMA(20)–EMA(50) zone**
+   * Lowest low of pullback is **no deeper than EMA(50) − 0.3 × ATR**
+
+3. **Pullback Structure**
+
+   * Pullback consists of **lower highs or overlapping candles**
+   * No strong bearish momentum candles
+
+📌 **What this removes**
+
+* Random EMA touches
+* Buying weak trends
+* Buying late-stage exhaustion moves
+
+---
+
+## 3️⃣ SETUP FILTERS (CONDITIONAL, TIME-LIMITED)
+
+> **Purpose:** Confirm momentum is *pausing*, not *reversing*.
+
+---
+
+### 3.1 RSI State Filter (MANDATORY)
+
+RSI(14) must:
+
+1. Stay **above 40** throughout pullback
+2. Make a **higher low relative to the start of pullback**
+3. Begin to **turn upward by at least 2 RSI points**
+
+📌 **Why**
+
+* RSI hooks alone are noise
+* We want **momentum compression → expansion**
+
+---
+
+### 3.2 Momentum Divergence (OPTIONAL, CONFIRMATION ONLY)
+
+> Divergence is **never required**, only supportive.
+
+Bullish divergence is valid only if:
+
+1. Price makes a **lower low within pullback**
+2. RSI makes a **higher low on the SAME bar**
+3. Divergence occurs **inside EMA zone**
+4. Occurs within **last 5 bars of pullback**
+
+📌 **Institutional truth**
+
+* Divergence increases confidence, not expectancy
+* Never trade divergence alone
+
+---
+
+## 4️⃣ TRIGGER: ENTRY EXECUTION (STRICT)
+
+> **Purpose:** Define the exact moment risk is taken.
+
+### 4.1 Rejection + Confirmation Model
+
+**Step 1 — Rejection Candle**
+At least **2 of the following must be true** on the same bar:
+
+* Lower wick ≥ 1.2 × body
+* Low sweeps prior pullback low and closes back above it
+* Close is in the top 30% of candle range
+
+**Step 2 — Confirmation Close**
+
+* Next candle closes **above the rejection candle high**
+
+📌 **Why**
+
+* Removes premature entries
+* Confirms actual demand, not just absorption
+
+---
+
+## 5️⃣ ENTRY RULE (LONG)
+
+Enter **LONG** at the **close of the confirmation candle** ONLY IF:
+
+* Market regime is valid
+* Pullback context is intact
+* RSI filter remains valid
+* (Optional) Divergence present
+* Rejection + confirmation completed
+* Entry occurs **within 3 bars max** after pullback low
+
+⛔ **Invalidate setup immediately if:**
+
+* Price closes below EMA(50)
+* RSI closes below 40
+* Pullback exceeds 8 bars
+* Strong bearish momentum candle appears
+
+---
+
+## 6️⃣ RISK MANAGEMENT (FIXED, NON-NEGOTIABLE)
+
+### 6.1 Stop Loss
+
+* Stop = **Lowest low of pullback − 0.3 × ATR**
+
+📌 More adaptive than static ATR stops.
+
+---
+
+### 6.2 Take Profit
+
+Two-tier model (institutional standard):
+
+* TP1 = **1.5R** → partial close
+* TP2 = **3.0R** → final exit
+
+OR
+
+* Trail stop using EMA(20) after TP1
+
+---
+
+## 7️⃣ SHORT TRADES (MIRRORED, NOT FLIPPED)
+
+Everything above applies inversely:
+
+* Downtrend confirmation
+* Pullback into EMA resistance
+* RSI below 60, holding above 30
+* Bearish rejection + confirmation
+* Stops above pullback high
+
+📌 No symmetry shortcuts — bearish markets behave differently.
 
 
 
