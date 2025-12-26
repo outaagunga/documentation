@@ -10,80 +10,124 @@
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
 ---
+**new version**
+```pinescript
 
-> Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals** using **RSI, trend, volume, and price action**.
-> The script must calculate signals on **every historical bar** so they remain visible when scrolling back.
-> Remember Pine Script doesn't allow multi-line function calls. Everything needs to be on one line
+```
+---
+---
+**old version**
+> Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals** using **RSI, trend, Divergence momentum, and price action**.  
+> The script must calculate signals on **every historical bar** so they remain visible when scrolling back.  
+> Remember Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 
-> ### 🔹 Inputs & Settings
+> ### 🔹 Inputs & Settings  
 
-> * RSI length (default 14)
-> * emaFastLen (default 20)
-> * emaSlowLen (default 50)
-> * ATR length (default: 14)
-> * On/Off toggle (boolean input) for **each filter**:
+> * RSI length (default 14)  
+> * emaFastLen (default 20)  
+> * emaSlowLen (default 50)  
+> * ATR length (default: 14)  
+> * On/Off toggle (boolean input) for **each filter**:  
 
->   * Momentum Divergence filter
->   * RSI filter
->   * Rejection candle filter
->   * Trend filter
->   * Support/Resistance (EMA zone) filter
+>   * Momentum Divergence filter  
+>   * RSI filter  
+>   * Rejection candle filter  
+>   * Trend filter  
+>   * Support/Resistance (EMA zone) filter  
 
-> ### 📈 Trend Definition
-> * **Uptrend:** `emaSlow > ta.lowest(emaSlow, 3) and (emaFast > emaSlow)` This allows for brief moments where the EMA flattens 
-> * **Downtrend:** `emaSlow < ta.highest(emaSlow, 3) and (emaFast < emaSlow)`
+> ## 📈 **Trend Definition (Context Filter Only)**  
 
-> ### 🟢 Long Entry (Buy Conditions)
-> A Buy signal triggers **only when all enabled filters pass**:
+> Trend defines trade direction eligibility only and does **not trigger entries**  
+> * **Uptrend:** `emaSlow > ta.lowest(emaSlow, 3) and (emaFast > emaSlow)` This allows for brief moments where the EMA flattens  
+> * **Downtrend:** `emaSlow < ta.highest(emaSlow, 3) and (emaFast < emaSlow)`  
 
-> 1. **Momentum Divergence**
->    * `(low < ta.lowest(low, 3)[1]) and (rsi > ta.lowest(rsi, 3)[1])` Price making a lower low while RSI does not make a lower low over the same lookback window   
-> 2. **RSI Hook**
->      example logic: `(rsi >= rsi[1]) and (rsi > rsi[1] or rsi > rsi[2]) and (rsi > ta.lowest(rsi, 3))`
-> 3. **Bullish Rejection Candle**
->    * `bullReject_wick = (math.min(open, close) - low) > (high - math.max(open, close))` //Wick-based rejection (absorption)
->    * `bullReject_structure = (low < low[1]) and (close > low[1])` //Structure-based rejection (failed breakdown)
->    * `bullReject_momentum = close > high[1]` //Momentum resolution after rejection
->    * `bullishRejection = bullReject_wick or bullReject_structure or bullReject_momentum` //Final behavior-based rejection condition
->    * `validRejection = bullishRejection and (math.abs(close - open) > ta.atr(14) * 0.2)`
-> 4. **EMA Support Zone**
->    * `(close > emaSlow) and (ta.lowest(low, 3) <= emaFast * 1.002)` This allows price pull back to or near the fast EMA within the last 1–3 bars. If on higher time frame (e.g day or weekly) or trading volatile items like crypto increase `0.002` to `0.1`  
-> 5. **Trend Filter**
->    * Price must be in uptrend  
+> ### 🟢 Long Entry (Buy Conditions)  
 
-> ### 🔴 Short Entry (Sell Conditions)
-> Short conditions must be the exact logical inverse of long conditions, including EMA buffers and RSI logic:
+> A Buy signal triggers **only when all enabled filters pass**: Filters are categorized as **Context → Setup → Trigger**  
 
-> ### 📊 Visual Requirements
-> * `overlay = true`
-> * Plot EMAs:
->   * emaFast → **Orange**
->   * emaSlow → **Blue**
+> 1. **EMA Support Zone** (Pullback Context)   
+> Confirms that price is pulling back into a dynamic support area **within an uptrend**  
+> The buffer must be **ATR-based**, not percentage-based, to adapt to volatility  
+>    * `(close > emaSlow) and (ta.lowest(low, 3) <= emaFast * 1.002)`  
 
-> * Entry markers:
->   * Buy → `size=size.tiny` **green triangle up** (`location.belowbar`) use `title=""` to removes the text labels 
->   * Sell → `size=size.tiny` **red triangle down** (`location.abovebar`) `title=""` to removes the text labels 
-> Use `plotshape()` for entries.
+> 2. **RSI** (Setup Filter)  
+> * Be above a mid-level threshold (e.g., 40)  
+> * Have made a recent low  
+> * Show upward momentum resumption (RSI turning up)  
+>      example logic: `(rsi >= rsi[1]) and (rsi > rsi[1] or rsi > rsi[2]) and (rsi > ta.lowest(rsi, 3))`  
 
-> ### 📋 Trade Info Table
-> * Create a table using:
->   `table.new(position.top_right, 2, 3)`
-> * Display:
->   * Entry Price
->   * Stop Loss `(use 1.5 * ATR)`
->   * Take Profit `(use 3.0 * ATR)`
-> * Table updates **only when a new signal occurs**
+> 3. **Momentum Divergence** (Setup Filter)  
+> * Detects bullish divergence during pullbacks only  
+> * Price makes a lower low relative to recent structure  
+> * RSI makes a higher low over the same lookback window  
+> * Divergence must rely on fixed lookback comparisons only  
+> * Divergence is valid **only when trend and EMA support filters pass**  
+>    * `(low < ta.lowest(low, 3)[1]) and (rsi > ta.lowest(rsi, 3)[1])`   
 
-> ### ⏰ Alerts
-> * Add alert conditions for:
->   * Buy signal
->   * Sell signal
-> Alerts must trigger **once per signal**.
+> 4. **Bullish Rejection Candle** (Entry Trigger)  
+> * The rejection candle is the **final entry trigger**, confirming demand absorption  
+>    * `bullReject_wick = (math.min(open, close) - low) > (high - math.max(open, close))` //Wick-based rejection (absorption)  
+>    * `bullReject_structure = (low < low[1]) and (close > low[1])` //Structure-based rejection (failed breakdown)  
+>    * `bullReject_momentum = close > high[1]` //Momentum resolution after rejection  
+>    * `bullishRejection = bullReject_wick or bullReject_structure or bullReject_momentum` //Final behavior-based rejection condition  
+>    * `validRejection = bullishRejection and (math.abs(close - open) > ta.atr(14) * 0.2)`  
 
-> ### 📝 Code Quality
-> * Clean, readable structure
-> * Clear comments explaining each filter
+> ### 🔴 Short Entry (Sell Conditions)  
+> * Short logic must follow the **same structure** as long trades:  
+> * Context → Setup → Trigger  
+> * Operate **only in downtrends**  
+> * Use mirrored logic **conceptually**, not mechanically  
+
+> ### 📊 Visual Requirements  
+> * `overlay = true`  
+> * Use `plotshape()` for all entries  
+> * Plot EMAs:  
+>   * Fast EMA → **Orange**  
+>   * Slow EMA → **Blue**  
+
+> ### Entry Markers:  
+> * Buy:  
+>  * Green triangle up  
+>  * `size = size.tiny`  
+>  * `location = location.belowbar`  
+>  * `title = ""`  
+
+> * Sell:  
+>  * Red triangle down  
+>  * `size = size.tiny`  
+>  * `location = location.abovebar`  
+>  * `title = ""`  
+
+> ## 📋 **Trade Information Table**  
+
+> Create a table using:  
+> * `table.new(position.top_right, 2, 3)`  
+> * Update the table **only when a new signal occurs**.  
+
+> **Display**:  
+> * Entry price  
+> * Stop loss → `1.5 * ATR`  
+> * Take profit → `3.0 * ATR`  
+
+> ## ⏰ **Alerts**  
+> Add alert conditions that:  
+> * Trigger **once per signal**  
+> * Do **not** repeat while the condition remains true  
+
+> Alerts required:  
+> * Buy signal  
+> * Sell signal  
+
+> ## 🧹 **Code Quality & Best Practices**  
+> * Clean, readable structure  
+> * Clear comments explaining:  
+>  * Context filters
+>  * Setup filters
+>  * Entry trigger logic
 > * Use functions where appropriate
+> * No repainting logic
+> * No pivot-based functions
+> * No future bar references
 
 ---
 ---
