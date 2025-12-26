@@ -22,7 +22,7 @@
 > * ATR length (default: 14)
 > * On/Off toggle (boolean input) for **each filter**:
 
->   * Volume filter
+>   * Momentum Divergence filter
 >   * RSI filter
 >   * Rejection candle filter
 >   * Trend filter
@@ -35,8 +35,8 @@
 > ### 🟢 Long Entry (Buy Conditions)
 > A Buy signal triggers **only when all enabled filters pass**:
 
-> 1. **Volume Lookback**
->    * `volCondition = ta.highest(volume > (ta.sma(volume, 5) * 0.8) ? 1 : 0, volLookback) == 1` volume must have been more than 80% at least once during ... On a higher timeframe increase `5` to atleast `20`  
+> 1. **Momentum Divergence**
+>    * `(low < ta.lowest(low, 3)[1]) and (rsi > ta.lowest(rsi, 3)[1])` Price making a lower low while RSI does not make a lower low over the same lookback window   
 > 2. **RSI Hook**
 >      example logic: `(rsi >= rsi[1]) and (rsi > rsi[1] or rsi > rsi[2]) and (rsi > ta.lowest(rsi, 3))`
 > 3. **Bullish Rejection Candle**
