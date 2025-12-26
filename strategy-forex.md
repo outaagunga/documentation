@@ -105,7 +105,8 @@
 
 > Create a table using:  
 > * `table.new(position.top_right, 2, 3)`  
-> * Update the table **only when a new signal occurs**.  
+> * Update the table **only when a new signal occurs**.
+> * `strategy.position_size != strategy.position_size[1]`   
 
 > **Display**:  
 > * Entry price  
