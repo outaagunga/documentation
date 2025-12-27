@@ -246,7 +246,40 @@
     
     > ## 8️⃣ SHORT LOGIC (MIRRORED, EXPLICIT)
     >  Short logic must follow the **same structure** as long trades logic mirrored conceptually
-       
+
+    > ### 📊 Visual Requirements  
+    > * `overlay = true`  
+    > * Use `plotshape()` for all entries  
+    > * Plot EMAs:  
+    >   * emaFast → **Blue**  
+    >   * emaSlow → **Red**  
+    
+    > ### Entry Markers:  
+    > * Buy:  
+    >  * Green triangle up  
+    >  * `size = size.tiny`  
+    >  * `location = location.belowbar`  
+    >  * `title = ""`  
+    
+    > * Sell:  
+    >  * Orange triangle down  
+    >  * `size = size.tiny`  
+    >  * `location = location.abovebar`  
+    >  * `title = ""`  
+    
+    > ## ⏰ **Alerts**  
+    > Add alert conditions that:  
+    > * Trigger **once per signal**  
+    > * Do **not** repeat while the condition remains true  
+    
+    > Alerts required:  
+    > * Buy signal  
+    > * Sell signal  
+    
+    > ## 🧹 **Code Quality & Best Practices**  
+    > * Clean, readable structure  
+    > * Clear comments explaining each part   
+    > * Use functions where appropriate
 ```
 ---
 ---
