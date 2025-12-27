@@ -10,557 +10,495 @@
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
 ---
-**new version  
+**Pullback trading strateggy**  
 ```pinescript
-    > Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals**.  
-    > The script must evaluate signals on every confirmed historical bar using only current and past data so they remain visible when scrolling back. Add On/Off toggle (boolean input) for each filter so that i can turn them on/ off.  
-    > Remember Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
-    > # 🧩 PULLBACK TRADING STRATEGY  
-    > ## 1️⃣ MARKET REGIME FILTER (MANDATORY)
-    > ### 1.1 Core Variables (Bar-Based)
-    ```text
-    emaFast = ta.ema(close, 20)
-    emaSlow = ta.ema(close, 50)
-    atr = ta.atr(14)
-    rsi = ta.rsi(close, 14)
-    pullbackBars = input.int(5, "Pullback Bars", minval=1, maxval=20)
+    # 📋 PULLBACK TRADING STRATEGY - PINE SCRIPT v6 SPECIFICATION
+    
+    ## 🎯 STRATEGY OVERVIEW
+    Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals** using a structured approach: **Market Regime → Context → Setup → Trigger → Confirmation**.
+    
+    ### Core Requirements
+    - Evaluate signals on every confirmed historical bar using only current and past data
+    - No repainting logic, no pivot lookahead, no future bar references
+    - Add On/Off toggle (boolean input) for **each optional filter**
+    - `overlay = true`
+    
+    ---
+    
+    ## 📐 CORE INPUTS & VARIABLES
+    
+    ```pinescript
+    // Length inputs
+    emaFastLen = input.int(20, "Fast EMA Length", minval=5, maxval=100)
+    emaSlowLen = input.int(50, "Slow EMA Length", minval=10, maxval=200)
+    rsiLen = input.int(14, "RSI Length", minval=5, maxval=50)
+    atrLen = input.int(14, "ATR Length", minval=5, maxval=50)
+    pullbackBars = input.int(5, "Pullback Lookback Bars", minval=3, maxval=20)
+    
+    // Filter toggles (each can be turned on/off)
+    useTrendFilter = input.bool(true, "Use Trend Filter")
+    useEmaZoneFilter = input.bool(true, "Use EMA Support/Resistance Zone")
+    useRsiFilter = input.bool(true, "Use RSI Setup Filter")
+    useDivergenceFilter = input.bool(false, "Use Momentum Divergence")
+    useRejectionFilter = input.bool(true, "Use Rejection Candle")
+    useVolumeFilter = input.bool(false, "Use Volume Confirmation")
+    useVolatilityFilter = input.bool(true, "Use Volatility Filter")
+    useHTFFilter = input.bool(false, "Use Higher Timeframe Alignment")
+    
+    // Core calculations
+    emaFast = ta.ema(close, emaFastLen)
+    emaSlow = ta.ema(close, emaSlowLen)
+    atr = ta.atr(atrLen)
+    rsi = ta.rsi(close, rsiLen)
     ```
-
-    ```text
+    
+    ---
+    
+    ## 1️⃣ MARKET REGIME FILTER (Context - Mandatory Foundation)
+    
+    **Purpose:** Defines whether we're in a tradeable trend environment. This is a **state**, not an entry signal.
+    
+    ### 1.1 EMA Alignment
+    ```pinescript
     emaAlignedUp = emaFast > emaSlow
+    emaAlignedDown = emaFast < emaSlow
     ```
-    > ### 1.2 Trend Persistence (No Lookahead)
-    > **EMA slope over fixed window**
-    ```text
+    
+    ### 1.2 Trend Persistence (Slope Confirmation)
+    **Ensures EMA is actually trending, not just randomly crossed**
+    ```pinescript
     emaSlopePercent = (emaSlow - emaSlow[10]) / emaSlow[10] * 100
     emaSlowRising = emaSlopePercent >= 0.15  // 0.15% rise over 10 bars
-    ```
-    ```text
-    priceAccepted = close >= emaSlow
-    ```
-    > ### 1.3 EMA Separation (Anti-Chop)
-    ```text
-    emaSeparation = math.abs(emaFast - emaSlow)
-    trendStrong = (emaFast - emaSlow) / emaSlow >= 0.003  // 0.3% separation
+    emaSlowFalling = emaSlopePercent <= -0.15  // 0.15% fall over 10 bars
     ```
     
-    > ### 1.4 Uptrend Qualification
-    ```text
-   upTrend =
-        emaAlignedUp and
-        emaSlowRising and
-        priceAccepted and
-        trendStrong
+    ### 1.3 Price Position (Acceptance)
+    ```pinescript
+    priceAcceptedAbove = close >= emaSlow
+    priceAcceptedBelow = close <= emaSlow
     ```
-    > 📌 **Important**
-    > This is a *state*, not an entry signal.
     
-    > ## 2️⃣ CONTEXT: VALID PULLBACK LOCATION
-    > ### 2.1 Prior Expansion Detection
-    > This Ensures price moved **away** before pulling back
-    ```text
+    ### 1.4 EMA Separation (Anti-Chop Filter)
+    **Prevents trading in tight consolidations**
+    ```pinescript
+    emaSeparationPercent = math.abs(emaFast - emaSlow) / emaSlow * 100
+    trendStrongUp = (emaFast - emaSlow) / emaSlow >= 0.003  // 0.3% separation minimum
+    trendStrongDown = (emaSlow - emaFast) / emaSlow >= 0.003
+    ```
+    
+    ### 1.5 Final Trend Qualification
+    ```pinescript
+    upTrend = emaAlignedUp and emaSlowRising and priceAcceptedAbove and trendStrongUp
+    downTrend = emaAlignedDown and emaSlowFalling and priceAcceptedBelow and trendStrongDown
+    ```
+    
+    📌 **Critical:** This only determines **eligibility** to look for trades, not entry timing.
+    
+    ---
+    
+    ## 2️⃣ CONTEXT: VALID PULLBACK LOCATION
+    
+    **Purpose:** Confirms price has pulled back to a logical support/resistance zone within the trend.
+    
+    ### 2.1 Prior Expansion Detection
+    **Ensures there was a trend move before the pullback**
+    ```pinescript
+    // For longs: confirm price extended above EMA before pulling back
     recentHigh = ta.highest(high, 10)
-    hadExpansion = (recentHigh - emaFast) >= atr * 0.6
+    hadExpansionUp = (recentHigh - emaFast) >= atr * 0.6
+    
+    // For shorts: confirm price extended below EMA before pulling back
+    recentLow = ta.lowest(low, 10)
+    hadExpansionDown = (emaFast - recentLow) >= atr * 0.6
     ```
     
-    > ### 2.2 EMA Zone Definition
-    ```text
-    emaZoneHigh = emaFast
-    emaZoneLow = emaSlow - atr * 0.6
+    ### 2.2 EMA Support/Resistance Zone Definition
+    **Creates a buffer zone around the EMAs for pullback detection**
+    ```pinescript
+    // Long setup: Support zone
+    emaZoneHighLong = emaFast + atr * 0.2
+    emaZoneLowLong = emaSlow - atr * 0.6
+    
+    // Short setup: Resistance zone
+    emaZoneHighShort = emaSlow + atr * 0.6
+    emaZoneLowShort = emaFast - atr * 0.2
     ```
     
-    > ### 2.3 Pullback Location Check
-    ```text
-    pullbackLow = ta.lowest(low[1], pullbackBars)
-    inEmaZone =
-        pullbackLow <= emaZoneHigh and
-        pullbackLow >= emaZoneLow
-    ```
-    > `pullbackBars` should be small and fixed (e.g. 5–8).
+    ### 2.3 Pullback Location Check
+    **Verifies price actually touched the EMA zone during recent bars**
+    ```pinescript
+    // For longs: Recent low must have touched support zone
+    pullbackLowLong = ta.lowest(low, pullbackBars)
+    inEmaZoneLong = pullbackLowLong <= emaZoneHighLong and pullbackLowLong >= emaZoneLowLong
     
-    > ### 2.4 Pullback Quality (Momentum Filter)
-    ```text
-    largeBearishCandle =
-        close < open and
-        (open - close) > atr * 0.7
+    // For shorts: Recent high must have touched resistance zone
+    pullbackHighShort = ta.highest(high, pullbackBars)
+    inEmaZoneShort = pullbackHighShort >= emaZoneLowShort and pullbackHighShort <= emaZoneHighShort
     ```
     
-    ```text
-    controlledPullback = not largeBearishCandle
-    ```
-    > 📌 This avoids deep momentum sell-offs.
+    ### 2.4 Pullback Bounce Confirmation
+    **Price must show signs of reversing from the zone, not continuing through it**
+    ```pinescript
+    // For longs: Price bouncing up from zone
+    priceBouncedFromSupport = close > ta.sma(close, 3)
     
-    > ### 2.5 Pullback Context State
-    ```text
-    validPullbackContext =
-        upTrend and
-        hadExpansion and
-        inEmaZone and
-        controlledPullback
+    // For shorts: Price bouncing down from zone
+    priceBouncedFromResistance = close < ta.sma(close, 3)
     ```
     
-    > ## 3️⃣ SETUP FILTERS (TIME-LIMITED)
-    > ## 3.1 RSI State (MANDATORY)
-    > ### RSI Conditions
-    ```text
-    rsiAboveFloor = rsi > 38
+    ### 2.5 Pullback Quality (Momentum Filter)
+    **Avoids deep momentum sell-offs or blow-off tops**
+    ```pinescript
+    // For longs: No large bearish candles (panic selling)
+    largeBearishCandle = close < open and (open - close) > atr * 0.7
+    controlledPullbackLong = not largeBearishCandle
+    
+    // For shorts: No large bullish candles (panic buying)
+    largeBullishCandle = close > open and (close - open) > atr * 0.7
+    controlledPullbackShort = not largeBullishCandle
     ```
     
-    ```text
-    rsiRecentHigh = ta.highest(rsi, pullbackBars)
-    rsiDrawdown = rsiRecentHigh - rsi
-    rsiStructureValid = rsiDrawdown <= 15
+    ### 2.6 Valid Pullback Context State
+    ```pinescript
+    // Long context
+    validPullbackContextLong = upTrend and hadExpansionUp and inEmaZoneLong and priceBouncedFromSupport and controlledPullbackLong
+    
+    // Short context
+    validPullbackContextShort = downTrend and hadExpansionDown and inEmaZoneShort and priceBouncedFromResistance and controlledPullbackShort
     ```
     
-    ```text
-    rsiTurningUp = rsi > rsi[1] and rsi[1] >= rsi[2]
+    ---
+    
+    ## 3️⃣ SETUP FILTERS (Optional Quality Enhancers)
+    
+    ### 3.1 RSI Setup Filter (Recommended)
+    **Confirms momentum is shifting in favor of trend direction**
+    
+    ```pinescript
+    // For longs: RSI was oversold, now turning up
+    rsiOversold = rsi < 40
+    rsiTurningUp = rsi > rsi[1] and rsi[1] > rsi[2]  // 2 consecutive rising bars
+    rsiAboveRecent = rsi > ta.sma(rsi, 3)
+    rsiSetupLong = rsiOversold[1] and rsiTurningUp and rsiAboveRecent
+    
+    // For shorts: RSI was overbought, now turning down
+    rsiOverbought = rsi > 60
+    rsiTurningDown = rsi < rsi[1] and rsi[1] < rsi[2]  // 2 consecutive falling bars
+    rsiBelowRecent = rsi < ta.sma(rsi, 3)
+    rsiSetupShort = rsiOverbought[1] and rsiTurningDown and rsiBelowRecent
     ```
     
-    > ### RSI Setup Valid
-    ```text
-    validRSI =
-        rsiAboveFloor and
-        rsiStructureValid and
-        rsiTurningUp
-    ```
-    > 📌 This removes noisy RSI hooks.
+    ### 3.2 Momentum Divergence Filter (Optional)
+    **Detects divergence between price and RSI at swing points**
     
-    > ## 3.2 Momentum Divergence (OPTIONAL)
-    > **Same-bar divergence only**
-    ```text
-    priceLowerOrEqualLow = low <= low[pullbackBars]
-    rsiHigherOrEqualLow = rsi >= rsi[pullbackBars]
+    ```pinescript
+    // Pivot detection (5 bars left, 5 bars right for confirmation)
+    pivotLow = ta.pivotlow(low, 5, 5)
+    pivotHigh = ta.pivothigh(high, 5, 5)
+    
+    // For longs: Bullish divergence (price lower low, RSI higher low)
+    pivotLowPrice = ta.valuewhen(pivotLow, low, 0)
+    pivotLowPrice_prev = ta.valuewhen(pivotLow, low, 1)
+    pivotLowRSI = ta.valuewhen(pivotLow, rsi, 0)
+    pivotLowRSI_prev = ta.valuewhen(pivotLow, rsi, 1)
+    bullishDiv = pivotLow and pivotLowPrice < pivotLowPrice_prev and pivotLowRSI > pivotLowRSI_prev
+    
+    // For shorts: Bearish divergence (price higher high, RSI lower high)
+    pivotHighPrice = ta.valuewhen(pivotHigh, high, 0)
+    pivotHighPrice_prev = ta.valuewhen(pivotHigh, high, 1)
+    pivotHighRSI = ta.valuewhen(pivotHigh, rsi, 0)
+    pivotHighRSI_prev = ta.valuewhen(pivotHigh, rsi, 1)
+    bearishDiv = pivotHigh and pivotHighPrice > pivotHighPrice_prev and pivotHighRSI < pivotHighRSI_prev
     ```
     
-    ```text
-    bullishDivergence =
-        rsi > rsi[1] and
-        rsi[1] < rsi[2] and
-        rsi >= ta.lowest(rsi, pullbackBars)
-    ```
-    > 📌 No rolling windows → no fake divergence.
-
-    > ### Volume Confirmation (Optional)
-    ```text
+    ### 3.3 Volume Filter (Optional)
+    **Confirms pullback is not a panic event**
+    
+    ```pinescript
     avgVolume = ta.sma(volume, 20)
-    volumeAcceptable = volume <= avgVolume * 1.5  // Not a panic sell-off
+    volumeAcceptable = volume <= avgVolume * 1.5  // Not excessive volume (panic)
     ```
-
-    > ### Higher Timeframe Filter (Optional)
-    ```text
-    htfTrend = request.security(syminfo.tickerid, "240", ta.ema(close, 50))  // 4H EMA50
-    alignedWithHTF = close > htfTrend
+    
+    ### 3.4 Volatility Filter (Optional)
+    **Avoids dead markets with insufficient movement**
+    
+    ```pinescript
+    avgATR = ta.sma(atr, 20)
+    isVolatileEnough = atr > avgATR * 0.7  // At least 70% of recent average volatility
     ```
-    > ## 4️⃣ TRIGGER: REJECTION + CONFIRMATION
-    > ### 4.1 Rejection Candle Logic
-    > **Candle metrics**
-    ```text
+    
+    ### 3.5 Higher Timeframe Alignment (Optional)
+    **Ensures trend alignment with larger timeframe**
+    
+    ```pinescript
+    htfEma = request.security(syminfo.tickerid, "240", ta.ema(close, 50))  // 4H EMA50
+    alignedWithHTFLong = close > htfEma
+    alignedWithHTFShort = close < htfEma
+    ```
+    
+    ---
+    
+    ## 4️⃣ TRIGGER: REJECTION CANDLE (Price Action Confirmation)
+    
+    **Purpose:** Identifies the specific candle that shows demand/supply absorption.
+    
+    ### 4.1 Candle Metrics
+    ```pinescript
     body = math.abs(close - open)
     candleRange = high - low
     lowerWick = math.min(open, close) - low
+    upperWick = high - math.max(open, close)
     ```
     
-    > ### Rejection Conditions (Score-Based)
-    ```text
-    wickReject = lowerWick >= body
+    ### 4.2 Rejection Scoring System (0-4 points)
+    
+    **For Long Entries (Bullish Rejection):**
+    ```pinescript
+    rejectionScoreLong = 0
+    
+    // Wick rejection (0-2 points)
+    if lowerWick > upperWick * 1.5
+        rejectionScoreLong := rejectionScoreLong + 2
+    else if lowerWick > upperWick
+        rejectionScoreLong := rejectionScoreLong + 1
+    
+    // Wick significance (0-1 point)
+    if lowerWick > atr * 0.4
+        rejectionScoreLong := rejectionScoreLong + 1
+    
+    // Structure rejection: failed breakdown (0-2 points)
+    structureRejectLong = low < ta.lowest(low[1], pullbackBars) and close > ta.lowest(low[1], pullbackBars)
+    if structureRejectLong
+        rejectionScoreLong := rejectionScoreLong + 2
+    
+    // Strong close in upper range (0-1 point)
+    if close >= low + candleRange * 0.6
+        rejectionScoreLong := rejectionScoreLong + 1
+    
+    // Valid rejection requires at least 3 points
+    validRejectionLong = rejectionScoreLong >= 3
     ```
     
-    ```text
-    structureReject =
-        low < ta.lowest(low[1], pullbackBars) and
-        close > ta.lowest(low[1], pullbackBars)
+    **For Short Entries (Bearish Rejection):**
+    ```pinescript
+    rejectionScoreShort = 0
+    
+    // Wick rejection (0-2 points)
+    if upperWick > lowerWick * 1.5
+        rejectionScoreShort := rejectionScoreShort + 2
+    else if upperWick > lowerWick
+        rejectionScoreShort := rejectionScoreShort + 1
+    
+    // Wick significance (0-1 point)
+    if upperWick > atr * 0.4
+        rejectionScoreShort := rejectionScoreShort + 1
+    
+    // Structure rejection: failed breakout (0-2 points)
+    structureRejectShort = high > ta.highest(high[1], pullbackBars) and close < ta.highest(high[1], pullbackBars)
+    if structureRejectShort
+        rejectionScoreShort := rejectionScoreShort + 2
+    
+    // Strong close in lower range (0-1 point)
+    if close <= high - candleRange * 0.6
+        rejectionScoreShort := rejectionScoreShort + 1
+    
+    // Valid rejection requires at least 3 points
+    validRejectionShort = rejectionScoreShort >= 3
     ```
     
-    ```text
-    strongClose = close >= low + candleRange * 0.6
+    ---
+    
+    ## 5️⃣ SETUP BAR IDENTIFICATION
+    
+    **Purpose:** Combines all filters to identify a potential setup bar (not yet an entry).
+    
+    ### 5.1 Setup Bar Conditions
+    ```pinescript
+    // Long setup bar
+    setupBarLong = validPullbackContextLong and (not useRsiFilter or rsiSetupLong) and (not useDivergenceFilter or bullishDiv) and (not useVolumeFilter or volumeAcceptable) and (not useVolatilityFilter or isVolatileEnough) and (not useHTFFilter or alignedWithHTFLong) and (not useRejectionFilter or validRejectionLong)
+    
+    // Short setup bar
+    setupBarShort = validPullbackContextShort and (not useRsiFilter or rsiSetupShort) and (not useDivergenceFilter or bearishDiv) and (not useVolumeFilter or volumeAcceptable) and (not useVolatilityFilter or isVolatileEnough) and (not useHTFFilter or alignedWithHTFShort) and (not useRejectionFilter or validRejectionShort)
     ```
     
-    > ### Rejection Valid (2 of 3)
-    ```text
-    rejectionScore = 
-        (wickReject ? 1 : 0) +
-        (structureReject ? 2 : 0) +  // Double weight
-        (strongClose ? 1 : 0)
-
-    validRejection = rejectionScore >= 3  // Requires structure + one other
-    ```
-
-    > ### Setup
-    ```text
-    setupBar =
-        validPullbackContext and
-        validRSI and
-        (not useDivergence or bullishDivergence) and
-        validRejection
-    ```
-
-    > ### Invalidation Rules
-    ```text
-   var int pullbackCounter = 0
-    if setupBar
-        pullbackCounter := 0
-    else if validPullbackContext  // Only count during active pullback
-        pullbackCounter += 1
+    ### 5.2 Pullback Timer & Invalidation
+    **Prevents chasing old setups or broken pullbacks**
+    
+    ```pinescript
+    // Track how long we've been in pullback context
+    var int pullbackCounterLong = 0
+    var int pullbackCounterShort = 0
+    
+    // Long pullback tracking
+    if setupBarLong
+        pullbackCounterLong := 0
+    else if validPullbackContextLong
+        pullbackCounterLong += 1
     else
-        pullbackCounter := 0  // Reset when not in pullback
-
-    pullbackTooLong = pullbackCounter > 10
-    invalidateSetup = (close < emaSlow) or (rsi < 38) or pullbackTooLong
-    ```
-
-    > ### 4.2 Confirmation Candle (Next Bar)
-    ```text
-    var bool waitingForConfirmation = false
-    var float confirmationLevel = na
-
-    if setupBar and not waitingForConfirmation
-        waitingForConfirmation := true
-        confirmationLevel := high
-
-    confirmation = waitingForConfirmation and close > confirmationLevel
-
-    if confirmation or invalidateSetup
-        waitingForConfirmation := false
+        pullbackCounterLong := 0
+    
+    // Short pullback tracking
+    if setupBarShort
+        pullbackCounterShort := 0
+    else if validPullbackContextShort
+        pullbackCounterShort += 1
+    else
+        pullbackCounterShort := 0
+    
+    // Invalidation conditions
+    pullbackTooLongLong = pullbackCounterLong > 10
+    pullbackTooLongShort = pullbackCounterShort > 10
+    
+    invalidateSetupLong = (close < emaSlow) or (rsi < 35) or pullbackTooLongLong
+    invalidateSetupShort = (close > emaSlow) or (rsi > 65) or pullbackTooLongShort
     ```
     
-    > ## 5️⃣ FINAL LONG ENTRY CONDITION
-    ```text
-    longEntry =
-        upTrend and
-        confirmation
+    ---
+    
+    ## 6️⃣ CONFIRMATION CANDLE (Entry Trigger)
+    
+    **Purpose:** Waits for the next bar to confirm momentum follow-through before entering.
+    
+    ### 6.1 Confirmation Logic
+    ```pinescript
+    // State variables to track pending confirmation
+    var bool waitingForConfirmationLong = false
+    var bool waitingForConfirmationShort = false
+    var float confirmationLevelLong = na
+    var float confirmationLevelShort = na
+    
+    // Long confirmation setup
+    if setupBarLong and not waitingForConfirmationLong
+        waitingForConfirmationLong := true
+        confirmationLevelLong := high  // Must break above setup bar high
+    
+    // Short confirmation setup
+    if setupBarShort and not waitingForConfirmationShort
+        waitingForConfirmationShort := true
+        confirmationLevelShort := low  // Must break below setup bar low
+    
+    // Confirmation triggers
+    confirmationLong = waitingForConfirmationLong and close > confirmationLevelLong
+    confirmationShort = waitingForConfirmationShort and close < confirmationLevelShort
+    
+    // Reset confirmation states
+    if confirmationLong or invalidateSetupLong
+        waitingForConfirmationLong := false
+        confirmationLevelLong := na
+    
+    if confirmationShort or invalidateSetupShort
+        waitingForConfirmationShort := false
+        confirmationLevelShort := na
     ```
-    > 📌 Entry occurs **on bar close**.
-
-    > ### Stop loss, Take profit and Exit
-    ```text
+    
+    ---
+    
+    ## 7️⃣ FINAL ENTRY CONDITIONS
+    
+    ```pinescript
+    // Execute long entry
+    longEntry = upTrend and confirmationLong and (not useTrendFilter or upTrend) and (not useEmaZoneFilter or validPullbackContextLong)
+    
+    // Execute short entry
+    shortEntry = downTrend and confirmationShort and (not useTrendFilter or downTrend) and (not useEmaZoneFilter or validPullbackContextShort)
+    ```
+    
+    ---
+    
+    ## 8️⃣ STOP LOSS & TAKE PROFIT
+    
+    ### 8.1 Stop Loss Calculation
+    **Uses recent swing structure, not arbitrary ATR multiples**
+    
+    ```pinescript
+    // Long stop: Below recent swing low with buffer
+    swingLowLong = ta.lowest(low, pullbackBars + 2)  // Include setup and confirmation bars
+    stopPriceLong = swingLowLong - atr * 0.5  // Buffer
+    minStopLong = close * 0.98  // Never more than 2% risk
+    finalStopLong = math.max(stopPriceLong, minStopLong)
+    
+    // Short stop: Above recent swing high with buffer
+    swingHighShort = ta.highest(high, pullbackBars + 2)
+    stopPriceShort = swingHighShort + atr * 0.5
+    maxStopShort = close * 1.02  // Never more than 2% risk
+    finalStopShort = math.min(stopPriceShort, maxStopShort)
+    ```
+    
+    ### 8.2 Take Profit Calculation
+    **Risk-based R-multiples**
+    
+    ```pinescript
+    // Long targets
+    riskAmountLong = close - finalStopLong
+    takeProfit1Long = close + riskAmountLong * 2.0  // 2R
+    takeProfit2Long = close + riskAmountLong * 3.0  // 3R
+    
+    // Short targets
+    riskAmountShort = finalStopShort - close
+    takeProfit1Short = close - riskAmountShort * 2.0  // 2R
+    takeProfit2Short = close - riskAmountShort * 3.0  // 3R
+    ```
+    
+    ### 8.3 Strategy Execution
+    ```pinescript
     if longEntry
-        entryATR = atr
-        actualPullbackLow = ta.lowest(low, pullbackBars + 2)  // Include setup and confirmation bars
-        stopPrice = actualPullbackLow - entryATR * 0.5  // Tighter buffer
-        minStop = close * 0.98  // Never more than 2% away
-        finalStop = math.max(stopPrice, minStop)
-        
-        strategy.entry("L", strategy.long)
-        strategy.exit("L-exit", "L", stop=finalStop, limit=close + entryATR * 3.0)
+        strategy.entry("Long", strategy.long)
+        strategy.exit("Long-Exit", "Long", stop=finalStopLong, limit=takeProfit2Long)
+    
+    if shortEntry
+        strategy.entry("Short", strategy.short)
+        strategy.exit("Short-Exit", "Short", stop=finalStopShort, limit=takeProfit2Short)
     ```
     
-    > ## 8️⃣ SHORT LOGIC (MIRRORED, EXPLICIT)
-    >  Short logic must follow the **same structure** as long trades logic mirrored conceptually
-
-    > ### 📊 Visual Requirements  
-    > * `overlay = true`  
-    > * Use `plotshape()` for all entries  
-    > * Plot EMAs:  
-    >   * emaFast → **Blue**  
-    >   * emaSlow → **Red**  
+    ---
     
-    > ### Entry Markers:  
-    > * Buy:  
-    >  * Green triangle up  
-    >  * `size = size.tiny`  
-    >  * `location = location.belowbar`  
-    >  * `title = ""`  
+    ## 9️⃣ VISUAL ELEMENTS
     
-    > * Sell:  
-    >  * Orange triangle down  
-    >  * `size = size.tiny`  
-    >  * `location = location.abovebar`  
-    >  * `title = ""`  
+    ### 9.1 EMA Plots
+    ```pinescript
+    plot(emaFast, title="Fast EMA", color=color.blue, linewidth=2)
+    plot(emaSlow, title="Slow EMA", color=color.red, linewidth=2)
+    ```
     
-    > ## ⏰ **Alerts**  
-    > Add alert conditions that:  
-    > * Trigger **once per signal**  
-    > * Do **not** repeat while the condition remains true  
+    ### 9.2 Entry Markers
+    ```pinescript
+    plotshape(longEntry, title="", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.tiny)
+    plotshape(shortEntry, title="", style=shape.triangledown, location=location.abovebar, color=color.#58181F, size=size.tiny)
+    ```
     
-    > Alerts required:  
-    > * Buy signal  
-    > * Sell signal  
+    ### 9.3 Setup Bar Markers (Optional - for debugging)
+    ```pinescript
+    plotshape(setupBarLong, title="", style=shape.circle, location=location.belowbar, color=color.new(color.green, 70), size=size.tiny)
+    plotshape(setupBarShort, title="", style=shape.circle, location=location.abovebar, color=color.new(color.red, 70), size=size.tiny)
+    ```
     
-    > ## 🧹 **Code Quality & Best Practices**  
-    > * Clean, readable structure  
-    > * Clear comments explaining each part   
-    > * Use functions where appropriate
+    ---
+    
+    ## 🔟 ALERTS
+    
+    ```pinescript
+    // Alert when entry signals occur (trigger once per bar)
+    alertcondition(longEntry, title="Long Entry Signal", message="Pullback Strategy: LONG entry triggered")
+    alertcondition(shortEntry, title="Short Entry Signal", message="Pullback Strategy: SHORT entry triggered")
+    
+    // Optional: Alert on setup bars (pre-warning)
+    alertcondition(setupBarLong, title="Long Setup Detected", message="Pullback Strategy: Long setup bar formed - watch for confirmation")
+    alertcondition(setupBarShort, title="Short Setup Detected", message="Pullback Strategy: Short setup bar formed - watch for confirmation")
+    ```
+    
+    ---
+    
+    ## 📊 IMPLEMENTATION NOTES
+    
+    ### Code Quality Requirements
+    1. **Clear section comments** for each major component
+    2. **Descriptive variable names** (avoid single letters except in loops)
+    3. **Single-line function calls** (Pine Script requirement)
+    4. **No repainting logic** - all calculations use confirmed bar data only
+    5. **Efficient calculation** - reuse variables where possible
 ```
----
----
-```text
-I am a beginner in forex trading strategy. I have spent the last few months strategizing how to take less time on forex charts but trade quality and high probability trades. I have come up with this prompt which i intend to give AI to generate pinescript that will be giving me signals when to trade. I need your honest help. Your task is to help me spot logical or mathematical ambiguity that may results into falls signals or bad trades. Then give recommendations how to do it in a professional manner:
-```
----
----
-**other version**
-```pinescript
-> Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals** using **RSI, trend, Divergence momentum, and price action**.  
-> The script must evaluate signals on every confirmed historical bar using only current and past data so they remain visible when scrolling back.  
-> Remember Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 
-> ### 🔹 Inputs & Settings  
 
-> * RSI length (default 14)  
-> * emaFastLen (default 20)  
-> * emaSlowLen (default 50)  
-> * ATR length (default: 14)  
-> * On/Off toggle (boolean input) for **each filter**:  
-
->   * Momentum Divergence filter  
->   * RSI filter  
->   * Rejection candle filter  
->   * Trend filter  
->   * Support/Resistance (EMA zone) filter  
-
-> ## 📈 **Trend Definition (Context Filter Only)**  
-
-> Trend defines trade direction eligibility only and does **not trigger entries**  
-> * **Uptrend:** `upTrend = emaFast > emaSlow and emaSlow > emaSlow[1] and close > emaSlow`  
-> * **Downtrend:** `downTrend = emaFast < emaSlow and emaSlow < emaSlow[1] and close < emaSlow`  
-
-> ### 🟢 Long Entry (Buy Conditions)  
-
-> A Buy signal triggers **only when all enabled filters pass**: Filters are categorized as **Context → Setup → Trigger**  
-
-> 1. **EMA Support Zone** (Pullback Context)   
-> Confirms that price is pulling back into a dynamic support area **within an uptrend**  
-> The buffer must be **ATR-based**, not percentage-based, to adapt to volatility  
->    * `emaSupport = close > emaSlow and ta.lowest(low, 3) <= emaFast + ta.atr(atrLen) * 0.3`  
-
-> 2. **RSI** (Setup Filter)  
-> * Be above a mid-level threshold (e.g., 40)  
-> * Show upward momentum resumption (RSI turning up)  
->      example logic: `rsiHook = rsi >= rsi[1] and rsi[1] < rsi[2] and rsi > ta.lowest(rsi, 3) and rsi > 40`  
-
-> 3. **Momentum Divergence** (Setup Filter)  
-> * Detects bullish divergence during pullbacks only  
-> * Price makes a lower low relative to recent structure  
-> * RSI makes a higher low over the same lookback window  
-> * Divergence must rely on fixed lookback comparisons only  
-> * Divergence must be evaluated only as a setup filter and gated by trend and EMA support in the final entry condition  
->    * `hiddenBullDiv = ta.lowest(low, 5) > ta.lowest(low, 10)[5] and ta.lowest(rsi, 5) < ta.lowest(rsi, 10)[5]`   
-
-> 4. **Bullish Rejection Candle** (Entry Trigger)  
-> * The rejection candle provides the entry trigger or momentum confirmation, confirming demand absorption  
->    * `bullReject_wick = (math.min(open, close) - low) > (high - math.max(open, close))` //Wick-based rejection (absorption)  
->    * `bullReject_structure = (low < low[1]) and (close > low[1])` //Structure-based rejection (failed breakdown)  
->    * `bullReject_momentum = close > high[1]` //Momentum resolution after rejection  
->    * `bullishRejection = bullReject_wick or bullReject_structure or bullReject_momentum` //Final behavior-based rejection condition  
->    * `validRejection = bullishRejection and (math.abs(close - open) > ta.atr(atrLen) * 0.2)`  
-
-> 5. **Final Long (bullish) Entry Condition** (Entry)  
-> * Execute long entry on bar close only    
->    * `longCondition =`  
->    * `(not useTrendFilter or upTrend) and`  
->    * `(not useEmaZoneFilter or emaSupport) and`  
->    * `(not useRsiFilter or rsiHook) and`  
->    * `(not useDivergenceFilter or hiddenBullDiv) and`  
->    * `(not useRejectionFilter or validRejection)`  
-
-> ### 🔴 Short Entry (Sell Conditions)  
-> * Short logic must follow the **same structure** as long trades:  
-> * Context → Setup → Trigger  
-> * Operate **only in downtrends**  
-> * Use mirrored logic conceptually, not mechanically (define bearish RSI zones, EMA resistance, divergence, and rejection logic explicitly)  
-
-> ### 📊 Visual Requirements  
-> * `overlay = true`  
-> * Use `plotshape()` for all entries  
-> * Plot EMAs:  
->   * Fast EMA → **Orange**  
->   * Slow EMA → **Blue**  
-
-> ### Entry Markers:  
-> * Buy:  
->  * Green triangle up  
->  * `size = size.tiny`  
->  * `location = location.belowbar`  
->  * `title = ""`  
-
-> * Sell:  
->  * Red triangle down  
->  * `size = size.tiny`  
->  * `location = location.abovebar`  
->  * `title = ""`  
-
-> ## 📋 **Trade Information Table**  
-
-> Create a table using:  
-> * `table.new(position.top_right, 2, 3)`  
-> * Update the table **only when a new signal occurs**.
-> * `strategy.position_size != strategy.position_size[1]`   
-
-> **Display**:  
-> * Entry price  
-> * Stop loss → `1.5 * ATR`  
-> * Take profit → `3.0 * ATR`  
-
-> ## ⏰ **Alerts**  
-> Add alert conditions that:  
-> * Trigger **once per signal**  
-> * Do **not** repeat while the condition remains true  
-
-> Alerts required:  
-> * Buy signal  
-> * Sell signal  
-
-> ## 🧹 **Code Quality & Best Practices**  
-> * Clean, readable structure  
-> * Clear comments explaining:  
->  * Context filters  
->  * Setup filters  
->  * Entry trigger logic  
-> * Use functions where appropriate  
-> * No repainting logic  
-> * No pivot-based functions  
-> * No future bar references   
-```
----
----
-**old version**
-> Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals** using **RSI, trend, Divergence momentum, and price action**.  
-> The script must calculate signals on **every historical bar** so they remain visible when scrolling back.  
-> Remember Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
-
-> ### 🔹 Inputs & Settings  
-
-> * RSI length (default 14)  
-> * emaFastLen (default 20)  
-> * emaSlowLen (default 50)  
-> * ATR length (default: 14)  
-> * On/Off toggle (boolean input) for **each filter**:  
-
->   * Momentum Divergence filter  
->   * RSI filter  
->   * Rejection candle filter  
->   * Trend filter  
->   * Support/Resistance (EMA zone) filter  
-
-> ## 📈 **Trend Definition (Context Filter Only)**  
-
-> Trend defines trade direction eligibility only and does **not trigger entries**  
-> * **Uptrend:** `emaSlow > ta.lowest(emaSlow, 3) and (emaFast > emaSlow)` This allows for brief moments where the EMA flattens  
-> * **Downtrend:** `emaSlow < ta.highest(emaSlow, 3) and (emaFast < emaSlow)`  
-
-> ### 🟢 Long Entry (Buy Conditions)  
-
-> A Buy signal triggers **only when all enabled filters pass**: Filters are categorized as **Context → Setup → Trigger**  
-
-> 1. **EMA Support Zone** (Pullback Context)   
-> Confirms that price is pulling back into a dynamic support area **within an uptrend**  
-> The buffer must be **ATR-based**, not percentage-based, to adapt to volatility  
->    * `(close > emaSlow) and (ta.lowest(low, 3) <= emaFast * 1.002)`  
-
-> 2. **RSI** (Setup Filter)  
-> * Be above a mid-level threshold (e.g., 40)  
-> * Have made a recent low  
-> * Show upward momentum resumption (RSI turning up)  
->      example logic: `(rsi >= rsi[1]) and (rsi > rsi[1] or rsi > rsi[2]) and (rsi > ta.lowest(rsi, 3))`  
-
-> 3. **Momentum Divergence** (Setup Filter)  
-> * Detects bullish divergence during pullbacks only  
-> * Price makes a lower low relative to recent structure  
-> * RSI makes a higher low over the same lookback window  
-> * Divergence must rely on fixed lookback comparisons only  
-> * Divergence is valid **only when trend and EMA support filters pass**  
->    * `(low < ta.lowest(low, 3)[1]) and (rsi > ta.lowest(rsi, 3)[1])`   
-
-> 4. **Bullish Rejection Candle** (Entry Trigger)  
-> * The rejection candle is the **final entry trigger**, confirming demand absorption  
->    * `bullReject_wick = (math.min(open, close) - low) > (high - math.max(open, close))` //Wick-based rejection (absorption)  
->    * `bullReject_structure = (low < low[1]) and (close > low[1])` //Structure-based rejection (failed breakdown)  
->    * `bullReject_momentum = close > high[1]` //Momentum resolution after rejection  
->    * `bullishRejection = bullReject_wick or bullReject_structure or bullReject_momentum` //Final behavior-based rejection condition  
->    * `validRejection = bullishRejection and (math.abs(close - open) > ta.atr(14) * 0.2)`  
-
-> ### 🔴 Short Entry (Sell Conditions)  
-> * Short logic must follow the **same structure** as long trades:  
-> * Context → Setup → Trigger  
-> * Operate **only in downtrends**  
-> * Use mirrored logic **conceptually**, not mechanically  
-
-> ### 📊 Visual Requirements  
-> * `overlay = true`  
-> * Use `plotshape()` for all entries  
-> * Plot EMAs:  
->   * Fast EMA → **Orange**  
->   * Slow EMA → **Blue**  
-
-> ### Entry Markers:  
-> * Buy:  
->  * Green triangle up  
->  * `size = size.tiny`  
->  * `location = location.belowbar`  
->  * `title = ""`  
-
-> * Sell:  
->  * Red triangle down  
->  * `size = size.tiny`  
->  * `location = location.abovebar`  
->  * `title = ""`  
-
-> ## 📋 **Trade Information Table**  
-
-> Create a table using:  
-> * `table.new(position.top_right, 2, 3)`  
-> * Update the table **only when a new signal occurs**.  
-
-> **Display**:  
-> * Entry price  
-> * Stop loss → `1.5 * ATR`  
-> * Take profit → `3.0 * ATR`  
-
-> ## ⏰ **Alerts**  
-> Add alert conditions that:  
-> * Trigger **once per signal**  
-> * Do **not** repeat while the condition remains true  
-
-> Alerts required:  
-> * Buy signal  
-> * Sell signal  
-
-> ## 🧹 **Code Quality & Best Practices**  
-> * Clean, readable structure  
-> * Clear comments explaining:  
->  * Context filters
->  * Setup filters
->  * Entry trigger logic
-> * Use functions where appropriate
-> * No repainting logic
-> * No pivot-based functions
-> * No future bar references
-
----
----
-```pinescript
-// --- Detailed Momentum Divergence Logic ---
-
-// 1. Identify previous pivot lows/highs
-pivotLow  = ta.pivotlow(low, 5, 5)
-pivotHigh = ta.pivothigh(high, 5, 5)
-
-// 2. Capture RSI at those pivots
-rsiAtPivotLow  = ta.valuewhen(pivotLow, rsiVal, 0)
-priceAtPivotLow = ta.valuewhen(pivotLow, low, 0)
-
-rsiAtPivotHigh  = ta.valuewhen(pivotHigh, rsiVal, 0)
-priceAtPivotHigh = ta.valuewhen(pivotHigh, high, 0)
-
-// 3. Define Divergence (One-Line)
-// Long: Current price is lower than previous pivot, but current RSI is higher than previous pivot RSI
-longDivergence  = low < priceAtPivotLow and rsiVal > rsiAtPivotLow
-
-// Short: Current price is higher than previous pivot, but current RSI is lower than previous pivot RSI
-shortDivergence = high > priceAtPivotHigh and rsiVal < rsiAtPivotHigh
-
-//OPTION II
-// Find swing lows (price makes lower low, RSI makes higher low)
-isPivotLow = low < low[1] and low < low[2] and low[1] < low[2]
-var float lastPivotLow = na
-var float lastPivotRSI = na
-
-if isPivotLow
-    if not na(lastPivotLow) and low < lastPivotLow and rsi > lastPivotRSI
-        bullishDivergence := true
-    lastPivotLow := low
-    lastPivotRSI := rsi
-```
 ---
 ---
 **Support Resistance Channels- by LonesomeTheBlue**    
