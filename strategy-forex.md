@@ -21,7 +21,7 @@
     ```text
     emaFast = ta.ema(close, 20)
     emaSlow = ta.ema(close, 50)
-    atr = ATR(14)
+    atr = ta.atr(14)
     rsi = ta.rsi(close, 14)
     ```
 
@@ -102,11 +102,11 @@
     > ## 3.1 RSI State (MANDATORY)
     > ### RSI Conditions
     ```text
-    rsiAboveFloor = rsi > 40
+    rsiAboveFloor = rsi > 38
     ```
     
     ```text
-    rsiRecentHigh = highest(rsi, pullbackBars)
+    rsiRecentHigh = ta.highest(rsi, pullbackBars)
     rsiDrawdown = rsiRecentHigh - rsi
     rsiStructureValid = rsiDrawdown <= 15
     ```
@@ -147,7 +147,7 @@
     ```text
     body = math.abs(close - open)
     candleRange = high - low
-    lowerWick = min(open, close) - low
+    lowerWick = math.min(open, close) - low
     ```
     
     > ### Rejection Conditions (Score-Based)
