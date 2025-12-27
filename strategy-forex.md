@@ -32,8 +32,8 @@
     > ### 1.2 Trend Persistence (No Lookahead)
     > **EMA slope over fixed window**
     ```text
-    emaSlowRising =
-        (emaSlow - emaSlow[10]) >= atr * 0.2
+    emaSlopePercent = (emaSlow - emaSlow[10]) / emaSlow[10] * 100
+    emaSlowRising = emaSlopePercent >= 0.15  // 0.15% rise over 10 bars
     ```
     ```text
     priceAccepted = close >= emaSlow
@@ -41,7 +41,7 @@
     > ### 1.3 EMA Separation (Anti-Chop)
     ```text
     emaSeparation = math.abs(emaFast - emaSlow)
-    trendStrong = emaSeparation >= atr * 0.3
+    trendStrong = (emaFast - emaSlow) / emaSlow >= 0.003  // 0.3% separation
     ```
     
     > ### 1.4 Uptrend Qualification
@@ -113,9 +113,7 @@
     ```
     
     ```text
-    rsiTurningUp =
-    rsi > rsi[1] or
-    rsi[1] > rsi[2]
+    rsiTurningUp = rsi > rsi[1] and rsi[1] >= rsi[2]
     ```
     
     > ### RSI Setup Valid
@@ -142,6 +140,17 @@
     ```
     > 📌 No rolling windows → no fake divergence.
 
+    > ### Volume Confirmation (Optional)
+    ```text
+    avgVolume = ta.sma(volume, 20)
+    volumeAcceptable = volume <= avgVolume * 1.5  // Not a panic sell-off
+    ```
+
+    > ### Higher Timeframe Filter (Optional)
+    ```text
+    htfTrend = request.security(syminfo.tickerid, "240", ta.ema(close, 50))  // 4H EMA50
+    alignedWithHTF = close > htfTrend
+    ```
     > ## 4️⃣ TRIGGER: REJECTION + CONFIRMATION
     > ### 4.1 Rejection Candle Logic
     > **Candle metrics**
@@ -170,12 +179,10 @@
     ```text
     rejectionScore = 
         (wickReject ? 1 : 0) +
-        (structureReject ? 1 : 0) +
+        (structureReject ? 2 : 0) +  // Double weight
         (strongClose ? 1 : 0)
-    ```
-    
-    ```text
-    validRejection = rejectionScore >= 2
+
+    validRejection = rejectionScore >= 3  // Requires structure + one other
     ```
 
     > ### Setup
@@ -189,11 +196,13 @@
 
     > ### Invalidation Rules
     ```text
-    var int pullbackCounter = 0
+   var int pullbackCounter = 0
     if setupBar
         pullbackCounter := 0
-    else if pullbackCounter >= 0
-        pullbackCounter := pullbackCounter + 1
+    else if validPullbackContext  // Only count during active pullback
+        pullbackCounter += 1
+    else
+        pullbackCounter := 0  // Reset when not in pullback
 
     pullbackTooLong = pullbackCounter > 10
     invalidateSetup = (close < emaSlow) or (rsi < 38) or pullbackTooLong
@@ -201,9 +210,17 @@
 
     > ### 4.2 Confirmation Candle (Next Bar)
     ```text
-    confirmation =
-        setupBar[1] and close > high[1] or
-        setupBar[2] and close > high[2]
+    var bool waitingForConfirmation = false
+    var float confirmationLevel = na
+
+    if setupBar and not waitingForConfirmation
+        waitingForConfirmation := true
+        confirmationLevel := high
+
+    confirmation = waitingForConfirmation and close > confirmationLevel
+
+    if confirmation or invalidateSetup
+        waitingForConfirmation := false
     ```
     
     > ## 5️⃣ FINAL LONG ENTRY CONDITION
@@ -217,18 +234,14 @@
     > ### Stop loss, Take profit and Exit
     ```text
     if longEntry
+        entryATR = atr
+        actualPullbackLow = ta.lowest(low, pullbackBars + 2)  // Include setup and confirmation bars
+        stopPrice = actualPullbackLow - entryATR * 0.5  // Tighter buffer
+        minStop = close * 0.98  // Never more than 2% away
+        finalStop = math.max(stopPrice, minStop)
+        
         strategy.entry("L", strategy.long)
-    
-    lockedPullbackLow = ta.valuewhen(longEntry, pullbackLow, 0)    
-    stopPrice = lockedPullbackLow - atr * 1.5                       
-    takeProfit = strategy.position_avg_price + atr * 3.0           
-    
-    strategy.exit(
-        id = "L-exit",
-        from_entry = "L",
-        stop = stopPrice,
-        limit = takeProfit
-    )
+        strategy.exit("L-exit", "L", stop=finalStop, limit=close + entryATR * 3.0)
     ```
     
     > ## 8️⃣ SHORT LOGIC (MIRRORED, EXPLICIT)
@@ -502,6 +515,18 @@ longDivergence  = low < priceAtPivotLow and rsiVal > rsiAtPivotLow
 
 // Short: Current price is higher than previous pivot, but current RSI is lower than previous pivot RSI
 shortDivergence = high > priceAtPivotHigh and rsiVal < rsiAtPivotHigh
+
+//OPTION II
+// Find swing lows (price makes lower low, RSI makes higher low)
+isPivotLow = low < low[1] and low < low[2] and low[1] < low[2]
+var float lastPivotLow = na
+var float lastPivotRSI = na
+
+if isPivotLow
+    if not na(lastPivotLow) and low < lastPivotLow and rsi > lastPivotRSI
+        bullishDivergence := true
+    lastPivotLow := low
+    lastPivotRSI := rsi
 ```
 ---
 ---
