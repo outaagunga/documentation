@@ -19,8 +19,8 @@
     > ## 1️⃣ MARKET REGIME FILTER (MANDATORY)
     > ### 1.1 Core Variables (Bar-Based)
     ```text
-    emaFast = EMA(close, 20)
-    emaSlow = EMA(close, 50)
+    emaFast = ta.ema(close, 20)
+    emaSlow = ta.ema(close, 50)
     atr = ATR(14)
     rsi = RSI(close, 14)
     ```
@@ -39,7 +39,7 @@
     ```
     > ### 1.3 EMA Separation (Anti-Chop)
     ```text
-    emaSeparation = abs(emaFast - emaSlow)
+    emaSeparation = math.abs(emaFast - emaSlow)
     trendStrong = emaSeparation >= atr * 0.3
     ```
     
@@ -58,7 +58,7 @@
     > ### 2.1 Prior Expansion Detection
     > This Ensures price moved **away** before pulling back
     ```text
-    recentHigh = highest(high, 10)
+    recentHigh = ta.highest(high, 10)
     hadExpansion = (recentHigh - emaFast) >= atr * 0.6
     ```
     
@@ -70,7 +70,7 @@
     
     > ### 2.3 Pullback Location Check
     ```text
-    pullbackLow = lowest(low, pullbackBars)
+    pullbackLow = ta.lowest(low[1], pullbackBars)
     inEmaZone =
         pullbackLow <= emaZoneHigh and
         pullbackLow >= emaZoneLow
@@ -188,16 +188,13 @@
 
     > ### Invalidation Rules
     ```text
-    //Pullback counter (dynamic)
-    var int pullbackCounter = na   // declare once outside the loop
+    var int pullbackCounter = 0
     if setupBar
         pullbackCounter := 0
     else if pullbackCounter >= 0
-    pullbackCounter := pullbackCounter + 1
+        pullbackCounter := pullbackCounter + 1
 
     pullbackTooLong = pullbackCounter > 10
-
-    //Setup invalidation
     invalidateSetup = (close < emaSlow) or (rsi < 38) or pullbackTooLong
     ```
 
@@ -216,16 +213,21 @@
     ```
     > 📌 Entry occurs **on bar close**.
 
-    > ### Stop loss and Take profit
+    > ### Stop loss, Take profit and Exit
     ```text
     if longEntry
         strategy.entry("L", strategy.long)
-
-    //Exit (every bar)
-    lockedPullbackLow = ta.valuewhen(setupBar, pullbackLow, 0)
-    stopPrice = lockedPullbackLow - atr * 1.5
-    takeProfit = strategy.position_avg_price + atr * 3.0
-    strategy.exit("L-exit", from_entry="L", stop=stopPrice, limit=takeProfit)
+    
+    lockedPullbackLow = ta.valuewhen(longEntry, pullbackLow, 0)    
+    stopPrice = lockedPullbackLow - atr * 1.5                       
+    takeProfit = strategy.position_avg_price + atr * 3.0           
+    
+    strategy.exit(
+        id = "L-exit",
+        from_entry = "L",
+        stop = stopPrice,
+        limit = takeProfit
+    )
     ```
     
     > ## 8️⃣ SHORT LOGIC (MIRRORED, EXPLICIT)
