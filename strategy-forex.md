@@ -237,6 +237,11 @@
 ```
 ---
 ---
+```text
+I am a beginner in forex trading strategy. I have spent the last few months strategizing how to take less time on forex charts but trade quality and high probability trades. I have come up with this prompt which i intend to give AI to generate pinescript that will be giving me signals when to trade. I need your honest help. Your task is to help me spot logical or mathematical ambiguity that may results into falls signals or bad trades. Then give recommendations how to do it in a professional manner:
+```
+---
+---
 **other version**
 ```pinescript
 > Create a **TradingView Pine Script v6 strategy** (not an indicator) that identifies **pullback-based entry and exit signals** using **RSI, trend, Divergence momentum, and price action**.  
