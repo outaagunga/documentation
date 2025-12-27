@@ -167,10 +167,10 @@
     
     > ### Rejection Valid (2 of 3)
     ```text
-    rejectionScore =
-        wickReject +
-        structureReject +
-        strongClose
+    rejectionScore = 
+        (wickReject ? 1 : 0) +
+        (structureReject ? 1 : 0) +
+        (strongClose ? 1 : 0)
     ```
     
     ```text
@@ -215,19 +215,17 @@
         confirmation
     ```
     > 📌 Entry occurs **on bar close**.
-    
-    > ## 7️⃣ STOP & TARGET LOGIC (STRUCTURE-BASED)
-    > ### Stop Loss
+
+    > ### Stop loss and Take profit
     ```text
-    stopPrice = pullbackLow - atr * 0.3
-    ```
-    > ### Targets
-    ```text
-    if strategy.position_size > 0 and strategy.position_size[1] == 0
-        entry = strategy.position_avg_price
-        stop  = entry - atr * 1.5
-        limit = entry + atr * 3.0
-        strategy.exit("L-exit", from_entry="L", stop=stop, limit=limit)
+    if longEntry
+        strategy.entry("L", strategy.long)
+
+    //Exit (every bar)
+    lockedPullbackLow = ta.valuewhen(setupBar, pullbackLow, 0)
+    stopPrice = lockedPullbackLow - atr * 1.5
+    takeProfit = strategy.position_avg_price + atr * 3.0
+    strategy.exit("L-exit", from_entry="L", stop=stopPrice, limit=takeProfit)
     ```
     
     > ## 8️⃣ SHORT LOGIC (MIRRORED, EXPLICIT)
