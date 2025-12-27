@@ -22,27 +22,33 @@
     emaFast = EMA(close, 20)
     emaSlow = EMA(close, 50)
     atr = ATR(14)
+    rsi = RSI(close, 14)
     ```
-    
+
+    ```text
+    emaAlignedUp = emaFast > emaSlow
+    ```
     > ### 1.2 Trend Persistence (No Lookahead)
     > **EMA slope over fixed window**
     ```text
-    emaSlowRising = emaSlow > emaSlow[5]
+    emaSlowRising = emaSlow > emaSlow[3]
     ```
-    
+    ```text
+    priceAccepted = close >= emaSlow
+    ```
     > ### 1.3 EMA Separation (Anti-Chop)
     ```text
     emaSeparation = abs(emaFast - emaSlow)
-    trendStrength = emaSeparation >= atr * 0.5
+    trendStrong = emaSeparation >= atr * 0.3
     ```
     
     > ### 1.4 Uptrend Qualification
     ```text
-    upTrend =
-        emaFast > emaSlow and
+   upTrend =
+        emaAlignedUp and
         emaSlowRising and
-        close > emaSlow and
-        trendStrength
+        priceAccepted and
+        trendStrong
     ```
     > 📌 **Important**
     > This is a *state*, not an entry signal.
@@ -52,14 +58,13 @@
     > This Ensures price moved **away** before pulling back
     ```text
     recentHigh = highest(high, 10)
-    expansionFromEMA = recentHigh - emaFast
-    hadExpansion = expansionFromEMA >= atr * 1.0
+    hadExpansion = (recentHigh - emaFast) >= atr * 0.6
     ```
     
     > ### 2.2 EMA Zone Definition
     ```text
     emaZoneHigh = emaFast
-    emaZoneLow = emaSlow - atr * 0.3
+    emaZoneLow = emaSlow - atr * 0.6
     ```
     
     > ### 2.3 Pullback Location Check
@@ -73,13 +78,13 @@
     
     > ### 2.4 Pullback Quality (Momentum Filter)
     ```text
-    bearishMomentum =
+    largeBearishCandle =
         close < open and
-        (open - close) > atr * 0.5
+        (open - close) > atr * 0.7
     ```
     
     ```text
-    controlledPullback = not bearishMomentum
+    controlledPullback = not largeBearishCandle
     ```
     > 📌 This avoids deep momentum sell-offs.
     
@@ -93,11 +98,7 @@
     ```
     
     > ## 3️⃣ SETUP FILTERS (TIME-LIMITED)
-    > ## 3.1 RSI State Filter (MANDATORY)
-    ```text
-    rsi = RSI(close, 14)
-    ```
-    
+    > ## 3.1 RSI State (MANDATORY)
     > ### RSI Conditions
     ```text
     rsiAboveFloor = rsi > 40
@@ -105,18 +106,21 @@
     
     ```text
     rsiPullbackLow = lowest(rsi, pullbackBars)
-    rsiHigherLow = rsiPullbackLow > rsiPullbackLow[pullbackBars]
+    priorRsiLow = lowest(rsi[pullbackBars], pullbackBars)
+    rsiStructureValid = rsiPullbackLow >= priorRsiLow
     ```
     
     ```text
-    rsiTurningUp = rsi >= rsi[1] + 2
+    rsiTurningUp =
+    rsi > rsi[1] or
+    rsi[1] > rsi[2]
     ```
     
     > ### RSI Setup Valid
     ```text
     validRSI =
         rsiAboveFloor and
-        rsiHigherLow and
+        rsiStructureValid and
         rsiTurningUp
     ```
     > 📌 This removes noisy RSI hooks.
@@ -124,14 +128,14 @@
     > ## 3.2 Momentum Divergence (OPTIONAL)
     > **Same-bar divergence only**
     ```text
-    priceLowerLow = low < low[pullbackBars]
-    rsiHigherLowSameBar = rsi > rsi[pullbackBars]
+    priceLowerOrEqualLow = low <= low[pullbackBars]
+    rsiHigherOrEqualLow = rsi >= rsi[pullbackBars]
     ```
     
     ```text
     bullishDivergence =
-        priceLowerLow and
-        rsiHigherLowSameBar and
+        priceLowerOrEqualLow and
+        rsiHigherOrEqualLow and
         inEmaZone
     ```
     > 📌 No rolling windows → no fake divergence.
@@ -147,7 +151,7 @@
     
     > ### Rejection Conditions (Score-Based)
     ```text
-    wickReject = lowerWick >= body * 1.2
+    wickReject = lowerWick >= body
     ```
     
     ```text
@@ -157,7 +161,7 @@
     ```
     
     ```text
-    closeStrong = close >= low + range * 0.7
+    strongClose = close >= low + range * 0.6
     ```
     
     > ### Rejection Valid (2 of 3)
@@ -165,7 +169,7 @@
     rejectionScore =
         wickReject +
         structureReject +
-        closeStrong
+        strongClose
     ```
     
     ```text
@@ -176,8 +180,8 @@
     > ### 4.2 Confirmation Candle (Next Bar)
     ```text
     confirmation =
-        close > high[1] and
-        validRejection[1]
+        (close > high[1] and validRejection[1]) or
+        (close > high[2] and validRejection[2])
     ```
     
     > ## 5️⃣ FINAL LONG ENTRY CONDITION
@@ -191,17 +195,12 @@
     > 📌 Entry occurs **on bar close**.
     
     > ## 6️⃣ TIME & STRUCTURE INVALIDATION
-    > ### Pullback Duration Control
-    ```text
-    pullbackTooLong = pullbackBars > 8
-    ```
-    
     > ### Hard Invalidation Rules
     ```text
     invalidateSetup =
         close < emaSlow or
-        rsi < 40 or
-        pullbackTooLong
+        rsi < 38 or
+        pullbackBars > 10
     ```
     > 📌 If invalid → no signals allowed.
     
@@ -218,20 +217,8 @@
     ```
     
     > ## 8️⃣ SHORT LOGIC (MIRRORED, EXPLICIT)
-    > Use **separate variables**, not `!longLogic`:
-    > * Downtrend:
-    
-      ```text
-      emaFast < emaSlow
-      emaSlow < emaSlow[5]
-      close < emaSlow
-      emaSeparation >= atr * 0.5
-      ```
-    > * Pullback into EMA resistance
-    > * RSI below 60 but above 30
-    > * Bearish rejection + confirmation
-    > * Stops above pullback high
-    > 📌 Never flip signs mechanically.
+    > 
+       
 ```
 ---
 ---
