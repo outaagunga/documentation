@@ -145,7 +145,7 @@
     > **Candle metrics**
     ```text
     body = abs(close - open)
-    range = high - low
+    candleRange = high - low
     lowerWick = min(open, close) - low
     ```
     
@@ -161,7 +161,7 @@
     ```
     
     ```text
-    strongClose = close >= low + range * 0.6
+    strongClose = close >= low + candleRange * 0.6
     ```
     
     > ### Rejection Valid (2 of 3)
@@ -217,7 +217,7 @@
     ```
     
     > ## 8️⃣ SHORT LOGIC (MIRRORED, EXPLICIT)
-    > 
+    >  Short logic must follow the **same structure** as long trades logic mirrored conceptually
        
 ```
 ---
