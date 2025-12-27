@@ -22,7 +22,7 @@
     emaFast = ta.ema(close, 20)
     emaSlow = ta.ema(close, 50)
     atr = ATR(14)
-    rsi = RSI(close, 14)
+    rsi = ta.rsi(close, 14)
     ```
 
     ```text
@@ -145,7 +145,7 @@
     > ### 4.1 Rejection Candle Logic
     > **Candle metrics**
     ```text
-    body = abs(close - open)
+    body = math.abs(close - open)
     candleRange = high - low
     lowerWick = min(open, close) - low
     ```
@@ -157,8 +157,8 @@
     
     ```text
     structureReject =
-        low < lowest(low[1], pullbackBars) and
-        close > lowest(low[1], pullbackBars)
+        low < ta.lowest(low[1], pullbackBars) and
+        close > ta.lowest(low[1], pullbackBars)
     ```
     
     ```text
