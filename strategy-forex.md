@@ -31,7 +31,8 @@
     > ### 1.2 Trend Persistence (No Lookahead)
     > **EMA slope over fixed window**
     ```text
-    emaSlowRising = emaSlow > emaSlow[3]
+    emaSlowRising =
+        (emaSlow - emaSlow[10]) >= atr * 0.2
     ```
     ```text
     priceAccepted = close >= emaSlow
@@ -105,9 +106,9 @@
     ```
     
     ```text
-    rsiPullbackLow = lowest(rsi, pullbackBars)
-    priorRsiLow = lowest(rsi[pullbackBars], pullbackBars)
-    rsiStructureValid = rsiPullbackLow >= priorRsiLow
+    rsiRecentHigh = highest(rsi, pullbackBars)
+    rsiDrawdown = rsiRecentHigh - rsi
+    rsiStructureValid = rsiDrawdown <= 15
     ```
     
     ```text
@@ -134,12 +135,12 @@
     
     ```text
     bullishDivergence =
-        priceLowerOrEqualLow and
-        rsiHigherOrEqualLow and
-        inEmaZone
+        rsi > rsi[1] and
+        rsi[1] < rsi[2] and
+        rsi >= ta.lowest(rsi, pullbackBars)
     ```
     > 📌 No rolling windows → no fake divergence.
-    
+
     > ## 4️⃣ TRIGGER: REJECTION + CONFIRMATION
     > ### 4.1 Rejection Candle Logic
     > **Candle metrics**
@@ -175,21 +176,27 @@
     ```text
     validRejection = rejectionScore >= 2
     ```
-    > 📌 Pine supports boolean → int coercion.
-    
+
+    > ### Setup
+    ```text
+    setupBar =
+        validPullbackContext and
+        validRSI and
+        (not useDivergence or bullishDivergence) and
+        validRejection
+    ```
+
     > ### 4.2 Confirmation Candle (Next Bar)
     ```text
     confirmation =
-        (close > high[1] and validRejection[1]) or
-        (close > high[2] and validRejection[2])
+        setupBar[1] and close > high[1] or
+        setupBar[2] and close > high[2]
     ```
     
     > ## 5️⃣ FINAL LONG ENTRY CONDITION
     ```text
     longEntry =
-        validPullbackContext and
-        validRSI and
-        (not useDivergence or bullishDivergence) and
+        upTrend and
         confirmation
     ```
     > 📌 Entry occurs **on bar close**.
