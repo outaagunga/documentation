@@ -23,6 +23,7 @@
     emaSlow = ta.ema(close, 50)
     atr = ta.atr(14)
     rsi = ta.rsi(close, 14)
+    pullbackBars = input.int(5, "Pullback Bars", minval=1, maxval=20)
     ```
 
     ```text
