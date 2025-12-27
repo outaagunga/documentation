@@ -186,6 +186,21 @@
         validRejection
     ```
 
+    > ### Invalidation Rules
+    ```text
+    //Pullback counter (dynamic)
+    var int pullbackCounter = na   // declare once outside the loop
+    if setupBar
+        pullbackCounter := 0
+    else if pullbackCounter >= 0
+    pullbackCounter := pullbackCounter + 1
+
+    pullbackTooLong = pullbackCounter > 10
+
+    //Setup invalidation
+    invalidateSetup = (close < emaSlow) or (rsi < 38) or pullbackTooLong
+    ```
+
     > ### 4.2 Confirmation Candle (Next Bar)
     ```text
     confirmation =
@@ -201,16 +216,6 @@
     ```
     > 📌 Entry occurs **on bar close**.
     
-    > ## 6️⃣ TIME & STRUCTURE INVALIDATION
-    > ### Hard Invalidation Rules
-    ```text
-    invalidateSetup =
-        close < emaSlow or
-        rsi < 38 or
-        pullbackBars > 10
-    ```
-    > 📌 If invalid → no signals allowed.
-    
     > ## 7️⃣ STOP & TARGET LOGIC (STRUCTURE-BASED)
     > ### Stop Loss
     ```text
@@ -218,9 +223,11 @@
     ```
     > ### Targets
     ```text
-    risk = entryPrice - stopPrice
-    tp1 = entryPrice + risk * 1.5
-    tp2 = entryPrice + risk * 3.0
+    if strategy.position_size > 0 and strategy.position_size[1] == 0
+        entry = strategy.position_avg_price
+        stop  = entry - atr * 1.5
+        limit = entry + atr * 3.0
+        strategy.exit("L-exit", from_entry="L", stop=stop, limit=limit)
     ```
     
     > ## 8️⃣ SHORT LOGIC (MIRRORED, EXPLICIT)
