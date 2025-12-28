@@ -3,10 +3,10 @@
 - give a simplified version that actually works for beginners  
 - give a step-by-step checklist  
 - Give your output in this format
-- Spot hidden assumptions/ Structural logic conflict/ Logical ambiguity/ Explore multiple perspectives/ Asking the right question?  
+- Spot hidden assumptions/ Structural logic conflict/ Logical ambiguity/Blind spot/ Explore multiple perspectives/ Asking the right question?  
 - I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.
 - Which part of the code is ambiguous  
-- trend → pullback → rejection → continuation (pullback strategy)  
+- Translate this ruleset into pinescript friendly logic  
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
 ---
