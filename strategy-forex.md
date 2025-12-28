@@ -260,6 +260,7 @@
     htfTimeframe = input.timeframe("240", "Higher Timeframe for Trend Filter", group="Filters")
     
     // Request HTF EMA with CRITICAL non-repainting settings
+    // Use barmerge.lookahead_off to prevent the strategy from "cheating" by seeing the HTF close early
     htfEma = request.security(syminfo.tickerid, htfTimeframe, ta.ema(close, 50), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
     
     // Alignment checks using confirmed HTF data only
