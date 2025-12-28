@@ -250,15 +250,29 @@
     isVolatileEnough = atr > avgATR * 0.7  // At least 70% of recent average volatility
     ```
     
-    ### 3.5 Higher Timeframe Alignment (Optional)
-    **Ensures trend alignment with larger timeframe**
+    ### 3.5 Higher Timeframe Alignment (Optional - Advanced)
+    - **Ensures trend alignment with larger timeframe.**
+    - ⚠️**Disabled by default - reduces signal frequency significantly**
+    - **Enable ONLY if you want additional confluence**
     
     ```pinescript
-    htfEma = request.security(syminfo.tickerid, "240", ta.ema(close, 50))  // 4H EMA50
+    // HTF timeframe input (default 4H, but user can adjust)
+    htfTimeframe = input.timeframe("240", "Higher Timeframe for Trend Filter", group="Filters")
+    
+    // Request HTF EMA with CRITICAL non-repainting settings
+    htfEma = request.security(syminfo.tickerid, htfTimeframe, ta.ema(close, 50), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+    
+    // Alignment checks using confirmed HTF data only
     alignedWithHTFLong = close > htfEma
     alignedWithHTFShort = close < htfEma
     ```
-    
+    **Verification Test: to check if Higher timeframe alignment works correctly**
+    ```pinescript
+    // Temporary debug: HTF EMA should only change at HTF bar closes
+    htfEmaChanged = htfEma != htfEma[1]
+    plotshape(htfEmaChanged, "HTF Update", shape.diamond, location.top, color=color.yellow, size=size.tiny)
+    // On 1H chart with 4H HTF: Should see diamonds only every 4 hours
+    ```
     ---
     
     ## 4️⃣ TRIGGER: REJECTION CANDLE (Price Action Confirmation)
