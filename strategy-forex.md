@@ -628,6 +628,313 @@ set the indicator to:
 - Alerts and pine script on strategy: 6 below  
 
 ---
+**pinescript code latest version**  
+```pine
+//@version=6
+strategy("Pullback Trading Strategy", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.1)
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 📐 INPUTS & SETTINGS
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Core Length Inputs
+emaFastLen = input.int(20, "Fast EMA Length", minval=5, maxval=100, group="Core Settings")
+emaSlowLen = input.int(50, "Slow EMA Length", minval=10, maxval=200, group="Core Settings")
+rsiLen = input.int(14, "RSI Length", minval=5, maxval=50, group="Core Settings")
+atrLen = input.int(14, "ATR Length", minval=5, maxval=50, group="Core Settings")
+pullbackBars = input.int(5, "Pullback Lookback Bars", minval=3, maxval=20, group="Core Settings")
+divLookback = input.int(10, "Divergence Lookback Bars", minval=5, maxval=30, group="Core Settings")
+
+// Filter Toggles
+useTrendFilter = input.bool(true, "Use Trend Filter", group="Filters")
+useEmaZoneFilter = input.bool(true, "Use EMA Support/Resistance Zone", group="Filters")
+useRsiFilter = input.bool(true, "Use RSI Setup Filter", group="Filters")
+useDivergenceFilter = input.bool(false, "Use Momentum Divergence", group="Filters")
+useRejectionFilter = input.bool(true, "Use Rejection Candle", group="Filters")
+useVolumeFilter = input.bool(false, "Use Volume Confirmation", group="Filters")
+useVolatilityFilter = input.bool(true, "Use Volatility Filter", group="Filters")
+useHTFFilter = input.bool(false, "Use Higher Timeframe Alignment (Advanced)", group="Filters")
+htfTimeframe = input.timeframe("240", "Higher Timeframe", group="Filters")
+
+// Core Calculations
+emaFast = ta.ema(close, emaFastLen)
+emaSlow = ta.ema(close, emaSlowLen)
+atr = ta.atr(atrLen)
+rsi = ta.rsi(close, rsiLen)
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 1️⃣ MARKET REGIME FILTER (Trend Definition)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// EMA Alignment
+emaAlignedUp = emaFast > emaSlow
+emaAlignedDown = emaFast < emaSlow
+
+// Trend Persistence (Slope Confirmation)
+emaSlopePercent = (emaSlow - emaSlow[10]) / emaSlow[10] * 100
+emaSlowRising = emaSlopePercent >= 0.15
+emaSlowFalling = emaSlopePercent <= -0.15
+
+// Price Position
+priceAcceptedAbove = close >= emaSlow
+priceAcceptedBelow = close <= emaSlow
+
+// EMA Separation (Anti-Chop)
+trendStrongUp = (emaFast - emaSlow) / emaSlow >= 0.003
+trendStrongDown = (emaSlow - emaFast) / emaSlow >= 0.003
+
+// Final Trend Qualification
+upTrend = emaAlignedUp and emaSlowRising and priceAcceptedAbove and trendStrongUp
+downTrend = emaAlignedDown and emaSlowFalling and priceAcceptedBelow and trendStrongDown
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 2️⃣ CONTEXT: VALID PULLBACK LOCATION
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Prior Expansion Detection
+recentHigh = ta.highest(high, 10)
+hadExpansionUp = (recentHigh - emaFast) >= atr * 0.6
+recentLow = ta.lowest(low, 10)
+hadExpansionDown = (emaFast - recentLow) >= atr * 0.6
+
+// EMA Zone Definition
+emaZoneHighLong = emaFast + atr * 0.2
+emaZoneLowLong = emaSlow - atr * 0.6
+emaZoneHighShort = emaSlow + atr * 0.6
+emaZoneLowShort = emaFast - atr * 0.2
+
+// Pullback Location Check
+pullbackLowLong = ta.lowest(low, pullbackBars)
+inEmaZoneLong = pullbackLowLong <= emaZoneHighLong and pullbackLowLong >= emaZoneLowLong
+pullbackHighShort = ta.highest(high, pullbackBars)
+inEmaZoneShort = pullbackHighShort >= emaZoneLowShort and pullbackHighShort <= emaZoneHighShort
+
+// Pullback Bounce Confirmation
+priceBouncedFromSupport = close > ta.sma(close, 3)
+priceBouncedFromResistance = close < ta.sma(close, 3)
+
+// Pullback Quality (No Panic Moves)
+largeBearishCandle = close < open and (open - close) > atr * 0.7
+controlledPullbackLong = not largeBearishCandle
+largeBullishCandle = close > open and (close - open) > atr * 0.7
+controlledPullbackShort = not largeBullishCandle
+
+// Valid Pullback Context State
+validPullbackContextLong = upTrend and hadExpansionUp and inEmaZoneLong and priceBouncedFromSupport and controlledPullbackLong
+validPullbackContextShort = downTrend and hadExpansionDown and inEmaZoneShort and priceBouncedFromResistance and controlledPullbackShort
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 3️⃣ SETUP FILTERS (Optional Quality Enhancers)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// 3.1 RSI Setup Filter (Adaptive Thresholds)
+rsiHigh20 = ta.highest(rsi, 20)
+rsiLow20 = ta.lowest(rsi, 20)
+rsiRange = rsiHigh20 - rsiLow20
+rsiOversoldLevel = rsiLow20 + rsiRange * 0.3
+rsiWasLow = rsi[1] <= rsiOversoldLevel or rsi[2] <= rsiOversoldLevel
+rsiTurningUp = rsi > rsi[1] and rsi[1] > rsi[2]
+rsiAboveRecent = rsi > ta.sma(rsi, 3)
+rsiSetupLong = rsiWasLow and rsiTurningUp and rsiAboveRecent
+rsiOverboughtLevel = rsiHigh20 - rsiRange * 0.3
+rsiWasHigh = rsi[1] >= rsiOverboughtLevel or rsi[2] >= rsiOverboughtLevel
+rsiTurningDown = rsi < rsi[1] and rsi[1] < rsi[2]
+rsiBelowRecent = rsi < ta.sma(rsi, 3)
+rsiSetupShort = rsiWasHigh and rsiTurningDown and rsiBelowRecent
+
+// 3.2 Momentum Divergence Filter (Zero Delay)
+recentLowPrice = ta.lowest(low, 3)
+priorLowPrice = ta.lowest(low[divLookback - 2], 3)
+recentLowRSI = ta.lowest(rsi, 3)
+priorLowRSI = ta.lowest(rsi[divLookback - 2], 3)
+bullishDiv = recentLowPrice < priorLowPrice and recentLowRSI > priorLowRSI and rsi < 50
+recentHighPrice = ta.highest(high, 3)
+priorHighPrice = ta.highest(high[divLookback - 2], 3)
+recentHighRSI = ta.highest(rsi, 3)
+priorHighRSI = ta.highest(rsi[divLookback - 2], 3)
+bearishDiv = recentHighPrice > priorHighPrice and recentHighRSI < priorHighRSI and rsi > 50
+
+// 3.3 Volume Filter
+avgVolume = ta.sma(volume, 20)
+volumeAcceptable = volume <= avgVolume * 1.5
+
+// 3.4 Volatility Filter
+avgATR = ta.sma(atr, 20)
+isVolatileEnough = atr > avgATR * 0.7
+
+// 3.5 Higher Timeframe Alignment
+htfEma = request.security(syminfo.tickerid, htfTimeframe, ta.ema(close, 50), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+alignedWithHTFLong = close > htfEma
+alignedWithHTFShort = close < htfEma
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 4️⃣ TRIGGER: REJECTION CANDLE (Price Action Confirmation)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Candle Metrics
+body = math.abs(close - open)
+candleRange = high - low
+lowerWick = math.min(open, close) - low
+upperWick = high - math.max(open, close)
+
+// Long Rejection Scoring (0-6 points, need 3+)
+rejectionScoreLong = 0
+rejectionScoreLong := rejectionScoreLong + (lowerWick > upperWick * 1.5 ? 2 : (lowerWick > upperWick ? 1 : 0))
+rejectionScoreLong := rejectionScoreLong + (lowerWick > atr * 0.4 ? 1 : 0)
+structureRejectLong = low < ta.lowest(low[1], pullbackBars) and close > ta.lowest(low[1], pullbackBars)
+rejectionScoreLong := rejectionScoreLong + (structureRejectLong ? 2 : 0)
+rejectionScoreLong := rejectionScoreLong + (close >= low + candleRange * 0.6 ? 1 : 0)
+validRejectionLong = rejectionScoreLong >= 3
+
+// Short Rejection Scoring (0-6 points, need 3+)
+rejectionScoreShort = 0
+rejectionScoreShort := rejectionScoreShort + (upperWick > lowerWick * 1.5 ? 2 : (upperWick > lowerWick ? 1 : 0))
+rejectionScoreShort := rejectionScoreShort + (upperWick > atr * 0.4 ? 1 : 0)
+structureRejectShort = high > ta.highest(high[1], pullbackBars) and close < ta.highest(high[1], pullbackBars)
+rejectionScoreShort := rejectionScoreShort + (structureRejectShort ? 2 : 0)
+rejectionScoreShort := rejectionScoreShort + (close <= high - candleRange * 0.6 ? 1 : 0)
+validRejectionShort = rejectionScoreShort >= 3
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 5️⃣ SETUP BAR IDENTIFICATION
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Combine All Filters for Setup Bar
+setupBarLong = validPullbackContextLong and (not useRsiFilter or rsiSetupLong) and (not useDivergenceFilter or bullishDiv) and (not useVolumeFilter or volumeAcceptable) and (not useVolatilityFilter or isVolatileEnough) and (not useHTFFilter or alignedWithHTFLong) and (not useRejectionFilter or validRejectionLong)
+setupBarShort = validPullbackContextShort and (not useRsiFilter or rsiSetupShort) and (not useDivergenceFilter or bearishDiv) and (not useVolumeFilter or volumeAcceptable) and (not useVolatilityFilter or isVolatileEnough) and (not useHTFFilter or alignedWithHTFShort) and (not useRejectionFilter or validRejectionShort)
+
+// Pullback Timer & Invalidation
+var int pullbackCounterLong = 0
+var int pullbackCounterShort = 0
+if setupBarLong
+    pullbackCounterLong := 0
+else if validPullbackContextLong
+    pullbackCounterLong += 1
+else
+    pullbackCounterLong := 0
+if setupBarShort
+    pullbackCounterShort := 0
+else if validPullbackContextShort
+    pullbackCounterShort += 1
+else
+    pullbackCounterShort := 0
+pullbackTooLongLong = pullbackCounterLong > 10
+pullbackTooLongShort = pullbackCounterShort > 10
+invalidateSetupLong = (close < emaSlow) or (rsi < 35) or pullbackTooLongLong
+invalidateSetupShort = (close > emaSlow) or (rsi > 65) or pullbackTooLongShort
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 6️⃣ CONFIRMATION CANDLE (Entry Trigger with Trend State Locking)
+// ═══════════════════════════════════════════════════════════════════════════
+
+var bool waitingForConfirmationLong = false
+var bool waitingForConfirmationShort = false
+var float confirmationLevelLong = na
+var float confirmationLevelShort = na
+var bool trendWasValidLong = false
+var bool trendWasValidShort = false
+
+// Long Confirmation Setup
+if setupBarLong and not waitingForConfirmationLong
+    waitingForConfirmationLong := true
+    confirmationLevelLong := high
+    trendWasValidLong := upTrend
+
+// Short Confirmation Setup
+if setupBarShort and not waitingForConfirmationShort
+    waitingForConfirmationShort := true
+    confirmationLevelShort := low
+    trendWasValidShort := downTrend
+
+// Confirmation Triggers
+confirmationLong = waitingForConfirmationLong and close > confirmationLevelLong
+confirmationShort = waitingForConfirmationShort and close < confirmationLevelShort
+
+// Reset Confirmation States
+if confirmationLong or invalidateSetupLong
+    waitingForConfirmationLong := false
+    confirmationLevelLong := na
+    trendWasValidLong := false
+if confirmationShort or invalidateSetupShort
+    waitingForConfirmationShort := false
+    confirmationLevelShort := na
+    trendWasValidShort := false
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 7️⃣ FINAL ENTRY CONDITIONS
+// ═══════════════════════════════════════════════════════════════════════════
+
+longEntry = trendWasValidLong and confirmationLong
+shortEntry = trendWasValidShort and confirmationShort
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 8️⃣ STOP LOSS & TAKE PROFIT
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Long Stop Loss
+swingLowLong = ta.lowest(low, pullbackBars + 2)
+stopPriceLong = swingLowLong - atr * 0.5
+minStopLong = close * 0.98
+finalStopLong = math.max(stopPriceLong, minStopLong)
+
+// Short Stop Loss
+swingHighShort = ta.highest(high, pullbackBars + 2)
+stopPriceShort = swingHighShort + atr * 0.5
+maxStopShort = close * 1.02
+finalStopShort = math.min(stopPriceShort, maxStopShort)
+
+// Long Take Profit
+riskAmountLong = close - finalStopLong
+takeProfit1Long = close + riskAmountLong * 2.0
+takeProfit2Long = close + riskAmountLong * 3.0
+
+// Short Take Profit
+riskAmountShort = finalStopShort - close
+takeProfit1Short = close - riskAmountShort * 2.0
+takeProfit2Short = close - riskAmountShort * 3.0
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 9️⃣ STRATEGY EXECUTION
+// ═══════════════════════════════════════════════════════════════════════════
+
+if longEntry
+    strategy.entry("Long", strategy.long)
+    strategy.exit("Long-Exit", "Long", stop=finalStopLong, limit=takeProfit2Long)
+
+if shortEntry
+    strategy.entry("Short", strategy.short)
+    strategy.exit("Short-Exit", "Short", stop=finalStopShort, limit=takeProfit2Short)
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🔟 VISUAL ELEMENTS
+// ═══════════════════════════════════════════════════════════════════════════
+
+// EMA Plots
+plot(emaFast, title="Fast EMA", color=color.blue, linewidth=2)
+plot(emaSlow, title="Slow EMA", color=color.red, linewidth=2)
+
+// HTF EMA (if enabled)
+plot(useHTFFilter ? htfEma : na, title="HTF EMA", color=color.new(color.purple, 30), linewidth=3, style=plot.style_stepline)
+
+// Entry Markers
+plotshape(longEntry, title="Long Entry", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.tiny)
+plotshape(shortEntry, title="Short Entry", style=shape.triangledown, location=location.abovebar, color=color.orange, size=size.tiny)
+
+// Setup Bar Markers (Debug - Optional)
+plotshape(setupBarLong and not longEntry, title="Long Setup", style=shape.circle, location=location.belowbar, color=color.new(color.green, 70), size=size.tiny)
+plotshape(setupBarShort and not shortEntry, title="Short Setup", style=shape.circle, location=location.abovebar, color=color.new(color.red, 70), size=size.tiny)
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 1️⃣1️⃣ ALERTS
+// ═══════════════════════════════════════════════════════════════════════════
+
+alertcondition(longEntry, title="Long Entry Signal", message="Pullback Strategy: LONG entry triggered at {{close}}")
+alertcondition(shortEntry, title="Short Entry Signal", message="Pullback Strategy: SHORT entry triggered at {{close}}")
+alertcondition(setupBarLong, title="Long Setup Detected", message="Pullback Strategy: Long setup bar formed - watch for confirmation")
+alertcondition(setupBarShort, title="Short Setup Detected", message="Pullback Strategy: Short setup bar formed - watch for confirmation")
+```
+---
+---
 
 # ✅ **HTF Wick Strategy — Step-by-Step Trading Checklist (Beginner Version)**  
 
