@@ -563,6 +563,58 @@
 ```
 ---
 ---
+**Strategy Usage Recommendation** 
+```pine
+    ### **Currency Pair Suitability:**
+    **Best:**
+    - EUR/USD (trending, liquid)
+    - GBP/USD (volatile, clear trends)
+    - AUD/USD (clean pullbacks)
+    
+    **Moderate:**
+    - USD/JPY (respects EMAs well)
+    - EUR/GBP (slower, fewer signals)
+    
+    **Avoid:**
+    - Exotic pairs (wide spreads, gaps)
+    - Crypto (too volatile for current settings)
+    ---
+    
+    ## 🔧 **Common Issues & Fixes:**
+    
+    ### **Issue 1: Too Few Signals**
+    **Solution:**
+    - Reduce `emaSlowLen` to 30-40
+    - Disable HTF filter
+    - Disable divergence filter
+    - Reduce rejection score threshold to 2
+    
+    ### **Issue 2: Too Many Losses**
+    **Solution:**
+    - Enable all filters
+    - Increase `pullbackBars` to 7-8
+    - Increase rejection score threshold to 4
+    - Enable HTF filter
+    
+    ### **Issue 3: Stops Too Tight**
+    **Solution:**
+    ```pine
+    // Change stop calculation:
+    stopPriceLong = swingLowLong - atr * 0.5  // Change to 0.8 or 1.0
+    minStopLong = close * 0.98  // Change to 0.97 (3% max stop)
+    ```
+    
+    ### **Issue 4: Targets Not Reached**
+    **Solution:**
+    ```pine
+    // Reduce target multipliers:
+    takeProfit1Long = close + riskAmountLong * 1.5  // From 2.0
+    takeProfit2Long = close + riskAmountLong * 2.5  // From 3.0
+    ```
+    ---
+```
+---
+---
 **Support Resistance Channels- by LonesomeTheBlue**    
 set the indicator to:  
 - Pivot Period --> 10
