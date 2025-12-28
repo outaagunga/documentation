@@ -610,6 +610,43 @@
     // Reduce target multipliers:
     takeProfit1Long = close + riskAmountLong * 1.5  // From 2.0
     takeProfit2Long = close + riskAmountLong * 2.5  // From 3.0
+
+    
+    ## 📊 **Parameter Adjustment Matrix- If you want to trade high volatilty curency like crypto or Exotic Pairs**
+    
+    ### **Priority 1: CRITICAL - Must Adjust (Will Break Otherwise)**
+    
+    | Parameter | Forex Default | Crypto Adjustment | Exotic Forex | Why Critical |
+    |-----------|---------------|-------------------|--------------|--------------|
+    | **EMA Separation %** | 0.003 (0.3%) | 0.010-0.015 (1-1.5%) | 0.005-0.008 (0.5-0.8%) | Crypto/exotics have wider EMA spreads naturally |
+    | **EMA Slope %** | 0.15% over 10 bars | 0.4-0.6% over 10 bars | 0.25-0.35% over 10 bars | Higher volatility = steeper slopes needed for "trend" |
+    | **ATR Multipliers** | All 0.3-0.7x | All 1.0-1.5x | All 0.5-1.0x | Wider price swings require larger buffers |
+    | **Min Stop %** | 2% (0.98) | 5-8% (0.92-0.95) | 3-5% (0.95-0.97) | Prevent premature stops in volatile assets |
+    
+    ---
+    
+    ### **Priority 2: HIGH - Should Adjust (Performance Impact)**
+    
+    | Parameter | Forex Default | Crypto Adjustment | Exotic Forex | Why Important |
+    |-----------|---------------|-------------------|--------------|---------------|
+    | **RSI Period** | 14 | 21-28 | 18-21 | Longer period smooths extreme volatility |
+    | **EMA Lengths** | 20/50 | 30/75 or 50/100 | 25/60 | Reduce whipsaw from noise |
+    | **Pullback Bars** | 5 | 3-4 | 4-5 | Crypto pullbacks are sharper/faster |
+    | **Pullback Timer** | 10 bars | 5-7 bars | 8-10 bars | Crypto moves expire faster |
+    | **Rejection Score Threshold** | 3/6 | 4/6 | 3-4/6 | Need stronger confirmation in noise |
+    | **Volume Filter** | 1.5x average | 2.0-3.0x average | 1.8-2.2x average | Crypto has more volume spikes |
+    
+    ---
+    
+    ### **Priority 3: MODERATE - Consider Adjusting (Optimization)**
+    
+    | Parameter | Forex Default | Crypto Adjustment | Exotic Forex | Why Helpful |
+    |-----------|---------------|-------------------|--------------|-------------|
+    | **Divergence Lookback** | 10 | 7-8 | 8-10 | Crypto trends shorter-lived |
+    | **HTF Timeframe** | 4H (240) | 1D (1D) | 6H (360) | Need higher TF for stability |
+    | **Commission %** | 0.1% | 0.2-0.5% | 0.2-0.3% | Crypto fees higher |
+    | **R:R Targets** | 2R/3R | 1.5R/2.5R | 2R/3R | Crypto less likely to hit 3R |
+    ---
     ```
     ---
 ```
