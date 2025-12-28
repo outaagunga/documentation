@@ -511,8 +511,8 @@
     
     ### 9.2 Entry Markers
     ```pinescript
-    plotshape(longEntry, title="", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.tiny)
-    plotshape(shortEntry, title="", style=shape.triangledown, location=location.abovebar, color=color.orange, size=size.tiny)
+    plotshape(longEntry, title="", style=shape.triangleup, location=location.belowbar, color=color.rgb(110,194,7), size=size.small)
+    plotshape(shortEntry, title="", style=shape.triangledown, location=location.abovebar, color=color.rgb(90,14,36), size=size.small)
     ```
     
     ### 9.3 Setup Bar Markers (Optional - for debugging)
