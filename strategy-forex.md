@@ -171,45 +171,68 @@
     
     ## 3️⃣ SETUP FILTERS (Optional Quality Enhancers)
     
-    ### 3.1 RSI Setup Filter (Recommended)
+    ### 3.1 RSI Setup Filter (Adaptive Thresholds - Recommended)
     **Confirms momentum is shifting in favor of trend direction**
+    **Adapts to market strength - catches both power pullbacks and standard pullbacks**
     
     ```pinescript
-    // For longs: RSI was oversold, now turning up
-    rsiOversold = rsi < 40
-    rsiTurningUp = rsi > rsi[1] and rsi[1] > rsi[2]  // 2 consecutive rising bars
-    rsiAboveRecent = rsi > ta.sma(rsi, 3)
-    rsiSetupLong = rsiOversold[1] and rsiTurningUp and rsiAboveRecent
+    // Calculate RSI's recent operating range (last 20 bars)
+    rsiHigh20 = ta.highest(rsi, 20)
+    rsiLow20 = ta.lowest(rsi, 20)
+    rsiRange = rsiHigh20 - rsiLow20
     
-    // For shorts: RSI was overbought, now turning down
-    rsiOverbought = rsi > 60
+    // For longs: Define "oversold" as lower 30% of recent RSI range
+    rsiOversoldLevel = rsiLow20 + rsiRange * 0.3
+    rsiWasLow = rsi[1] <= rsiOversoldLevel or rsi[2] <= rsiOversoldLevel
+    rsiTurningUp = rsi > rsi[1] and rsi[1] > rsi[2]  // 2 consecutive rising bars
+    rsiAboveRecent = rsi > ta.sma(rsi, 3)  // Above 3-bar average
+    rsiSetupLong = rsiWasLow and rsiTurningUp and rsiAboveRecent
+    
+    // For shorts: Define "overbought" as upper 30% of recent RSI range
+    rsiOverboughtLevel = rsiHigh20 - rsiRange * 0.3
+    rsiWasHigh = rsi[1] >= rsiOverboughtLevel or rsi[2] >= rsiOverboughtLevel
     rsiTurningDown = rsi < rsi[1] and rsi[1] < rsi[2]  // 2 consecutive falling bars
-    rsiBelowRecent = rsi < ta.sma(rsi, 3)
-    rsiSetupShort = rsiOverbought[1] and rsiTurningDown and rsiBelowRecent
+    rsiBelowRecent = rsi < ta.sma(rsi, 3)  // Below 3-bar average
+    rsiSetupShort = rsiWasHigh and rsiTurningDown and rsiBelowRecent
     ```
     
-    ### 3.2 Momentum Divergence Filter (Optional)
-    **Detects divergence between price and RSI at swing points**
+    **Why Adaptive Thresholds:**
+    - ✅ **Strong uptrends** (RSI range 45-75): oversold ≈ 52 - catches power pullbacks where RSI barely dips
+    - ✅ **Weak uptrends** (RSI range 30-60): oversold ≈ 39 - catches standard pullbacks
+    - ✅ **Ranging markets** (RSI range 25-75): oversold ≈ 40 - similar to static threshold
+    - ✅ **Automatic adjustment** - no manual intervention needed across different market regimes
+    
+    ### 3.2 Momentum Divergence Filter (Optional - Zero Delay)
+    **Detects divergence between price and RSI using fixed lookback comparison (no pivot lookahead)**
     
     ```pinescript
-    // Pivot detection (5 bars left, 5 bars right for confirmation)
-    pivotLow = ta.pivotlow(low, 5, 5)
-    pivotHigh = ta.pivothigh(high, 5, 5)
+    // Adjustable lookback for divergence detection
+    divLookback = input.int(10, "Divergence Lookback Bars", minval=5, maxval=30)
     
     // For longs: Bullish divergence (price lower low, RSI higher low)
-    pivotLowPrice = ta.valuewhen(pivotLow, low, 0)
-    pivotLowPrice_prev = ta.valuewhen(pivotLow, low, 1)
-    pivotLowRSI = ta.valuewhen(pivotLow, rsi, 0)
-    pivotLowRSI_prev = ta.valuewhen(pivotLow, rsi, 1)
-    bullishDiv = pivotLow and pivotLowPrice < pivotLowPrice_prev and pivotLowRSI > pivotLowRSI_prev
+    recentLowPrice = ta.lowest(low, 3)  // Recent 3-bar low
+    priorLowPrice = ta.lowest(low[divLookback - 2], 3)  // Low from ~lookback bars ago
+    recentLowRSI = ta.lowest(rsi, 3)  // Recent 3-bar RSI low
+    priorLowRSI = ta.lowest(rsi[divLookback - 2], 3)  // RSI from ~lookback bars ago
+    
+    // Bullish divergence: price making lower low, RSI making higher low (with RSI filter)
+    bullishDiv = recentLowPrice < priorLowPrice and recentLowRSI > priorLowRSI and rsi < 50
     
     // For shorts: Bearish divergence (price higher high, RSI lower high)
-    pivotHighPrice = ta.valuewhen(pivotHigh, high, 0)
-    pivotHighPrice_prev = ta.valuewhen(pivotHigh, high, 1)
-    pivotHighRSI = ta.valuewhen(pivotHigh, rsi, 0)
-    pivotHighRSI_prev = ta.valuewhen(pivotHigh, rsi, 1)
-    bearishDiv = pivotHigh and pivotHighPrice > pivotHighPrice_prev and pivotHighRSI < pivotHighRSI_prev
+    recentHighPrice = ta.highest(high, 3)  // Recent 3-bar high
+    priorHighPrice = ta.highest(high[divLookback - 2], 3)  // High from ~lookback bars ago
+    recentHighRSI = ta.highest(rsi, 3)  // Recent 3-bar RSI high
+    priorHighRSI = ta.highest(rsi[divLookback - 2], 3)  // RSI from ~lookback bars ago
+    
+    // Bearish divergence: price making higher high, RSI making lower high (with RSI filter)
+    bearishDiv = recentHighPrice > priorHighPrice and recentHighRSI < priorHighRSI and rsi > 50
     ```
+    
+    **Why This Approach:**
+    - ✅ Zero delay - triggers immediately on current bar
+    - ✅ No repainting - uses only confirmed historical data
+    - ✅ No lookahead bias - doesn't require future bars for confirmation
+    - ✅ Consistent with other filters - all signals appear in real-time
     
     ### 3.3 Volume Filter (Optional)
     **Confirms pullback is not a panic event**
@@ -359,49 +382,75 @@
     
     **Purpose:** Waits for the next bar to confirm momentum follow-through before entering.
     
-    ### 6.1 Confirmation Logic
+    ### 6.1 Confirmation Logic with Trend State Locking
+    **Critical:** Locks the trend state at setup to prevent flickering from invalidating good setups
+    
     ```pinescript
-    // State variables to track pending confirmation
+    // State variables to track pending confirmation AND locked trend state
     var bool waitingForConfirmationLong = false
     var bool waitingForConfirmationShort = false
     var float confirmationLevelLong = na
     var float confirmationLevelShort = na
+    var bool trendWasValidLong = false  // Lock trend state at setup
+    var bool trendWasValidShort = false  // Lock trend state at setup
     
-    // Long confirmation setup
+    // Long confirmation setup - preserve trend state when setup forms
     if setupBarLong and not waitingForConfirmationLong
         waitingForConfirmationLong := true
         confirmationLevelLong := high  // Must break above setup bar high
+        trendWasValidLong := upTrend  // Lock the trend state from setup bar
     
-    // Short confirmation setup
+    // Short confirmation setup - preserve trend state when setup forms
     if setupBarShort and not waitingForConfirmationShort
         waitingForConfirmationShort := true
         confirmationLevelShort := low  // Must break below setup bar low
+        trendWasValidShort := downTrend  // Lock the trend state from setup bar
     
-    // Confirmation triggers
+    // Confirmation triggers (price action only - trend already locked)
     confirmationLong = waitingForConfirmationLong and close > confirmationLevelLong
     confirmationShort = waitingForConfirmationShort and close < confirmationLevelShort
     
-    // Reset confirmation states
+    // Reset confirmation states when triggered or invalidated
     if confirmationLong or invalidateSetupLong
         waitingForConfirmationLong := false
         confirmationLevelLong := na
+        trendWasValidLong := false  // Reset locked state
     
     if confirmationShort or invalidateSetupShort
         waitingForConfirmationShort := false
         confirmationLevelShort := na
+        trendWasValidShort := false  // Reset locked state
     ```
+    
+    **Why Trend State Locking:**
+    - ✅ Prevents missed entries due to temporary trend flickering during confirmation bar
+    - ✅ If setup was valid when it formed, it remains valid through confirmation phase
+    - ✅ Only invalidation rules (Section 5.2) can cancel the pending setup
+    - ✅ Aligns with how traders think: "Setup was good, just waiting for trigger"
     
     ---
     
     ## 7️⃣ FINAL ENTRY CONDITIONS
     
-    ```pinescript
-    // Execute long entry
-    longEntry = upTrend and confirmationLong and (not useTrendFilter or upTrend) and (not useEmaZoneFilter or validPullbackContextLong)
+    **Purpose:** Execute trades using locked trend state from setup bar to prevent flickering invalidation
     
-    // Execute short entry
-    shortEntry = downTrend and confirmationShort and (not useTrendFilter or downTrend) and (not useEmaZoneFilter or validPullbackContextShort)
+    ```pinescript
+    // Execute long entry - uses locked trend state from setup bar
+    // All filter conditions were already validated in setupBarLong
+    // Only confirmation (price breaking setup high) is needed
+    longEntry = trendWasValidLong and confirmationLong
+    
+    // Execute short entry - uses locked trend state from setup bar
+    // All filter conditions were already validated in setupBarShort
+    // Only confirmation (price breaking setup low) is needed
+    shortEntry = trendWasValidShort and confirmationShort
     ```
+    
+    **Why This Works:**
+    - Trend state is captured and locked at setup bar (Section 6.1)
+    - Prevents temporary trend flickering from canceling valid setups
+    - All other filters already passed in `setupBarLong` / `setupBarShort`
+    - Only invalidation rules (Section 5.2) can cancel pending entries
     
     ---
     
@@ -463,7 +512,7 @@
     ### 9.2 Entry Markers
     ```pinescript
     plotshape(longEntry, title="", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.tiny)
-    plotshape(shortEntry, title="", style=shape.triangledown, location=location.abovebar, color=color.#58181F, size=size.tiny)
+    plotshape(shortEntry, title="", style=shape.triangledown, location=location.abovebar, color=color.orange, size=size.tiny)
     ```
     
     ### 9.3 Setup Bar Markers (Optional - for debugging)
@@ -497,8 +546,6 @@
     4. **No repainting logic** - all calculations use confirmed bar data only
     5. **Efficient calculation** - reuse variables where possible
 ```
-
-
 ---
 ---
 **Support Resistance Channels- by LonesomeTheBlue**    
