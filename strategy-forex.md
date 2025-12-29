@@ -3,7 +3,8 @@
 - give a simplified version that actually works for beginners  
 - give a step-by-step checklist  
 - Give your output in this format
-- Spot hidden assumptions/ Structural logic conflict/ Logical ambiguity/Blind spot/ Explore multiple perspectives/ Asking the right question?  
+- Spot hidden assumptions/ Structural logic conflict/ Logical ambiguity/Blind spot/ Explore multiple perspectives/ Asking the right question?
+- Explain this in clear, concise bulleted points without adding new assumptions    
 - I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.
 - Which part of the code is ambiguous  
 - Translate this ruleset into pinescript friendly logic  
