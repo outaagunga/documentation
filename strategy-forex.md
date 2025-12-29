@@ -973,6 +973,235 @@ alertcondition(setupBarShort, title="Short Setup Detected", message="Pullback St
 ```
 ---
 ---
+## M15 Continuation Engine Strategy:  
+```pine
+//@version=6
+strategy(
+     "PA M15 Continuation Engine (Adaptive) - Safe Entry/Exit v6 Sticky Trend",
+     overlay = true,
+     pyramiding = 0,
+     default_qty_type = strategy.percent_of_equity,
+     default_qty_value = 1
+)
+
+//─────────────────────────────
+// INPUTS
+//─────────────────────────────
+left  = input.int(4, "Pivot Left", 1, 10)
+minScoreTrending = input.int(4, "Min Score (Trending)")
+minScoreBalanced = input.int(6, "Min Score (Balanced)")
+minScoreVolatile = input.int(7, "Min Score (Volatile)")
+atrLen = input.int(14, "ATR Length")
+atr = ta.atr(atrLen)
+
+//─────────────────────────────
+// MARKET STRUCTURE
+//─────────────────────────────
+isLocalHigh = high > ta.highest(high[1], left)
+isLocalLow  = low  < ta.lowest(low[1], left)
+
+var float HH = na
+var float HL = na
+var float LH = na
+var float LL = na
+var int trendState = 0
+pullbackBuffer = atr * 0.5  // buffer for sticky trend
+
+// Update pivots
+if isLocalHigh
+    if trendState == 1 or trendState == 0
+        if na(HH) or high > HH
+            HH := high
+        else
+            LH := high
+    else
+        HH := high
+        HL := na
+        trendState := 0
+
+if isLocalLow
+    if trendState == -1 or trendState == 0
+        if na(LL) or low < LL
+            LL := low
+        else
+            HL := low
+    else
+        LL := low
+        LH := na
+        trendState := 0
+
+// Trend detection
+isUptrend   = not na(HH) and not na(HL) and close > HL
+isDowntrend = not na(LL) and not na(LH) and close < LH
+
+//─────────────────────────────
+// STICKY TREND STATE LOGIC
+//─────────────────────────────
+if isUptrend
+    trendState := 1
+else if isDowntrend
+    trendState := -1
+else
+    // only neutralize if price breaks significant level beyond buffer
+    if trendState == 1 and close < HL - pullbackBuffer
+        trendState := 0
+    else if trendState == -1 and close > LH + pullbackBuffer
+        trendState := 0
+    // otherwise keep previous trendState
+
+longStructureOK  = trendState == 1 and low > HL
+shortStructureOK = trendState == -1 and high < LH
+
+//─────────────────────────────
+// MARKET TYPE DETECTION
+//─────────────────────────────
+rangeN = ta.highest(high, 20) - ta.lowest(low, 20)
+impulse = math.abs(close - open)
+compression = rangeN > 0 ? impulse / rangeN : 0
+
+lowerWick = math.min(open, close) - low
+upperWick = high - math.max(open, close)
+wickRatio = (lowerWick + upperWick) / math.max(impulse, atr * 0.2)
+
+marketType =
+    compression > 0.25 ? 1 :
+    wickRatio > 1.8    ? 2 :
+                          0
+
+minScore =
+    marketType == 1 ? minScoreTrending :
+    marketType == 2 ? minScoreVolatile :
+                      minScoreBalanced
+
+//─────────────────────────────
+// CANDLE QUALITY
+//─────────────────────────────
+body = math.abs(close - open)
+lw   = lowerWick
+uw   = upperWick
+
+bullReject = lw > body * 1.5
+bearReject = uw > body * 1.5
+
+bullMomentum = close > open and close > high[1]
+bearMomentum = close < open and close < low[1]
+
+//─────────────────────────────
+// SCORE LOGIC
+//─────────────────────────────
+longScore = 0
+shortScore = 0
+
+if longStructureOK
+    if marketType == 0
+        longScore += (bullReject or bullMomentum) ? 3 : 0
+        longScore += compression > 0.2 ? 2 : 0
+    else if marketType == 1
+        longScore += bullMomentum ? 3 : 0
+        longScore += bullReject ? 1 : 0
+        longScore += compression > 0.2 ? 2 : 0
+    else
+        longScore += bullReject ? 3 : 0
+        longScore += bullMomentum ? 1 : 0
+        longScore += compression > 0.2 ? 2 : 0
+
+if shortStructureOK
+    if marketType == 0
+        shortScore += (bearReject or bearMomentum) ? 3 : 0
+        shortScore += compression > 0.2 ? 2 : 0
+    else if marketType == 1
+        shortScore += bearMomentum ? 3 : 0
+        shortScore += bearReject ? 1 : 0
+        shortScore += compression > 0.2 ? 2 : 0
+    else
+        shortScore += bearReject ? 3 : 0
+        shortScore += bearMomentum ? 1 : 0
+        shortScore += compression > 0.2 ? 2 : 0
+
+//─────────────────────────────
+// GLOBAL VARIABLES
+//─────────────────────────────
+var float pendingLongEntry  = na
+var float pendingShortEntry = na
+var float activeLongEntry   = na
+var float activeShortEntry  = na
+var float longSL            = na
+var float shortSL           = na
+var float longTP            = na
+var float shortTP           = na
+maxSL = atr * 2
+
+//─────────────────────────────
+// SET PENDING ENTRY PRICES
+//─────────────────────────────
+if strategy.position_size == 0
+    // Reset pending entries if conditions are no longer valid
+    if not (longStructureOK and longScore >= minScore)
+        pendingLongEntry := na
+    if not (shortStructureOK and shortScore >= minScore)
+        pendingShortEntry := na
+
+    // Set new pending entries if conditions are valid
+    if longStructureOK and longScore >= minScore and na(pendingLongEntry)
+        pendingLongEntry := high + syminfo.mintick * 2
+        rawSL = math.min(HL, low) - atr * 0.15
+        longSL := math.max(pendingLongEntry - maxSL, rawSL)
+        longTP := pendingLongEntry + (pendingLongEntry - longSL) * 2.2
+
+    if shortStructureOK and shortScore >= minScore and na(pendingShortEntry)
+        pendingShortEntry := low - syminfo.mintick * 2
+        rawSL = math.max(LH, high) + atr * 0.15
+        shortSL := math.min(pendingShortEntry + maxSL, rawSL)
+        shortTP := pendingShortEntry - (shortSL - pendingShortEntry) * 2.2
+
+//─────────────────────────────
+// EXECUTE ENTRIES
+//─────────────────────────────
+if not na(pendingLongEntry)
+    strategy.entry("LONG", strategy.long, stop = pendingLongEntry)
+if not na(pendingShortEntry)
+    strategy.entry("SHORT", strategy.short, stop = pendingShortEntry)
+
+//─────────────────────────────
+// LOCK ACTIVE ENTRY AFTER FILL
+//─────────────────────────────
+if strategy.position_size > 0 and na(activeLongEntry)
+    activeLongEntry := pendingLongEntry
+    pendingLongEntry := na
+if strategy.position_size < 0 and na(activeShortEntry)
+    activeShortEntry := pendingShortEntry
+    pendingShortEntry := na
+
+//─────────────────────────────
+// RESET ACTIVE ENTRIES WHEN FLAT
+//─────────────────────────────
+if strategy.position_size == 0
+    activeLongEntry := na
+    activeShortEntry := na
+
+//─────────────────────────────
+// EXECUTE EXITS
+//─────────────────────────────
+if strategy.position_size > 0
+    strategy.exit("XL", "LONG", stop = longSL, limit = longTP)
+if strategy.position_size < 0
+    strategy.exit("XS", "SHORT", stop = shortSL, limit = shortTP)
+
+//─────────────────────────────
+// VISUALS
+//─────────────────────────────
+plot(HL, "HL", color=color.new(color.green, 80))
+plot(LH, "LH", color=color.new(color.red, 80))
+
+bgcolor(
+    marketType == 1 ? color.new(color.green, 92) :
+    marketType == 2 ? color.new(color.red, 92) :
+                      color.new(color.gray, 94)
+)
+```
+
+---
+---
 
 # ✅ **HTF Wick Strategy — Step-by-Step Trading Checklist (Beginner Version)**  
 
