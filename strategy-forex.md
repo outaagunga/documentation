@@ -45,13 +45,15 @@
     
     **Example of pinescript logic**
     ```pinescript
-    //@version=5
-    strategy("10-Indicator Confluence Strategy", overlay=true, initial_capital=1000)
+        //@version=5
+    strategy("10-Indicator Confluence Pro", overlay=true, initial_capital=1000, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
     
     // --- INPUTS ---
-    confluenceThreshold = input.int(7, "Min Indicators for Signal", minval=1, maxval=10)
-    atrMultiplier = input.float(1.5, "ATR SL Multiplier")
-    tpMultiplier = input.float(3.0, "ATR TP Multiplier")
+    confluenceThreshold = input.int(7, "Min Score for Signal", minval=1, maxval=10)
+    useEmaFilter        = input.bool(true, "Mandatory EMA 200 Trend Filter")
+    minAdx              = input.int(20, "Min ADX (Volatility Filter)", minval=0)
+    atrMultiplier       = input.float(1.5, "ATR Stop Loss Multiplier")
+    tpMultiplier        = input.float(3.0, "ATR Take Profit Multiplier")
     
     // --- 1. TREND (Price Path) ---
     ema200 = ta.ema(close, 200)
@@ -80,7 +82,7 @@
     
     // --- 6. MEAN REVERSION (Stoch) ---
     stochK = ta.stoch(close, high, low, 14)
-    stochD = ta.sma(stochK, 3) // Standard way to get the %D line
+    stochD = ta.sma(stochK, 3) 
     bull_6 = stochK > stochD
     bear_6 = stochK < stochD
     
@@ -108,25 +110,39 @@
     longScore = (bull_1 ? 1:0) + (bull_2 ? 1:0) + (bull_3 ? 1:0) + (bull_4 ? 1:0) + (bull_5 ? 1:0) + (bull_6 ? 1:0) + (bull_7 ? 1:0) + (bull_8 ? 1:0) + (bull_9 ? 1:0) + (bull_10 ? 1:0)
     shortScore = (bear_1 ? 1:0) + (bear_2 ? 1:0) + (bear_3 ? 1:0) + (bear_4 ? 1:0) + (bear_5 ? 1:0) + (bear_6 ? 1:0) + (bear_7 ? 1:0) + (bear_8 ? 1:0) + (bear_9 ? 1:0) + (bear_10 ? 1:0)
     
+    // --- ENTRY FILTERS ---
+    // Price must be on correct side of EMA if filter is ON, and ADX must be high enough
+    longFilter  = (not useEmaFilter or bull_1) and (adx >= minAdx)
+    shortFilter = (not useEmaFilter or bear_1) and (adx >= minAdx)
+    
     // --- EXIT LOGIC (ATR) ---
     atr = ta.atr(14)
     longStop = close - (atr * atrMultiplier)
-    longTP = close + (atr * tpMultiplier)
+    longTP   = close + (atr * tpMultiplier)
     shortStop = close + (atr * atrMultiplier)
-    shortTP = close - (atr * tpMultiplier)
+    shortTP   = close - (atr * tpMultiplier)
     
     // --- EXECUTION ---
-    if (longScore >= confluenceThreshold)
+    if (longScore >= confluenceThreshold and longFilter)
         strategy.entry("Long", strategy.long)
         strategy.exit("Exit Long", "Long", stop=longStop, limit=longTP)
     
-    if (shortScore >= confluenceThreshold)
+    if (shortScore >= confluenceThreshold and shortFilter)
         strategy.entry("Short", strategy.short)
         strategy.exit("Exit Short", "Short", stop=shortStop, limit=shortTP)
     
     // --- VISUALS ---
-    plotshape(longScore >= confluenceThreshold, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small, title="Long Signal")
-    plotshape(shortScore >= confluenceThreshold, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small, title="Short Signal")
+    plot(ema200, color=color.new(color.gray, 50), title="EMA 200 Trend")
+    plotshape(longScore >= confluenceThreshold and longFilter, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small, title="Long Signal")
+    plotshape(shortScore >= confluenceThreshold and shortFilter, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small, title="Short Signal")
+    
+    // --- DASHBOARD TABLE ---
+    var table scoreBoard = table.new(position.bottom_right, 2, 2, bgcolor=color.new(color.black, 80), border_width=1, border_color=color.gray)
+    if barstate.islast
+        table.cell(scoreBoard, 0, 0, "Bull Score", text_color=color.green, text_size=size.small)
+        table.cell(scoreBoard, 1, 0, str.tostring(longScore) + "/10", text_color=color.green, text_size=size.small)
+        table.cell(scoreBoard, 0, 1, "Bear Score", text_color=color.red, text_size=size.small)
+        table.cell(scoreBoard, 1, 1, str.tostring(shortScore) + "/10", text_color=color.red, text_size=size.small)
     ```
 ```
 ---
