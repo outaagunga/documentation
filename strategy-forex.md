@@ -79,9 +79,10 @@
     bear_5 = ta.change(obv) < 0
     
     // --- 6. MEAN REVERSION (Stoch) ---
-    [k, d] = ta.stoch(close, high, low, 14, 3, 3)
-    bull_6 = k > d
-    bear_6 = k < d
+    stochK = ta.stoch(close, high, low, 14)
+    stochD = ta.sma(stochK, 3) // Standard way to get the %D line
+    bull_6 = stochK > stochD
+    bear_6 = stochK < stochD
     
     // --- 7. TREND STRENGTH (ADX) ---
     [diplus, diminus, adx] = ta.dmi(14, 14)
