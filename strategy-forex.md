@@ -16,54 +16,40 @@
 ## 🎓 **HOW TO USE THIS**
 
 ### **Backtest (Do This First)**
-1. Apply to BTC/USD on 4H timeframe
-2. Test period: 2020-2024 (includes bull, bear, and sideways)
-3. Record:
+1. Test period: atleast 2 years data (includes bull, bear, and sideways)
+2. Record:
    - Total trades
    - Win rate
    - Profit factor
    - Max drawdown
    - Average R:R actually achieved
 
-### **Optimize for Your Risk Tolerance**
+### **Recommended Settings**
+- This is recommended settings for high volatile currencies (e.g  Bitcoin, BTC/USDT)
+- Each currency pair require its own settings depending on volatility
+  
+**Conservative (Beginner friendly):**
+- riskPercent = 1.0
+- atrMultiplier = 3.5
+- tpRiskRatio = 2.0
+- partialTPLevel = 1.8
+- confluenceThreshold = 8/10
 
-**Conservative (Beginner):**
-- Risk: 1%
-- Confluence: 9/10
-- ATR Multiplier: 4.0
-- Partial TP: Enabled
+**Balanced (Optimized):**
+- riskPercent = 1.5
+- atrMultiplier = 3.5
+- tpRiskRatio = 2.5
+- partialTPLevel = 2.0
+- usePartialTP = false  // Try full exits only
 
-**Balanced (Intermediate):**
-- Risk: 1.5%
-- Confluence: 8/10
-- ATR Multiplier: 3.5
-- Partial TP: Enabled
-
-**Aggressive (Experienced):**
-- Risk: 2%
-- Confluence: 7/10
-- ATR Multiplier: 3.0
-- Trailing Stop: Aggressive (1.5x ATR)
-
-### **Other Crypto Pairs**
-
-**High Volatility (DOGE, SHIB):**
-- ATR Multiplier: 4.0-5.0
-- Risk: 1% max
-- Confluence: 9/10
-
-**Medium Volatility (ETH, BNB):**
-- ATR Multiplier: 3.0-3.5
-- Risk: 1.5%
-- Confluence: 8/10
-
-**Lower Volatility (USDT pairs):**
-- ATR Multiplier: 2.5-3.0
-- Risk: 2%
-- Confluence: 7/10
+**Aggressive (Try for maximum profits):**
+- riskPercent = 2.0
+- atrMultiplier = 3.0
+- tpRiskRatio = 3.0
+- partialTPLevel = 2.5
+- trailOffset = 1.5
 
 ## ⚠️ **CRITICAL REMINDERS**
-
 1. **Commission is 0.1%** (set for crypto exchanges like Binance)
    - If using different exchange, adjust in code
 
