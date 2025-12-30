@@ -11,6 +11,125 @@
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
 ---
+**Using different indicators easily**
+```pine
+    # Trading Strategy (Not Indicator)
+    - Build a strategy that uses multiple indicator to scan the market (atleat 10 indicators)
+    - The indicator used should be indicators that look at the market through different lenses (not doubling up on same data). e.g **Price Action**, **Momentum**, **Volume**, **Volatility**, e.tc.
+    - Pine script at as the gatekeeper and analyzes the indicators through a score based logic. If the score hits threshold (e.g., 7/10), the signal triggers  
+    - Either one or two indicators must be mandatory (for extra protection)
+    
+    ### 1. The "Multi-Lens" Indicator Selection (Each category- 2 indicators)
+    
+    To ensure we aren't just doubling up on the same data, we will categorize our 10 indicators:
+    
+    | Category | Indicators Used | Data Source |
+    | --- | --- | --- |
+    | **Trend** | EMA 200, SuperTrend | Price Path |
+    | **Momentum** | RSI, MFI | Speed vs. Flow |
+    | **Volatility** | Bollinger Bands, ATR | Price Expansion |
+    | **Volume** | On-Balance Volume (OBV), Volume Oscillator | Buying/Selling Pressure |
+    | **Mean Reversion** | Stochastic, CCI | Overextended Levels |
+    
+    ### 2. Strategy Logic: The Confluence Filter
+    
+    
+    The script acts as a "Gatekeeper." It will only plot a **Long** signal if at least 7 out of 10 indicators are bullish, and a **Short** signal if at least 7 are bearish.
+    
+    We will use a **Dynamic Stop Loss (SL)** based on the ATR (Average True Range), which adjusts to current market volatility.
+    
+    
+    ### 3. Pine Script Template (v5)
+    
+    SHould be structured in a way that you can easily toggle the **"threshold/ "Minimum Confluence"** requirement.
+    
+    **Example of pinescript logic**
+    ```pinescript
+    //@version=5
+    strategy("10-Indicator Confluence Strategy", overlay=true, initial_capital=1000)
+    
+    // --- INPUTS ---
+    confluenceThreshold = input.int(7, "Min Indicators for Signal", minval=1, maxval=10)
+    atrMultiplier = input.float(1.5, "ATR SL Multiplier")
+    tpMultiplier = input.float(3.0, "ATR TP Multiplier")
+    
+    // --- 1. TREND (Price Path) ---
+    ema200 = ta.ema(close, 200)
+    bull_1 = close > ema200
+    bear_1 = close < ema200
+    
+    // --- 2. MOMENTUM (RSI) ---
+    rsi = ta.rsi(close, 14)
+    bull_2 = rsi > 50
+    bear_2 = rsi < 50
+    
+    // --- 3. VOLUME FLOW (MFI) ---
+    mfi = ta.mfi(hlc3, 14)
+    bull_3 = mfi > 50
+    bear_3 = mfi < 50
+    
+    // --- 4. VOLATILITY (Bollinger Bands) ---
+    [bb_mid, bb_upper, bb_lower] = ta.bb(close, 20, 2)
+    bull_4 = close > bb_mid
+    bear_4 = close < bb_mid
+    
+    // --- 5. ACCUMULATION (OBV) ---
+    obv = ta.obv
+    bull_5 = ta.change(obv) > 0
+    bear_5 = ta.change(obv) < 0
+    
+    // --- 6. MEAN REVERSION (Stoch) ---
+    [k, d] = ta.stoch(close, high, low, 14, 3, 3)
+    bull_6 = k > d
+    bear_6 = k < d
+    
+    // --- 7. TREND STRENGTH (ADX) ---
+    [diplus, diminus, adx] = ta.dmi(14, 14)
+    bull_7 = diplus > diminus
+    bear_7 = diminus > diplus
+    
+    // --- 8. CYCLES (CCI) ---
+    cci = ta.cci(close, 20)
+    bull_8 = cci > 0
+    bear_8 = cci < 0
+    
+    // --- 9. VOLUME MOMENTUM (Volume Osc) ---
+    volOsc = ta.ema(volume, 5) - ta.ema(volume, 10)
+    bull_9 = volOsc > 0
+    bear_9 = volOsc < 0
+    
+    // --- 10. PSYCHOLOGY (Rate of Change) ---
+    roc = ta.roc(close, 9)
+    bull_10 = roc > 0
+    bear_10 = roc < 0
+    
+    // --- CONFLUENCE CALCULATION ---
+    longScore = (bull_1 ? 1:0) + (bull_2 ? 1:0) + (bull_3 ? 1:0) + (bull_4 ? 1:0) + (bull_5 ? 1:0) + (bull_6 ? 1:0) + (bull_7 ? 1:0) + (bull_8 ? 1:0) + (bull_9 ? 1:0) + (bull_10 ? 1:0)
+    shortScore = (bear_1 ? 1:0) + (bear_2 ? 1:0) + (bear_3 ? 1:0) + (bear_4 ? 1:0) + (bear_5 ? 1:0) + (bear_6 ? 1:0) + (bear_7 ? 1:0) + (bear_8 ? 1:0) + (bear_9 ? 1:0) + (bear_10 ? 1:0)
+    
+    // --- EXIT LOGIC (ATR) ---
+    atr = ta.atr(14)
+    longStop = close - (atr * atrMultiplier)
+    longTP = close + (atr * tpMultiplier)
+    shortStop = close + (atr * atrMultiplier)
+    shortTP = close - (atr * tpMultiplier)
+    
+    // --- EXECUTION ---
+    if (longScore >= confluenceThreshold)
+        strategy.entry("Long", strategy.long)
+        strategy.exit("Exit Long", "Long", stop=longStop, limit=longTP)
+    
+    if (shortScore >= confluenceThreshold)
+        strategy.entry("Short", strategy.short)
+        strategy.exit("Exit Short", "Short", stop=shortStop, limit=shortTP)
+    
+    // --- VISUALS ---
+    plotshape(longScore >= confluenceThreshold, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small, title="Long Signal")
+    plotshape(shortScore >= confluenceThreshold, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small, title="Short Signal")
+    ```
+```
+---
+---
 **Pullback trading strateggy**  
 ```pinescript
     # 📋 PULLBACK TRADING STRATEGY - PINE SCRIPT v6 SPECIFICATION
