@@ -679,472 +679,414 @@ volumeOK = true  // Always true for forex (volume unreliable)
 ---
 **version: 2 - No repainting
 ```vb
-   //@version=6
-   strategy("Confluence Pro V3 - Crypto Volatility Optimized", 
-            overlay=true, 
-            initial_capital=10000, 
-            default_qty_type=strategy.percent_of_equity,
-            default_qty_value=100,
-            commission_type=strategy.commission.percent,
-            commission_value=0.1) // 0.1% trading fee for crypto exchanges
-   
-   // ========================================
-   // 🚀 CRYPTO-OPTIMIZED INPUTS
-   // ========================================
-   // Risk Management - Crypto Calibrated
-   riskPercent = input.float(1.5, "Risk % Per Trade", minval=0.5, maxval=3.0, group="💰 Risk Management")
-   atrMultiplier = input.float(3.5, "ATR Stop Loss Multiplier (Wider for Crypto)", minval=2.0, maxval=5.0, group="💰 Risk Management")
-   tpRiskRatio = input.float(2.0, "Take Profit R:R Ratio", minval=1.2, maxval=3.0, group="💰 Risk Management")
-   
-   // Partial Profit Taking (Crypto-Specific)
-   usePartialTP = input.bool(true, "Enable Partial Profit Taking", group="💰 Risk Management")
-   partialTPLevel = input.float(1.3, "Take 50% Profit at X R", minval=1.0, maxval=2.5, group="💰 Risk Management")
-   useBreakevenStop = input.bool(true, "Move SL to Breakeven at 1.5R", group="💰 Risk Management")
-   
-   // Trailing Stop (Essential for Crypto Trends)
-   useTrailingStop = input.bool(true, "Use Trailing Stop", group="💰 Risk Management")
-   trailActivation = input.float(1.5, "Activate Trail at X R", minval=1.0, maxval=3.0, group="💰 Risk Management")
-   trailOffset = input.float(2.0, "Trail Offset (ATR Multiplier)", minval=1.0, maxval=4.0, group="💰 Risk Management")
-   
-   // Strategy Settings - Higher Bar for Entry
-   confluenceThreshold = input.int(8, "Min Score for Signal (Higher = Fewer Trades)", minval=5, maxval=10, group="⚙️ Strategy")
-   useRegimeFilter = input.bool(true, "Enable Market Regime Filter", group="⚙️ Strategy")
-   useMandatoryTrend = input.bool(true, "Mandatory Trend Alignment (EMA)", group="⚙️ Strategy")
-   
-   // 🆕 ANTI-REPAINTING CONTROL
-   useStrictStructure = input.bool(true, "Use Anti-Repainting Structure (RECOMMENDED)", group="⚙️ Strategy", tooltip="Eliminates repainting by using only confirmed bar data. May add 1-bar lag but ensures backtest = live performance.")
-   useVolumeConfirmation = input.bool(true, "Require Volume Expansion for Structure Signals", group="⚙️ Strategy", tooltip="Filters weak HH/LL signals without volume conviction")
-   
-   // Crypto Volume Deadzone Filter
-   useVolumeFilter = input.bool(true, "Avoid Low Volume Hours (2AM-6AM UTC)", group="⚙️ Strategy")
-   minVolumeMultiple = input.float(0.7, "Min Volume vs 24H Avg", minval=0.3, maxval=1.5, group="⚙️ Strategy")
-   
-   // Market Regime - Crypto Adjusted
-   trendingADX = input.int(22, "ADX Threshold for Trending (Lower for Crypto)", minval=15, maxval=35, group="📊 Regime Detection")
-   rangingADX = input.int(18, "ADX Threshold for Ranging", minval=10, maxval=25, group="📊 Regime Detection")
-   
-   // Volatility Expansion Filter (Prevents Chop Trading)
-   requireVolExpansion = input.bool(true, "Require Volatility Expansion for Entry", group="📊 Regime Detection")
-   
-   // ========================================
-   // 🎯 CRYPTO MARKET STRUCTURE
-   // ========================================
-   [diplus, diminus, adx] = ta.dmi(14, 14)
-   isTrending = adx > trendingADX
-   isRanging = adx < rangingADX
-   isTransition = not isTrending and not isRanging
-   
-   // ========================================
-   // 📊 VOLUME ANALYSIS (Crypto-Specific)
-   // ========================================
-   vol24hAvg = ta.sma(volume, 24)
-   currentVolRatio = volume / vol24hAvg
-   volumeOK = not useVolumeFilter or currentVolRatio >= minVolumeMultiple
-   
-   // Dead Zone Filter (2AM-6AM UTC = Low Liquidity)
-   currentHour = hour(time, "UTC")
-   isDeadZone = currentHour >= 2 and currentHour < 6
-   timeOK = not useVolumeFilter or not isDeadZone
-   
-   // ========================================
-   // CATEGORY 1: TREND (Crypto Price Momentum)
-   // ========================================
-   // 1.1 EMA Ribbon - Multi-Timeframe Trend
-   ema20 = ta.ema(close, 20)
-   ema50 = ta.ema(close, 50)
-   ema200 = ta.ema(close, 200)
-   
-   // Bullish: 20>50>200 and price above all
-   bull_trend1 = close > ema20 and ema20 > ema50 and ema50 > ema200
-   bear_trend1 = close < ema20 and ema20 < ema50 and ema50 < ema200
-   
-   // 1.2 ADX Directional Strength
-   bull_trend2 = diplus > diminus and adx > rangingADX
-   bear_trend2 = diminus > diplus and adx > rangingADX
-   
-   // ========================================
-   // CATEGORY 2: MOMENTUM (Divergence-Aware)
-   // ========================================
-   // 2.1 RSI with Crypto Zones
-   rsi = ta.rsi(close, 14)
-   bull_momentum1 = rsi > 55 and rsi < 75  // Above neutral, not overbought
-   bear_momentum1 = rsi < 45 and rsi > 25  // Below neutral, not oversold
-   
-   // 2.2 MACD with Histogram Acceleration
-   [macdLine, signalLine, macdHist] = ta.macd(close, 12, 26, 9)
-   histRising = macdHist > macdHist[1]
-   histFalling = macdHist < macdHist[1]
-   bull_momentum2 = macdLine > signalLine and histRising
-   bear_momentum2 = macdLine < signalLine and histFalling
-   
-   // ========================================
-   // CATEGORY 3: VOLATILITY & BREAKOUTS
-   // ========================================
-   // 3.1 Bollinger Bands - Expansion + Position
-   [bb_mid, bb_upper, bb_lower] = ta.bb(close, 20, 2.5)  // Wider bands for crypto
-   bbWidth = (bb_upper - bb_lower) / bb_mid
-   bbExpanding = bbWidth > ta.sma(bbWidth, 20)
-   
-   bull_volatility1 = close > bb_mid and (not requireVolExpansion or bbExpanding)
-   bear_volatility1 = close < bb_mid and (not requireVolExpansion or bbExpanding)
-   
-   // 3.2 ATR Expansion - Breakout Confirmation
-   atr = ta.atr(14)
-   atrRising = atr > ta.sma(atr, 20) * 1.1  // ATR 10% above average
-   bull_volatility2 = close > close[1] and atrRising
-   bear_volatility2 = close < close[1] and atrRising
-   
-   // ========================================
-   // CATEGORY 4: MEAN REVERSION (Range Detection)
-   // ========================================
-   // 4.1 Stochastic RSI (More Sensitive for Crypto)
-   stochRSI_K = ta.stoch(rsi, rsi, rsi, 14)
-   stochRSI_D = ta.sma(stochRSI_K, 3)
-   
-   bull_reversion1 = ta.crossover(stochRSI_K, stochRSI_D) and stochRSI_K < 80
-   bear_reversion1 = ta.crossunder(stochRSI_K, stochRSI_D) and stochRSI_K > 20
-   
-   // 4.2 CCI Momentum Cycles
-   cci = ta.cci(close, 20)
-   bull_reversion2 = cci > 0 and cci < 150  // Positive but not extreme
-   bear_reversion2 = cci < 0 and cci > -150
-   
-   // ========================================
-   // CATEGORY 5: CRYPTO PRICE ACTION (🆕 ANTI-REPAINTING FIXED)
-   // ========================================
-   // 5.1 Higher High/Lower Low Structure - REPAINTING ELIMINATED
-   hhll_period = 3
-   
-   // Volume expansion filter (optional but recommended)
-   volumeExpansion = volume > vol24hAvg * 1.2  // 20% above 24h average
-   
-   // Initialize structure variables
-   var bool bull_structure = false
-   var bool bear_structure = false
-   
-   if useStrictStructure
-       // SOLUTION 1: Use only confirmed (closed) bar data
-       // This completely eliminates repainting
-       highest_high_confirmed = ta.highest(high[1], hhll_period)
-       lowest_low_confirmed = ta.lowest(low[1], hhll_period)
-       
-       // Base structure detection using confirmed bars only
-       bull_structure_base = high[1] >= highest_high_confirmed and low[1] >= lowest_low_confirmed
-       bear_structure_base = high[1] <= highest_high_confirmed and low[1] <= lowest_low_confirmed
-       
-       // Apply volume filter if enabled
-       if useVolumeConfirmation
-           bull_structure := bull_structure_base and volumeExpansion
-           bear_structure := bear_structure_base and volumeExpansion
-       else
-           bull_structure := bull_structure_base
-           bear_structure := bear_structure_base
-   else
-       // Original logic (kept for comparison/testing)
-       // WARNING: This version can repaint!
-       highest_high = ta.highest(high, hhll_period)
-       lowest_low = ta.lowest(low, hhll_period)
-       
-       bull_structure := high >= highest_high[1] and low >= lowest_low[1]
-       bear_structure := high <= highest_high[1] and low <= lowest_low[1]
-   
-   // 5.2 Candle Strength (Body Dominance) - Already safe from repainting
-   bodySize = math.abs(close - open)
-   avgBody = ta.sma(bodySize, 20)
-   wickRatio = bodySize / (high - low)
-   
-   bull_candle = close > open and bodySize > avgBody * 1.5 and wickRatio > 0.6
-   bear_candle = close < open and bodySize > avgBody * 1.5 and wickRatio > 0.6
-   
-   // ========================================
-   // 🧮 REGIME-ADAPTIVE SCORING SYSTEM
-   // ========================================
-   // Dynamic weighting based on market conditions
-   trendWeight = isTrending ? 1.2 : 0.7       // Boost trend signals when trending
-   momentumWeight = 1.0                        // Always important
-   volatilityWeight = bbExpanding ? 1.2 : 0.8  // Boost on expansion
-   reversionWeight = isRanging ? 1.0 : 0.4     // Only valuable in ranges
-   structureWeight = 1.1                       // Price action always key
-   
-   // Calculate weighted scores (max ~11 points with weights)
-   longScore = 
-        (bull_trend1 ? trendWeight : 0) + 
-        (bull_trend2 ? trendWeight : 0) + 
-        (bull_momentum1 ? momentumWeight : 0) + 
-        (bull_momentum2 ? momentumWeight : 0) + 
-        (bull_volatility1 ? volatilityWeight : 0) + 
-        (bull_volatility2 ? volatilityWeight : 0) + 
-        (bull_reversion1 ? reversionWeight : 0) + 
-        (bull_reversion2 ? reversionWeight : 0) + 
-        (bull_structure ? structureWeight : 0) + 
-        (bull_candle ? structureWeight : 0)
-   
-   shortScore = 
-        (bear_trend1 ? trendWeight : 0) + 
-        (bear_trend2 ? trendWeight : 0) + 
-        (bear_momentum1 ? momentumWeight : 0) + 
-        (bear_momentum2 ? momentumWeight : 0) + 
-        (bear_volatility1 ? volatilityWeight : 0) + 
-        (bear_volatility2 ? volatilityWeight : 0) + 
-        (bear_reversion1 ? reversionWeight : 0) + 
-        (bear_reversion2 ? reversionWeight : 0) + 
-        (bear_structure ? structureWeight : 0) + 
-        (bear_candle ? structureWeight : 0)
-   
-   // Normalize to 0-10 scale for display
-   normalizedLongScore = longScore / 1.15 * 10  // Adjust for max possible ~11.5
-   normalizedShortScore = shortScore / 1.15 * 10
-   
-   // ========================================
-   // 🎯 ENTRY FILTERS (Multi-Layer)
-   // ========================================
-   mandatoryTrend = not useMandatoryTrend or (bull_trend1 or bear_trend1)
-   regimeOK = not useRegimeFilter or not isTransition
-   noActivePosition = strategy.position_size == 0
-   
-   // Final Entry Conditions
-   longCondition = longScore >= confluenceThreshold and mandatoryTrend and regimeOK and volumeOK and timeOK and noActivePosition
-   shortCondition = shortScore >= confluenceThreshold and mandatoryTrend and regimeOK and volumeOK and timeOK and noActivePosition
-   
-   // ========================================
-   // 💰 DYNAMIC POSITION SIZING
-   // ========================================
-   accountEquity = strategy.equity
-   riskAmount = accountEquity * (riskPercent / 100)
-   stopDistance = atr * atrMultiplier
-   
-   // Position size based on risk and stop distance
-   positionSize = (riskAmount / stopDistance) * close
-   positionSizePercent = (positionSize / accountEquity) * 100
-   
-   // Safety cap: never risk more than 100% of equity in position value
-   safePositionSize = math.min(positionSizePercent, 95)
-   
-   // ========================================
-   // 📍 STOP LOSS & TAKE PROFIT
-   // ========================================
-   var float entryPrice = na
-   var float longStopPrice = na
-   var float longTPPrice = na
-   var float shortStopPrice = na
-   var float shortTPPrice = na
-   var bool partialTPTaken = false
-   var bool breakEvenSet = false
-   
-   // ========================================
-   // 🚀 ENTRY EXECUTION
-   // ========================================
-   if longCondition
-       entryPrice := close
-       longStopPrice := close - stopDistance
-       longTPPrice := close + (stopDistance * tpRiskRatio)
-       partialTPTaken := false
-       breakEvenSet := false
-       strategy.entry("Long", strategy.long, qty=safePositionSize)
-   
-   if shortCondition
-       entryPrice := close
-       shortStopPrice := close + stopDistance
-       shortTPPrice := close - (stopDistance * tpRiskRatio)
-       partialTPTaken := false
-       breakEvenSet := false
-       strategy.entry("Short", strategy.short, qty=safePositionSize)
-   
-   // ========================================
-   // 🎯 ADVANCED EXIT MANAGEMENT
-   // ========================================
-   if strategy.position_size > 0  // LONG POSITION
-       currentProfit = (close - entryPrice) / stopDistance  // Profit in R multiples
-       
-       // 1. Partial Profit Taking
-       if usePartialTP and not partialTPTaken and currentProfit >= partialTPLevel
-           strategy.close("Long", qty_percent=50, comment="Partial TP 50%")
-           partialTPTaken := true
-       
-       // 2. Move to Breakeven
-       if useBreakevenStop and not breakEvenSet and currentProfit >= 1.5
-           longStopPrice := entryPrice + (atr * 0.1)  // Slightly above BE
-           breakEvenSet := true
-       
-       // 3. Trailing Stop
-       if useTrailingStop and currentProfit >= trailActivation
-           trailStop = close - (atr * trailOffset)
-           longStopPrice := math.max(longStopPrice, trailStop)
-       
-       // Execute exit
-       strategy.exit("Exit Long", "Long", stop=longStopPrice, limit=longTPPrice)
-   
-   if strategy.position_size < 0  // SHORT POSITION
-       currentProfit = (entryPrice - close) / stopDistance
-       
-       // 1. Partial Profit Taking
-       if usePartialTP and not partialTPTaken and currentProfit >= partialTPLevel
-           strategy.close("Short", qty_percent=50, comment="Partial TP 50%")
-           partialTPTaken := true
-       
-       // 2. Move to Breakeven
-       if useBreakevenStop and not breakEvenSet and currentProfit >= 1.5
-           shortStopPrice := entryPrice - (atr * 0.1)
-           breakEvenSet := true
-       
-       // 3. Trailing Stop
-       if useTrailingStop and currentProfit >= trailActivation
-           trailStop = close + (atr * trailOffset)
-           shortStopPrice := math.min(shortStopPrice, trailStop)
-       
-       // Execute exit
-       strategy.exit("Exit Short", "Short", stop=shortStopPrice, limit=shortTPPrice)
-   
-   // ========================================
-   // 📊 VISUAL ELEMENTS
-   // ========================================
-   // EMA Ribbon
-   plot(ema20, color=color.new(color.yellow, 0), linewidth=1, title="EMA 20")
-   plot(ema50, color=color.new(color.orange, 0), linewidth=2, title="EMA 50")
-   plot(ema200, color=color.new(color.gray, 40), linewidth=3, title="EMA 200")
-   
-   // Bollinger Bands
-   p1 = plot(bb_upper, color=color.new(color.blue, 70), title="BB Upper")
-   p2 = plot(bb_lower, color=color.new(color.blue, 70), title="BB Lower")
-   fill(p1, p2, color=color.new(color.blue, 93))
-   
-   // Entry Signals - Larger for visibility
-   plotshape(longCondition, style=shape.triangleup, location=location.belowbar, 
-            color=color.new(color.lime, 0), size=size.normal, title="🚀 LONG")
-   plotshape(shortCondition, style=shape.triangledown, location=location.abovebar, 
-            color=color.new(color.red, 0), size=size.normal, title="🔻 SHORT")
-   
-   // 🆕 Visual warning for non-strict mode
-   if not useStrictStructure and barstate.islast
-       label.new(bar_index, high, "⚠️ REPAINTING MODE", 
-                 color=color.new(color.orange, 70), 
-                 textcolor=color.orange, 
-                 style=label.style_label_down,
-                 size=size.small)
-   
-   // Stop Loss & Take Profit Lines
-   plot(strategy.position_size > 0 ? longStopPrice : na, color=color.new(color.red, 0), 
-        style=plot.style_linebr, linewidth=2, title="Stop Loss")
-   plot(strategy.position_size > 0 ? longTPPrice : na, color=color.new(color.lime, 0), 
-        style=plot.style_linebr, linewidth=2, title="Take Profit")
-   plot(strategy.position_size < 0 ? shortStopPrice : na, color=color.new(color.red, 0), 
-        style=plot.style_linebr, linewidth=2, title="Stop Loss")
-   plot(strategy.position_size < 0 ? shortTPPrice : na, color=color.new(color.lime, 0), 
-        style=plot.style_linebr, linewidth=2, title="Take Profit")
-   
-   // Partial TP Level (visual guide)
-   partialTPLine = strategy.position_size > 0 ? entryPrice + (stopDistance * partialTPLevel) : strategy.position_size < 0 ? entryPrice - (stopDistance * partialTPLevel) : na
-   plot(partialTPLine, color=color.new(color.yellow, 50), style=plot.style_circles, linewidth=1, title="Partial TP")
-   
-   // ========================================
-   // 📱 ADVANCED DASHBOARD
-   // ========================================
-   var table dashboard = table.new(position.top_right, 3, 11, bgcolor=color.new(#000000, 85), border_width=2, border_color=color.new(color.gray, 50))
-   
-   if barstate.islast
-       // Header with Anti-Repainting Status
-       headerText = useStrictStructure ? "🚀 CONFLUENCE V3 ✓ FIXED" : "🚀 CONFLUENCE V3 ⚠️"
-       headerColor = useStrictStructure ? color.new(#1E3A8A, 60) : color.new(#8B4513, 60)
-       table.cell(dashboard, 0, 0, headerText, 
-                 text_color=color.white, text_size=size.normal, 
-                 bgcolor=headerColor)
-       table.merge_cells(dashboard, 0, 0, 2, 0)
-       
-       // 🆕 Anti-Repainting Status Row
-       repaintStatus = useStrictStructure ? "✓ Protected" : "⚠️ Active"
-       repaintColor = useStrictStructure ? color.lime : color.orange
-       table.cell(dashboard, 0, 1, "Repainting", text_color=color.gray, text_size=size.small)
-       table.cell(dashboard, 1, 1, repaintStatus, text_color=repaintColor, text_size=size.small)
-       table.cell(dashboard, 2, 1, useVolumeConfirmation ? "Vol✓" : "Vol✗", 
-                 text_color=useVolumeConfirmation ? color.lime : color.gray, text_size=size.small)
-       
-       // Market Regime
-       regimeText = isTrending ? "📈 TRENDING" : isRanging ? "📊 RANGING" : "⚡ TRANSITION"
-       regimeColor = isTrending ? color.lime : isRanging ? color.orange : color.yellow
-       table.cell(dashboard, 0, 2, "Regime", text_color=color.gray, text_size=size.small)
-       table.cell(dashboard, 1, 2, regimeText, text_color=regimeColor, text_size=size.small)
-       table.cell(dashboard, 2, 2, "ADX:" + str.tostring(math.round(adx, 1)), 
-                 text_color=color.white, text_size=size.small)
-       
-       // Confluence Scores
-       longScoreRounded = math.round(normalizedLongScore, 1)
-       shortScoreRounded = math.round(normalizedShortScore, 1)
-       
-       table.cell(dashboard, 0, 3, "🐂 Bull", text_color=color.lime, text_size=size.small)
-       table.cell(dashboard, 1, 3, str.tostring(longScoreRounded) + "/10", 
-                 text_color=color.lime, text_size=size.normal, 
-                 bgcolor=longScore >= confluenceThreshold ? color.new(color.green, 80) : na)
-       table.cell(dashboard, 2, 3, longScore >= confluenceThreshold ? "✓ READY" : "⏳ Wait", 
-                 text_color=longScore >= confluenceThreshold ? color.lime : color.gray, 
-                 text_size=size.small)
-       
-       table.cell(dashboard, 0, 4, "🐻 Bear", text_color=color.red, text_size=size.small)
-       table.cell(dashboard, 1, 4, str.tostring(shortScoreRounded) + "/10", 
-                 text_color=color.red, text_size=size.normal,
-                 bgcolor=shortScore >= confluenceThreshold ? color.new(color.red, 80) : na)
-       table.cell(dashboard, 2, 4, shortScore >= confluenceThreshold ? "✓ READY" : "⏳ Wait", 
-                 text_color=shortScore >= confluenceThreshold ? color.red : color.gray, 
-                 text_size=size.small)
-       
-       // Volatility Metrics
-       table.cell(dashboard, 0, 5, "⚡ ATR", text_color=color.gray, text_size=size.small)
-       table.cell(dashboard, 1, 5, "$" + str.tostring(math.round(atr, 0)), 
-                 text_color=color.white, text_size=size.small)
-       table.cell(dashboard, 2, 5, atrRising ? "📈 Rising" : "📉 Falling", 
-                 text_color=atrRising ? color.orange : color.blue, text_size=size.small)
-       
-       // Volume Status
-       volStatus = currentVolRatio >= minVolumeMultiple ? "✓ Good" : "⚠ Low"
-       volColor = currentVolRatio >= minVolumeMultiple ? color.lime : color.orange
-       table.cell(dashboard, 0, 6, "📊 Volume", text_color=color.gray, text_size=size.small)
-       table.cell(dashboard, 1, 6, str.tostring(math.round(currentVolRatio, 2)) + "x", 
-                 text_color=color.white, text_size=size.small)
-       table.cell(dashboard, 2, 6, volStatus, text_color=volColor, text_size=size.small)
-       
-       // Time/Session Status
-       timeStatus = timeOK ? "✓ Active" : "🌙 Dead Zone"
-       timeColor = timeOK ? color.lime : color.red
-       table.cell(dashboard, 0, 7, "🕐 Time", text_color=color.gray, text_size=size.small)
-       table.cell(dashboard, 1, 7, str.tostring(currentHour) + ":00 UTC", 
-                 text_color=color.white, text_size=size.small)
-       table.cell(dashboard, 2, 7, timeStatus, text_color=timeColor, text_size=size.small)
-       
-       // Position Info
-       posText = strategy.position_size > 0 ? "🚀 LONG" : 
-                 strategy.position_size < 0 ? "🔻 SHORT" : "⏸ No Position"
-       posColor = strategy.position_size > 0 ? color.lime : 
-                  strategy.position_size < 0 ? color.red : color.gray
-       table.cell(dashboard, 0, 8, "Position", text_color=color.gray, text_size=size.small)
-       table.cell(dashboard, 1, 8, posText, text_color=posColor, text_size=size.normal)
-       table.merge_cells(dashboard, 1, 8, 2, 8)
-       
-       // Risk Metrics
-       if strategy.position_size != 0
-           currentPnL = strategy.position_size > 0 ? 
-                        (close - entryPrice) : (entryPrice - close)
-           pnlPercent = (currentPnL / entryPrice) * 100
-           pnlColor = currentPnL > 0 ? color.lime : color.red
-           
-           table.cell(dashboard, 0, 9, "💰 P&L", text_color=color.gray, text_size=size.small)
-           table.cell(dashboard, 1, 9, str.tostring(math.round(pnlPercent, 2)) + "%", 
-                     text_color=pnlColor, text_size=size.normal)
-           table.cell(dashboard, 2, 9, "$" + str.tostring(math.round(currentPnL, 0)), 
-                     text_color=pnlColor, text_size=size.small)
-       else
-           table.cell(dashboard, 0, 9, "Risk/Trade", text_color=color.gray, text_size=size.small)
-           table.cell(dashboard, 1, 9, str.tostring(riskPercent) + "%", 
-                     text_color=color.white, text_size=size.small)
-           table.cell(dashboard, 2, 9, "$" + str.tostring(math.round(riskAmount, 0)), 
-                     text_color=color.white, text_size=size.small)
-       
-       // Exit Alerts
-       if strategy.position_size != 0
-           exitStatus = partialTPTaken ? "✓ 50% Taken" : 
-                        breakEvenSet ? "🔒 BE Set" : "⏳ Running"
-           exitColor = partialTPTaken ? color.lime : breakEvenSet ? color.yellow : color.white
-           table.cell(dashboard, 0, 10, "Exit Status", text_color=color.gray, text_size=size.small)
-           table.cell(dashboard, 1, 10, exitStatus, text_color=exitColor, text_size=size.small)
-           table.merge_cells(dashboard, 1, 10, 2, 10)
+   //@version=5
+strategy("Confluence Pro V3 - Comprehensive Fix", 
+         overlay=true, 
+         initial_capital=10000, 
+         default_qty_type=strategy.percent_of_equity,
+         default_qty_value=100,
+         commission_type=strategy.commission.percent,
+         commission_value=0.1,
+         slippage=3)
+
+// ========================================
+// 🚀 INPUTS
+// ========================================
+// Risk Management
+riskPercent = input.float(1.5, "Risk % Per Trade", minval=0.5, maxval=3.0, group="💰 Risk")
+atrMultiplier = input.float(3.5, "ATR Stop Multiplier", minval=2.0, maxval=5.0, group="💰 Risk")
+tpRiskRatio = input.float(2.0, "TP R:R Ratio", minval=1.2, maxval=3.0, group="💰 Risk")
+
+// 🆕 Position Sizing Safety
+maxPositionSize = input.float(40.0, "Max Position %", minval=10.0, maxval=60.0, group="💰 Risk")
+minATRFloor = input.float(0.5, "Min ATR Floor %", minval=0.1, maxval=2.0, group="💰 Risk")
+volSqueezeRiskReduction = input.bool(true, "Reduce Risk in Squeezes", group="💰 Risk")
+
+usePartialTP = input.bool(true, "Partial Profit Taking", group="💰 Risk")
+partialTPLevel = input.float(1.3, "Take 50% at X R", minval=1.0, maxval=2.5, group="💰 Risk")
+useBreakevenStop = input.bool(true, "Breakeven at 1.5R", group="💰 Risk")
+useTrailingStop = input.bool(true, "Trailing Stop", group="💰 Risk")
+trailActivation = input.float(1.5, "Trail at X R", minval=1.0, maxval=3.0, group="💰 Risk")
+trailOffset = input.float(2.0, "Trail Offset", minval=1.0, maxval=4.0, group="💰 Risk")
+
+// Strategy
+confluenceThreshold = input.int(80, "Min Score %", minval=50, maxval=95, group="⚙️ Strategy")
+useRegimeFilter = input.bool(true, "Regime Filter", group="⚙️ Strategy")
+useMandatoryTrend = input.bool(true, "Mandatory Trend", group="⚙️ Strategy")
+lockRegimeOnSignal = input.bool(true, "Lock Regime on Signal", group="⚙️ Strategy")
+useStrictStructure = input.bool(true, "Anti-Repainting", group="⚙️ Strategy")
+useVolumeConfirmation = input.bool(true, "Volume Confirm", group="⚙️ Strategy")
+useVolumeFilter = input.bool(true, "Avoid Dead Hours", group="⚙️ Strategy")
+minVolumeMultiple = input.float(0.7, "Min Volume", minval=0.3, maxval=1.5, group="⚙️ Strategy")
+
+// Regime
+trendingADX = input.int(22, "Trending ADX", minval=15, maxval=35, group="📊 Regime")
+rangingADX = input.int(18, "Ranging ADX", minval=10, maxval=25, group="📊 Regime")
+useAdaptiveVolThreshold = input.bool(true, "Adaptive Vol Threshold", group="📊 Regime")
+requireVolExpansion = input.bool(true, "Require Vol Expansion", group="📊 Regime")
+
+// ========================================
+// VOLATILITY REGIME & ATR SNAPSHOT
+// ========================================
+atr = ta.atr(14)
+atrLongTerm = ta.sma(atr, 100)
+atrPriceRatio = (atr / close) * 100
+
+isLowVol = atrPriceRatio < 1.0
+isMedVol = atrPriceRatio >= 1.0 and atrPriceRatio < 2.5
+isHighVol = atrPriceRatio >= 2.5
+
+// 🆕 Pre-entry ATR snapshot
+var float atrSnapshot = na
+if bar_index > 0
+    atrSnapshot := atr[1]
+
+// ========================================
+// MARKET STRUCTURE
+// ========================================
+[diplus, diminus, adx] = ta.dmi(14, 14)
+isTrending = adx > trendingADX
+isRanging = adx < rangingADX
+isTransition = not isTrending and not isRanging
+
+// ========================================
+// VOLUME ANALYSIS
+// ========================================
+vol24hAvg = ta.sma(volume, 24)
+currentVolRatio = volume / vol24hAvg
+volumeOK = not useVolumeFilter or currentVolRatio >= minVolumeMultiple
+
+currentHour = hour(time, "UTC")
+isDeadZone = currentHour >= 2 and currentHour < 6
+timeOK = not useVolumeFilter or not isDeadZone
+
+// ========================================
+// CATEGORY 1: TREND
+// ========================================
+ema20 = ta.ema(close, 20)
+ema50 = ta.ema(close, 50)
+ema200 = ta.ema(close, 200)
+
+bull_trend1 = close > ema20 and ema20 > ema50 and ema50 > ema200
+bear_trend1 = close < ema20 and ema20 < ema50 and ema50 < ema200
+
+bull_trend2 = diplus > diminus and adx > rangingADX
+bear_trend2 = diminus > diplus and adx > rangingADX
+
+// ========================================
+// CATEGORY 2: MOMENTUM
+// ========================================
+rsi = ta.rsi(close, 14)
+bull_momentum1 = rsi > 55 and rsi < 75
+bear_momentum1 = rsi < 45 and rsi > 25
+
+[macdLine, signalLine, macdHist] = ta.macd(close, 12, 26, 9)
+histRising = macdHist > macdHist[1]
+histFalling = macdHist < macdHist[1]
+bull_momentum2 = macdLine > signalLine and histRising
+bear_momentum2 = macdLine < signalLine and histFalling
+
+// ========================================
+// CATEGORY 3: VOLATILITY
+// ========================================
+[bb_mid, bb_upper, bb_lower] = ta.bb(close, 20, 2.5)
+bbWidth = (bb_upper - bb_lower) / bb_mid
+bbExpanding = bbWidth > ta.sma(bbWidth, 20)
+
+bull_volatility1 = close > bb_mid and (not requireVolExpansion or bbExpanding)
+bear_volatility1 = close < bb_mid and (not requireVolExpansion or bbExpanding)
+
+// 🆕 Adaptive ATR Rising
+atrStdDev = ta.stdev(atr, 20)
+atrSMA = ta.sma(atr, 20)
+
+atrRising = useAdaptiveVolThreshold ? 
+     atr > atrSMA + (atrStdDev * 1.5) :
+     atr > atrSMA * 1.10
+
+bull_volatility2 = close > close[1] and atrRising
+bear_volatility2 = close < close[1] and atrRising
+
+// ========================================
+// CATEGORY 4: MEAN REVERSION (🆕 FIXED)
+// ========================================
+// 🆕 Corrected Stochastic RSI
+rsi_high = ta.highest(rsi, 14)
+rsi_low = ta.lowest(rsi, 14)
+stochRSI_K = rsi_high != rsi_low ? ((rsi - rsi_low) / (rsi_high - rsi_low)) * 100 : 50
+stochRSI_D = ta.sma(stochRSI_K, 3)
+
+bull_reversion1 = ta.crossover(stochRSI_K, stochRSI_D) and stochRSI_K < 80
+bear_reversion1 = ta.crossunder(stochRSI_K, stochRSI_D) and stochRSI_K > 20
+
+cci = ta.cci(close, 20)
+bull_reversion2 = cci > 0 and cci < 150
+bear_reversion2 = cci < 0 and cci > -150
+
+// ========================================
+// CATEGORY 5: STRUCTURE (🆕 ANTI-REPAINT)
+// ========================================
+hhll_period = 3
+volumeExpansion = volume > vol24hAvg * 1.2
+
+var bool bull_structure = false
+var bool bear_structure = false
+
+if useStrictStructure
+    highest_high_confirmed = ta.highest(high[1], hhll_period)
+    lowest_low_confirmed = ta.lowest(low[1], hhll_period)
+    
+    bull_structure_base = high[1] >= highest_high_confirmed and low[1] >= lowest_low_confirmed
+    bear_structure_base = high[1] <= highest_high_confirmed and low[1] <= lowest_low_confirmed
+    
+    bull_structure := useVolumeConfirmation ? bull_structure_base and volumeExpansion : bull_structure_base
+    bear_structure := useVolumeConfirmation ? bear_structure_base and volumeExpansion : bear_structure_base
+else
+    highest_high = ta.highest(high, hhll_period)
+    lowest_low = ta.lowest(low, hhll_period)
+    bull_structure := high >= highest_high[1] and low >= lowest_low[1]
+    bear_structure := high <= highest_high[1] and low <= lowest_low[1]
+
+bodySize = math.abs(close - open)
+avgBody = ta.sma(bodySize, 20)
+wickRatio = bodySize / (high - low)
+
+bull_candle = close > open and bodySize > avgBody * 1.5 and wickRatio > 0.6
+bear_candle = close < open and bodySize > avgBody * 1.5 and wickRatio > 0.6
+
+// ========================================
+// SCORING (🆕 DYNAMIC NORMALIZATION)
+// ========================================
+trendWeight = isTrending ? 1.2 : 0.7
+momentumWeight = 1.0
+volatilityWeight = bbExpanding ? 1.2 : 0.8
+reversionWeight = isRanging ? 1.0 : 0.4
+structureWeight = 1.1
+
+longScore = 
+     (bull_trend1 ? trendWeight : 0) + (bull_trend2 ? trendWeight : 0) +
+     (bull_momentum1 ? momentumWeight : 0) + (bull_momentum2 ? momentumWeight : 0) +
+     (bull_volatility1 ? volatilityWeight : 0) + (bull_volatility2 ? volatilityWeight : 0) +
+     (bull_reversion1 ? reversionWeight : 0) + (bull_reversion2 ? reversionWeight : 0) +
+     (bull_structure ? structureWeight : 0) + (bull_candle ? structureWeight : 0)
+
+shortScore = 
+     (bear_trend1 ? trendWeight : 0) + (bear_trend2 ? trendWeight : 0) +
+     (bear_momentum1 ? momentumWeight : 0) + (bear_momentum2 ? momentumWeight : 0) +
+     (bear_volatility1 ? volatilityWeight : 0) + (bear_volatility2 ? volatilityWeight : 0) +
+     (bear_reversion1 ? reversionWeight : 0) + (bear_reversion2 ? reversionWeight : 0) +
+     (bear_structure ? structureWeight : 0) + (bear_candle ? structureWeight : 0)
+
+maxPossibleScore = (trendWeight + momentumWeight + volatilityWeight + reversionWeight + structureWeight) * 2
+
+normalizedLongScore = maxPossibleScore > 0 ? (longScore / maxPossibleScore) * 100 : 0
+normalizedShortScore = maxPossibleScore > 0 ? (shortScore / maxPossibleScore) * 100 : 0
+
+// ========================================
+// ENTRY FILTERS
+// ========================================
+mandatoryTrend = not useMandatoryTrend or (bull_trend1 or bear_trend1)
+regimeOK = not useRegimeFilter or not isTransition
+noActivePosition = strategy.position_size == 0
+
+longCondition = normalizedLongScore >= confluenceThreshold and mandatoryTrend and regimeOK and volumeOK and timeOK and noActivePosition
+shortCondition = normalizedShortScore >= confluenceThreshold and mandatoryTrend and regimeOK and volumeOK and timeOK and noActivePosition
+
+// ========================================
+// POSITION SIZING (🆕 COMPREHENSIVE FIX)
+// ========================================
+accountEquity = strategy.equity
+
+// 🆕 Squeeze detection & risk reduction
+atrCompression = atr / atrLongTerm
+isVolatilitySqueeze = atrCompression < 0.7
+
+effectiveRiskPercent = volSqueezeRiskReduction and isVolatilitySqueeze ? riskPercent * 0.6 : riskPercent
+riskAmount = accountEquity * (effectiveRiskPercent / 100)
+
+// 🆕 Use snapshot ATR
+safeATR = atrSnapshot > 0 ? atrSnapshot : atr
+
+// 🆕 ATR floor
+minATRValue = close * (minATRFloor / 100)
+enforcedATR = math.max(safeATR, minATRValue)
+
+stopDistance = enforcedATR * atrMultiplier
+
+// 🆕 Hard position cap
+positionSizeFromRisk = (riskAmount / stopDistance) * close
+positionSizePercent = (positionSizeFromRisk / accountEquity) * 100
+safePositionSize = math.min(positionSizePercent, maxPositionSize)
+
+// ========================================
+// TRADE MANAGEMENT
+// ========================================
+var float entryPrice = na
+var float longStopPrice = na
+var float longTPPrice = na
+var float shortStopPrice = na
+var float shortTPPrice = na
+var bool partialTPTaken = false
+var bool breakEvenSet = false
+var float lockedStopDistance = na
+
+if longCondition
+    entryPrice := close
+    lockedStopDistance := stopDistance
+    longStopPrice := close - stopDistance
+    longTPPrice := close + (stopDistance * tpRiskRatio)
+    partialTPTaken := false
+    breakEvenSet := false
+    strategy.entry("Long", strategy.long, qty=safePositionSize)
+
+if shortCondition
+    entryPrice := close
+    lockedStopDistance := stopDistance
+    shortStopPrice := close + stopDistance
+    shortTPPrice := close - (stopDistance * tpRiskRatio)
+    partialTPTaken := false
+    breakEvenSet := false
+    strategy.entry("Short", strategy.short, qty=safePositionSize)
+
+if strategy.position_size > 0
+    currentProfit = (close - entryPrice) / lockedStopDistance
+    
+    if usePartialTP and not partialTPTaken and currentProfit >= partialTPLevel
+        strategy.close("Long", qty_percent=50, comment="Partial TP")
+        partialTPTaken := true
+    
+    if useBreakevenStop and not breakEvenSet and currentProfit >= 1.5
+        longStopPrice := entryPrice + (enforcedATR * 0.1)
+        breakEvenSet := true
+    
+    if useTrailingStop and currentProfit >= trailActivation
+        trailStop = close - (enforcedATR * trailOffset)
+        longStopPrice := math.max(longStopPrice, trailStop)
+    
+    strategy.exit("Exit Long", "Long", stop=longStopPrice, limit=longTPPrice)
+
+if strategy.position_size < 0
+    currentProfit = (entryPrice - close) / lockedStopDistance
+    
+    if usePartialTP and not partialTPTaken and currentProfit >= partialTPLevel
+        strategy.close("Short", qty_percent=50, comment="Partial TP")
+        partialTPTaken := true
+    
+    if useBreakevenStop and not breakEvenSet and currentProfit >= 1.5
+        shortStopPrice := entryPrice - (enforcedATR * 0.1)
+        breakEvenSet := true
+    
+    if useTrailingStop and currentProfit >= trailActivation
+        trailStop = close + (enforcedATR * trailOffset)
+        shortStopPrice := math.min(shortStopPrice, trailStop)
+    
+    strategy.exit("Exit Short", "Short", stop=shortStopPrice, limit=shortTPPrice)
+
+// ========================================
+// VISUALS
+// ========================================
+plot(ema20, color=color.new(color.yellow, 0), linewidth=1)
+plot(ema50, color=color.new(color.orange, 0), linewidth=2)
+plot(ema200, color=color.new(color.gray, 40), linewidth=3)
+
+p1 = plot(bb_upper, color=color.new(color.blue, 70))
+p2 = plot(bb_lower, color=color.new(color.blue, 70))
+fill(p1, p2, color=color.new(color.blue, 93))
+
+plotshape(longCondition, style=shape.triangleup, location=location.belowbar, 
+         color=color.new(color.lime, 0), size=size.normal)
+plotshape(shortCondition, style=shape.triangledown, location=location.abovebar, 
+         color=color.new(color.red, 0), size=size.normal)
+
+plot(strategy.position_size > 0 ? longStopPrice : na, color=color.new(color.red, 0), 
+     style=plot.style_linebr, linewidth=2)
+plot(strategy.position_size > 0 ? longTPPrice : na, color=color.new(color.lime, 0), 
+     style=plot.style_linebr, linewidth=2)
+plot(strategy.position_size < 0 ? shortStopPrice : na, color=color.new(color.red, 0), 
+     style=plot.style_linebr, linewidth=2)
+plot(strategy.position_size < 0 ? shortTPPrice : na, color=color.new(color.lime, 0), 
+     style=plot.style_linebr, linewidth=2)
+
+// ========================================
+// DASHBOARD
+// ========================================
+var table dash = table.new(position.top_right, 3, 10, bgcolor=color.new(#000000, 85), 
+                           border_width=2, border_color=color.new(color.gray, 50))
+
+if barstate.islast
+    table.cell(dash, 0, 0, "🚀 FIXED V3", text_color=color.white, bgcolor=color.new(#1E3A8A, 60))
+    table.merge_cells(dash, 0, 0, 2, 0)
+    
+    // Vol Regime
+    volText = isLowVol ? "LOW" : isMedVol ? "MED" : "HIGH"
+    volColor = isLowVol ? color.blue : isMedVol ? color.yellow : color.red
+    table.cell(dash, 0, 1, "Vol", text_color=color.gray, text_size=size.small)
+    table.cell(dash, 1, 1, volText, text_color=volColor, text_size=size.small)
+    table.cell(dash, 2, 1, isVolatilitySqueeze ? "⚠️ SQZ" : "✓", 
+              text_color=isVolatilitySqueeze ? color.purple : color.lime, text_size=size.small)
+    
+    // Regime
+    regText = isTrending ? "TREND" : isRanging ? "RANGE" : "TRANS"
+    regColor = isTrending ? color.lime : isRanging ? color.orange : color.yellow
+    table.cell(dash, 0, 2, "Regime", text_color=color.gray, text_size=size.small)
+    table.cell(dash, 1, 2, regText, text_color=regColor, text_size=size.small)
+    table.cell(dash, 2, 2, str.tostring(math.round(adx)), text_color=color.white, text_size=size.small)
+    
+    // Scores
+    table.cell(dash, 0, 3, "🐂", text_color=color.lime, text_size=size.small)
+    table.cell(dash, 1, 3, str.tostring(math.round(normalizedLongScore)) + "%", 
+              text_color=color.lime, text_size=size.normal,
+              bgcolor=normalizedLongScore >= confluenceThreshold ? color.new(color.green, 80) : na)
+    table.cell(dash, 2, 3, normalizedLongScore >= confluenceThreshold ? "✓" : "✗", 
+              text_color=normalizedLongScore >= confluenceThreshold ? color.lime : color.gray)
+    
+    table.cell(dash, 0, 4, "🐻", text_color=color.red, text_size=size.small)
+    table.cell(dash, 1, 4, str.tostring(math.round(normalizedShortScore)) + "%", 
+              text_color=color.red, text_size=size.normal,
+              bgcolor=normalizedShortScore >= confluenceThreshold ? color.new(color.red, 80) : na)
+    table.cell(dash, 2, 4, normalizedShortScore >= confluenceThreshold ? "✓" : "✗", 
+              text_color=normalizedShortScore >= confluenceThreshold ? color.red : color.gray)
+    
+    // Position
+    posText = strategy.position_size > 0 ? "LONG" : strategy.position_size < 0 ? "SHORT" : "NONE"
+    posColor = strategy.position_size > 0 ? color.lime : strategy.position_size < 0 ? color.red : color.gray
+    table.cell(dash, 0, 5, "Position", text_color=color.gray, text_size=size.small)
+    table.cell(dash, 1, 5, posText, text_color=posColor, text_size=size.normal)
+    table.merge_cells(dash, 1, 5, 2, 5)
+    
+    // Position Size
+    table.cell(dash, 0, 6, "Size", text_color=color.gray, text_size=size.small)
+    table.cell(dash, 1, 6, str.tostring(math.round(safePositionSize)) + "%", 
+              text_color=color.white, text_size=size.small)
+    table.cell(dash, 2, 6, "Max:" + str.tostring(math.round(maxPositionSize)), 
+              text_color=color.yellow, text_size=size.small)
+    
+    // Risk
+    table.cell(dash, 0, 7, "Risk", text_color=color.gray, text_size=size.small)
+    table.cell(dash, 1, 7, str.tostring(effectiveRiskPercent) + "%", 
+              text_color=color.white, text_size=size.small)
+    table.cell(dash, 2, 7, "$" + str.tostring(math.round(riskAmount)), 
+              text_color=color.white, text_size=size.small)
+    
+    // P&L
+    if strategy.position_size != 0
+        pnl = strategy.position_size > 0 ? (close - entryPrice) : (entryPrice - close)
+        pnlPct = (pnl / entryPrice) * 100
+        pnlColor = pnl > 0 ? color.lime : color.red
+        
+        table.cell(dash, 0, 8, "P&L", text_color=color.gray, text_size=size.small)
+        table.cell(dash, 1, 8, str.tostring(math.round(pnlPct, 2)) + "%", 
+                  text_color=pnlColor, text_size=size.normal)
+        table.cell(dash, 2, 8, "$" + str.tostring(math.round(pnl)), 
+                  text_color=pnlColor, text_size=size.small)
+    
+    // Exit Status
+    if strategy.position_size != 0
+        exitText = partialTPTaken ? "50% OUT" : breakEvenSet ? "BE SET" : "ACTIVE"
+        exitColor = partialTPTaken ? color.lime : breakEvenSet ? color.yellow : color.white
+        table.cell(dash, 0, 9, "Status", text_color=color.gray, text_size=size.small)
+        table.cell(dash, 1, 9, exitText, text_color=exitColor, text_size=size.small)
+        table.merge_cells(dash, 1, 9, 2, 9)
 ```
 ---
 ---
