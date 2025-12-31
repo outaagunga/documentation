@@ -56,6 +56,67 @@
 2. **This is 4H timeframe optimized**
    - 1H = More trades, more noise
    - Daily = Fewer trades, better signals
+
+
+```vb
+□ 1. Check your strategy Dashboard on the TradingView
+     - Bull Score: ___/10 (must be ≥ 8.0)
+     - Regime: ___________ (prefer 📈 TRENDING, avoid ⚡ RANGING/TRANSITION)
+     - Session: Active ✓ or Inactive ✗ (avoid 02:00–06:00 UTC)
+     - Volume: Good ✓ or Low ✗ (Volume ≥ 0.7× 24H Avg)
+     
+□ 2. Write Down Signal Details (from chart)
+     Entry Price: $__________
+     Stop Loss: $__________ (ATR-based)
+     Take Profit: $__________ (≈ 2R)
+     Partial TP: $__________ (50% exit at ≈ 1.3R)
+     
+□ 3. Go to Binance Account
+     Login → Derivatives → USDT-M Futures
+
+□ 4. Select Correct Pair
+     - Click pair name (top left)
+     - Search: e.g BTCUSDT
+     - Select: e.g BTC/USDT Perpetual
+     
+□ 5. Set to ISOLATED MARGIN ✓
+     - Top of order panel
+     - Click "Cross" → Change to "Isolated"
+     - Confirm margin mode
+     
+□ 6. Calculate Position Size (Risk-Based)
+     Account Balance: $________
+     Risk Per Trade: 1.5% = $________
+     Stop Distance: $________ (|Entry − SL|)
+     Position Size: Risk ÷ Stop Distance = $_______ (contract value)
+     
+□ 7. Select ORDER TYPE:
+     - Preferred: LIMIT (at signal close)
+     - Alternative: MARKET (only if strong momentum)
+     
+□ 8. Enter Trade Details (from TradingView)
+     - Side: BUY (Long) or SELL (Short)
+     - Price: $__________ (Entry price)
+     - Amount: __________ (contracts / coin)
+     - Click "Buy/Long" or "Sell/Short"
+     
+□ 9. SET STOP LOSS (Immediately!)
+     - Click "TP/SL" on position
+     - Stop Loss Price: $__________
+     - Stop Loss Type: Last Price
+     - Click "Confirm"
+     
+□ 10. SET TAKE PROFIT
+      - Take Profit Price: $__________
+      - TP Type: Last Price
+      - Click "Confirm"
+      
+□ 11. SET PRICE ALERT for Partial TP
+      - Right-click chart → "Add Alert"
+      - Price crosses: $__________ (Partial TP ≈ 1.3R)
+      - Message: "Close 50% at Partial TP"
+```
+
 ## Crypto trading strategy  
 ```pine
     //@version=5
