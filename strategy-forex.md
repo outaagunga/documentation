@@ -42,122 +42,116 @@ plotshape(buySignal,  style=shape.triangleup,   location=location.belowbar, colo
 plotshape(sellSignal, style=shape.triangledown, location=location.abovebar, color=color.red,   size=size.small, title="Sell Entry")
 
 ```
+4. Adjust inputs to match your timeframe:
+   - **Scalping (5m-15m)**: Fast 8, Slow 21, Trend 50
+   - **Day Trading (1H-4H)**: Fast 12, Slow 26, Trend 50 (default)
+   - **Swing Trading (D)**: Fast 20, Slow 50, Trend 200
+     
 **Indicator**
 ```vb
 //@version=5
-indicator("EMA Ribbon with Advanced Filters", overlay=true)
+indicator("EMA Crossover + Confluence", overlay=true)
 
-// ============================================
-// INPUT SETTINGS
-// ============================================
-fastLength = input.int(9, "Fast EMA Length", minval=1)
-slowLength = input.int(21, "Slow EMA Length", minval=1)
-trendLength = input.int(50, "Trend EMA Length", minval=1)
-
-// RSI Filter Settings
-useRSI = input.bool(true, "Use RSI Filter")
+// ═══════════════════════════════════════════════════════════
+// INPUTS - Adjust to Your Preference
+// ═══════════════════════════════════════════════════════════
+fastLength = input.int(12, "Fast EMA", minval=1)
+slowLength = input.int(26, "Slow EMA", minval=1)
+trendLength = input.int(50, "Trend EMA", minval=1)
 rsiLength = input.int(14, "RSI Length", minval=1)
 rsiOverbought = input.int(70, "RSI Overbought", minval=50, maxval=100)
 rsiOversold = input.int(30, "RSI Oversold", minval=0, maxval=50)
 
-// EMA Slope Filter
-useSlopeFilter = input.bool(true, "Use EMA Trend Slope Filter")
-slopeLookback = input.int(3, "Slope Lookback Period", minval=1)
-
-// Multiple Timeframe Filter
-useMTF = input.bool(false, "Use Multiple Timeframe Filter")
-htfTimeframe = input.timeframe("60", "Higher Timeframe")
-
-// Candle Highlight
-highlightCandle = input.bool(true, "Highlight Crossover Candle")
-
-// ============================================
-// CALCULATE EMAs
-// ============================================
+// ═══════════════════════════════════════════════════════════
+// CALCULATIONS
+// ═══════════════════════════════════════════════════════════
 fastEMA = ta.ema(close, fastLength)
 slowEMA = ta.ema(close, slowLength)
 trendEMA = ta.ema(close, trendLength)
-
-// ============================================
-// RSI CALCULATION
-// ============================================
 rsi = ta.rsi(close, rsiLength)
 
-// ============================================
-// EMA TREND SLOPE
-// ============================================
-trendSlope = trendEMA - trendEMA[slopeLookback]
+// Trend slope (momentum direction)
+trendSlope = trendEMA - trendEMA[1]
 
-// ============================================
-// MULTIPLE TIMEFRAME TREND
-// ============================================
-htfFastEMA = request.security(syminfo.tickerid, htfTimeframe, ta.ema(close, fastLength))
-htfSlowEMA = request.security(syminfo.tickerid, htfTimeframe, ta.ema(close, slowLength))
-htfTrend = htfFastEMA > htfSlowEMA ? 1 : -1
+// EMA squeeze detection (EMAs coming together = momentum building)
+emaDistance = math.abs(fastEMA - slowEMA)
+avgDistance = ta.sma(emaDistance, 20)
+isSqueezing = emaDistance < avgDistance * 0.8
 
-// ============================================
-// RIBBON COLOR & PLOTTING
-// ============================================
-ribbonColor = fastEMA > slowEMA ? color.new(color.green, 80) : color.new(color.red, 80)
+// ═══════════════════════════════════════════════════════════
+// SIGNAL CONDITIONS WITH CONFLUENCE
+// ═══════════════════════════════════════════════════════════
+// Basic crossover/crossunder
+emaCrossUp = ta.crossover(fastEMA, slowEMA)
+emaCrossDown = ta.crossunder(fastEMA, slowEMA)
 
+// BUY: All conditions aligned bullish
+buySignal = emaCrossUp and close > trendEMA and trendSlope > 0 and rsi < rsiOverbought and isSqueezing
+
+// SELL: All conditions aligned bearish
+sellSignal = emaCrossDown and 
+             close < trendEMA and 
+             trendSlope < 0 and 
+             rsi > rsiOversold and 
+             isSqueezing
+
+// ═══════════════════════════════════════════════════════════
+// VISUALS
+// ═══════════════════════════════════════════════════════════
 // Plot EMAs
-p1 = plot(fastEMA, color=color.new(color.green, 0), title="Fast EMA", linewidth=2)
-p2 = plot(slowEMA, color=color.new(color.red, 0), title="Slow EMA", linewidth=2)
-fill(p1, p2, color=ribbonColor, title="EMA Ribbon")
+plot(fastEMA, "Fast EMA", color=color.new(color.blue, 0), linewidth=2)
+plot(slowEMA, "Slow EMA", color=color.new(color.orange, 0), linewidth=2)
+plot(trendEMA, "Trend EMA", color=color.new(color.gray, 0), linewidth=2)
 
-// Plot Trend EMA
-plot(trendEMA, color=color.gray, title="Trend EMA", linewidth=2)
+// Ribbon shading between Fast and Slow EMAs
+ribbonColor = fastEMA > slowEMA ? color.new(color.green, 80) : color.new(color.red, 80)
+fill(plot(fastEMA), plot(slowEMA), color=ribbonColor, title="EMA Ribbon")
 
-// ============================================
-// SIGNAL CONDITIONS
-// ============================================
-// Basic crossover conditions
-crossUp = ta.crossover(fastEMA, slowEMA)
-crossDown = ta.crossunder(fastEMA, slowEMA)
+// Signal shapes
+plotshape(buySignal, style=shape.triangleup, location=location.belowbar, 
+          color=color.new(color.green, 0), size=size.normal, title="Buy Signal")
+plotshape(sellSignal, style=shape.triangledown, location=location.abovebar, 
+          color=color.new(color.red, 0), size=size.normal, title="Sell Signal")
 
-// RSI Filter
-rsiFilterBuy = not useRSI or rsi < rsiOverbought
-rsiFilterSell = not useRSI or rsi > rsiOversold
+// Highlight crossover candle backgrounds
+bgcolor(buySignal ? color.new(color.green, 90) : na, title="Buy Candle Highlight")
+bgcolor(sellSignal ? color.new(color.red, 90) : na, title="Sell Candle Highlight")
 
-// Slope Filter
-slopeFilterBuy = not useSlopeFilter or trendSlope > 0
-slopeFilterSell = not useSlopeFilter or trendSlope < 0
-
-// Multiple Timeframe Filter
-mtfFilterBuy = not useMTF or htfTrend == 1
-mtfFilterSell = not useMTF or htfTrend == -1
-
-// Combined Buy Signal
-buySignal = crossUp and rsiFilterBuy and slopeFilterBuy and mtfFilterBuy
-
-// Combined Sell Signal
-sellSignal = crossDown and rsiFilterSell and slopeFilterSell and mtfFilterSell
-
-// ============================================
-// PLOT SIGNALS
-// ============================================
-plotshape(buySignal, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small, title="Buy Signal")
-plotshape(sellSignal, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small, title="Sell Signal")
-
-// ============================================
-// HIGHLIGHT CROSSOVER CANDLE
-// ============================================
-bgColor = highlightCandle and buySignal ? color.new(color.green, 90) : highlightCandle and sellSignal ? color.new(color.red, 90) : na
-bgcolor(bgColor, title="Crossover Highlight")
-
-// ============================================
+// ═══════════════════════════════════════════════════════════
 // ALERTS
-// ============================================
-alertcondition(buySignal, title="Buy Signal", message="EMA Buy Signal: Fast EMA crossed above Slow EMA with all filters passed")
-alertcondition(sellSignal, title="Sell Signal", message="EMA Sell Signal: Fast EMA crossed below Slow EMA with all filters passed")
-alertcondition(buySignal or sellSignal, title="Any Signal", message="EMA Signal Triggered")
+// ═══════════════════════════════════════════════════════════
+alertcondition(buySignal, title="Buy Alert", 
+               message="BUY Signal: EMA Cross + All Filters Aligned ✓")
+alertcondition(sellSignal, title="Sell Alert", 
+               message="SELL Signal: EMA Cross + All Filters Aligned ✓")
 
-// ============================================
-// DEBUG INFO
-// ============================================
-plotchar(rsi, "RSI", "", location.top, color.blue)
-plotchar(trendSlope, "Trend Slope", "", location.top, color.purple)
-plotchar(htfTrend, "HTF Trend", "", location.top, color.orange)
+// ═══════════════════════════════════════════════════════════
+// DASHBOARD (Optional info display)
+// ═══════════════════════════════════════════════════════════
+var table infoTable = table.new(position.top_right, 2, 5, 
+                                 bgcolor=color.new(color.black, 85), 
+                                 border_width=1)
+
+if barstate.islast
+    table.cell(infoTable, 0, 0, "RSI", text_color=color.white)
+    table.cell(infoTable, 1, 0, str.tostring(rsi, "#.##"), 
+               text_color=rsi > rsiOverbought ? color.red : rsi < rsiOversold ? color.green : color.white)
+    
+    table.cell(infoTable, 0, 1, "Trend", text_color=color.white)
+    table.cell(infoTable, 1, 1, trendSlope > 0 ? "UP ▲" : "DOWN ▼", 
+               text_color=trendSlope > 0 ? color.green : color.red)
+    
+    table.cell(infoTable, 0, 2, "Position", text_color=color.white)
+    table.cell(infoTable, 1, 2, close > trendEMA ? "Above" : "Below", 
+               text_color=close > trendEMA ? color.green : color.red)
+    
+    table.cell(infoTable, 0, 3, "Squeeze", text_color=color.white)
+    table.cell(infoTable, 1, 3, isSqueezing ? "YES" : "NO", 
+               text_color=isSqueezing ? color.yellow : color.gray)
+    
+    table.cell(infoTable, 0, 4, "Ribbon", text_color=color.white)
+    table.cell(infoTable, 1, 4, fastEMA > slowEMA ? "BULL" : "BEAR", 
+               text_color=fastEMA > slowEMA ? color.green : color.red)
 ```
 ---
 ---
