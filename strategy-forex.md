@@ -11,6 +11,71 @@
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
 ---
+
+
+## Indicator 
+If you plan to use this for strategy testing: Add **Use strategy()** instead of **indicator()** to simulate PnL, win rate, drawdown
+The "beginning" of a color change occurs when the two EMAs cross each other. The signals should be exactly at the start of change of ribbon colour
+
+* **Buy Signal (Green Ribbon Starts):** Triggered when the **Fast EMA crosses over the Slow EMA**. This indicates bullish momentum.
+* **Sell Signal (Red Ribbon Starts):** Triggered when the **Fast EMA crosses under the Slow EMA**. This indicates bearish momentum.
+* **EMA ribbon is shaded between the EMAs**, so the ribbon itself visibly changes color exactly at the crossover. 
+* **Trend EMA:** e.g EMA50 is plotted as a single gray line—no shading, just trend context.
+* **RSI**: no buys when RSI > 70, no sells when RSI < 30. To prevent entering just as price may be reversing
+* **Input**: user can adjust input values (e.g from 20 to 50)
+* **EMA trend Slope/ Momentum:** EMAtrend slope > 0 for buys, < 0 for sells. This ensures trades go in the direction of momentum.
+* **Alert** Add alertcondition for buy/sell triggers.
+* **Multiple Timeframe**: only allow trades on the lower timeframe (e.g., 15m) in the same direction as the higher timeframe.
+* **Highlight Crossover Candle:** Highlight the candle where the crossover occurs with different background color.
+
+```pinescript
+// Define the cross conditions
+buySignal  = ta.crossover(fastEMA, slowEMA)
+sellSignal = ta.crossunder(fastEMA, slowEMA)
+
+// Plot shapes on the chart
+plotshape(buySignal,  style=shape.triangleup,   location=location.belowbar, color=color.green, size=size.small, title="Buy Entry")
+plotshape(sellSignal, style=shape.triangledown, location=location.abovebar, color=color.red,   size=size.small, title="Sell Entry")
+
+```
+**Indicator**
+```vb
+//@version=5
+indicator("EMA Ribbon with Trend Filter and Signals", overlay=true)
+
+// EMA settings
+fastLength  = 9
+slowLength  = 21
+trendLength = 50  // For overall trend
+
+// Calculate EMAs
+fastEMA  = ta.ema(close, fastLength)
+slowEMA  = ta.ema(close, slowLength)
+trendEMA = ta.ema(close, trendLength)
+
+// Determine ribbon color for shading
+ribbonColor = fastEMA > slowEMA ? color.new(color.green, 80) : color.new(color.red, 80)
+
+// Plot fast and slow EMAs
+p1 = plot(fastEMA, color=color.new(color.green, 0), title="Fast EMA")
+p2 = plot(slowEMA, color=color.new(color.red, 0), title="Slow EMA")
+
+// Fill between fast and slow EMA
+fill(p1, p2, color=ribbonColor, title="EMA Ribbon")
+
+// Plot the trend EMA (EMA50) in gray
+plot(trendEMA, color=color.gray, title="Trend EMA 50", linewidth=2)
+
+// Signals at crossover, filtered by trend EMA
+buySignal  = ta.crossover(fastEMA, slowEMA) and close > trendEMA
+sellSignal = ta.crossunder(fastEMA, slowEMA) and close < trendEMA
+
+// Plot arrows on chart
+plotshape(buySignal,  style=shape.triangleup,   location=location.belowbar, color=color.green, size=size.small, title="Buy Entry")
+plotshape(sellSignal, style=shape.triangledown, location=location.abovebar, color=color.red,   size=size.small, title="Sell Entry")
+```
+---
+---
 **The new and latest version**
 
 ## 🎓 **HOW TO USE THIS**
