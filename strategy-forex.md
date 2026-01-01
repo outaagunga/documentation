@@ -98,14 +98,14 @@ sellSignal = emaCrossDown and
 // ═══════════════════════════════════════════════════════════
 // VISUALS
 // ═══════════════════════════════════════════════════════════
-// Plot EMAs
-plot(fastEMA, "Fast EMA", color=color.new(color.blue, 0), linewidth=2)
-plot(slowEMA, "Slow EMA", color=color.new(color.orange, 0), linewidth=2)
+// 1. Assign plot IDs to variables
+p1 = plot(fastEMA, "Fast EMA", color=color.new(color.blue, 0), linewidth=2)
+p2 = plot(slowEMA, "Slow EMA", color=color.new(color.orange, 0), linewidth=2)
 plot(trendEMA, "Trend EMA", color=color.new(color.gray, 0), linewidth=2)
 
-// Ribbon shading between Fast and Slow EMAs
+// 2. Reference those IDs (p1 and p2) in the fill
 ribbonColor = fastEMA > slowEMA ? color.new(color.green, 80) : color.new(color.red, 80)
-fill(plot(fastEMA), plot(slowEMA), color=ribbonColor, title="EMA Ribbon")
+fill(p1, p2, color=ribbonColor, title="EMA Ribbon")
 
 // Signal shapes
 plotshape(buySignal, style=shape.triangleup, location=location.belowbar, 
