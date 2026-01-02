@@ -17,6 +17,8 @@ indicator("4H Candle Bias Filter for 15m", overlay=true)
 
 // --- Inputs ---
 htf = input.timeframe("240", "Higher Timeframe Bias (4H)")
+ema_fast_length = input.int(9, "Fast EMA Length", minval=1)
+ema_slow_length = input.int(21, "Slow EMA Length", minval=1)
 
 // --- Fetch 4H Data ---
 htf_open  = request.security(syminfo.tickerid, htf, open, lookahead=barmerge.lookahead_on)
@@ -34,10 +36,15 @@ bgcolor(bg_color)
 // Optional: Plot the 4H Open price as a "Support/Resistance" line
 plot(htf_open, "4H Open Level", color=color.gray, style=plot.style_stepline, linewidth=2)
 
-// --- Entry Signal Example (EMA Cross + 4H Bias) ---
-ema_fast = ta.ema(close, 9)
-ema_slow = ta.ema(close, 21)
+// --- EMA Calculation ---
+ema_fast = ta.ema(close, ema_fast_length)
+ema_slow = ta.ema(close, ema_slow_length)
 
+// --- Plot EMAs ---
+plot(ema_fast, "EMA 9", color=color.blue, linewidth=2)
+plot(ema_slow, "EMA 21", color=color.orange, linewidth=2)
+
+// --- Entry Signal Example (EMA Cross + 4H Bias) ---
 buy_signal  = is_bullish_bias and ta.crossover(ema_fast, ema_slow)
 sell_signal = is_bearish_bias and ta.crossunder(ema_fast, ema_slow)
 
