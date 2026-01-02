@@ -13,6 +13,119 @@
 ---
 ```vb
 //@version=5
+strategy("Trend-Filtered Mean Reversion: BB + RSI + Stoch", overlay=true, initial_capital=1000, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
+
+// --- INPUTS ---
+emaLength = input.int(200, "Trend EMA Length")
+bbLength   = input.int(20, "BB Length")
+bbMult     = input.float(2.0, "BB StdDev")
+rsiLength  = input.int(14, "RSI Length")
+stochK     = input.int(14, "Stoch %K Length")
+stochD     = input.int(3, "Stoch %D Smoothing")
+stochSm    = input.int(3, "Stoch %K Smoothing")
+
+// --- FILTER TOGGLES ---
+useTrendFilter = input.bool(true, "Use Trend Filter (EMA)")
+useBBFilter = input.bool(true, "Use Bollinger Bands Filter")
+useRSIFilter = input.bool(true, "Use RSI Filter")
+useStochFilter = input.bool(true, "Use Stochastic Filter")
+
+// --- CALCULATIONS ---
+// 1. Trend Filter
+ema200 = ta.ema(close, emaLength)
+
+// 2. Bollinger Bands
+[bbMiddle, bbUpper, bbLower] = ta.bb(close, bbLength, bbMult)
+
+// 3. RSI
+rsiValue = ta.rsi(close, rsiLength)
+
+// 4. Stochastic (with Snap-Back Logic)
+k = ta.sma(ta.stoch(close, high, low, stochK), stochSm)
+d = ta.sma(k, stochD)
+
+// --- STRATEGY LOGIC ---
+// Trend Check
+isBullish = close > ema200
+isBearish = close < ema200
+
+// Long Condition: Trend is UP + Price at Lower Band + RSI Oversold + Stoch Snap-Back
+longCondition = (useTrendFilter ? isBullish : true) and (useBBFilter ? (close <= bbLower or close[1] <= bbLower[1]) : true) and (useRSIFilter ? (rsiValue < 45) : true) and (useStochFilter ? ta.crossover(k, 20) : true)
+
+// Short Condition: Trend is DOWN + Price at Upper Band + RSI Overbought + Stoch Snap-Back
+shortCondition = (useTrendFilter ? isBearish : true) and (useBBFilter ? (close >= bbUpper or close[1] >= bbUpper[1]) : true) and (useRSIFilter ? (rsiValue > 55) : true) and (useStochFilter ? ta.crossunder(k, 80) : true)
+
+// --- EXECUTION ---
+if (longCondition)
+    strategy.entry("Long", strategy.long, comment="Trend Long")
+
+if (shortCondition)
+    strategy.entry("Short", strategy.short, comment="Trend Short")
+
+// Exit logic: Exit at Middle Band (Mean Reversion)
+if (ta.cross(close, bbMiddle))
+    strategy.close_all(comment="Exit: Mean")
+
+// --- VISUALS ---
+plot(ema200, color=color.new(color.white, 20), linewidth=2, title="200 EMA Trend")
+plot(bbUpper, color=color.new(color.blue, 60), title="BB Upper")
+plot(bbLower, color=color.new(color.blue, 60), title="BB Lower")
+
+plotshape(longCondition, style=shape.labelup, location=location.belowbar, color=color.green, text="BUY", textcolor=color.white)
+plotshape(shortCondition, style=shape.labeldown, location=location.abovebar, color=color.red, text="SELL", textcolor=color.white)
+```
+
+```vb
+//@version=5
+strategy("Improved Mean Reversion: BB + RSI + Stoch Snap-Back", overlay=true, initial_capital=1000)
+
+// --- INPUTS ---
+bbLength = input.int(20, "BB Length")
+bbMult   = input.float(2.0, "BB StdDev")
+rsiLen   = input.int(14, "RSI Length")
+stochK   = input.int(14, "Stoch %K")
+stochD   = input.int(3, "Stoch %D")
+stochSm  = input.int(3, "Stoch Smooth")
+
+// --- FILTER TOGGLES ---
+useBBFilter = input.bool(true, "Use Bollinger Bands Filter")
+useRSIFilter = input.bool(true, "Use RSI Filter")
+useStochFilter = input.bool(true, "Use Stochastic Filter")
+
+// --- CALCULATIONS ---
+[bbMid, bbUpper, bbLower] = ta.bb(close, bbLength, bbMult)
+rsiVal = ta.rsi(close, rsiLen)
+k = ta.sma(ta.stoch(close, high, low, stochK), stochSm)
+d = ta.sma(k, stochD)
+
+// --- IMPROVED LOGIC ---
+// Long: Price was low + RSI was oversold + Stoch NOW crossing back ABOVE 20
+longCondition = (useBBFilter ? (close <= bbLower or close[1] <= bbLower[1]) : true) and (useRSIFilter ? (rsiVal < 40) : true) and (useStochFilter ? ta.crossover(k, 20) : true)
+
+// Short: Price was high + RSI was overbought + Stoch NOW crossing back BELOW 80
+shortCondition = (useBBFilter ? (close >= bbUpper or close[1] >= bbUpper[1]) : true) and (useRSIFilter ? (rsiVal > 60) : true) and (useStochFilter ? ta.crossunder(k, 80) : true)
+
+// --- EXECUTION ---
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+
+if (shortCondition)
+    strategy.entry("Short", strategy.short)
+
+// Exit at Middle Band (Basis)
+if (ta.cross(close, bbMid))
+    strategy.close_all()
+
+// --- VISUALS ---
+plot(bbUpper, color=color.new(color.gray, 50))
+plot(bbLower, color=color.new(color.gray, 50))
+plotshape(longCondition, style=shape.labelup, location=location.belowbar, color=color.green, text="BUY", textcolor=color.white)
+plotshape(shortCondition, style=shape.labeldown, location=location.abovebar, color=color.red, text="SELL", textcolor=color.white)
+```
+---
+---
+```vb
+//@version=5
 indicator("4H Candle Bias Filter for 15m", overlay=true)
 
 // --- Inputs ---
