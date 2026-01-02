@@ -66,12 +66,20 @@ show_emas = input.bool(true, "Show EMAs", group="EMAs")
 ema_fast_length = input.int(9, "Fast EMA Length", group="EMAs", minval=1)
 ema_slow_length = input.int(21, "Slow EMA Length", group="EMAs", minval=1)
 
+// RSI Settings
+show_rsi = input.bool(true, "Show RSI", group="RSI")
+rsi_length = input.int(14, "RSI Length", group="RSI", minval=1)
+rsi_overbought = input.int(70, "RSI Overbought Level", group="RSI", minval=50, maxval=100)
+rsi_oversold = input.int(30, "RSI Oversold Level", group="RSI", minval=0, maxval=50)
+rsi_source = input.source(close, "RSI Source", group="RSI")
+
 // Previous Day Range Settings
 show_pdr = input.bool(true, "Show Previous Day High/Low", group="Levels")
 
 // Signal Settings
 show_ema_signals = input.bool(true, "Show EMA Crossover Signals", group="Signals")
 show_pdr_signals = input.bool(true, "Show PDR Breakout Signals", group="Signals")
+show_rsi_signals = input.bool(true, "Show RSI Overbought/Oversold Signals", group="Signals")
 
 // ============================================================================
 // 4H BIAS CALCULATION
@@ -87,6 +95,19 @@ is_bearish_bias = close < htf_open
 // ============================================================================
 ema_fast = ta.ema(close, ema_fast_length)
 ema_slow = ta.ema(close, ema_slow_length)
+
+// ============================================================================
+// RSI CALCULATION
+// ============================================================================
+rsi = ta.rsi(rsi_source, rsi_length)
+is_overbought = rsi > rsi_overbought
+is_oversold = rsi < rsi_oversold
+
+// RSI crossing into/out of zones
+rsi_enters_overbought = ta.crossover(rsi, rsi_overbought)
+rsi_exits_overbought = ta.crossunder(rsi, rsi_overbought)
+rsi_enters_oversold = ta.crossunder(rsi, rsi_oversold)
+rsi_exits_oversold = ta.crossover(rsi, rsi_oversold)
 
 // ============================================================================
 // PREVIOUS DAY RANGE
@@ -142,6 +163,10 @@ sell_ema_signal = is_bearish_bias and ta.crossunder(ema_fast, ema_slow)
 long_pdr_breakout = is_bullish_bias and ta.crossover(close, pdh)
 short_pdr_breakout = is_bearish_bias and ta.crossunder(close, pdl)
 
+// RSI Signals (with 4H bias filter)
+buy_rsi_signal = is_bullish_bias and rsi_exits_oversold  // Bullish when RSI exits oversold
+sell_rsi_signal = is_bearish_bias and rsi_exits_overbought  // Bearish when RSI exits overbought
+
 // ============================================================================
 // SIGNAL VISUALIZATION
 // ============================================================================
@@ -149,6 +174,14 @@ short_pdr_breakout = is_bearish_bias and ta.crossunder(close, pdl)
 // EMA Crossover Signals
 plotshape(show_ema_signals and buy_ema_signal, "Buy EMA Cross", shape.triangleup, location.belowbar, color.green, size=size.small)
 plotshape(show_ema_signals and sell_ema_signal, "Sell EMA Cross", shape.triangledown, location.abovebar, color.red, size=size.small)
+
+// RSI Signals
+plotshape(show_rsi_signals and buy_rsi_signal, "RSI Buy Signal", shape.circle, location.belowbar, color.new(color.aqua, 0), size=size.tiny)
+plotshape(show_rsi_signals and sell_rsi_signal, "RSI Sell Signal", shape.circle, location.abovebar, color.new(color.fuchsia, 0), size=size.tiny)
+
+// Background highlighting for RSI zones
+bgcolor(show_rsi and is_overbought ? color.new(color.red, 95) : na, title="Overbought BG")
+bgcolor(show_rsi and is_oversold ? color.new(color.green, 95) : na, title="Oversold BG")
 
 // PDR Breakout Signals
 plotshape(show_pdr_signals and long_pdr_breakout, "PDH Breakout", shape.labelup, location.belowbar, color.new(color.lime, 0), text="PDH BREAK", textcolor=color.white, size=size.small)
@@ -161,6 +194,11 @@ alertcondition(buy_ema_signal, "Buy Signal - EMA Cross", "Bullish EMA crossover 
 alertcondition(sell_ema_signal, "Sell Signal - EMA Cross", "Bearish EMA crossunder on {{ticker}}")
 alertcondition(long_pdr_breakout, "Buy Signal - PDH Break", "Price broke above Previous Day High on {{ticker}}")
 alertcondition(short_pdr_breakout, "Sell Signal - PDL Break", "Price broke below Previous Day Low on {{ticker}}")
+
+alertcondition(buy_rsi_signal, "Buy Signal - RSI Oversold Exit", "RSI exited oversold zone on {{ticker}}")
+alertcondition(sell_rsi_signal, "Sell Signal - RSI Overbought Exit", "RSI exited overbought zone on {{ticker}}")
+alertcondition(rsi_enters_oversold, "RSI Oversold", "RSI entered oversold zone (<{{plot_0}}) on {{ticker}}")
+alertcondition(rsi_enters_overbought, "RSI Overbought", "RSI entered overbought zone (>{{plot_0}}) on {{ticker}}")
 ```
 ---
 ---
