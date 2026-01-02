@@ -54,38 +54,67 @@ plotshape(sell_signal, "Sell Alert", shape.triangledown, location.abovebar, colo
 
 ```vb
 //@version=5
-indicator("Expert 4H Bias + Prev Day Range", overlay=true)
+indicator("4H Bias + EMA Crossover + Prev Day Range", overlay=true)
 
-// --- Inputs ---
+// ============================================================================
+// INPUTS
+// ============================================================================
 htf = input.timeframe("240", "Higher Timeframe Bias (4H)")
-show_pdr = input.bool(true, "Show Previous Day High/Low", group="Levels")
+
+// EMA Settings
 show_emas = input.bool(true, "Show EMAs", group="EMAs")
-ema9_length = input.int(9, "EMA 9 Length", group="EMAs")
-ema21_length = input.int(21, "EMA 21 Length", group="EMAs")
+ema_fast_length = input.int(9, "Fast EMA Length", group="EMAs", minval=1)
+ema_slow_length = input.int(21, "Slow EMA Length", group="EMAs", minval=1)
 
-// --- EMA Calculations ---
-ema9 = ta.ema(close, ema9_length)
-ema21 = ta.ema(close, ema21_length)
+// Previous Day Range Settings
+show_pdr = input.bool(true, "Show Previous Day High/Low", group="Levels")
 
-// --- 1. Fetch 4H Bias Data ---
-// We use 'barmerge.lookahead_on' to ensure the bias updates exactly at the start of the 4H candle
+// Signal Settings
+show_ema_signals = input.bool(true, "Show EMA Crossover Signals", group="Signals")
+show_pdr_signals = input.bool(true, "Show PDR Breakout Signals", group="Signals")
+
+// ============================================================================
+// 4H BIAS CALCULATION
+// ============================================================================
 htf_open = request.security(syminfo.tickerid, htf, open, lookahead=barmerge.lookahead_on)
+htf_close = request.security(syminfo.tickerid, htf, close, lookahead=barmerge.lookahead_on)
+
 is_bullish_bias = close > htf_open
 is_bearish_bias = close < htf_open
 
-// --- 2. Fetch Previous Day High/Low ---
+// ============================================================================
+// EMA CALCULATION
+// ============================================================================
+ema_fast = ta.ema(close, ema_fast_length)
+ema_slow = ta.ema(close, ema_slow_length)
+
+// ============================================================================
+// PREVIOUS DAY RANGE
+// ============================================================================
 pdh = request.security(syminfo.tickerid, "D", high[1], lookahead=barmerge.lookahead_on)
 pdl = request.security(syminfo.tickerid, "D", low[1], lookahead=barmerge.lookahead_on)
 
-// --- 3. Visuals: Bias Background ---
-bg_color = is_bullish_bias ? color.new(color.green, 92) : is_bearish_bias ? color.new(color.red, 92) : na
+// ============================================================================
+// VISUALS: BIAS BACKGROUND
+// ============================================================================
+bg_color = is_bullish_bias ? color.new(color.green, 90) : is_bearish_bias ? color.new(color.red, 90) : na
 bgcolor(bg_color)
 
-// --- 4. Visuals: EMAs ---
-plot(show_emas ? ema9 : na, "EMA 9", color=color.blue, linewidth=2)
-plot(show_emas ? ema21 : na, "EMA 21", color=color.yellow, linewidth=2)
+// ============================================================================
+// VISUALS: 4H OPEN LEVEL
+// ============================================================================
+plot(htf_open, "4H Open Level", color=color.gray, style=plot.style_stepline, linewidth=2)
 
-// --- 5. Visuals: Previous Day Range Lines ---
+// ============================================================================
+// VISUALS: EMAs
+// ============================================================================
+plot(show_emas ? ema_fast : na, "EMA 9", color=color.blue, linewidth=2)
+plot(show_emas ? ema_slow : na, "EMA 21", color=color.orange, linewidth=2)
+
+// ============================================================================
+// VISUALS: PREVIOUS DAY RANGE
+// ============================================================================
+// Lines for current/future bars
 var line hi_line = na
 var line lo_line = na
 
@@ -97,16 +126,41 @@ if barstate.islast and show_pdr
     label.new(bar_index + 10, pdh, "Prev Day High", style=label.style_none, textcolor=color.gray, size=size.small)
     label.new(bar_index + 10, pdl, "Prev Day Low", style=label.style_none, textcolor=color.gray, size=size.small)
 
-// Also plot them across the chart for historical context
-plot(show_pdr ? pdh : na, "PDH historical", color=color.new(color.gray, 70), style=plot.style_stepline)
-plot(show_pdr ? pdl : na, "PDL historical", color=color.new(color.gray, 70), style=plot.style_stepline)
+// Historical plot for previous day range
+plot(show_pdr ? pdh : na, "PDH Historical", color=color.new(color.gray, 70), style=plot.style_stepline)
+plot(show_pdr ? pdl : na, "PDL Historical", color=color.new(color.gray, 70), style=plot.style_stepline)
 
-// --- 6. Breakout Signals ---
-long_breakout  = is_bullish_bias and ta.crossover(close, pdh)
-short_breakout = is_bearish_bias and ta.crossunder(close, pdl)
+// ============================================================================
+// TRADING SIGNALS
+// ============================================================================
 
-plotshape(long_breakout, "PDH Breakout", shape.labelup, location.belowbar, color.green, text="PDH BREAK", textcolor=color.white, size=size.small)
-plotshape(short_breakout, "PDL Breakout", shape.labeldown, location.abovebar, color.red, text="PDL BREAK", textcolor=color.white, size=size.small)
+// EMA Crossover Signals (with 4H bias filter)
+buy_ema_signal = is_bullish_bias and ta.crossover(ema_fast, ema_slow)
+sell_ema_signal = is_bearish_bias and ta.crossunder(ema_fast, ema_slow)
+
+// Previous Day Range Breakout Signals (with 4H bias filter)
+long_pdr_breakout = is_bullish_bias and ta.crossover(close, pdh)
+short_pdr_breakout = is_bearish_bias and ta.crossunder(close, pdl)
+
+// ============================================================================
+// SIGNAL VISUALIZATION
+// ============================================================================
+
+// EMA Crossover Signals
+plotshape(show_ema_signals and buy_ema_signal, "Buy EMA Cross", shape.triangleup, location.belowbar, color.green, size=size.small)
+plotshape(show_ema_signals and sell_ema_signal, "Sell EMA Cross", shape.triangledown, location.abovebar, color.red, size=size.small)
+
+// PDR Breakout Signals
+plotshape(show_pdr_signals and long_pdr_breakout, "PDH Breakout", shape.labelup, location.belowbar, color.new(color.lime, 0), text="PDH BREAK", textcolor=color.white, size=size.small)
+plotshape(show_pdr_signals and short_pdr_breakout, "PDL Breakout", shape.labeldown, location.abovebar, color.new(color.maroon, 0), text="PDL BREAK", textcolor=color.white, size=size.small)
+
+// ============================================================================
+// ALERTS
+// ============================================================================
+alertcondition(buy_ema_signal, "Buy Signal - EMA Cross", "Bullish EMA crossover on {{ticker}}")
+alertcondition(sell_ema_signal, "Sell Signal - EMA Cross", "Bearish EMA crossunder on {{ticker}}")
+alertcondition(long_pdr_breakout, "Buy Signal - PDH Break", "Price broke above Previous Day High on {{ticker}}")
+alertcondition(short_pdr_breakout, "Sell Signal - PDL Break", "Price broke below Previous Day Low on {{ticker}}")
 ```
 ---
 ---
