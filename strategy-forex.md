@@ -11,6 +11,87 @@
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
 ---
+```vb
+//@version=5
+indicator("4H Candle Bias Filter for 15m", overlay=true)
+
+// --- Inputs ---
+htf = input.timeframe("240", "Higher Timeframe Bias (4H)")
+
+// --- Fetch 4H Data ---
+htf_open  = request.security(syminfo.tickerid, htf, open, lookahead=barmerge.lookahead_on)
+htf_close = request.security(syminfo.tickerid, htf, close, lookahead=barmerge.lookahead_on)
+
+// --- Define Bias ---
+is_bullish_bias = close > htf_open
+is_bearish_bias = close < htf_open
+
+// --- Visualizing the "Permission to Trade" ---
+// Green background = Only look for BUYS | Red = Only look for SELLS
+bg_color = is_bullish_bias ? color.new(color.green, 90) : is_bearish_bias ? color.new(color.red, 90) : na
+bgcolor(bg_color)
+
+// Optional: Plot the 4H Open price as a "Support/Resistance" line
+plot(htf_open, "4H Open Level", color=color.gray, style=plot.style_stepline, linewidth=2)
+
+// --- Entry Signal Example (EMA Cross + 4H Bias) ---
+ema_fast = ta.ema(close, 9)
+ema_slow = ta.ema(close, 21)
+
+buy_signal  = is_bullish_bias and ta.crossover(ema_fast, ema_slow)
+sell_signal = is_bearish_bias and ta.crossunder(ema_fast, ema_slow)
+
+plotshape(buy_signal, "Buy Alert", shape.triangleup, location.belowbar, color.green, size=size.small)
+plotshape(sell_signal, "Sell Alert", shape.triangledown, location.abovebar, color.red, size=size.small)
+```
+
+```vb
+//@version=5
+indicator("Expert 4H Bias + Prev Day Range", overlay=true)
+
+// --- Inputs ---
+htf = input.timeframe("240", "Higher Timeframe Bias (4H)")
+show_pdr = input.bool(true, "Show Previous Day High/Low", group="Levels")
+
+// --- 1. Fetch 4H Bias Data ---
+// We use 'barmerge.lookahead_on' to ensure the bias updates exactly at the start of the 4H candle
+htf_open = request.security(syminfo.tickerid, htf, open, lookahead=barmerge.lookahead_on)
+is_bullish_bias = close > htf_open
+is_bearish_bias = close < htf_open
+
+// --- 2. Fetch Previous Day High/Low ---
+pdh = request.security(syminfo.tickerid, "D", high[1], lookahead=barmerge.lookahead_on)
+pdl = request.security(syminfo.tickerid, "D", low[1], lookahead=barmerge.lookahead_on)
+
+// --- 3. Visuals: Bias Background ---
+bg_color = is_bullish_bias ? color.new(color.green, 92) : is_bearish_bias ? color.new(color.red, 92) : na
+bgcolor(bg_color)
+
+// --- 4. Visuals: Previous Day Range Lines ---
+var line hi_line = na
+var line lo_line = na
+
+if barstate.islast and show_pdr
+    line.delete(hi_line)
+    line.delete(lo_line)
+    hi_line := line.new(bar_index - 50, pdh, bar_index + 10, pdh, color=color.new(color.gray, 20), style=line.style_dashed, width=1)
+    lo_line := line.new(bar_index - 50, pdl, bar_index + 10, pdl, color=color.new(color.gray, 20), style=line.style_dashed, width=1)
+    label.new(bar_index + 10, pdh, "Prev Day High", style=label.style_none, textcolor=color.gray, size=size.small)
+    label.new(bar_index + 10, pdl, "Prev Day Low", style=label.style_none, textcolor=color.gray, size=size.small)
+
+// Also plot them across the chart for historical context
+plot(show_pdr ? pdh : na, "PDH historical", color=color.new(color.gray, 70), style=plot.style_stepline)
+plot(show_pdr ? pdl : na, "PDL historical", color=color.new(color.gray, 70), style=plot.style_stepline)
+
+// --- 5. Breakout Signals ---
+long_breakout  = is_bullish_bias and ta.crossover(close, pdh)
+short_breakout = is_bearish_bias and ta.crossunder(close, pdl)
+
+plotshape(long_breakout, "PDH Breakout", shape.labelup, location.belowbar, color.green, text="PDH BREAK", textcolor=color.white, size=size.small)
+plotshape(short_breakout, "PDL Breakout", shape.labeldown, location.abovebar, color.red, text="PDL BREAK", textcolor=color.white, size=size.small)
+```
+---
+---
 
 
 ## Indicator 
