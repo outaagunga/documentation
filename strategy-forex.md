@@ -59,6 +59,13 @@ indicator("Expert 4H Bias + Prev Day Range", overlay=true)
 // --- Inputs ---
 htf = input.timeframe("240", "Higher Timeframe Bias (4H)")
 show_pdr = input.bool(true, "Show Previous Day High/Low", group="Levels")
+show_emas = input.bool(true, "Show EMAs", group="EMAs")
+ema9_length = input.int(9, "EMA 9 Length", group="EMAs")
+ema21_length = input.int(21, "EMA 21 Length", group="EMAs")
+
+// --- EMA Calculations ---
+ema9 = ta.ema(close, ema9_length)
+ema21 = ta.ema(close, ema21_length)
 
 // --- 1. Fetch 4H Bias Data ---
 // We use 'barmerge.lookahead_on' to ensure the bias updates exactly at the start of the 4H candle
@@ -74,7 +81,11 @@ pdl = request.security(syminfo.tickerid, "D", low[1], lookahead=barmerge.lookahe
 bg_color = is_bullish_bias ? color.new(color.green, 92) : is_bearish_bias ? color.new(color.red, 92) : na
 bgcolor(bg_color)
 
-// --- 4. Visuals: Previous Day Range Lines ---
+// --- 4. Visuals: EMAs ---
+plot(show_emas ? ema9 : na, "EMA 9", color=color.blue, linewidth=2)
+plot(show_emas ? ema21 : na, "EMA 21", color=color.yellow, linewidth=2)
+
+// --- 5. Visuals: Previous Day Range Lines ---
 var line hi_line = na
 var line lo_line = na
 
@@ -90,7 +101,7 @@ if barstate.islast and show_pdr
 plot(show_pdr ? pdh : na, "PDH historical", color=color.new(color.gray, 70), style=plot.style_stepline)
 plot(show_pdr ? pdl : na, "PDL historical", color=color.new(color.gray, 70), style=plot.style_stepline)
 
-// --- 5. Breakout Signals ---
+// --- 6. Breakout Signals ---
 long_breakout  = is_bullish_bias and ta.crossover(close, pdh)
 short_breakout = is_bearish_bias and ta.crossunder(close, pdl)
 
