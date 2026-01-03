@@ -69,7 +69,7 @@ plotshape(shortCondition, style=shape.triangledown, location=location.abovebar, 
 ```
 ---
 ---
-Top down analys. The line are the 4 hour highs and lows
+Top down analys. The lines are the 4 hour highs and lows. They are you point of interest when you move to lower timeframe e.g 15min  
 ```vb
 //@version=5
 indicator("Top-Down Analysis Dashboard", overlay=true)
