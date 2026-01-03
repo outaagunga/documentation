@@ -11,6 +11,57 @@
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
 ---
+```vb
+//@version=5
+strategy("Early Entry: BB Squeeze + Momentum Expansion", overlay=true, initial_capital=1000)
+
+// --- INPUTS ---
+bbLength = input.int(20, "BB Length")
+bbMult   = input.float(2.0, "BB StdDev")
+sqzLookback = input.int(20, "Squeeze Lookback Period")
+emaFilterLen = input.int(200, "Trend Filter (EMA)")
+
+// --- 4HR HIGHS/LOWS CALCULATION ---
+// "D" is daily, "240" is 4 hours. 
+// gaps=barmerge.gaps_off ensures the line stays continuous.
+high4hr = request.security(syminfo.tickerid, "240", high, lookahead=barmerge.lookahead_on)
+low4hr  = request.security(syminfo.tickerid, "240", low, lookahead=barmerge.lookahead_on)
+
+// --- CALCULATIONS ---
+[bbMid, bbUpper, bbLower] = ta.bb(close, bbLength, bbMult)
+ema200 = ta.ema(close, emaFilterLen)
+
+// Bollinger Band Width (Volatility Measure)
+bbWidth = (bbUpper - bbLower) / bbMid
+isSqueezing = bbWidth <= ta.lowest(bbWidth, sqzLookback) // True if bands are at their tightest
+
+// --- ENTRY LOGIC (Catching the move start) ---
+longCondition = isSqueezing[1] and ta.crossover(close, bbUpper) and close > ema200
+shortCondition = isSqueezing[1] and ta.crossunder(close, bbLower) and close < ema200
+
+// --- EXECUTION ---
+if (longCondition)
+    strategy.entry("Sqz Breakout Long", strategy.long)
+
+if (shortCondition)
+    strategy.entry("Sqz Breakout Short", strategy.short)
+
+// --- EXIT LOGIC (Trailing or Target) ---
+if (ta.cross(close, bbMid))
+    strategy.close_all()
+
+// --- VISUALS ---
+plot(ema200, color=color.yellow, title="200 EMA Trend Filter")
+fill(plot(bbUpper, color=color.new(color.gray, 0)), plot(bbLower, color=color.new(color.gray, 0)), color = isSqueezing ? color.new(color.blue, 80) : color.new(color.gray, 90))
+plotshape(longCondition, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(shortCondition, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small)
+
+// --- PLOT 4HR LEVELS ---
+plot(high4hr, color=color.new(color.green, 0), style=plot.style_stepline, linewidth=2, title="4hr High")
+plot(low4hr, color=color.new(color.red, 0), style=plot.style_stepline, linewidth=2, title="4hr Low")
+```
+---
+---
 To catch the market before the "meat" of the move happens, we need to enter immidiately before squeeze explodes
 we use **Bollinger Band Squeeze** detector
 
