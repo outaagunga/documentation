@@ -69,6 +69,56 @@ plotshape(shortCondition, style=shape.triangledown, location=location.abovebar, 
 ```
 ---
 ---
+Top down analys. The line are the 4 hour highs and lows
+```vb
+//@version=5
+indicator("Top-Down Analysis Dashboard", overlay=true)
+
+// --- INPUTS ---
+htf_trend = input.timeframe("D", "Higher Timeframe (Trend)")
+mtf_structure = input.timeframe("240", "Medium Timeframe (Structure)")
+ema_length = input.int(20, "Trend EMA Length")
+
+// --- CALCULATIONS ---
+// Get HTF Trend (Daily EMA)
+daily_ema = request.security(syminfo.tickerid, htf_trend, ta.ema(close, ema_length))
+daily_close = request.security(syminfo.tickerid, htf_trend, close)
+is_bullish_htf = daily_close > daily_ema
+
+// Get MTF Structure (4-Hour Highs/Lows)
+mtf_high = request.security(syminfo.tickerid, mtf_structure, ta.highest(high, 10))
+mtf_low = request.security(syminfo.tickerid, mtf_structure, ta.lowest(low, 10))
+
+// --- VISUAL SECTIONS ---
+// Plot the MTF Support/Resistance Zones
+plot(mtf_high, "MTF Resistance", color=color.new(color.red, 50), style=plot.style_linebr)
+plot(mtf_low, "MTF Support", color=color.new(color.green, 50), style=plot.style_linebr)
+
+// --- DASHBOARD TABLE ---
+var table board = table.new(position.top_right, 2, 3, bgcolor=color.new(color.black, 80), border_width=1)
+
+if barstate.islast
+    // Header
+    table.cell(board, 0, 0, "Timeframe", text_color=color.white)
+    table.cell(board, 1, 0, "Bias", text_color=color.white)
+    
+    // Row 1: Daily Trend
+    table.cell(board, 0, 1, "Daily (Trend)", text_color=color.white)
+    table.cell(board, 1, 1, is_bullish_htf ? "BULLISH" : "BEARISH", bgcolor = is_bullish_htf ? color.green : color.red)
+    
+    // Row 2: 4H Structure
+    table.cell(board, 0, 2, "4H (Zones)", text_color=color.white)
+    table.cell(board, 1, 2, close > mtf_low and close < mtf_high ? "RANGING" : "BREAKOUT", text_color=color.white)
+
+// --- ALERTS / SIGNALS ---
+buy_condition = is_bullish_htf and ta.crossover(close, mtf_low)
+sell_condition = not is_bullish_htf and ta.crossunder(close, mtf_high)
+
+plotshape(buy_condition, "Buy Signal", shape.triangleup, location.belowbar, color.green, size=size.small)
+plotshape(sell_condition, "Sell Signal", shape.triangledown, location.abovebar, color.red, size=size.small)
+```
+---
+---
 ```vb
 //@version=5
 strategy("Trend-Filtered Mean Reversion: BB + RSI + Stoch", overlay=true, initial_capital=1000, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
