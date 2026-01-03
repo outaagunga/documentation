@@ -11,6 +11,64 @@
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
 ---
 ---
+To catch the market before the "meat" of the move happens, we need to enter immidiately before squeeze explodes
+we use **Bollinger Band Squeeze** detector
+
+### **The "Early Entry" Logic**
+
+* **The Squeeze:** We calculate the "Width" of the Bollinger Bands. When the width is at a 20-period low, the background turns blue. This is your "get ready" signal.
+* **The Expansion:** The trade triggers the moment price breaks the band while the width starts to expand, ensuring you are there for the very first "big candle."
+
+### **Expert Tip for "Zero-Lag" Entry**
+If you want to be even faster, look at the **1-minute chart** when the **15-minute chart** is in a squeeze.
+1. Wait for the 15m Squeeze to turn blue.
+2. Drop down to the 1m chart.
+3. Enter the moment the 1m chart shows a volume spike. This often gets you into the trade 5–10 minutes before the 15m candle even closes.
+```vb
+//@version=5
+strategy("Early Entry: BB Squeeze + Momentum Expansion", overlay=true, initial_capital=1000)
+
+// --- INPUTS ---
+bbLength = input.int(20, "BB Length")
+bbMult   = input.float(2.0, "BB StdDev")
+sqzLookback = input.int(20, "Squeeze Lookback Period")
+emaFilterLen = input.int(200, "Trend Filter (EMA)")
+
+// --- CALCULATIONS ---
+[bbMid, bbUpper, bbLower] = ta.bb(close, bbLength, bbMult)
+ema200 = ta.ema(close, emaFilterLen)
+
+// Bollinger Band Width (Volatility Measure)
+bbWidth = (bbUpper - bbLower) / bbMid
+isSqueezing = bbWidth <= ta.lowest(bbWidth, sqzLookback) // True if bands are at their tightest
+
+// --- ENTRY LOGIC (Catching the move start) ---
+// Long: We are in a squeeze + price closes ABOVE upper band + price is above 200 EMA
+longCondition = isSqueezing[1] and ta.crossover(close, bbUpper) and close > ema200
+
+// Short: We are in a squeeze + price closes BELOW lower band + price is below 200 EMA
+shortCondition = isSqueezing[1] and ta.crossunder(close, bbLower) and close < ema200
+
+// --- EXECUTION ---
+if (longCondition)
+    strategy.entry("Sqz Breakout Long", strategy.long)
+
+if (shortCondition)
+    strategy.entry("Sqz Breakout Short", strategy.short)
+
+// --- EXIT LOGIC (Trailing or Target) ---
+// Exit when price touches the Mid line (Mean Reversion) or a Trailing Stop
+if (ta.cross(close, bbMid))
+    strategy.close_all()
+
+// --- VISUALS ---
+plot(ema200, color=color.yellow, title="200 EMA Trend Filter")
+fill(plot(bbUpper), plot(bbLower), color = isSqueezing ? color.new(color.blue, 80) : color.new(color.gray, 90))
+plotshape(longCondition, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(shortCondition, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small)
+```
+---
+---
 ```vb
 //@version=5
 strategy("Trend-Filtered Mean Reversion: BB + RSI + Stoch", overlay=true, initial_capital=1000, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
