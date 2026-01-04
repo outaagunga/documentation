@@ -12,6 +12,295 @@
 ---
 ---
 ```vb
+## AI PROMPT — Rubber Band Mean Reversion Trading Strategy
+
+**Role:**
+Act as a professional quantitative trader and strategy designer. Your task is to identify and trade **mean-reversion (“Rubber Band”) setups** in the market using precise, rule-based logic.
+
+---
+
+### STRATEGY OBJECTIVE
+
+Trade **mean reversion** by identifying when price becomes statistically **overextended** away from its mean and then enters only after confirmation that price is snapping back toward equilibrium.
+
+---
+
+### INDICATORS & DEFINITIONS
+
+**Mean (Equilibrium):**
+
+* 20-period Simple Moving Average (SMA)
+
+**Overextension Boundaries:**
+
+* Bollinger Bands (20-period, 2 standard deviations)
+
+**Momentum & Exhaustion Filters:**
+
+* RSI (14)
+* Stochastic Oscillator (14, 3, 3)
+
+---
+
+### STEP 1 — IDENTIFY A STRETCHED MARKET
+
+A market is considered **“stretched”** when **at least two** of the following conditions are true:
+
+1. **Distance from Mean:**
+   Price is visually and statistically far from the 20-period SMA.
+
+2. **Bollinger Band Breach:**
+   A candle **closes outside** the upper or lower Bollinger Band.
+
+3. **RSI Extreme:**
+
+   * RSI > 70 → Overbought (short bias)
+   * RSI < 30 → Oversold (long bias)
+
+4. **Stochastic Exhaustion:**
+
+   * Stochastic > 80 (short bias) or < 20 (long bias)
+   * Oscillator begins to curve back toward the mid-range.
+
+5. **EMA Slope:**
+
+   * Long Entry: Current EMA > EMA (1 bar ago)
+   * Short Entry: Current EMA < EMA (1 bar ago)
+---
+
+### STEP 2 — ENTRY TRIGGER (THE SNAP)
+
+Do **not** enter immediately on overextension.
+
+Enter a trade **only after confirmation** that price is reverting:
+
+1. **Band Pierce:**
+   Price first moves outside the Bollinger Band.
+
+2. **Re-Entry Signal (Required):**
+   A candle **closes back inside** the Bollinger Band.
+
+3. **Reversal Confirmation (Required):**
+   Presence of a clear reversal candlestick pattern at the extreme, such as:
+
+   * Pin Bar / Hammer
+   * Engulfing candle
+   * Strong rejection wick
+
+**Trade Direction:**
+
+* Overbought stretch → Short
+* Oversold stretch → Long
+
+---
+
+### STEP 3 — RISK MANAGEMENT
+
+**Stop Loss:**
+
+* Long trades: Below the lowest wick of the stretched move
+* Short trades: Above the highest wick of the stretched move
+
+Stops must invalidate the idea of mean reversion if hit.
+
+---
+
+### STEP 4 — PROFIT TARGETS
+
+**Primary Target (Mandatory Partial Take-Profit):**
+
+* Take 50–70% profit at the **20-period SMA** (the mean).
+
+**Secondary Target (Optional Runner):**
+
+* Hold remaining position toward the **opposite Bollinger Band**, only if momentum supports continuation.
+
+---
+
+### STEP 5 — TRADE FILTER (WHEN NOT TO TRADE)
+
+Avoid all Rubber Band trades when:
+
+* Market is in a **strong trend**
+* Price is **walking the Bollinger Bands**
+* Price respects one band repeatedly without reverting to the mean
+
+In such conditions, mean-reversion logic is invalid.
+
+---
+
+### OUTPUT REQUIREMENTS (WHEN APPLICABLE)
+
+When generating signals, code, or analysis:
+
+* Clearly label **Stretch Detection**
+* Clearly label **Entry Trigger**
+* Clearly label **Stop Loss**
+* Clearly label **Targets**
+* User can toggle **on/off each filter**
+* User can adjust numerical values without editing the code
+* Reject trades that violate the trend filter
+* Single-line function calls **(Pine Script requirement)**
+```
+---
+---
+```vb
+//@version=5
+strategy("Rubber Band Mean Reversion - STRICT", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
+
+// ==========================================
+// USER INPUTS & TOGGLES
+// ==========================================
+grp1 = "Step 1: Overextension (Stretch)"
+smaLen = input.int(20, "20-period SMA (The Mean)", group=grp1)
+bbMult = input.float(2.0, "BB StdDev Boundary", group=grp1)
+rsiLen = input.int(14, "RSI Period", group=grp1)
+rsiOB  = input.int(70, "RSI Overbought", group=grp1)
+rsiOS  = input.int(30, "RSI Oversold", group=grp1)
+stocLen= input.int(14, "Stoch Period", group=grp1)
+
+grp2 = "Step 1.5: EMA Slope Filter"
+useSlope = input.bool(true, "Enable EMA Slope Filter", group=grp2)
+emaSlopeLen = input.int(9, "EMA Slope Period", group=grp2)
+
+grp3 = "Step 5: Trend Filter (Avoid Walking Bands)"
+useTrendFilt = input.bool(true, "ADX Trend Filter", group=grp3)
+adxLimit     = input.int(25, "Max ADX for Reversion", group=grp3)
+
+// ==========================================
+// INDICATOR CALCULATIONS
+// ==========================================
+// Mean and Bands
+meanSMA = ta.sma(close, smaLen)
+[topBB, midBB, lowBB] = ta.bb(close, smaLen, bbMult)
+
+// Oscillators
+rsiVal = ta.rsi(close, rsiLen)
+stochRaw = ta.stoch(close, high, low, stocLen)
+stochK = ta.sma(stochRaw, 3)
+stochD = ta.sma(stochK, 3)
+
+// EMA Slope
+slopeEMA = ta.ema(close, emaSlopeLen)
+emaRising  = slopeEMA > slopeEMA[1]
+emaFalling = slopeEMA < slopeEMA[1]
+
+// ADX for Trend Filter
+[plusDI, minusDI, adxVal] = ta.dmi(14, 14)
+
+// ==========================================
+// STEP 1: STRETCH DETECTION (At least 2 required)
+// ==========================================
+// 1. Distance from Mean (Price > BB which is 2SD away)
+distUpper = close > topBB
+distLower = close < lowBB
+
+// 2. Bollinger Band Breach (Close outside)
+breachUpper = close > topBB
+breachLower = close < lowBB
+
+// 3. RSI Extreme
+rsiOB_cond = rsiVal > rsiOB
+rsiOS_cond = rsiVal < rsiOS
+
+// 4. Stochastic Exhaustion
+stochOB_cond = stochK > 80
+stochOS_cond = stochK < 20
+
+// Tallying the Stretch
+stretchCountLong  = (distLower ? 1 : 0) + (breachLower ? 1 : 0) + (rsiOS_cond ? 1 : 0) + (stochOS_cond ? 1 : 0)
+stretchCountShort = (distUpper ? 1 : 0) + (breachUpper ? 1 : 0) + (rsiOB_cond ? 1 : 0) + (stochOB_cond ? 1 : 0)
+
+isStretchedLong  = stretchCountLong >= 2
+isStretchedShort = stretchCountShort >= 2
+
+// ==========================================
+// STEP 2: ENTRY TRIGGER (THE SNAP)
+// ==========================================
+// 1. Check for recent stretch (within last 5 bars)
+wasStretchedL = ta.barssince(isStretchedLong) <= 5
+wasStretchedS = ta.barssince(isStretchedShort) <= 5
+
+// 2. Re-Entry Signal (Close back inside)
+reEntryL = close > lowBB and close[1] <= lowBB[1]
+reEntryS = close < topBB and close[1] >= topBB[1]
+
+// 3. Reversal Confirmation (Pin Bar or Engulfing)
+isPinBarL = (close > open) and (lowBB - low) > (high - low) * 0.6
+isEngulfL = (close > open) and (close > high[1])
+revConfL  = isPinBarL or isEngulfL
+
+isPinBarS = (close < open) and (high - topBB) > (high - low) * 0.6
+isEngulfS = (close < open) and (close < low[1])
+revConfS  = isPinBarS or isEngulfS
+
+// Final Combined Logic
+trendOK = not useTrendFilt or adxVal < adxLimit
+slopeOK_L = not useSlope or emaRising
+slopeOK_S = not useSlope or emaFalling
+
+longEntry  = wasStretchedL and reEntryL and revConfL and trendOK and slopeOK_L
+shortEntry = wasStretchedS and reEntryS and revConfS and trendOK and slopeOK_S
+
+// ==========================================
+// STEP 3 & 4: RISK & TARGETS
+// ==========================================
+// Capture the extreme of the stretch for Stop Loss
+var float longSL = na
+var float shortSL = na
+
+if (longEntry and strategy.position_size == 0)
+    longSL := ta.lowest(low, 5)
+    strategy.entry("Long", strategy.long)
+
+if (shortEntry and strategy.position_size == 0)
+    shortSL := ta.highest(high, 5)
+    strategy.entry("Short", strategy.short)
+
+// Exits
+if (strategy.position_size > 0)
+    strategy.exit("TP1_L", "Long", qty_percent=60, limit=meanSMA, stop=longSL, comment="MeanTP")
+    strategy.exit("TP2_L", "Long", qty_percent=100, limit=topBB, stop=longSL, comment="OppBandTP")
+
+if (strategy.position_size < 0)
+    strategy.exit("TP1_S", "Short", qty_percent=60, limit=meanSMA, stop=shortSL, comment="MeanTP")
+    strategy.exit("TP2_S", "Short", qty_percent=100, limit=lowBB, stop=shortSL, comment="OppBandTP")
+
+// ==========================================
+// VISUALS
+// ==========================================
+plot(meanSMA, "Mean", color=color.blue, linewidth=2)
+p1 = plot(topBB, "Upper Band", color=color.red)
+p2 = plot(lowBB, "Lower Band", color=color.green)
+fill(p1, p2, color=color.new(color.gray, 90))
+
+plotshape(longEntry, "Long Snap", shape.triangleup, location.belowbar, color.green, size=size.small)
+plotshape(shortEntry, "Short Snap", shape.triangledown, location.abovebar, color.red, size=size.small)
+```
+---
+---
+## 🥉 **Best Structure-Based Trend Filter**
+### **Market Structure (HH / HL / LL / LH)**
+
+**Why pros love it**
+* Works even when EMAs lag
+* Excellent for scalping reversals inside trends
+
+**Rules**
+* Uptrend = Higher Highs + Higher Lows
+* Downtrend = Lower Highs + Lower Lows
+* Only fade bands **in the direction of structure**
+
+📌 Best when paired with **session highs/lows**
+
+## 🔥 **Best Professional Combo (Highly Recommended)**
+If you want **high win-rate scalping**, use this:
+
+> **200 EMA (direction)**
+> **50 EMA (alignment)**
+> **Bollinger Bands (entry)**
+> **RSI(7) or Stoch (timing)**
+```vb
 //@version=6
 strategy("Mean-Reversion Scalper (Trend Filtered)", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
 
