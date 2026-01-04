@@ -24,8 +24,8 @@ emaFilterLen = input.int(200, "Trend Filter (EMA)")
 // --- 4HR HIGHS/LOWS CALCULATION ---
 // "D" is daily, "240" is 4 hours. 
 // gaps=barmerge.gaps_off ensures the line stays continuous.
-high4hr = request.security(syminfo.tickerid, "240", high, lookahead=barmerge.lookahead_on)
-low4hr  = request.security(syminfo.tickerid, "240", low, lookahead=barmerge.lookahead_on)
+high4hr = request.security(syminfo.tickerid, "240", high, lookahead=barmerge.lookahead_off)
+low4hr  = request.security(syminfo.tickerid, "240", low, lookahead=barmerge.lookahead_off)
 
 // --- CALCULATIONS ---
 [bbMid, bbUpper, bbLower] = ta.bb(close, bbLength, bbMult)
@@ -59,8 +59,8 @@ plotshape(longCondition, style=shape.triangleup, location=location.belowbar, col
 plotshape(shortCondition, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small)
 
 // --- PLOT 4HR LEVELS ---
-plot(high4hr, color=color.new(color.green, 0), style=plot.style_stepline, linewidth=2, title="4hr High")
-plot(low4hr, color=color.new(color.red, 0), style=plot.style_stepline, linewidth=2, title="4hr Low")
+plot(high4hr, color=color.new(color.red, 0), style=plot.style_stepline, linewidth=0.5, title="4hr High")
+plot(low4hr, color=color.new(color.green, 0), style=plot.style_stepline, linewidth=0.5, title="4hr Low")
 ```
 ---
 ---
