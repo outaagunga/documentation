@@ -12,6 +12,87 @@
 ---
 ---
 ```vb
+//@version=6
+strategy("Mean-Reversion Scalper (Trend Filtered)", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
+
+// --- INPUTS ---
+grp_trend = "Trend Filter"
+use_trend  = input.bool(true, "Enable 200 EMA Trend Filter", group=grp_trend)
+ema_len    = input.int(200, "Trend EMA Length", group=grp_trend)
+
+grp_bb     = "Bollinger Bands"
+bb_len     = input.int(20, "BB Length", group=grp_bb)
+bb_mult    = input.float(2.0, "BB StdDev", group=grp_bb)
+
+grp_filt   = "Volatility & Filters"
+use_vol    = input.bool(true, "Filter: BBW > BBW Average", group=grp_filt)
+bbw_avg_l  = input.int(50, "BBW MA Length", group=grp_filt)
+max_slope  = input.float(2.0, "Max MA Slope (%)", group=grp_filt)
+
+grp_mom    = "Momentum"
+mom_src    = input.string("RSI", "Confirmation Source", options=["RSI", "Stochastic"], group=grp_mom)
+rsi_len    = input.int(7, "RSI Length", group=grp_mom)
+stoch_k    = input.int(5, "Stoch K", group=grp_mom)
+stoch_d    = input.int(3, "Stoch D", group=grp_mom)
+
+// --- INDICATOR CALCULATIONS ---
+// Trend EMA
+ema_200 = ta.ema(close, ema_len)
+
+// Bollinger Bands
+[basis, upper, lower] = ta.bb(close, bb_len, bb_mult)
+bbw = (upper - lower) / basis
+bbw_avg = ta.sma(bbw, bbw_avg_l)
+
+// Momentum (RSI or Stoch)
+rsi_val = ta.rsi(close, rsi_len)
+stoch_k_val = ta.stoch(close, high, low, stoch_k)
+stoch_d_val = ta.sma(stoch_k_val, stoch_d)
+
+// Slope Filter (Price change over 3 bars to avoid steep trends)
+ma_slope = math.abs(basis - basis[3]) / basis[3] * 100
+
+// --- CONDITION GATES ---
+trend_bull = not use_trend or (close > ema_200)
+trend_bear = not use_trend or (close < ema_200)
+vol_ok     = not use_vol or (bbw > bbw_avg)
+slope_ok   = ma_slope < max_slope
+
+// --- CANDLESTICK REJECTION ---
+bull_rev = (low < lower and close > lower) and (close > open)
+bear_rev = (high > upper and close < upper) and (close < open)
+
+// --- TRADING LOGIC ---
+long_cond = trend_bull and vol_ok and slope_ok and bull_rev and (mom_src == "RSI" ? (rsi_val > 30 and rsi_val[1] <= 30) : ta.crossover(stoch_d_val, 20))
+short_cond = trend_bear and vol_ok and slope_ok and bear_rev and (mom_src == "RSI" ? (rsi_val < 70 and rsi_val[1] >= 70) : ta.crossunder(stoch_d_val, 80))
+
+// --- EXECUTION ---
+if long_cond
+    strategy.entry("Long", strategy.long, comment="Trend Long")
+
+if short_cond
+    strategy.entry("Short", strategy.short, comment="Trend Short")
+
+// Exit at Middle Band or Swing High/Low
+if strategy.position_size > 0
+    strategy.exit("LX", "Long", limit=basis, stop=ta.lowest(low, 3)[1])
+
+if strategy.position_size < 0
+    strategy.exit("SX", "Short", limit=basis, stop=ta.highest(high, 3)[1])
+
+// --- VISUALS ---
+plot(ema_200, color=color.new(color.orange, 0), linewidth=2, title="200 EMA Trend")
+plot(basis, color=color.gray, title="20 MA")
+p_up = plot(upper, color=color.red, title="Upper Band")
+p_lo = plot(lower, color=color.green, title="Lower Band")
+fill(p_up, p_lo, color=color.new(color.blue, 96))
+
+plotshape(long_cond, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(short_cond, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small)
+```
+---
+---
+```vb
 //@version=5
 strategy("Early Entry: BB Squeeze + Momentum Expansion", overlay=true, initial_capital=1000)
 
