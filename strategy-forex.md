@@ -141,6 +141,7 @@ When generating signals, code, or analysis:
 * User can adjust numerical values without editing the code
 * Reject trades that violate the trend filter
 * Single-line function calls **(Pine Script requirement)**
+* Properly compiled code with NO logical/ Mathematical ambiguity or blind spot
 ```
 ---
 ---
