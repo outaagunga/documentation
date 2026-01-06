@@ -6,9 +6,51 @@
 - Spot hidden assumptions/ Structural logic conflict/ Logical ambiguity/Blind spot/ Explore multiple perspectives/ Asking the right question?
 - Explain this in clear, concise bulleted points without adding new assumptions    
 - I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.
-- Which part of the code is ambiguous  
+- Which part of the code is ambiguous
+- Audit this strictly from a professional prop trade/ risk committee lens, not as educator or code  
 - Translate this ruleset into pinescript friendly logic  
 - Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
+---
+---
+```vb
+This "Free Bar" variation is a powerful way to filter out weak signals. It uses the statistical extreme of the Bollinger Bands to identify high-probability reversal points.
+
+### **"Free Bar" Reversal Workflow**
+
+#### **Step 1: Identify the "Overextension" (The Setup)**
+
+* **Wait for a Free Bar:** Look for a candle where the **entire body and the wicks** are completely outside the Bollinger Band.
+* For a **Short** trade: The bar must be entirely above the Upper Band.
+* For a **Long** trade: The bar must be entirely below the Lower Band.
+
+* **Confirm the "Gap":** There should be visible "daylight" or white space between the Bollinger Band and the candle's nearest wick.
+
+#### **Step 2: The Return Signal (The Trigger)**
+
+* **Wait for the Re-entry:** Do not trade while the price is still outside the bands. Wait for a subsequent candle to move back toward the mean.
+* **The Close Requirement:** The trigger is a candle that **closes back inside** the Bollinger Band.
+* *Example:* For a short, wait for a candle to close below the Upper Band after the Free Bar has occurred.
+
+#### **Step 3: Entry Execution**
+
+* **Execute at the Close:** Enter the trade immediately at the closing price of the first candle that successfully moves back inside the band.
+
+#### **Step 4: Risk Management (Stop Loss)**
+
+* **Placement:** Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (for shorts) or below the lowest point of the "Free Bar" (for longs).
+* **Logic:** If the price breaks past the Free Bar's extreme, the momentum is too strong and the reversal thesis is invalidated.
+
+#### **Step 5: Profit Taking (Targets)**
+
+* **Target 1 (The Mean):** Your primary target is the **Middle SMA line**. This is the most reliable profit-taking zone.
+* **Target 2 (The Opposite Band):** If the trend is strong and you want to ride the move, trail your stop loss and aim for the **opposite outer Bollinger Band**.
+
+### **Visualizing the Setup**
+
+### **Why this works better than a "Touch"**
+
+When price merely touches a band, it can "walk the band" for a long time, leading to stop-outs. A **Free Bar** represents a "climax" or "exhaustion" point. By waiting for the price to close back inside, you are letting the market prove to you that the extreme momentum has ended before you put your capital at risk.
+```
 ---
 ---
 ```vb
