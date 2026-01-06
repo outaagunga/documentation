@@ -13,6 +13,162 @@
 ---
 ---
 ```vb
+
+
+## **Reactive Bollinger Bands Trading Logic**
+
+### **Core Philosophy (Non-Predictive)**
+
+Bollinger Bands are **not** used for mean reversion or predicting reversals.
+They are used **reactively** to detect **volatility expansion and trend participation** after the market has already chosen a direction.
+
+The strategy trades **momentum continuation first** and **exhaustion second**, with continuation having higher priority.
+
+## **Indicator Definitions (Explicit)**
+
+* **Bollinger Bands**
+
+  * Period: 20
+  * Basis: Simple Moving Average (SMA)
+  * Deviation: ±2 standard deviations
+* **Middle Band** = 20-period SMA
+* **Upper Band** = Middle Band + (2 × Std Dev)
+* **Lower Band** = Middle Band − (2 × Std Dev)
+* **200-Period Moving Average** = Trend filter
+* **Bollinger Band Width**
+
+  * Defined as: `(Upper Band − Lower Band)`
+
+## **Step-by-Step Reactive Workflow**
+
+### **Step 1: Bollinger Band Squeeze (No-Trade Zone)**
+
+**Purpose:** Identify low-volatility environments where no directional edge exists.
+
+**Conditions:**
+
+* Bollinger Band Width is **contracting** compared to previous bars
+* Bands are visually narrow and parallel
+
+**Interpretation:**
+
+* Market volatility is low
+* Price action is random and non-directional
+* No trend participation advantage
+
+**Action:**
+
+* **Do nothing**
+* No entries allowed during this phase
+
+### **Step 2: Bollinger Band Expansion (Activation Phase)**
+
+**Purpose:** Detect the moment volatility returns and directional intent appears.
+
+**Conditions:**
+
+* Bollinger Band Width begins **expanding** after contraction
+* Expansion must be sustained (not a single-bar spike)
+
+**Interpretation:**
+
+* Volatility expansion confirms a **market dislocation**
+* Direction is being chosen by strong participants
+
+**Action:**
+
+* Enable trade logic
+* Do **not** enter yet — wait for price confirmation
+
+### **Step 3: Walking the Bands (Trade Entry Phase)**
+
+**Purpose:** Participate only in strong, sustained momentum.
+
+#### **Definition of “Walking the Bands”**
+
+Price is considered to be “walking” a band when:
+
+* Multiple consecutive candles **close near or outside** the same Bollinger Band
+* Price does **not** mean-revert back to the middle band
+* The middle band slopes in the direction of price
+
+## **Directional Trade Rules (Hard Filters)**
+
+### **LONG Setup**
+
+All conditions must be true:
+
+1. **Trend Filter**
+
+   * Price is **above the 200-period MA**
+2. **Volatility Filter**
+
+   * Bollinger Band Width is **expanding**
+3. **Price Location**
+
+   * Candle closes **at or above the Upper Bollinger Band**
+   * Price continues to “hug” the Upper Band
+4. **Momentum Confirmation**
+
+   * Middle Band is sloping upward
+
+**Action:**
+→ Enter **LONG** in the direction of the band walk
+
+### **SHORT Setup**
+
+All conditions must be true:
+
+1. **Trend Filter**
+
+   * Price is **below the 200-period MA**
+2. **Volatility Filter**
+
+   * Bollinger Band Width is **expanding**
+3. **Price Location**
+
+   * Candle closes **at or below the Lower Bollinger Band**
+   * Price continues to “hug” the Lower Band
+4. **Momentum Confirmation**
+
+   * Middle Band is sloping downward
+
+**Action:**
+→ Enter **SHORT** in the direction of the band walk
+
+## **Trade Management (Beginner-Safe Rules)**
+
+### **Stay-In Rule (Primary)**
+
+* **LONG:** Stay in the trade **as long as price remains between the Upper Band and the Middle Band**
+* **SHORT:** Stay in the trade **as long as price remains between the Lower Band and the Middle Band**
+
+### **Exit Conditions**
+
+Exit the trade when **any** of the following occur:
+
+1. Candle closes beyond the Middle Band against the trade
+2. Bollinger Band Width stops expanding and begins contracting
+3. Price cleanly detaches from the band and loses momentum
+
+## **Key Principles (Non-Negotiable)**
+
+* Never fade price simply because it is “outside” the Bollinger Band
+* Overextension is **evidence of strength**, not weakness
+* Mean reversion logic is invalid during band expansion
+* The strategy is **reactive**, not predictive
+
+## **Why This Works (Conceptual Summary)**
+
+* Bollinger Bands visualize **volatility regimes**
+* The squeeze filters noise
+* The expansion confirms participation
+* The walk captures the portion of the trend where **most returns occur**
+* The 200 MA prevents counter-trend trades
+```
+---
+---
+```vb
 This "Free Bar" variation is a powerful way to filter out weak signals. It uses the statistical extreme of the Bollinger Bands to identify high-probability reversal points.
 
 ### **"Free Bar" Reversal Workflow**
