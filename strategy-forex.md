@@ -120,6 +120,10 @@ All conditions must be true:
 2. **Volatility Filter**
 
    * Bollinger Band Width is expanding OR the Leading Band (Upper for Longs, Lower for Shorts) is actively moving away from the Middle Band
+   * Leading band moving away is defined as:
+|UpperBand − MiddleBand| increasing vs prior bar (for longs)
+|LowerBand − MiddleBand| increasing vs prior bar (for shorts)
+
 3. **Price Location**
 
    * Candle closes at, slightly above, or in close proximity to the Upper Bollinger Band SD1, while maintaining directional pressure
@@ -226,6 +230,7 @@ ACTIVE → IDLE if expansion fails
 * ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
 * WALK → ACTIVE if price loses SD1 but expansion persists
 * ACTIVE → IDLE if expansion fails
+* Expansion fails if BBWidth contracts for 2 consecutive bars
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
 * Exit conditions override WALK → ACTIVE transitions
 
@@ -234,6 +239,10 @@ validSqueeze = [logic goes here]
 activationPhase = [logic goes here]
 walkUpper = [logic goes here]
 volConfirm = [logic goes here]
+Example of other logics includes:
+  N = input.int(10, minval=8, maxval=12)
+  X = input.float(0.3)
+  M = input.int(7)
 **Ensure** pinescript compliance (single-line function call)
 ```
 ---
