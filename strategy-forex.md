@@ -103,7 +103,6 @@ Price is considered to be “walking” a band when:
 * Multiple consecutive candles **close near or outside** the same Bollinger Band
 * Price does **not** mean-revert back to the middle band
 * The middle band slopes in the direction of price
-* The price should stay primarily between the SD1 and SD2 bands (The Power Zone)
 
 ## **Directional Trade Rules (Hard Filters)**
 
