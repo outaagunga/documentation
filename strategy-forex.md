@@ -77,9 +77,9 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 **Conditions:**
 
-* Bollinger Band Width begins **expanding** after contraction
-* Expansion must be sustained (not a single-bar spike)
-* The squeeze before expansion must have lasted for atleast 15 bars
+* Bollinger Band Width begins expanding after a squeeze, with expansion occurring within the last 1–3 bars
+* Expansion must show follow-through, not just a single-bar spike
+* The squeeze before expansion must have lasted for at least 8–12 bars, indicating meaningful volatility compression rather than noise
 * Confirmation requires the bands to 'funnel out'—the upper band must point up and the lower band must point down simultaneously
 
 **Interpretation:**
@@ -100,7 +100,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 Price is considered to be “walking” a band when:
 
-* Multiple consecutive candles **close near or outside** the same Bollinger Band
+* Multiple consecutive candles remain near, touch, or briefly close outside the same Bollinger Band, without sustained reversion back to the middle band
 * Price does **not** mean-revert back to the middle band
 * The middle band slopes in the direction of price
 
@@ -118,7 +118,7 @@ All conditions must be true:
    * Bollinger Band Width is expanding OR the Leading Band (Upper for Longs, Lower for Shorts) is actively moving away from the Middle Band
 3. **Price Location**
 
-   * Candle closes **at or above the Upper Bollinger Band SD1**
+   * Candle closes at, slightly above, or in close proximity to the Upper Bollinger Band SD1, while maintaining directional pressure
    * Price continues to “hug” the Upper Band
 4. **Momentum Confirmation**
 
@@ -145,7 +145,7 @@ All conditions must be true:
    * Bollinger Band Width is expanding OR the Leading Band (Upper for Longs, Lower for Shorts) is actively moving away from the Middle Band
 3. **Price Location**
 
-   * Candle closes **at or below the Lower Bollinger Band SD1**
+   * Candle closes at, slightly below, or in close proximity to the Lower Bollinger Band SD1, while maintaining directional pressure
    * Price continues to “hug” the Lower Band
 4. **Momentum Confirmation**
 
@@ -154,7 +154,7 @@ All conditions must be true:
 
 5. **Volume Confirmation**
 
-   * Entry candle volume must be > 20-period Volume SMA
+   * Volume must confirm participation, with volume exceeding the 20-period Volume SMA on the entry candle or within the surrounding 1–2 bars
 
 **Action:**
 → Enter **SHORT** in the direction of the band walk
@@ -196,6 +196,24 @@ Exit the trade when **any** of the following occur:
 * The expansion confirms participation
 * The walk captures the portion of the trend where **most returns occur**
 * The 200 HMA Slope ensures alignment with the dominant market regime while minimizing the lag found in traditional averages
+
+# 🧠 STATE DEFINITIONS (CONCEPTUAL)
+
+| State            | Meaning                              |
+| ---------------- | ------------------------------------ |
+| `0 = IDLE`       | No valid volatility structure        |
+| `1 = SQUEEZE`    | BB width contracting ≥ 15 bars       |
+| `2 = ACTIVE`     | Expansion detected → trading enabled |
+| `3 = WALK_LONG`  | Long momentum participation          |
+| `4 = WALK_SHORT` | Short momentum participation         |
+
+**NOTE**: Only **one state** is active at a time.
+var int state = 0   // 0=IDLE, 1=SQUEEZE, 2=ACTIVE, 3=WALK_LONG, 4=WALK_SHORT
+validSqueeze = [logic goes here]
+activationPhase = [logic goes here]
+walkUpper = [logic goes here]
+volConfirm = [logic goes here]
+**Ensure** pinescript compliance (single-line function call)
 ```
 ---
 ---
