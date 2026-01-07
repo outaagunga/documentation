@@ -13,8 +13,6 @@
 ---
 ---
 ```vb
-
-
 ## **Reactive Bollinger Bands Trading Logic**
 
 ### **Core Philosophy (Non-Predictive)**
@@ -27,16 +25,28 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 ## **Indicator Definitions (Explicit)**
 
 * **Bollinger Bands**
-
+*First Bollinger*
   * Period: 20
-  * Basis: Simple Moving Average (SMA)
+  * Basis: Exponential Moving Average (EMA)
   * Deviation: ±2 standard deviations
-* **Middle Band** = 20-period SMA
+* **Middle Band** = 20-period EMA
 * **Upper Band** = Middle Band + (2 × Std Dev)
 * **Lower Band** = Middle Band − (2 × Std Dev)
-* **200-Period Moving Average** = Trend filter
+* **200-Period Hull Moving Average (HMA)**: Primary Trend Filter.
 * **Bollinger Band Width**
+  * Defined as: `(Upper Band − Lower Band)`
 
+*Second Bollinger*
+  * Period: 20
+  * Basis: Exponential Moving Average (EMA)
+  * Deviation: ±1 standard deviations
+* **Middle Band** = 20-period EMA
+* **Upper Band** = Middle Band + (1 × Std Dev)
+* **Lower Band** = Middle Band − (1 × Std Dev)
+* **200-Period Hull Moving Average (HMA)**: Primary Trend Filter
+* **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
+* **Slope Confirmation**: To prevent HMA whipsaws, the slope must be consistent (Positive or Negative) for at least 3 consecutive bars before a trade is enabled.
+* **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
 ## **Step-by-Step Reactive Workflow**
@@ -69,6 +79,8 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 * Bollinger Band Width begins **expanding** after contraction
 * Expansion must be sustained (not a single-bar spike)
+* The squeeze before expansion must have lasted for atleast 15 bars
+* Confirmation requires the bands to 'funnel out'—the upper band must point up and the lower band must point down simultaneously
 
 **Interpretation:**
 
@@ -91,6 +103,7 @@ Price is considered to be “walking” a band when:
 * Multiple consecutive candles **close near or outside** the same Bollinger Band
 * Price does **not** mean-revert back to the middle band
 * The middle band slopes in the direction of price
+* The price should stay primarily between the SD1 and SD2 bands (The Power Zone)
 
 ## **Directional Trade Rules (Hard Filters)**
 
@@ -100,20 +113,26 @@ All conditions must be true:
 
 1. **Trend Filter**
 
-   * Price is **above the 200-period MA**
+   * The **200-period HMA** Slope is Positive (sloping upward)
 2. **Volatility Filter**
 
-   * Bollinger Band Width is **expanding**
+   * Bollinger Band Width is expanding OR the Leading Band (Upper for Longs, Lower for Shorts) is actively moving away from the Middle Band
 3. **Price Location**
 
-   * Candle closes **at or above the Upper Bollinger Band**
+   * Candle closes **at or above the Upper Bollinger Band SD1**
    * Price continues to “hug” the Upper Band
 4. **Momentum Confirmation**
 
+   * Price is above the 20-period EMA (Middle Band)
    * Middle Band is sloping upward
+
+5. **Volume Confirmation**
+
+   * Entry candle volume must be > 20-period Volume SMA
 
 **Action:**
 → Enter **LONG** in the direction of the band walk
+→ Set Initial **Stop-Loss** at the Middle Band (20 EMA). Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
 
 ### **SHORT Setup**
 
@@ -121,35 +140,48 @@ All conditions must be true:
 
 1. **Trend Filter**
 
-   * Price is **below the 200-period MA**
+   * The 200-period HMA Slope is Negative (sloping downward)
 2. **Volatility Filter**
 
-   * Bollinger Band Width is **expanding**
+   * Bollinger Band Width is expanding OR the Leading Band (Upper for Longs, Lower for Shorts) is actively moving away from the Middle Band
 3. **Price Location**
 
-   * Candle closes **at or below the Lower Bollinger Band**
+   * Candle closes **at or below the Lower Bollinger Band SD1**
    * Price continues to “hug” the Lower Band
 4. **Momentum Confirmation**
 
+   * Price is below the 20-period EMA (Middle Band)
    * Middle Band is sloping downward
+
+5. **Volume Confirmation**
+
+   * Entry candle volume must be > 20-period Volume SMA
 
 **Action:**
 → Enter **SHORT** in the direction of the band walk
+→ Set Initial **Stop-Loss** at the Middle Band (20 EMA). Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
 
 ## **Trade Management (Beginner-Safe Rules)**
 
 ### **Stay-In Rule (Primary)**
 
-* **LONG:** Stay in the trade **as long as price remains between the Upper Band and the Middle Band**
-* **SHORT:** Stay in the trade **as long as price remains between the Lower Band and the Middle Band**
+* **LONG:** Stay in the trade **as long as price remains at or above the Upper Band SD1**
+* **SHORT:** Stay in the trade **as long as price remains at or below the Lower Band SD1**
 
 ### **Exit Conditions**
 
 Exit the trade when **any** of the following occur:
+*Long Trade*
+1. Close the trade if a candle closes below the Upper SD1 band
+2. Exit if the leading band (the one being walked) starts to curve back toward the middle band
+3. Momentum Fade: Price stops "hugging" the SD2 band AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided the price is no longer making new local highs/lows
+4. Parabolic Exhaustion (The "Floating" Candle): If a full candle (body and wicks) forms entirely above/outside the SD2 band, and the subsequent candle closes back inside the SD2 band, exit immediately
 
-1. Candle closes beyond the Middle Band against the trade
-2. Bollinger Band Width stops expanding and begins contracting
-3. Price cleanly detaches from the band and loses momentum
+*SHort Trade*
+1. Close the trade if a candle closes above the lower SD1 band
+2. Exit if the leading band (the one being walked) starts to curve back toward the middle band
+3. Momentum Fade: Price stops "hugging" the SD2 band AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided the price is no longer making new local highs/lows
+4. Parabolic Exhaustion (The "Floating" Candle): If a full candle (body and wicks) forms entirely below/outside the SD2 band, and the subsequent candle closes back inside the SD2 band, exit immediately
 
 ## **Key Principles (Non-Negotiable)**
 
@@ -164,7 +196,7 @@ Exit the trade when **any** of the following occur:
 * The squeeze filters noise
 * The expansion confirms participation
 * The walk captures the portion of the trend where **most returns occur**
-* The 200 MA prevents counter-trend trades
+* The 200 HMA Slope ensures alignment with the dominant market regime while minimizing the lag found in traditional averages
 ```
 ---
 ---
