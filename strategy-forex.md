@@ -46,7 +46,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Lower Band** = Middle Band − (1 × Std Dev)
 * **200-Period Hull Moving Average (HMA)**: Primary Trend Filter
 * **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
-* **Slope Confirmation**: To prevent HMA whipsaws, the slope must be consistent (Positive or Negative) for at least 3 consecutive bars before a trade is enabled.
+* **Slope Confirmation**: To prevent HMA whipsaws, the slope must be consistent (Positive or Negative) for at least 3 consecutive bars before a trade is enabled (e.g HMA > HMA[1] for 3 consecutive bars OR HMA_slope > 0 for 3 bars).
 * **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
@@ -83,7 +83,8 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * Expansion must show follow-through, not just a single-bar spike
 * Expansion follow-through is defined as BBWidth increasing for at least 2 of the last 3 bars
 * The squeeze before expansion must have lasted for at least 8–12 bars, indicating meaningful volatility compression rather than noise
-* Confirmation requires the bands to 'funnel out'—the upper band must point up and the lower band must point down simultaneously
+* Confirmation requires the bands to 'funnel out'—the upper band must point up and the lower band must point down simultaneously (e.g UpperBand > UpperBand[1] AND LowerBand < LowerBand[1]
+)
 
 **Interpretation:**
 
@@ -123,7 +124,7 @@ All conditions must be true:
 
    * Candle closes at, slightly above, or in close proximity to the Upper Bollinger Band SD1, while maintaining directional pressure
    * Price continues to “hug” the Upper Band
-   * “Hugging” means price remains within X% or X×ATR of the SD1 band
+   * “Hugging” means price remains within X% or X×ATR of the SD1 band (e.g close is within 0.3 × ATR of the SD1 band)
 
 4. **Momentum Confirmation**
 
@@ -225,6 +226,8 @@ ACTIVE → IDLE if expansion fails
 * ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
 * WALK → ACTIVE if price loses SD1 but expansion persists
 * ACTIVE → IDLE if expansion fails
+* If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
+* Exit conditions override WALK → ACTIVE transitions
 
 var int state = 0   // 0=IDLE, 1=SQUEEZE, 2=ACTIVE, 3=WALK_LONG, 4=WALK_SHORT
 validSqueeze = [logic goes here]
