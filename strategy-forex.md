@@ -60,6 +60,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 * Bollinger Band Width is **contracting** compared to previous bars
 * Bands are visually narrow and parallel
+* Band width contraction is defined as BBWidth < BBWidth[1] for a minimum of N bars
 
 **Interpretation:**
 
@@ -80,6 +81,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 * Bollinger Band Width begins expanding after a squeeze, with expansion occurring within the last 1–3 bars
 * Expansion must show follow-through, not just a single-bar spike
+* Expansion follow-through is defined as BBWidth increasing for at least 2 of the last 3 bars
 * The squeeze before expansion must have lasted for at least 8–12 bars, indicating meaningful volatility compression rather than noise
 * Confirmation requires the bands to 'funnel out'—the upper band must point up and the lower band must point down simultaneously
 
@@ -121,6 +123,8 @@ All conditions must be true:
 
    * Candle closes at, slightly above, or in close proximity to the Upper Bollinger Band SD1, while maintaining directional pressure
    * Price continues to “hug” the Upper Band
+   * “Hugging” means price remains within X% or X×ATR of the SD1 band
+
 4. **Momentum Confirmation**
 
    * Price is above the 20-period EMA (Middle Band)
@@ -128,7 +132,8 @@ All conditions must be true:
 
 5. **Volume Confirmation**
 
-   * Entry candle volume must be > 20-period Volume SMA
+   * Volume must confirm participation, with volume exceeding the 20-period Volume SMA
+on the entry candle or within the surrounding 1–2 bars
 
 **Action:**
 → Enter **LONG** in the direction of the band walk
@@ -198,17 +203,29 @@ Exit the trade when **any** of the following occur:
 * The walk captures the portion of the trend where **most returns occur**
 * The 200 HMA Slope ensures alignment with the dominant market regime while minimizing the lag found in traditional averages
 
-# 🧠 STATE DEFINITIONS (CONCEPTUAL)
+## STATE DEFINITIONS (CONCEPTUAL)
 
 | State            | Meaning                              |
 | ---------------- | ------------------------------------ |
 | `0 = IDLE`       | No valid volatility structure        |
-| `1 = SQUEEZE`    | BB width contracting ≥ 15 bars       |
+| `1 = SQUEEZE`    | BB width contracting ≥ 8-12 bars       |
 | `2 = ACTIVE`     | Expansion detected → trading enabled |
 | `3 = WALK_LONG`  | Long momentum participation          |
 | `4 = WALK_SHORT` | Short momentum participation         |
 
 **NOTE**: Only **one state** is active at a time.
+STATE TRANSITIONS:
+SQUEEZE → ACTIVE when expansion detected
+ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
+WALK → ACTIVE if price loses SD1 but expansion persists
+ACTIVE → IDLE if expansion fails
+
+## STATE TRANSITIONS:
+* SQUEEZE → ACTIVE when expansion detected
+* ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
+* WALK → ACTIVE if price loses SD1 but expansion persists
+* ACTIVE → IDLE if expansion fails
+
 var int state = 0   // 0=IDLE, 1=SQUEEZE, 2=ACTIVE, 3=WALK_LONG, 4=WALK_SHORT
 validSqueeze = [logic goes here]
 activationPhase = [logic goes here]
