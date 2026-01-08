@@ -10,7 +10,14 @@
 - Which part of the code is ambiguous
 - Audit this strictly from a professional prop trade/ risk committee lens, not as educator or code  
 - Translate this ruleset into pinescript friendly logic  
-- Pine Script doesn't allow multi-line function calls. Everything needs to be on one line  
+- Pine Script doesn't allow multi-line function calls. Everything needs to be on one line
+```vb
+here is the guide. highlight the part I should edit and give the replacement. 
+your output should be: 
+* blind spot detected
+* look for [the line or words to be replaced] 
+* replace with [replacement]
+```
 ---
 ---
 ```vb
@@ -46,7 +53,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Lower Band** = Middle Band − (1 × Std Dev)
 * **200-Period Hull Moving Average (HMA)**: Primary Trend Filter
 * **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
-* **Slope Confirmation**: To prevent HMA whipsaws, the slope must be consistent (Positive or Negative) for at least 3 consecutive bars before a trade is enabled (e.g HMA > HMA[1] for at least 3 consecutive bars).
+* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must be consistent for at least 3 bars, UNLESS the Middle Band (20 EMA) slope is > 30 degrees (aggressive expansion), in which case the 200 HMA is only used as a location filter (Price > 200 HMA for Longs).
 * **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
@@ -149,7 +156,7 @@ All conditions must be true:
    * The 200-period HMA Slope is Negative (sloping downward)
 2. **Volatility Filter**
 
-   * Volatility filter passes if: BBWidth is flat AND distance(LeadingBand − MiddleBand) > distance(LeadingBand[1] − MiddleBand[1]) for at least 2 of the last 3 bars
+   * Volatility filter passes if: BBWidth is expanding (BBWidth > BBWidth[1]) AND the Leading Band (Lower) distance from Middle Band increased by at least 0.5 × ATR compared to the previous bar, confirming accelerating downward momentum
 
 3. **Price Location**
 
