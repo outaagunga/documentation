@@ -46,7 +46,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Lower Band** = Middle Band − (1 × Std Dev)
 * **200-Period Hull Moving Average (HMA)**: Primary Trend Filter
 * **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
-* **Slope Confirmation**: To prevent HMA whipsaws, the slope must be consistent (Positive or Negative) for at least 3 consecutive bars before a trade is enabled (e.g HMA > HMA[1] for 3 consecutive bars OR HMA_slope > 0 for 3 bars).
+* **Slope Confirmation**: To prevent HMA whipsaws, the slope must be consistent (Positive or Negative) for at least 3 consecutive bars before a trade is enabled (e.g HMA > HMA[1] for at least 3 consecutive bars).
 * **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
@@ -79,9 +79,8 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 **Conditions:**
 
-* Bollinger Band Width begins expanding after a squeeze, with expansion occurring within the last 1–3 bars
+* Expansion is valid if, after a squeeze ends, BBWidth has increased in at least 2 of the last 3 bars, with the most recent increase occurring within the last 3 bars.
 * Expansion must show follow-through, not just a single-bar spike
-* Expansion follow-through is defined as BBWidth increasing for at least 2 of the last 3 bars
 * The squeeze before expansion must have lasted for at least 8–12 bars, indicating meaningful volatility compression rather than noise
 * Confirmation requires the bands to 'funnel out'—the upper band must point up and the lower band must point down simultaneously (e.g UpperBand > UpperBand[1] AND LowerBand < LowerBand[1]
 )
@@ -119,16 +118,14 @@ All conditions must be true:
    * The **200-period HMA** Slope is Positive (sloping upward)
 2. **Volatility Filter**
 
-   * Bollinger Band Width is expanding OR the Leading Band (Upper for Longs, Lower for Shorts) is actively moving away from the Middle Band
-   * Leading band moving away is defined as:
-|UpperBand − MiddleBand| increasing vs prior bar (for longs)
-|LowerBand − MiddleBand| increasing vs prior bar (for shorts)
+   * Volatility filter passes if:
+          BBWidth is expanding OR (BBWidth is flat AND leading band distance from middle band is increasing)
 
 3. **Price Location**
 
    * Candle closes at, slightly above, or in close proximity to the Upper Bollinger Band SD1, while maintaining directional pressure
    * Price continues to “hug” the Upper Band
-   * “Hugging” means price remains within X% or X×ATR of the SD1 band (e.g close is within 0.3 × ATR of the SD1 band)
+   * “Hugging” means price remains within a given distance of the SD1 band (e.g abs(close − SD1) ≤ X × ATR)
 
 4. **Momentum Confirmation**
 
