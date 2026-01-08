@@ -60,7 +60,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 * Bollinger Band Width is **contracting** compared to previous bars
 * Bands are visually narrow and parallel
-* Band width contraction is defined as BBWidth < BBWidth[1] for a minimum of N bars
+* Band width contraction is defined as BBWidth < BBWidth[1] for a minimum of N bars (e.g., N = 6, adjustable between 4–8 bars)
 
 **Interpretation:**
 
@@ -79,8 +79,8 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 **Conditions:**
 
-* Expansion is valid if, within a rolling window of L bars after a squeeze, BBWidth increases in at least 2 of any 4 bars, indicating volatility expansion with follow-through.
-* Directional bias is established once price closes predominantly in the same half of the bands (upper or lower) during the expansion window
+* Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), BBWidth increases in at least 2 of any 4 consecutive bars, confirming meaningful volatility expansion.
+* Directional bias is established once price closes in the upper 50% of the bands for bullish bias or lower 50% for bearish bias, for at least 2 of the last 3 bars in the expansion window
 * The squeeze before expansion must have lasted for at least 4–8 bars, indicating meaningful volatility compression rather than noise
 * Confirmation requires the bands to 'funnel out'— Upper band rising for bullish expansion. Lower band falling for bearish expansion. Simultaneous divergence is preferred but not required
 
@@ -102,7 +102,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 Price is considered to be “walking” a band when:
 
-* At least K consecutive closes (allowing 1 bar exception) within X × ATR of the same SD1 band AND price may temporarily touch the middle band once without invalidating the setup
+* At least K consecutive closes (allowing 1 bar exception) within X × ATR of the SD1 band (e.g., K = 3, X = 0.3), where price may touch the middle band once during the walk without resetting the counter
 * Price does **not** mean-revert back to the middle band
 * The middle band slopes in the direction of price
 
@@ -118,16 +118,14 @@ All conditions must be true:
 2. **Volatility Filter**
 
    * Volatility filter passes if:
-          BBWidth is expanding (BBWidth > BBWidth[1]) AND the Leading Band is moving away from the Middle Band faster than the Trailing Band is contracting
+          BBWidth is expanding (BBWidth > BBWidth[1]) AND the Leading Band distance from Middle Band increased by at least 0.5 × ATR compared to the previous bar, while the Trailing Band contraction is less than 0.5 × ATR
    * BBWidth is considered flat if: abs(BBWidth − BBWidth[1]) ≤ ε   where:
           ε = small threshold (e.g 0.1 × ATR or percentage of BBWidth)
 
 3. **Price Location**
 
    * Candle closes at or near the Upper Bollinger Band SD1 AND the entry candle range is not greater than Z × ATR (e.g. Z ≤ 1.2)
-   * Price continues to “hug” the Upper Band
-   * “Hugging” means price remains within a slightly larger distance of the SD1 band (e.g abs(close − SD1) ≤ 1.5 × X × ATR) Price may temporarily move slightly outside SD1 for 1 bar without invalidating the trade
-
+   * Price continues to “hug” the Upper Band: closes remain within 1.5 × X × ATR above or below the SD1 band; temporary deviation for 1 bar is allowed without invalidating the trade
 
 4. **Momentum Confirmation**
 
@@ -140,7 +138,7 @@ All conditions must be true:
 
 **Action:**
 → Enter **LONG** in the direction of the band walk
-→ Set Set Initial Stop-Loss at: the Middle Band (20 EMA) OR a volatility-adjusted distance of Y × ATR from entry, whichever is farther. Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
+→ Set Initial Stop-Loss at the Middle Band (20 EMA) or Y × ATR from entry (e.g., Y = 1.2), whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
 
 ### **SHORT Setup**
 
@@ -168,7 +166,7 @@ All conditions must be true:
 
 **Action:**
 → Enter **SHORT** in the direction of the band walk
-→ Set Initial Stop-Loss at: the Middle Band (20 EMA) OR a volatility-adjusted distance of Y × ATR from entry, whichever is farther. Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
+→ Set Initial Stop-Loss at the Middle Band (20 EMA) or Y × ATR from entry (e.g., Y = 1.2), whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
 
 ## **Trade Management (Beginner-Safe Rules)**
 
@@ -225,12 +223,9 @@ Exit the trade using the following priority order:
 * ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
 * WALK → ACTIVE if price loses SD1 but expansion persists, provided no more than R failed WALK attempts have occurred during the same activation phase (e.g. R = 2)
 * ACTIVE → IDLE if expansion fails
-* Expansion fails if BBWidth contracts for 2 consecutive bars
+* Expansion fails if BBWidth contracts for 2 consecutive bars below the threshold ε (e.g., ε = 0.1 × ATR) indicating volatility is not sustaining
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
 * Exit conditions override WALK → ACTIVE transitions
-
-## edge protection (Structural Context Filter)
-* No new entries if price is within W × ATR of a prior session high/low or higher-timeframe level, where W is reduced (e.g., 0.5 × ATR instead of 1 × ATR) to allow more trades
 
 var int state = 0   // 0=IDLE, 1=SQUEEZE, 2=ACTIVE, 3=WALK_LONG, 4=WALK_SHORT
 validSqueeze = [logic goes here]
