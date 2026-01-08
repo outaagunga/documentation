@@ -120,6 +120,8 @@ All conditions must be true:
 
    * Volatility filter passes if:
           BBWidth is expanding OR (BBWidth is flat AND leading band distance from middle band is increasing)
+   * BBWidth is considered flat if: abs(BBWidth − BBWidth[1]) ≤ ε   where:
+          ε = small threshold (e.g 0.1 × ATR or percentage of BBWidth)
 
 3. **Price Location**
 
@@ -150,7 +152,8 @@ All conditions must be true:
    * The 200-period HMA Slope is Negative (sloping downward)
 2. **Volatility Filter**
 
-   * Bollinger Band Width is expanding OR the Leading Band (Upper for Longs, Lower for Shorts) is actively moving away from the Middle Band
+   * Volatility filter passes if: BBWidth is expanding OR (BBWidth is flat AND leading band distance from middle band is increasing)
+
 3. **Price Location**
 
    * Candle closes at, slightly below, or in close proximity to the Lower Bollinger Band SD1, while maintaining directional pressure
@@ -181,6 +184,7 @@ Exit the trade when **any** of the following occur:
 *Long Trade*
 1. Close the trade if a candle closes below the Upper SD1 band
 2. Exit if the leading band (the one being walked) starts to curve back toward the middle band
+    Leading band is curving back if: distance(LeadingBand − MiddleBand) < distance(LeadingBand[1] − MiddleBand[1])
 3. Momentum Fade: Price stops "hugging" the SD2 band AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided the price is no longer making new local highs/lows
 4. Parabolic Exhaustion (The "Floating" Candle): If a full candle (body and wicks) forms entirely above/outside the SD2 band, and the subsequent candle closes back inside the SD2 band, exit immediately
 
