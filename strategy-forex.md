@@ -171,7 +171,7 @@ All conditions must be true:
 
 **Action:**
 → Enter **SHORT** in the direction of the band walk
-→ Set Initial **Stop-Loss** at the Middle Band (20 EMA). Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
+→ Set Initial Stop-Loss at: the Middle Band (20 EMA) OR a volatility-adjusted distance of Y × ATR from entry, whichever is farther. Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
 
 ## **Trade Management (Beginner-Safe Rules)**
 
