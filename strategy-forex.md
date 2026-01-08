@@ -79,13 +79,10 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 **Conditions:**
 
-* Expansion is valid if, after a squeeze ends, BBWidth has increased in at least 2 of the last 3 bars, with the most recent increase occurring within the last 3 bars.
-* Expansion must show follow-through, not just a single-bar spike
-  Follow-through is defined as: BBWidth increasing in at least 2 of the last 3 bars AND price closing in the same directional half of the bands (upper half for bullish, lower half for bearish)
-
+* Expansion is valid if, within a rolling window of L bars after a squeeze, BBWidth increases in at least 2 of any 4 bars, indicating volatility expansion with follow-through.
+* Directional bias is established once price closes predominantly in the same half of the bands (upper or lower) during the expansion window
 * The squeeze before expansion must have lasted for at least 8–12 bars, indicating meaningful volatility compression rather than noise
-* Confirmation requires the bands to 'funnel out'— upper band must point up and the lower band must point down simultaneously
-AND the middle band must be flat-to-turning in the direction of price (abs(MiddleBand − MiddleBand[1]) ≥ small slope threshold)
+* Confirmation requires the bands to 'funnel out'— Upper band rising for bullish expansion. Lower band falling for bearish expansion. Simultaneous divergence is preferred but not required
 
 **Interpretation:**
 
@@ -138,8 +135,7 @@ All conditions must be true:
 
 5. **Volume Confirmation**
 
-   * Volume must confirm participation, with volume exceeding the 20-period Volume SMA
-on the entry candle or within the surrounding 1–2 bars
+   * Volume exceeds the 20-period SMA at least once within the last 3–5 bars, OR Average volume during the expansion-to-walk phase is greater than the prior squeeze average
 
 **Action:**
 → Enter **LONG** in the direction of the band walk
@@ -226,7 +222,7 @@ Exit the trade using the following priority order:
 ## STATE TRANSITIONS:
 * SQUEEZE → ACTIVE when expansion detected
 * ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
-* WALK → ACTIVE if price loses SD1 but expansion persists, provided no more than R failed WALK attempts have occurred during the same activation phase (e.g. R = 1)
+* WALK → ACTIVE if price loses SD1 but expansion persists, provided no more than R failed WALK attempts have occurred during the same activation phase (e.g. R = 2)
 * ACTIVE → IDLE if expansion fails
 * Expansion fails if BBWidth contracts for 2 consecutive bars
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
