@@ -118,7 +118,7 @@ All conditions must be true:
 2. **Volatility Filter**
 
    * Volatility filter passes if:
-          BBWidth is flat AND distance(LeadingBand − MiddleBand) > distance(LeadingBand[1] − MiddleBand[1]) for at least 2 of the last 3 bars
+          BBWidth is expanding (BBWidth > BBWidth[1]) AND the Leading Band is moving away from the Middle Band faster than the Trailing Band is contracting
    * BBWidth is considered flat if: abs(BBWidth − BBWidth[1]) ≤ ε   where:
           ε = small threshold (e.g 0.1 × ATR or percentage of BBWidth)
 
