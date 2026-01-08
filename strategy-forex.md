@@ -81,7 +81,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 * Expansion is valid if, within a rolling window of L bars after a squeeze, BBWidth increases in at least 2 of any 4 bars, indicating volatility expansion with follow-through.
 * Directional bias is established once price closes predominantly in the same half of the bands (upper or lower) during the expansion window
-* The squeeze before expansion must have lasted for at least 8–12 bars, indicating meaningful volatility compression rather than noise
+* The squeeze before expansion must have lasted for at least 4–8 bars, indicating meaningful volatility compression rather than noise
 * Confirmation requires the bands to 'funnel out'— Upper band rising for bullish expansion. Lower band falling for bearish expansion. Simultaneous divergence is preferred but not required
 
 **Interpretation:**
@@ -102,7 +102,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 Price is considered to be “walking” a band when:
 
-* At least K consecutive closes within X × ATR of the same SD1 band AND no close beyond the middle band during those K bars
+* At least K consecutive closes (allowing 1 bar exception) within X × ATR of the same SD1 band AND price may temporarily touch the middle band once without invalidating the setup
 * Price does **not** mean-revert back to the middle band
 * The middle band slopes in the direction of price
 
@@ -126,7 +126,8 @@ All conditions must be true:
 
    * Candle closes at or near the Upper Bollinger Band SD1 AND the entry candle range is not greater than Z × ATR (e.g. Z ≤ 1.2)
    * Price continues to “hug” the Upper Band
-   * “Hugging” means price remains within a given distance of the SD1 band (e.g abs(close − SD1) ≤ X × ATR)
+   * “Hugging” means price remains within a slightly larger distance of the SD1 band (e.g abs(close − SD1) ≤ 1.5 × X × ATR) Price may temporarily move slightly outside SD1 for 1 bar without invalidating the trade
+
 
 4. **Momentum Confirmation**
 
@@ -212,7 +213,7 @@ Exit the trade using the following priority order:
 | State            | Meaning                              |
 | ---------------- | ------------------------------------ |
 | `0 = IDLE`       | No valid volatility structure        |
-| `1 = SQUEEZE`    | BB width contracting ≥ 8-12 bars       |
+| `1 = SQUEEZE`    | BB width contracting ≥ 4-8 bars       |
 | `2 = ACTIVE`     | Expansion detected → trading enabled |
 | `3 = WALK_LONG`  | Long momentum participation          |
 | `4 = WALK_SHORT` | Short momentum participation         |
@@ -229,7 +230,7 @@ Exit the trade using the following priority order:
 * Exit conditions override WALK → ACTIVE transitions
 
 ## edge protection (Structural Context Filter)
-* No new entries if price is within W × ATR of a prior session high/low or higher-timeframe level
+* No new entries if price is within W × ATR of a prior session high/low or higher-timeframe level, where W is reduced (e.g., 0.5 × ATR instead of 1 × ATR) to allow more trades
 
 var int state = 0   // 0=IDLE, 1=SQUEEZE, 2=ACTIVE, 3=WALK_LONG, 4=WALK_SHORT
 validSqueeze = [logic goes here]
@@ -237,7 +238,7 @@ activationPhase = [logic goes here]
 walkUpper = [logic goes here]
 volConfirm = [logic goes here]
 Example of other logics includes:
-  N = input.int(10, minval=8, maxval=12)
+  N = input.int(6, minval=4, maxval=8)
   X = input.float(0.3)
   M = input.int(7)
 **Ensure** pinescript compliance (single-line function call)
