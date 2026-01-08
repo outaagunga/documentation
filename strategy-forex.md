@@ -105,7 +105,7 @@ AND the middle band must be flat-to-turning in the direction of price (abs(Middl
 
 Price is considered to be “walking” a band when:
 
-* Multiple consecutive candles remain near, touch, or briefly close outside the same Bollinger Band, without sustained reversion back to the middle band
+* At least K consecutive closes within X × ATR of the same SD1 band AND no close beyond the middle band during those K bars
 * Price does **not** mean-revert back to the middle band
 * The middle band slopes in the direction of price
 
@@ -154,7 +154,7 @@ All conditions must be true:
    * The 200-period HMA Slope is Negative (sloping downward)
 2. **Volatility Filter**
 
-   * Volatility filter passes if: BBWidth is expanding OR (BBWidth is flat AND leading band distance from middle band is increasing)
+   * Volatility filter passes if: BBWidth is flat AND distance(LeadingBand − MiddleBand) > distance(LeadingBand[1] − MiddleBand[1]) for at least 2 of the last 3 bars
 
 3. **Price Location**
 
@@ -182,7 +182,7 @@ All conditions must be true:
 
 ### **Exit Conditions**
 
-Exit the trade when **any** of the following occur:
+Exit the trade using the following priority order:
 *Long Trade*
 1. Close the trade if a candle closes below the Upper SD1 band
 2. Exit if the leading band (the one being walked) starts to curve back toward the middle band
@@ -222,10 +222,6 @@ Exit the trade when **any** of the following occur:
 | `4 = WALK_SHORT` | Short momentum participation         |
 
 **NOTE**: Only **one state** is active at a time.
-STATE TRANSITIONS:
-SQUEEZE → ACTIVE when expansion detected
-ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
-ACTIVE → IDLE if expansion fails
 
 ## STATE TRANSITIONS:
 * SQUEEZE → ACTIVE when expansion detected
@@ -235,6 +231,9 @@ ACTIVE → IDLE if expansion fails
 * Expansion fails if BBWidth contracts for 2 consecutive bars
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
 * Exit conditions override WALK → ACTIVE transitions
+
+## edge protection (Structural Context Filter)
+* No new entries if price is within W × ATR of a prior session high/low or higher-timeframe level
 
 var int state = 0   // 0=IDLE, 1=SQUEEZE, 2=ACTIVE, 3=WALK_LONG, 4=WALK_SHORT
 validSqueeze = [logic goes here]
