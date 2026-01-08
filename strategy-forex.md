@@ -81,9 +81,11 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 * Expansion is valid if, after a squeeze ends, BBWidth has increased in at least 2 of the last 3 bars, with the most recent increase occurring within the last 3 bars.
 * Expansion must show follow-through, not just a single-bar spike
+  Follow-through is defined as: BBWidth increasing in at least 2 of the last 3 bars AND price closing in the same directional half of the bands (upper half for bullish, lower half for bearish)
+
 * The squeeze before expansion must have lasted for at least 8–12 bars, indicating meaningful volatility compression rather than noise
-* Confirmation requires the bands to 'funnel out'—the upper band must point up and the lower band must point down simultaneously (e.g UpperBand > UpperBand[1] AND LowerBand < LowerBand[1]
-)
+* Confirmation requires the bands to 'funnel out'— upper band must point up and the lower band must point down simultaneously
+AND the middle band must be flat-to-turning in the direction of price (abs(MiddleBand − MiddleBand[1]) ≥ small slope threshold)
 
 **Interpretation:**
 
@@ -119,13 +121,13 @@ All conditions must be true:
 2. **Volatility Filter**
 
    * Volatility filter passes if:
-          BBWidth is expanding OR (BBWidth is flat AND leading band distance from middle band is increasing)
+          BBWidth is flat AND distance(LeadingBand − MiddleBand) > distance(LeadingBand[1] − MiddleBand[1]) for at least 2 of the last 3 bars
    * BBWidth is considered flat if: abs(BBWidth − BBWidth[1]) ≤ ε   where:
           ε = small threshold (e.g 0.1 × ATR or percentage of BBWidth)
 
 3. **Price Location**
 
-   * Candle closes at, slightly above, or in close proximity to the Upper Bollinger Band SD1, while maintaining directional pressure
+   * Candle closes at or near the Upper Bollinger Band SD1 AND the entry candle range is not greater than Z × ATR (e.g. Z ≤ 1.2)
    * Price continues to “hug” the Upper Band
    * “Hugging” means price remains within a given distance of the SD1 band (e.g abs(close − SD1) ≤ X × ATR)
 
@@ -141,7 +143,7 @@ on the entry candle or within the surrounding 1–2 bars
 
 **Action:**
 → Enter **LONG** in the direction of the band walk
-→ Set Initial **Stop-Loss** at the Middle Band (20 EMA). Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
+→ Set Set Initial Stop-Loss at: the Middle Band (20 EMA) OR a volatility-adjusted distance of Y × ATR from entry, whichever is farther. Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
 
 ### **SHORT Setup**
 
@@ -186,13 +188,13 @@ Exit the trade when **any** of the following occur:
 2. Exit if the leading band (the one being walked) starts to curve back toward the middle band
     Leading band is curving back if: distance(LeadingBand − MiddleBand) < distance(LeadingBand[1] − MiddleBand[1])
 3. Momentum Fade: Price stops "hugging" the SD2 band AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided the price is no longer making new local highs/lows
-4. Parabolic Exhaustion (The "Floating" Candle): If a full candle (body and wicks) forms entirely above/outside the SD2 band, and the subsequent candle closes back inside the SD2 band, exit immediately
+4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND BBWidth fails to expand further AND the next candle closes back inside SD2, exit immediately
 
 *SHort Trade*
 1. Close the trade if a candle closes above the lower SD1 band
 2. Exit if the leading band (the one being walked) starts to curve back toward the middle band
 3. Momentum Fade: Price stops "hugging" the SD2 band AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided the price is no longer making new local highs/lows
-4. Parabolic Exhaustion (The "Floating" Candle): If a full candle (body and wicks) forms entirely below/outside the SD2 band, and the subsequent candle closes back inside the SD2 band, exit immediately
+4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND BBWidth fails to expand further AND the next candle closes back inside SD2, exit immediately
 
 ## **Key Principles (Non-Negotiable)**
 
@@ -223,13 +225,12 @@ Exit the trade when **any** of the following occur:
 STATE TRANSITIONS:
 SQUEEZE → ACTIVE when expansion detected
 ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
-WALK → ACTIVE if price loses SD1 but expansion persists
 ACTIVE → IDLE if expansion fails
 
 ## STATE TRANSITIONS:
 * SQUEEZE → ACTIVE when expansion detected
 * ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
-* WALK → ACTIVE if price loses SD1 but expansion persists
+* WALK → ACTIVE if price loses SD1 but expansion persists, provided no more than R failed WALK attempts have occurred during the same activation phase (e.g. R = 1)
 * ACTIVE → IDLE if expansion fails
 * Expansion fails if BBWidth contracts for 2 consecutive bars
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
