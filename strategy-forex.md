@@ -8,6 +8,7 @@
 - Explain this in clear, concise bulleted points without adding new assumptions    
 - I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.
 - Which part of the code is ambiguous
+- My phylosophy is [e.g reactive trading]. Which part contradicts my phylosophy
 - Audit this strictly from a professional prop trade/ risk committee lens, not as educator or code  
 - Translate this ruleset into pinescript friendly logic  
 - Pine Script doesn't allow multi-line function calls. [e.g Ensure all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules]
@@ -109,7 +110,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 Price is considered to be “walking” a band when:
 
 * At least K consecutive closes (allowing 1 bar exception) within ATRDistance × ATR of the SD1 band, provided price does not close beyond SD2 more than once within the WALK qualification window prior to entry
-* Price does **not** mean-revert back to the middle band for more than one consecutive close
+* A second consecutive close at the middle band invalidates the WALK state and returns the system to ACTIVE unless an explicit exit condition has already been triggered
 * the middle band slope is used only as confirmation of sustained movement, not as a directional predictor
 
 ## **Directional Trade Rules (Hard Filters)**
@@ -118,9 +119,10 @@ Price is considered to be “walking” a band when:
 
 All conditions must be true:
 
-1. **Trend Filter**
+1. **Regime Alignment**
 
-   * The 200-period HMA slope must satisfy the previously defined multi-bar slope confirmation logic
+   * Filter The 200-period HMA slope is used solely to confirm alignment with the current volatility regime and does not imply future price direction
+
 2. **Volatility Filter**
 
    * Volatility filter passes if:
@@ -143,7 +145,7 @@ All conditions must be true:
    * Volume confirmation rules are symmetric for LONG and SHORT trades and serve only to validate participation, not anticipate direction
 
 **Action:**
-→ Enter **LONG** in the direction of the band walk
+→ Enter LONG upon confirmed WALK_LONG state
 → Set Initial Stop-Loss at the Middle Band (20 EMA) or StopATRMultiplier from entry, whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even only after a pullback holds above the SD1 band following a close beyond SD2
 
 ### **SHORT Setup**
@@ -168,10 +170,10 @@ All conditions must be true:
 
 5. **Volume Confirmation**
 
-   * Volume must confirm participation, with volume exceeding the 20-period Volume SMA on the entry candle or within the surrounding 1–2 bars
+   * Volume confirmation rules are symmetric for LONG and SHORT trades and serve only to validate participation, not anticipate direction
 
 **Action:**
-→ Enter **SHORT** in the direction of the band walk
+→ Enter SHORT upon confirmed WALK_SHORT state
 → Set Initial Stop-Loss at the Middle Band (20 EMA) or StopATRMultiplier from entry, whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even only after a pullback holds above the SD1 band following a close beyond SD2
 
 ## **Trade Management (Beginner-Safe Rules)**
