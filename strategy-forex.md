@@ -252,13 +252,18 @@ Example of other logics includes:
   ε is a shared volatility noise threshold used consistently across expansion, contraction, and flatness checks
   BBWidthPercentile = rolling percentile of Normalized BBWidth over the last P bars (e.g., P = 100–200, configurable)
 
-K = required consecutive closes for WALK (e.g. 3–5)
-L = expansion validation window (e.g. 5)
-P = lookback for momentum fade comparison
-R = max failed WALK attempts per ACTIVE phase (e.g. 2)
-Z = max entry candle range in ATR (e.g. ≤ 1.2)
-ATRDistance = proximity threshold to SD1 (e.g. 0.5–1.0)
-HugDistance = SD2 hugging tolerance in ATR (e.g. 0.3–0.6)
+### safe ranges for all critical parameters
+
+| Parameter     | Current Use                            | Safe Range Suggestion     | Purpose                                                                |
+| ------------- | -------------------------------------- | ------------------------- | ---------------------------------------------------------------------- |
+| `ATRDistance` | Proximity to SD1 for WALK entry        | `0.3 ≤ ATRDistance ≤ 1.0` | Prevents impossible “too tight” or overly loose conditions             |
+| `Z`           | Max entry candle range                 | `0.5 ≤ Z ≤ 1.5`           | Ensures entry bar size is reasonable relative to ATR                   |
+| `HugDistance` | SD2 hugging tolerance                  | `0.2 ≤ HugDistance ≤ 0.6` | Ensures meaningful band hugging without triggering false exit          |
+| `K`           | Required consecutive closes            | `2 ≤ K ≤ 5`               | Prevents unachievable WALK criteria                                    |
+| `L`           | Expansion validation window            | `3 ≤ L ≤ 6`               | Ensures enough bars for expansion confirmation                         |
+| `R`           | Max failed WALK attempts               | `1 ≤ R ≤ 3`               | Prevents infinite loops in ACTIVE state                                |
+| `M`           | Max bars to remain ACTIVE without WALK | `4 ≤ M ≤ 10`              | Keeps ACTIVE state realistic                                           |
+| `ε`           | Volatility noise threshold             | `0.05 ≤ ε ≤ 0.10`         | Avoids overly sensitive or insensitive expansion/contraction detection |
 
 **Ensure** all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules
 ```
