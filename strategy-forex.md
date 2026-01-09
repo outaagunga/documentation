@@ -10,7 +10,7 @@
 - Which part of the code is ambiguous
 - Audit this strictly from a professional prop trade/ risk committee lens, not as educator or code  
 - Translate this ruleset into pinescript friendly logic  
-- Pine Script doesn't allow multi-line function calls. Everything needs to be on one line
+- Pine Script doesn't allow multi-line function calls. [e.g Ensure all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules]
 ```vb
 here is the guide. highlight the part I should edit and give the replacement. 
 your output should be: 
@@ -66,7 +66,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 **Conditions:**
 
 * Bollinger Band Width is **contracting** compared to previous bars
-* Bands are narrow and parallel, defined as UpperBand − LowerBand within the lowest X percentile of BBWidth values measured over the last N bars
+* Bands are narrow and parallel, defined as UpperBand − LowerBand within the lowest BBWidthPercentile percentile of BBWidth values measured over the last N bars
 * Band width contraction is defined as BBWidth < BBWidth[1] for a minimum of N bars (e.g., N = 6, adjustable between 4–8 bars)
 
 **Interpretation:**
@@ -87,7 +87,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 **Conditions:**
 
 * Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), BBWidth increases in at least 2 of any 4 consecutive bars, and no single bar contributes more than 50% of the cumulative BBWidth increase measured from the final squeeze bar to the current bar.
-* Directional bias is established once price close is above the midpoint between the Upper and Lower Bollinger Bands for bullish bias or bearish bias, for at least 2 of the last 3 bars in the expansion window
+* Directional bias is established once price close is above ((UpperBand + LowerBand) / 2) for bullish bias or bearish bias, for at least 2 of the last 3 bars in the expansion window
 * The squeeze before expansion must have lasted for at least 4–8 bars, indicating meaningful volatility compression rather than noise
 * Confirmation requires directional band separation, defined as the leading band moving away from the middle band for at least 2 bars. Simultaneous divergence is optional and has no effect on trade validity
 
@@ -109,9 +109,9 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 Price is considered to be “walking” a band when:
 
-* At least K consecutive closes (allowing 1 bar exception) within X × ATR of the SD1 band, provided price has not closed beyond SD2 more than once since the current WALK state was entered
+* At least K consecutive closes (allowing 1 bar exception) within ATRDistance × ATR of the SD1 band, provided price has not closed beyond SD2 more than once since the current WALK state was entered
 * Price does **not** mean-revert back to the middle band for more than one consecutive close
-* the middle band slope is positive for LONG trades and negative for SHORT trades, defined as MiddleBand > MiddleBand[1]
+* the middle band slope is considered positive for LONG trades if MiddleBand − MiddleBand[1] > 0, and negative for SHORT trades if MiddleBand − MiddleBand[1] < 0, evaluated on the current bar
 
 ## **Directional Trade Rules (Hard Filters)**
 
@@ -161,7 +161,7 @@ All conditions must be true:
 3. **Price Location**
 
    * Candle closes at, slightly below, or in close proximity to the Lower Bollinger Band SD1, while maintaining directional pressure
-   * Price continues to close within X × ATR of the Upper Band SD1
+   * Price continues to close within ATRDistance × ATR of the Lower Band SD1
 4. **Momentum Confirmation**
 
    * Price is below the 20-period EMA (Middle Band)
@@ -187,16 +187,16 @@ All conditions must be true:
 Exit the trade using the following priority order, where volatility contraction overrides price-location rules:
 *Long Trade*
 1. Close the trade if a candle closes below the Upper SD1 band
-2. Exit if the leading band (the one being walked) starts to curve back toward the middle band
+2. Exit if the leading band (Upper Band for LONG trades, Lower Band for SHORT trades) starts to curve back toward the middle band
     Leading band is curving back if: distance(LeadingBand − MiddleBand) < distance(LeadingBand[1] − MiddleBand[1])
-3. Momentum Fade: Price stops "hugging" the SD2 band AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided the price has not made a new high (LONG) or new low (SHORT) over the last P bars
-4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND BBWidth fails to expand further AND the next candle closes back inside SD2, exit immediately
+3. Momentum Fade: Price stops ‘hugging’ the SD2 band, defined as the absolute distance between Close and SD2 exceeding HugDistance × ATR AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided Close ≤ highest(High, P)[1] for LONG trades, or Close ≥ lowest(Low, P)[1] for SHORT trades
+4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND BBWidth ≤ BBWidth[1] AND the next candle closes back inside SD2, exit immediately
 
 *SHort Trade*
 1. Close the trade if a candle closes above the lower SD1 band
-2. Exit if the leading band (the one being walked) starts to curve back toward the middle band
-3. Momentum Fade: Price stops "hugging" the SD2 band AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided the price has not made a new high (LONG) or new low (SHORT) over the last P bars
-4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND BBWidth fails to expand further AND the next candle closes back inside SD2, exit immediately
+2. Exit if the leading band (Upper Band for LONG trades, Lower Band for SHORT trades) starts to curve back toward the middle band
+3. Momentum Fade: Price stops ‘hugging’ the SD2 band, defined as the absolute distance between Close and SD2 exceeding HugDistance × ATR  AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided Close ≤ highest(High, P)[1] for LONG trades, or Close ≥ lowest(Low, P)[1] for SHORT trades
+4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND BBWidth ≤ BBWidth[1] AND the next candle closes back inside SD2, exit immediately
 
 ## **Key Principles (Non-Negotiable)**
 
@@ -235,15 +235,15 @@ Exit the trade using the following priority order, where volatility contraction 
 * Exit conditions override WALK → ACTIVE transitions
 
 var int state = 0   // 0=IDLE, 1=SQUEEZE, 2=ACTIVE, 3=WALK_LONG, 4=WALK_SHORT
-validSqueeze = [logic goes here]
-activationPhase = [logic goes here]
-walkUpper = [logic goes here]
-volConfirm = [logic goes here]
+bool validSqueeze = [logic goes here]
+bool activationPhase = [logic goes here]
+bool walkUpper = [logic goes here]
+bool volConfirm = [logic goes here]”
 Example of other logics includes:
   N = input.int(6, minval=4, maxval=8)
   X = input.float(0.3)
   M = input.int(7)
-**Ensure** pinescript compliance (single-line function call)
+**Ensure** all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules
 ```
 ---
 ---
