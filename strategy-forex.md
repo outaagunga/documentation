@@ -8,7 +8,7 @@
 - Explain this in clear, concise bulleted points without adding new assumptions    
 - I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.
 - Which part of the code is ambiguous
-- My phylosophy is [e.g reactive trading]. Which part contradicts my phylosophy
+- My phylosophy is [e.g reactive trading]. Give the parts that contradicts my phylosophy
 - Audit this strictly from a professional prop trade/ risk committee lens, not as educator or code  
 - Translate this ruleset into pinescript friendly logic  
 - Pine Script doesn't allow multi-line function calls. [e.g Ensure all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules]
@@ -89,7 +89,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), within any rolling 4-bar window, Normalized BBWidth must increase on at least 2 bars relative to their immediately preceding bars, and no single bar contributes more than 50% of the cumulative Normalized BBWidth increase measured from the final squeeze bar to the current bar.
 * No directional bias is assigned during expansion. Expansion only enables participation logic; direction is confirmed exclusively during the WALK phase via sustained price-band interaction
 * The squeeze before expansion must have lasted for at least 4–8 bars, indicating meaningful volatility compression rather than noise
-* Confirmation requires directional band separation, defined as the leading band moving away from the middle band for at least 2 bars. Simultaneous divergence is optional and has no effect on trade validity
+* Confirmation requires band separation, defined as the band corresponding to price location moving away from the middle band for at least 2 bars, without implying future direction. Simultaneous divergence is optional and has no effect on trade validity
 
 **Interpretation:**
 
@@ -109,7 +109,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 Price is considered to be “walking” a band when:
 
-* At least K consecutive closes (allowing 1 bar exception) within ATRDistance × ATR of the SD1 band, provided price does not close beyond SD2 more than once within the WALK qualification window prior to entry
+* At least K consecutive closes (allowing 1 bar exception) within ATRDistance × ATR of the SD1 band, provided price does not close beyond SD2 more than once within the WALK qualification window prior to entry, and any SD2 close does not immediately trigger an exit condition
 * A second consecutive close at the middle band invalidates the WALK state and returns the system to ACTIVE unless an explicit exit condition has already been triggered
 * the middle band slope is used only as confirmation of sustained movement, not as a directional predictor
 
@@ -138,7 +138,7 @@ All conditions must be true:
 4. **Momentum Confirmation**
 
    * Price is above the 20-period EMA (Middle Band)
-   * Middle Band is sloping upward
+   * Middle Band slope confirms sustained directional pressure and is not used as a predictive signal
 
 5. **Volume Confirmation**
 
@@ -152,9 +152,9 @@ All conditions must be true:
 
 All conditions must be true:
 
-1. **Trend Filter**
+1. **Regime Alignment**
 
-   * The 200-period HMA Slope is Negative (sloping downward)
+   * The 200-period HMA slope is used solely to confirm alignment with the current volatility regime and does not imply future price direction
 2. **Volatility Filter**
 
    * Volatility filter passes if: BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Absolute distance between Leading Band and Middle Band increased by at least 0.5 × ATR compared to the previous bar, confirming accelerating downward momentum
@@ -166,7 +166,7 @@ All conditions must be true:
 4. **Momentum Confirmation**
 
    * Price is below the 20-period EMA (Middle Band)
-   * Middle Band is sloping downward
+   * Middle Band slope confirms sustained directional pressure and is not used as a predictive signal
 
 5. **Volume Confirmation**
 
@@ -229,7 +229,7 @@ Exit the trade using the following priority order, where volatility contraction 
 ## STATE TRANSITIONS:
 * SQUEEZE → ACTIVE when expansion detected
 * ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
-* WALK → ACTIVE if price loses SD1 but expansion persists, provided the count of failed WALK attempts during the current ACTIVE phase does not exceed R (e.g. R = 2)
+* WALK → ACTIVE if price loses SD1 but expansion persists, provided no exit condition has been triggered and the count of failed WALK attempts during the current ACTIVE phase does not exceed R (e.g. R = 2)
 * A failed WALK attempt is defined as price entering WALK state but losing SD1 before any exit condition is triggered
 * ACTIVE → IDLE if expansion fails or if Normalized BBWidth does not exceed the maximum Normalized BBWidth value recorded during the ACTIVE phase within the last M bars
 * Expansion fails if Normalized BBWidth contracts for 2 consecutive bars below the threshold ε (e.g., ε = 5–10% of Normalized BBWidth) indicating volatility is not sustaining
