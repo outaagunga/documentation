@@ -51,7 +51,6 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Middle Band** = 20-period EMA
 * **Upper Band** = Middle Band + (1 × Std Dev)
 * **Lower Band** = Middle Band − (1 × Std Dev)
-* **200-Period Hull Moving Average (HMA)**: Primary Trend Filter
 * **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
 * **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must maintain the same sign (positive or negative) for at least 3 consecutive bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(EMASlopeLookback) ≥ EMASlopeATRMultiplier × ATR(ATRLength).
 * **Bollinger Band Width**
@@ -127,7 +126,7 @@ All conditions must be true:
    * Volatility filter passes if:
           BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Leading Band distance from Middle Band increased by at least 0.5 × ATR compared to the previous bar, while the Trailing Band contraction is less than 0.5 × ATR
    * BBWidth is considered flat if: abs(Normalized BBWidth − Normalized BBWidth[1]) ≤ ε   where:
-          ε = small threshold (e.g 0.1 × ATR or percentage of Normalized BBWidth)
+          ε = small unitless threshold expressed as a percentage of Normalized BBWidth (e.g. 5–10%)
 
 3. **Price Location**
 
@@ -229,6 +228,7 @@ Exit the trade using the following priority order, where volatility contraction 
 * SQUEEZE → ACTIVE when expansion detected
 * ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
 * WALK → ACTIVE if price loses SD1 but expansion persists, provided the count of failed WALK attempts during the current ACTIVE phase does not exceed R (e.g. R = 2)
+* A failed WALK attempt is defined as price entering WALK state but losing SD1 before any exit condition is triggered
 * ACTIVE → IDLE if expansion fails or if Normalized BBWidth does not exceed the maximum Normalized BBWidth value recorded during the ACTIVE phase within the last M bars
 * Expansion fails if Normalized BBWidth contracts for 2 consecutive bars below the threshold ε (e.g., ε = 0.1 × ATR) indicating volatility is not sustaining
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
