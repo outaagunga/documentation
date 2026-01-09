@@ -53,7 +53,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Lower Band** = Middle Band − (1 × Std Dev)
 * **200-Period Hull Moving Average (HMA)**: Primary Trend Filter
 * **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
-* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must maintain the same sign (positive or negative) for at least 3 consecutive bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(Y bars ago) ≥ EMASlopeATRMultiplier × ATR(Y), where Y is a fixed user input.
+* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must maintain the same sign (positive or negative) for at least 3 consecutive bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(EMASlopeLookback) ≥ EMASlopeATRMultiplier × ATR(Y), where Y is a fixed user input.
 * **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
@@ -66,8 +66,8 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 **Conditions:**
 
 * Bollinger Band Width is **contracting** compared to previous bars
-* Bands are narrow and parallel, defined as UpperBand − LowerBand within the lowest BBWidthPercentile percentile of BBWidth values, computed using a rolling percentile calculation over the last N bars
-* Band width contraction is defined as BBWidth < BBWidth[1] for a minimum of N bars (e.g., N = 6, adjustable between 4–8 bars)
+* Bands are narrow and parallel, defined as UpperBand − LowerBand within the lowest BBWidthPercentile percentile of Normalized BBWidth values, computed using a rolling percentile calculation over the last N bars
+* Band width contraction is defined as Normalized BBWidth < Normalized BBWidth[1] for a minimum of N bars (e.g., N = 6, adjustable between 4–8 bars)
 
 **Interpretation:**
 
@@ -86,7 +86,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 **Conditions:**
 
-* Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), within any rolling 4-bar window, BBWidth must increase on at least 2 bars relative to their immediately preceding bars, and no single bar contributes more than 50% of the cumulative BBWidth increase measured from the final squeeze bar to the current bar.
+* Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), within any rolling 4-bar window, Normalized BBWidth must increase on at least 2 bars relative to their immediately preceding bars, and no single bar contributes more than 50% of the cumulative Normalized BBWidth increase measured from the final squeeze bar to the current bar.
 * Directional bias is established once price close is above ((UpperBand + LowerBand) / 2) for bullish bias or bearish bias, for at least 2 of the last 3 bars in the expansion window
 * The squeeze before expansion must have lasted for at least 4–8 bars, indicating meaningful volatility compression rather than noise
 * Confirmation requires directional band separation, defined as the leading band moving away from the middle band for at least 2 bars. Simultaneous divergence is optional and has no effect on trade validity
@@ -125,9 +125,9 @@ All conditions must be true:
 2. **Volatility Filter**
 
    * Volatility filter passes if:
-          BBWidth is expanding (BBWidth > BBWidth[1]) AND the Leading Band distance from Middle Band increased by at least 0.5 × ATR compared to the previous bar, while the Trailing Band contraction is less than 0.5 × ATR
-   * BBWidth is considered flat if: abs(BBWidth − BBWidth[1]) ≤ ε   where:
-          ε = small threshold (e.g 0.1 × ATR or percentage of BBWidth)
+          BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Leading Band distance from Middle Band increased by at least 0.5 × ATR compared to the previous bar, while the Trailing Band contraction is less than 0.5 × ATR
+   * BBWidth is considered flat if: abs(Normalized BBWidth − Normalized BBWidth[1]) ≤ ε   where:
+          ε = small threshold (e.g 0.1 × ATR or percentage of Normalized BBWidth)
 
 3. **Price Location**
 
@@ -145,7 +145,7 @@ All conditions must be true:
 
 **Action:**
 → Enter **LONG** in the direction of the band walk
-→ Set Initial Stop-Loss at the Middle Band (20 EMA) or Y × ATR from entry (e.g., Y = 1.2), whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even only after a pullback holds above the SD1 band following a close beyond SD2
+→ Set Initial Stop-Loss at the Middle Band (20 EMA) or StopATRMultiplier from entry, whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even only after a pullback holds above the SD1 band following a close beyond SD2
 
 ### **SHORT Setup**
 
@@ -156,11 +156,11 @@ All conditions must be true:
    * The 200-period HMA Slope is Negative (sloping downward)
 2. **Volatility Filter**
 
-   * Volatility filter passes if: BBWidth is expanding (BBWidth > BBWidth[1]) AND the Leading Band (Lower) distance from Middle Band increased by at least 0.5 × ATR compared to the previous bar, confirming accelerating downward momentum
+   * Volatility filter passes if: BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Leading Band (Lower) distance from Middle Band increased by at least 0.5 × ATR compared to the previous bar, confirming accelerating downward momentum
 
 3. **Price Location**
 
-   * Candle closes at, slightly below, or in close proximity to the Lower Bollinger Band SD1, while maintaining directional pressure
+   * Candle close is within ATRDistance × ATR of the Upper Bollinger Band SD1 AND the entry candle range, defined as (High − Low) of the entry bar, is not greater than Z × ATR (e.g. Z ≤ 1.2)
    * Price continues to close within ATRDistance × ATR of the Lower Band SD1
 4. **Momentum Confirmation**
 
@@ -173,7 +173,7 @@ All conditions must be true:
 
 **Action:**
 → Enter **SHORT** in the direction of the band walk
-→ Set Initial Stop-Loss at the Middle Band (20 EMA) or Y × ATR from entry (e.g., Y = 1.2), whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even only after a pullback holds above the SD1 band following a close beyond SD2
+→ Set Initial Stop-Loss at the Middle Band (20 EMA) or StopATRMultiplier from entry, whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even only after a pullback holds above the SD1 band following a close beyond SD2
 
 ## **Trade Management (Beginner-Safe Rules)**
 
@@ -190,13 +190,13 @@ Exit the trade using the following priority order, where volatility contraction 
 2. Exit if the leading band (Upper Band for LONG trades, Lower Band for SHORT trades) starts to curve back toward the middle band
     Leading band is curving back if: abs(LeadingBand − MiddleBand) < abs(LeadingBand[1] − MiddleBand[1])
 3. Momentum Fade: Price stops ‘hugging’ the SD2 band, defined as the absolute distance between Close and SD2 exceeding HugDistance × ATR AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided Close ≤ highest(High, P)[1] for LONG trades, or Close ≥ lowest(Low, P)[1] for SHORT trades
-4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND BBWidth ≤ BBWidth[1] AND the next candle closes back inside SD2, exit immediately
+4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND Normalized BBWidth ≤ Normalized BBWidth[1] AND the next candle closes back inside SD2, exit immediately
 
 *SHort Trade*
 1. Close the trade if a candle closes above the lower SD1 band
 2. Exit if the leading band (Upper Band for LONG trades, Lower Band for SHORT trades) starts to curve back toward the middle band
 3. Momentum Fade: Price stops ‘hugging’ the SD2 band, defined as the absolute distance between Close and SD2 exceeding HugDistance × ATR  AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided Close ≤ highest(High, P)[1] for LONG trades, or Close ≥ lowest(Low, P)[1] for SHORT trades
-4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND BBWidth ≤ BBWidth[1] AND the next candle closes back inside SD2, exit immediately
+4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND Normalized BBWidth ≤ Normalized BBWidth[1] AND the next candle closes back inside SD2, exit immediately
 
 ## **Key Principles (Non-Negotiable)**
 
@@ -229,8 +229,8 @@ Exit the trade using the following priority order, where volatility contraction 
 * SQUEEZE → ACTIVE when expansion detected
 * ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
 * WALK → ACTIVE if price loses SD1 but expansion persists, provided the count of failed WALK attempts during the current ACTIVE phase does not exceed R (e.g. R = 2)
-* ACTIVE → IDLE if expansion fails or if BBWidth does not exceed the maximum BBWidth value recorded during the ACTIVE phase within the last M bars
-* Expansion fails if BBWidth contracts for 2 consecutive bars below the threshold ε (e.g., ε = 0.1 × ATR) indicating volatility is not sustaining
+* ACTIVE → IDLE if expansion fails or if Normalized BBWidth does not exceed the maximum Normalized BBWidth value recorded during the ACTIVE phase within the last M bars
+* Expansion fails if Normalized BBWidth contracts for 2 consecutive bars below the threshold ε (e.g., ε = 0.1 × ATR) indicating volatility is not sustaining
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
 * Exit conditions override WALK → ACTIVE transitions
 
