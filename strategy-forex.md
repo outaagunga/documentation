@@ -40,7 +40,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Middle Band** = 20-period EMA
 * **Upper Band** = Middle Band + (2 × Std Dev)
 * **Lower Band** = Middle Band − (2 × Std Dev)
-* **200-Period Hull Moving Average (HMA)**: Primary Trend Filter.
+* **200-Period Hull Moving Average (HMA)**: Single shared Primary Trend Filter used globally across all conditions.
 * **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
@@ -53,7 +53,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Lower Band** = Middle Band − (1 × Std Dev)
 * **200-Period Hull Moving Average (HMA)**: Primary Trend Filter
 * **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
-* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must be consistent for at least 3 bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as EMA change ≥ X × ATR over the last Y bars.
+* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must be consistent for at least 3 bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(Y bars ago) ≥ X × ATR(Y), where X and Y are fixed user inputs.
 * **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
@@ -66,7 +66,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 **Conditions:**
 
 * Bollinger Band Width is **contracting** compared to previous bars
-* Bands are narrow and parallel, defined as UpperBand − LowerBand within the lowest X% of BBWidth over the last N bars
+* Bands are narrow and parallel, defined as UpperBand − LowerBand within the lowest X percentile of BBWidth values measured over the last N bars
 * Band width contraction is defined as BBWidth < BBWidth[1] for a minimum of N bars (e.g., N = 6, adjustable between 4–8 bars)
 
 **Interpretation:**
@@ -86,10 +86,10 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 **Conditions:**
 
-* Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), BBWidth increases in at least 2 of any 4 consecutive bars, and no single bar accounts for more than 50% of the total BBWidth expansion.
-* Directional bias is established once price closes in the upper 50% of the bands for bullish bias or lower 50% for bearish bias, for at least 2 of the last 3 bars in the expansion window
+* Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), BBWidth increases in at least 2 of any 4 consecutive bars, and no single bar contributes more than 50% of the cumulative BBWidth increase measured from the final squeeze bar to the current bar.
+* Directional bias is established once price close is above the midpoint between the Upper and Lower Bollinger Bands for bullish bias or bearish bias, for at least 2 of the last 3 bars in the expansion window
 * The squeeze before expansion must have lasted for at least 4–8 bars, indicating meaningful volatility compression rather than noise
-* Confirmation requires directional band separation, defined as the leading band moving away from the middle band for at least 2 bars. Simultaneous divergence is preferred but not required
+* Confirmation requires directional band separation, defined as the leading band moving away from the middle band for at least 2 bars. Simultaneous divergence is optional and has no effect on trade validity
 
 **Interpretation:**
 
@@ -109,9 +109,9 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 Price is considered to be “walking” a band when:
 
-* At least K consecutive closes (allowing 1 bar exception) within X × ATR of the SD1 band, provided price has not already closed beyond SD2 more than once during the walk
+* At least K consecutive closes (allowing 1 bar exception) within X × ATR of the SD1 band, provided price has not closed beyond SD2 more than once since the current WALK state was entered
 * Price does **not** mean-revert back to the middle band for more than one consecutive close
-* The middle band slopes in the direction of price
+* the middle band slope is positive for LONG trades and negative for SHORT trades, defined as MiddleBand > MiddleBand[1]
 
 ## **Directional Trade Rules (Hard Filters)**
 
@@ -131,7 +131,7 @@ All conditions must be true:
 
 3. **Price Location**
 
-   * Candle closes at or near the Upper Bollinger Band SD1 AND the entry candle range is not greater than Z × ATR (e.g. Z ≤ 1.2)
+   * Candle close is within X × ATR of the Upper Bollinger Band SD1 AND the entry candle range is not greater than Z × ATR (e.g. Z ≤ 1.2)
    * Price continues to “hug” the Upper Band: closes remain within 1.5 × X × ATR above or below the SD1 band; temporary deviation for 1 bar is allowed without invalidating the trade
 
 4. **Momentum Confirmation**
@@ -161,7 +161,7 @@ All conditions must be true:
 3. **Price Location**
 
    * Candle closes at, slightly below, or in close proximity to the Lower Bollinger Band SD1, while maintaining directional pressure
-   * Price continues to “hug” the Lower Band
+   * Price continues to close within X × ATR of the Upper Band SD1
 4. **Momentum Confirmation**
 
    * Price is below the 20-period EMA (Middle Band)
@@ -179,8 +179,8 @@ All conditions must be true:
 
 ### **Stay-In Rule (Primary)**
 
-* **LONG:** Stay in the trade **as long as price remains at or above the Upper Band SD1**
-* **SHORT:** Stay in the trade **as long as price remains at or below the Lower Band SD1**
+* **LONG:** Stay-in rule applies only while no exit condition has been triggered
+* **SHORT:** Stay-in rule applies only while no exit condition has been triggered
 
 ### **Exit Conditions**
 
@@ -189,13 +189,13 @@ Exit the trade using the following priority order, where volatility contraction 
 1. Close the trade if a candle closes below the Upper SD1 band
 2. Exit if the leading band (the one being walked) starts to curve back toward the middle band
     Leading band is curving back if: distance(LeadingBand − MiddleBand) < distance(LeadingBand[1] − MiddleBand[1])
-3. Momentum Fade: Price stops "hugging" the SD2 band AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided the price is no longer making new local highs/lows
+3. Momentum Fade: Price stops "hugging" the SD2 band AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided the price has not made a new high (LONG) or new low (SHORT) over the last P bars
 4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND BBWidth fails to expand further AND the next candle closes back inside SD2, exit immediately
 
 *SHort Trade*
 1. Close the trade if a candle closes above the lower SD1 band
 2. Exit if the leading band (the one being walked) starts to curve back toward the middle band
-3. Momentum Fade: Price stops "hugging" the SD2 band AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided the price is no longer making new local highs/lows
+3. Momentum Fade: Price stops "hugging" the SD2 band AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided the price has not made a new high (LONG) or new low (SHORT) over the last P bars
 4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND BBWidth fails to expand further AND the next candle closes back inside SD2, exit immediately
 
 ## **Key Principles (Non-Negotiable)**
@@ -228,7 +228,7 @@ Exit the trade using the following priority order, where volatility contraction 
 ## STATE TRANSITIONS:
 * SQUEEZE → ACTIVE when expansion detected
 * ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
-* WALK → ACTIVE if price loses SD1 but expansion persists, provided no more than R failed WALK attempts have occurred during the same activation phase (e.g. R = 2)
+* WALK → ACTIVE if price loses SD1 but expansion persists, provided the count of failed WALK attempts during the current ACTIVE phase does not exceed R (e.g. R = 2)
 * ACTIVE → IDLE if expansion fails or if BBWidth fails to make a new expansion high within M bars
 * Expansion fails if BBWidth contracts for 2 consecutive bars below the threshold ε (e.g., ε = 0.1 × ATR) indicating volatility is not sustaining
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
