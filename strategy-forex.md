@@ -53,7 +53,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Lower Band** = Middle Band − (1 × Std Dev)
 * **200-Period Hull Moving Average (HMA)**: Primary Trend Filter
 * **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
-* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must maintain the same sign (positive or negative) for at least 3 consecutive bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(Y bars ago) ≥ X × ATR(Y), where X and Y are fixed user inputs.
+* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must maintain the same sign (positive or negative) for at least 3 consecutive bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(Y bars ago) ≥ EMASlopeATRMultiplier × ATR(Y), where X and Y are fixed user inputs.
 * **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
@@ -188,7 +188,7 @@ Exit the trade using the following priority order, where volatility contraction 
 *Long Trade*
 1. Close the trade if a candle closes below the Upper SD1 band
 2. Exit if the leading band (Upper Band for LONG trades, Lower Band for SHORT trades) starts to curve back toward the middle band
-    Leading band is curving back if: distance(LeadingBand − MiddleBand) < distance(LeadingBand[1] − MiddleBand[1])
+    Leading band is curving back if: abs(LeadingBand − MiddleBand) < abs(LeadingBand[1] − MiddleBand[1])
 3. Momentum Fade: Price stops ‘hugging’ the SD2 band, defined as the absolute distance between Close and SD2 exceeding HugDistance × ATR AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided Close ≤ highest(High, P)[1] for LONG trades, or Close ≥ lowest(Low, P)[1] for SHORT trades
 4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND BBWidth ≤ BBWidth[1] AND the next candle closes back inside SD2, exit immediately
 
@@ -237,11 +237,12 @@ Exit the trade using the following priority order, where volatility contraction 
 var int state = 0   // 0=IDLE, 1=SQUEEZE, 2=ACTIVE, 3=WALK_LONG, 4=WALK_SHORT
 bool validSqueeze = [logic goes here]
 bool activationPhase = [logic goes here]
-bool walkUpper = [logic goes here]
+bool walkValid = [logic goes here]
 bool volConfirm = [logic goes here]
 Example of other logics includes:
+  ATRLength = input.int(14, minval=5)
   N = input.int(6, minval=4, maxval=8)
-  X = input.float(0.3)
+  EMASlopeATRMultiplier = input.float(0.3)
   M = input.int(7)
 **Ensure** all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules
 ```
