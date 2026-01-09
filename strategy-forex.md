@@ -53,7 +53,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Lower Band** = Middle Band − (1 × Std Dev)
 * **200-Period Hull Moving Average (HMA)**: Primary Trend Filter
 * **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
-* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must be consistent for at least 3 bars, UNLESS the Middle Band (20 EMA) slope is > 30 degrees (aggressive expansion), in which case the 200 HMA is only used as a location filter (Price > 200 HMA for Longs).
+* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must be consistent for at least 3 bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as EMA change ≥ X × ATR over the last Y bars.
 * **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
@@ -66,7 +66,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 **Conditions:**
 
 * Bollinger Band Width is **contracting** compared to previous bars
-* Bands are visually narrow and parallel
+* Bands are narrow and parallel, defined as UpperBand − LowerBand within the lowest X% of BBWidth over the last N bars
 * Band width contraction is defined as BBWidth < BBWidth[1] for a minimum of N bars (e.g., N = 6, adjustable between 4–8 bars)
 
 **Interpretation:**
@@ -86,14 +86,14 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 **Conditions:**
 
-* Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), BBWidth increases in at least 2 of any 4 consecutive bars, confirming meaningful volatility expansion.
+* Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), BBWidth increases in at least 2 of any 4 consecutive bars, and no single bar accounts for more than 50% of the total BBWidth expansion.
 * Directional bias is established once price closes in the upper 50% of the bands for bullish bias or lower 50% for bearish bias, for at least 2 of the last 3 bars in the expansion window
 * The squeeze before expansion must have lasted for at least 4–8 bars, indicating meaningful volatility compression rather than noise
-* Confirmation requires the bands to 'funnel out'— Upper band rising for bullish expansion. Lower band falling for bearish expansion. Simultaneous divergence is preferred but not required
+* Confirmation requires directional band separation, defined as the leading band moving away from the middle band for at least 2 bars. Simultaneous divergence is preferred but not required
 
 **Interpretation:**
 
-* Volatility expansion confirms a **market dislocation**
+* Volatility expansion confirms a **potential market dislocation**, which is only tradeable if price structure sustains directional pressure
 * Direction is being chosen by strong participants
 
 **Action:**
@@ -109,8 +109,8 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 Price is considered to be “walking” a band when:
 
-* At least K consecutive closes (allowing 1 bar exception) within X × ATR of the SD1 band (e.g., K = 3, X = 0.3), where price may touch the middle band once during the walk without resetting the counter
-* Price does **not** mean-revert back to the middle band
+* At least K consecutive closes (allowing 1 bar exception) within X × ATR of the SD1 band, provided price has not already closed beyond SD2 more than once during the walk
+* Price does **not** mean-revert back to the middle band for more than one consecutive close
 * The middle band slopes in the direction of price
 
 ## **Directional Trade Rules (Hard Filters)**
@@ -141,11 +141,11 @@ All conditions must be true:
 
 5. **Volume Confirmation**
 
-   * Volume exceeds the 20-period SMA at least once within the last 3–5 bars, OR Average volume during the expansion-to-walk phase is greater than the prior squeeze average
+   * Volume exceeds the 20-period SMA for at least 2 bars within the last 3–5 bars, avoiding single-bar volume spikes, OR Average volume during the expansion-to-walk phase is greater than the prior squeeze average
 
 **Action:**
 → Enter **LONG** in the direction of the band walk
-→ Set Initial Stop-Loss at the Middle Band (20 EMA) or Y × ATR from entry (e.g., Y = 1.2), whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
+→ Set Initial Stop-Loss at the Middle Band (20 EMA) or Y × ATR from entry (e.g., Y = 1.2), whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even only after a pullback holds above the SD1 band following a close beyond SD2
 
 ### **SHORT Setup**
 
@@ -184,7 +184,7 @@ All conditions must be true:
 
 ### **Exit Conditions**
 
-Exit the trade using the following priority order:
+Exit the trade using the following priority order, where volatility contraction overrides price-location rules:
 *Long Trade*
 1. Close the trade if a candle closes below the Upper SD1 band
 2. Exit if the leading band (the one being walked) starts to curve back toward the middle band
@@ -229,7 +229,7 @@ Exit the trade using the following priority order:
 * SQUEEZE → ACTIVE when expansion detected
 * ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
 * WALK → ACTIVE if price loses SD1 but expansion persists, provided no more than R failed WALK attempts have occurred during the same activation phase (e.g. R = 2)
-* ACTIVE → IDLE if expansion fails
+* ACTIVE → IDLE if expansion fails or if BBWidth fails to make a new expansion high within M bars
 * Expansion fails if BBWidth contracts for 2 consecutive bars below the threshold ε (e.g., ε = 0.1 × ATR) indicating volatility is not sustaining
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
 * Exit conditions override WALK → ACTIVE transitions
