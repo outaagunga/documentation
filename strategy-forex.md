@@ -26,7 +26,7 @@ your output should be:
 ### **Core Philosophy (Non-Predictive)**
 
 Bollinger Bands are **not** used for mean reversion or predicting reversals.
-They are used **reactively** to detect **volatility expansion and trend participation** after the market has already chosen a direction.
+They are used **reactively** to detect **volatility expansion and trend participation** after volatility expansion has occurred and directional participation is observable.
 
 The strategy trades **momentum continuation first** and **exhaustion second**, with continuation having higher priority.
 
@@ -81,24 +81,24 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 ### **Step 2: Bollinger Band Expansion (Activation Phase)**
 
-**Purpose:** Detect the moment volatility returns and directional intent appears.
+**Purpose:** Detect the moment volatility returns and participation becomes possible.
 
 **Conditions:**
 
 * Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), within any rolling 4-bar window, Normalized BBWidth must increase on at least 2 bars relative to their immediately preceding bars, and no single bar contributes more than 50% of the cumulative Normalized BBWidth increase measured from the final squeeze bar to the current bar.
-* Directional bias is established once price close is above ((UpperBand + LowerBand) / 2) for bullish bias or bearish bias, for at least 2 of the last 3 bars in the expansion window
+* No directional bias is assigned during expansion. Expansion only enables participation logic; direction is confirmed exclusively during the WALK phase via sustained price-band interaction
 * The squeeze before expansion must have lasted for at least 4–8 bars, indicating meaningful volatility compression rather than noise
 * Confirmation requires directional band separation, defined as the leading band moving away from the middle band for at least 2 bars. Simultaneous divergence is optional and has no effect on trade validity
 
 **Interpretation:**
 
 * Volatility expansion confirms a **potential market dislocation**, which is only tradeable if price structure sustains directional pressure
-* Direction is being chosen by strong participants
+* Volatility expansion indicates increased participation; directional validity is confirmed only after sustained band interaction
 
 **Action:**
 
 * Enable trade logic
-* Do **not** enter yet — wait for price confirmation
+* Entries are permitted only upon confirmed WALK state
 
 ### **Step 3: Walking the Bands (Trade Entry Phase)**
 
@@ -108,9 +108,9 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 Price is considered to be “walking” a band when:
 
-* At least K consecutive closes (allowing 1 bar exception) within ATRDistance × ATR of the SD1 band, provided price has not closed beyond SD2 more than once since the bar index at which the current WALK state was entered
+* At least K consecutive closes (allowing 1 bar exception) within ATRDistance × ATR of the SD1 band, provided price does not close beyond SD2 more than once within the WALK qualification window prior to entry
 * Price does **not** mean-revert back to the middle band for more than one consecutive close
-* the middle band slope is considered positive for LONG trades if MiddleBand − MiddleBand[1] > 0, and negative for SHORT trades if MiddleBand − MiddleBand[1] < 0, evaluated on the current bar
+* the middle band slope is used only as confirmation of sustained movement, not as a directional predictor
 
 ## **Directional Trade Rules (Hard Filters)**
 
@@ -120,7 +120,7 @@ All conditions must be true:
 
 1. **Trend Filter**
 
-   * The **200-period HMA** Slope is Positive (sloping upward)
+   * The 200-period HMA slope must satisfy the previously defined multi-bar slope confirmation logic
 2. **Volatility Filter**
 
    * Volatility filter passes if:
@@ -140,7 +140,7 @@ All conditions must be true:
 
 5. **Volume Confirmation**
 
-   * Volume exceeds the 20-period Volume SMA for at least 2 bars within the last 3–5 bars, avoiding single-bar volume spikes, OR Average volume measured from the first ACTIVE bar through the current bar of the WALK phase is greater than the prior squeeze average
+   * Volume confirmation rules are symmetric for LONG and SHORT trades and serve only to validate participation, not anticipate direction
 
 **Action:**
 → Enter **LONG** in the direction of the band walk
@@ -185,14 +185,14 @@ All conditions must be true:
 
 Exit the trade using the following priority order, where volatility contraction overrides price-location rules:
 *Long Trade*
-1. Close the trade if a candle closes below the Upper SD1 band
+1. Close the trade only if SD1 loss is accompanied by volatility contraction or leading band deceleration
 2. Exit if the leading band (Upper Band for LONG trades, Lower Band for SHORT trades) starts to curve back toward the middle band
     Leading band is curving back if: abs(LeadingBand − MiddleBand) < abs(LeadingBand[1] − MiddleBand[1])
 3. Momentum Fade: Price stops ‘hugging’ the SD2 band, defined as the absolute distance between Close and SD2 exceeding HugDistance × ATR AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided Close ≤ highest(High, P)[1] for LONG trades, or Close ≥ lowest(Low, P)[1] for SHORT trades
 4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND Normalized BBWidth ≤ Normalized BBWidth[1] AND the next candle closes back inside SD2, exit immediately
 
 *SHORT Trade*
-1. Close the trade if a candle closes above the lower SD1 band
+1. Close the trade only if SD1 loss is accompanied by volatility contraction or leading band deceleration
 2. Exit if the leading band (Upper Band for LONG trades, Lower Band for SHORT trades) starts to curve back toward the middle band
 3. Momentum Fade: Price stops ‘hugging’ the SD2 band, defined as the absolute distance between Close and SD2 exceeding HugDistance × ATR  AND the distance between the Price Close and the SD2 band increases for 3 consecutive bars (signaling the move is cooling off), provided Close ≤ highest(High, P)[1] for LONG trades, or Close ≥ lowest(Low, P)[1] for SHORT trades
 4. Parabolic Exhaustion (The "Floating" Candle): If a full candle forms entirely outside the SD2 band AND Normalized BBWidth ≤ Normalized BBWidth[1] AND the next candle closes back inside SD2, exit immediately
