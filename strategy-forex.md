@@ -53,7 +53,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Lower Band** = Middle Band − (1 × Std Dev)
 * **200-Period Hull Moving Average (HMA)**: Primary Trend Filter
 * **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
-* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must maintain the same sign (positive or negative) for at least 3 consecutive bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(Y bars ago) ≥ EMASlopeATRMultiplier × ATR(Y), where X and Y are fixed user inputs.
+* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must maintain the same sign (positive or negative) for at least 3 consecutive bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(Y bars ago) ≥ EMASlopeATRMultiplier × ATR(Y), where Y is a fixed user input.
 * **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
@@ -141,7 +141,7 @@ All conditions must be true:
 
 5. **Volume Confirmation**
 
-   * Volume exceeds the 20-period SMA for at least 2 bars within the last 3–5 bars, avoiding single-bar volume spikes, OR Average volume measured from the first ACTIVE bar through the current bar of the WALK phase is greater than the prior squeeze average
+   * Volume exceeds the 20-period Volume SMA for at least 2 bars within the last 3–5 bars, avoiding single-bar volume spikes, OR Average volume measured from the first ACTIVE bar through the current bar of the WALK phase is greater than the prior squeeze average
 
 **Action:**
 → Enter **LONG** in the direction of the band walk
@@ -173,7 +173,7 @@ All conditions must be true:
 
 **Action:**
 → Enter **SHORT** in the direction of the band walk
-→ Set Initial Stop-Loss at the Middle Band (20 EMA) or Y × ATR from entry (e.g., Y = 1.2), whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even once price closes above SD2
+→ Set Initial Stop-Loss at the Middle Band (20 EMA) or Y × ATR from entry (e.g., Y = 1.2), whichever results in a wider stop to account for volatility. Trail the stop-loss manually at the 20 EMA or Move to Break-even only after a pullback holds above the SD1 band following a close beyond SD2
 
 ## **Trade Management (Beginner-Safe Rules)**
 
@@ -241,6 +241,14 @@ bool walkValid = [logic goes here]
 bool volConfirm = [logic goes here]
 Example of other logics includes:
   ATRLength = input.int(14, minval=5)
+  Leading Band = Upper Band for LONG trades, Lower Band for SHORT trades
+  Trailing Band = Lower Band for LONG trades, Upper Band for SHORT trades
+  SD1 Bands = Bollinger Bands with ±1 standard deviation
+  SD2 Bands = Bollinger Bands with ±2 standard deviations
+  ATR is calculated using True Range with Wilder’s smoothing over ATRLength bars
+  Normalized BBWidth = (Upper − Lower) / MiddleBand
+  ε is a shared volatility noise threshold used consistently across expansion, contraction, and flatness checks
+
   N = input.int(6, minval=4, maxval=8)
   EMASlopeATRMultiplier = input.float(0.3)
   M = input.int(7)
