@@ -124,7 +124,7 @@ All conditions must be true:
 2. **Volatility Filter**
 
    * Volatility filter passes if:
-          BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Leading Band distance from Middle Band increased by at least 0.5 × ATR compared to the previous bar, while the Trailing Band contraction is less than 0.5 × ATR
+          BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Absolute distance between Leading Band and Middle Band increased by at least 0.5 × ATR compared to the previous bar, while the Trailing Band contraction is less than 0.5 × ATR
    * BBWidth is considered flat if: abs(Normalized BBWidth − Normalized BBWidth[1]) ≤ ε   where:
           ε = small unitless threshold expressed as a percentage of Normalized BBWidth (e.g. 5–10%)
 
@@ -155,7 +155,7 @@ All conditions must be true:
    * The 200-period HMA Slope is Negative (sloping downward)
 2. **Volatility Filter**
 
-   * Volatility filter passes if: BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Leading Band (Lower) distance from Middle Band increased by at least 0.5 × ATR compared to the previous bar, confirming accelerating downward momentum
+   * Volatility filter passes if: BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Absolute distance between Leading Band and Middle Band increased by at least 0.5 × ATR compared to the previous bar, confirming accelerating downward momentum
 
 3. **Price Location**
 
@@ -230,7 +230,7 @@ Exit the trade using the following priority order, where volatility contraction 
 * WALK → ACTIVE if price loses SD1 but expansion persists, provided the count of failed WALK attempts during the current ACTIVE phase does not exceed R (e.g. R = 2)
 * A failed WALK attempt is defined as price entering WALK state but losing SD1 before any exit condition is triggered
 * ACTIVE → IDLE if expansion fails or if Normalized BBWidth does not exceed the maximum Normalized BBWidth value recorded during the ACTIVE phase within the last M bars
-* Expansion fails if Normalized BBWidth contracts for 2 consecutive bars below the threshold ε (e.g., ε = 0.1 × ATR) indicating volatility is not sustaining
+* Expansion fails if Normalized BBWidth contracts for 2 consecutive bars below the threshold ε (e.g., ε = 5–10% of Normalized BBWidth) indicating volatility is not sustaining
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
 * Exit conditions override WALK → ACTIVE transitions
 
@@ -248,10 +248,16 @@ Example of other logics includes:
   ATR is calculated using True Range with Wilder’s smoothing over ATRLength bars
   Normalized BBWidth = (Upper − Lower) / MiddleBand
   ε is a shared volatility noise threshold used consistently across expansion, contraction, and flatness checks
+  BBWidthPercentile = rolling percentile of Normalized BBWidth over the last P bars (e.g., P = 100–200, configurable)
 
-  N = input.int(6, minval=4, maxval=8)
-  EMASlopeATRMultiplier = input.float(0.3)
-  M = input.int(7)
+K = required consecutive closes for WALK (e.g. 3–5)
+L = expansion validation window (e.g. 5)
+P = lookback for momentum fade comparison
+R = max failed WALK attempts per ACTIVE phase (e.g. 2)
+Z = max entry candle range in ATR (e.g. ≤ 1.2)
+ATRDistance = proximity threshold to SD1 (e.g. 0.5–1.0)
+HugDistance = SD2 hugging tolerance in ATR (e.g. 0.3–0.6)
+
 **Ensure** all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules
 ```
 ---
