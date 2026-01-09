@@ -53,7 +53,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Lower Band** = Middle Band − (1 × Std Dev)
 * **200-Period Hull Moving Average (HMA)**: Primary Trend Filter
 * **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
-* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must be consistent for at least 3 bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(Y bars ago) ≥ X × ATR(Y), where X and Y are fixed user inputs.
+* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must maintain the same sign (positive or negative) for at least 3 consecutive bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(Y bars ago) ≥ X × ATR(Y), where X and Y are fixed user inputs.
 * **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
@@ -66,7 +66,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 **Conditions:**
 
 * Bollinger Band Width is **contracting** compared to previous bars
-* Bands are narrow and parallel, defined as UpperBand − LowerBand within the lowest BBWidthPercentile percentile of BBWidth values measured over the last N bars
+* Bands are narrow and parallel, defined as UpperBand − LowerBand within the lowest BBWidthPercentile percentile of BBWidth values, computed using a rolling percentile calculation over the last N bars
 * Band width contraction is defined as BBWidth < BBWidth[1] for a minimum of N bars (e.g., N = 6, adjustable between 4–8 bars)
 
 **Interpretation:**
@@ -86,7 +86,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 **Conditions:**
 
-* Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), BBWidth increases in at least 2 of any 4 consecutive bars, and no single bar contributes more than 50% of the cumulative BBWidth increase measured from the final squeeze bar to the current bar.
+* Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), within any rolling 4-bar window, BBWidth must increase on at least 2 bars relative to their immediately preceding bars, and no single bar contributes more than 50% of the cumulative BBWidth increase measured from the final squeeze bar to the current bar.
 * Directional bias is established once price close is above ((UpperBand + LowerBand) / 2) for bullish bias or bearish bias, for at least 2 of the last 3 bars in the expansion window
 * The squeeze before expansion must have lasted for at least 4–8 bars, indicating meaningful volatility compression rather than noise
 * Confirmation requires directional band separation, defined as the leading band moving away from the middle band for at least 2 bars. Simultaneous divergence is optional and has no effect on trade validity
@@ -109,7 +109,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 Price is considered to be “walking” a band when:
 
-* At least K consecutive closes (allowing 1 bar exception) within ATRDistance × ATR of the SD1 band, provided price has not closed beyond SD2 more than once since the current WALK state was entered
+* At least K consecutive closes (allowing 1 bar exception) within ATRDistance × ATR of the SD1 band, provided price has not closed beyond SD2 more than once since the bar index at which the current WALK state was entered
 * Price does **not** mean-revert back to the middle band for more than one consecutive close
 * the middle band slope is considered positive for LONG trades if MiddleBand − MiddleBand[1] > 0, and negative for SHORT trades if MiddleBand − MiddleBand[1] < 0, evaluated on the current bar
 
@@ -131,8 +131,8 @@ All conditions must be true:
 
 3. **Price Location**
 
-   * Candle close is within X × ATR of the Upper Bollinger Band SD1 AND the entry candle range is not greater than Z × ATR (e.g. Z ≤ 1.2)
-   * Price continues to “hug” the Upper Band: closes remain within 1.5 × X × ATR above or below the SD1 band; temporary deviation for 1 bar is allowed without invalidating the trade
+   * Candle close is within ATRDistance × ATR of the Upper Bollinger Band SD1 AND the entry candle range, defined as (High − Low) of the entry bar, is not greater than Z × ATR (e.g. Z ≤ 1.2)
+   * Price continues to “hug” the Upper Band: closes remain within 1.5 × ATRDistance × ATR above or below the SD1 band; temporary deviation for 1 bar is allowed without invalidating the trade
 
 4. **Momentum Confirmation**
 
@@ -141,7 +141,7 @@ All conditions must be true:
 
 5. **Volume Confirmation**
 
-   * Volume exceeds the 20-period SMA for at least 2 bars within the last 3–5 bars, avoiding single-bar volume spikes, OR Average volume during the expansion-to-walk phase is greater than the prior squeeze average
+   * Volume exceeds the 20-period SMA for at least 2 bars within the last 3–5 bars, avoiding single-bar volume spikes, OR Average volume measured from the first ACTIVE bar through the current bar of the WALK phase is greater than the prior squeeze average
 
 **Action:**
 → Enter **LONG** in the direction of the band walk
@@ -229,7 +229,7 @@ Exit the trade using the following priority order, where volatility contraction 
 * SQUEEZE → ACTIVE when expansion detected
 * ACTIVE → WALK_LONG/SHORT when price-location + trend + volume align
 * WALK → ACTIVE if price loses SD1 but expansion persists, provided the count of failed WALK attempts during the current ACTIVE phase does not exceed R (e.g. R = 2)
-* ACTIVE → IDLE if expansion fails or if BBWidth fails to make a new expansion high within M bars
+* ACTIVE → IDLE if expansion fails or if BBWidth does not exceed the maximum BBWidth value recorded during the ACTIVE phase within the last M bars
 * Expansion fails if BBWidth contracts for 2 consecutive bars below the threshold ε (e.g., ε = 0.1 × ATR) indicating volatility is not sustaining
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
 * Exit conditions override WALK → ACTIVE transitions
@@ -238,7 +238,7 @@ var int state = 0   // 0=IDLE, 1=SQUEEZE, 2=ACTIVE, 3=WALK_LONG, 4=WALK_SHORT
 bool validSqueeze = [logic goes here]
 bool activationPhase = [logic goes here]
 bool walkUpper = [logic goes here]
-bool volConfirm = [logic goes here]”
+bool volConfirm = [logic goes here]
 Example of other logics includes:
   N = input.int(6, minval=4, maxval=8)
   X = input.float(0.3)
