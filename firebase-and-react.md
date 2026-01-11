@@ -80,6 +80,12 @@ npm run dev
 
 Your React app is now running.
 
+Install tailwind css 
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
 # **PART 3 — Install Firebase in React**
 
 Inside your React project:
