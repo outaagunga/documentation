@@ -214,7 +214,7 @@ yarn build
 Vite will create a folder called:
 
 ```
-build
+dist
 ```
 
 (This is what Firebase hosts)
