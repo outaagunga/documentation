@@ -2090,7 +2090,7 @@ MIT
 ## Contributing
 
 Feel free to submit issues and pull requests!
-```
+
 
 ## **Complete! 🎉**
 
@@ -2111,3 +2111,368 @@ Feel free to submit issues and pull requests!
 13. App.jsx - Routes
 14. Configuration files (package.json, vite.config.js, etc.)
 15. README.md - Complete setup guide
+---
+---
+---
+# Complete Firestore Configuration Guide
+
+## Step-by-Step Firestore Setup
+
+### Step 1: Create Firebase Project
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Click **"Add project"** or **"Create a project"**
+3. Enter project name (e.g., "task-manager-app")
+4. Click **Continue**
+5. Choose whether to enable Google Analytics (optional)
+6. Click **Create project**
+7. Wait for project creation, then click **Continue**
+
+---
+
+### Step 2: Enable Firestore Database
+
+1. In Firebase Console, click **"Firestore Database"** in the left sidebar
+2. Click **"Create database"**
+3. **Select Starting Mode**:
+   - Choose **"Start in production mode"** (we'll add custom rules next)
+   - Click **Next**
+4. **Choose Location**:
+   - Select a Cloud Firestore location closest to your users
+   - **IMPORTANT**: This cannot be changed later!
+   - Common choices:
+     - `us-central1` (United States)
+     - `europe-west1` (Belgium)
+     - `asia-southeast1` (Singapore)
+   - Click **Enable**
+5. Wait for Firestore to be provisioned (takes 1-2 minutes)
+
+---
+
+### Step 3: Configure Firestore Security Rules
+
+#### Option A: Using Firebase Console (Recommended for Beginners)
+
+1. In Firestore Database, click the **"Rules"** tab at the top
+2. You'll see the default rules. **Delete everything** in the editor
+3. Copy the rules from the artifact I provided earlier:
+
+```javascript
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Tasks collection - strict user isolation
+    match /tasks/{taskId} {
+      // Users can only read their own tasks
+      allow read: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Users can only create tasks with their own userId
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.keys().hasAll(['title', 'userId', 'createdAt']) &&
+                       request.resource.data.userId is string &&
+                       request.resource.data.title is string;
+      
+      // Users can only update their own tasks
+      allow update: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid &&
+                       request.resource.data.userId == request.auth.uid;
+      
+      // Users can only delete their own tasks
+      allow delete: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+    }
+    
+    // Deny all other access by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+```
+
+4. Click **"Publish"** button
+5. Confirm the publication
+
+#### Option B: Using Firebase CLI (Advanced)
+
+1. Install Firebase CLI:
+```bash
+npm install -g firebase-tools
+```
+
+2. Login to Firebase:
+```bash
+firebase login
+```
+
+3. Initialize Firestore in your project:
+```bash
+firebase init firestore
+```
+
+4. Create `firestore.rules` file in your project root with the rules above
+
+5. Deploy the rules:
+```bash
+firebase deploy --only firestore:rules
+```
+
+---
+
+### Step 4: Create Firestore Indexes (Optional but Recommended)
+
+Our app queries tasks with `where` and `orderBy` clauses. Firebase may require composite indexes.
+
+#### Create Index for Tasks Collection:
+
+1. Go to **Firestore Database** > **Indexes** tab
+2. Click **"Create Index"**
+3. Configure the index:
+   - **Collection ID**: `tasks`
+   - **Fields to index**:
+     - Field: `userId`, Order: `Ascending`
+     - Field: `createdAt`, Order: `Descending`
+   - **Query scope**: Collection
+4. Click **"Create index"**
+5. Wait for index to build (usually 1-2 minutes)
+
+**Alternative**: Firebase will automatically suggest creating indexes when you first run queries that need them. You can create them on-demand through the error messages.
+
+---
+
+### Step 5: Enable Authentication
+
+1. In Firebase Console, click **"Authentication"** in the left sidebar
+2. Click **"Get started"**
+3. Go to **"Sign-in method"** tab
+
+#### Enable Email/Password:
+1. Click **"Email/Password"**
+2. Toggle **Enable** to ON
+3. (Optional) Toggle "Email link (passwordless sign-in)" if desired
+4. Click **Save**
+
+#### Enable Google Sign-In:
+1. Click **"Google"**
+2. Toggle **Enable** to ON
+3. Select a **Project support email** (your email)
+4. Click **Save**
+
+---
+
+### Step 6: Get Firebase Configuration
+
+1. In Firebase Console, click the **⚙️ gear icon** (Settings) next to "Project Overview"
+2. Click **"Project settings"**
+3. Scroll down to **"Your apps"** section
+4. Click the **Web icon** (`</>`) to add a web app
+5. Register app:
+   - **App nickname**: "Task Manager Web App"
+   - (Optional) Check "Also set up Firebase Hosting"
+   - Click **"Register app"**
+6. Copy the Firebase configuration object:
+
+```javascript
+const firebaseConfig = {
+  apiKey: "AIza...",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abc123"
+};
+```
+
+7. Click **"Continue to console"**
+
+---
+
+### Step 7: Configure Environment Variables
+
+1. In your project root, create a `.env` file
+2. Add your Firebase credentials:
+
+```env
+VITE_FIREBASE_API_KEY=AIza...
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
+VITE_FIREBASE_APP_ID=1:123456789:web:abc123
+```
+
+**IMPORTANT**: 
+- Replace all values with YOUR actual Firebase config
+- Never commit `.env` to version control (it's in `.gitignore`)
+- For production, set these as environment variables in your hosting platform
+
+---
+
+### Step 8: Verify Firestore Setup
+
+#### Test Database Connection:
+
+1. Start your app:
+```bash
+npm run dev
+```
+
+2. Sign up with a new account
+3. Create a test task
+4. Go to Firebase Console > Firestore Database > Data tab
+5. You should see:
+   - Collection: `tasks`
+   - Document ID: auto-generated
+   - Fields: `title`, `description`, `userId`, `completed`, `priority`, `createdAt`, `updatedAt`
+
+#### Verify Security Rules:
+
+1. In Firestore Console, click **Rules** tab
+2. Click **"Rules playground"**
+3. Test a read operation:
+   - **Location**: `/tasks/test-doc-id`
+   - **Authenticated**: Yes
+   - **Provider**: Email
+   - Click **"Run"**
+4. Should show "Simulated read allowed" ✅
+
+---
+
+## Firestore Data Structure
+
+Your Firestore database will have this structure:
+
+```
+firestore (root)
+└── tasks (collection)
+    ├── {taskId1} (document)
+    │   ├── title: "Complete project"
+    │   ├── description: "Finish the task manager app"
+    │   ├── userId: "user123abc"
+    │   ├── completed: false
+    │   ├── priority: "high"
+    │   ├── createdAt: Timestamp
+    │   └── updatedAt: Timestamp
+    ├── {taskId2} (document)
+    │   └── ...
+    └── {taskId3} (document)
+        └── ...
+```
+
+---
+
+## Important Notes
+
+### Security Best Practices:
+
+✅ **DO:**
+- Always validate `userId` matches authenticated user
+- Use server timestamps (`serverTimestamp()`)
+- Implement proper field validation in rules
+- Keep API keys in environment variables
+- Use production mode with custom rules
+
+❌ **DON'T:**
+- Never use test mode in production
+- Don't allow open read/write access
+- Don't commit `.env` files to Git
+- Don't disable authentication checks
+
+### Cost Optimization:
+
+- **Free Tier Limits**:
+  - 50,000 reads/day
+  - 20,000 writes/day
+  - 20,000 deletes/day
+  - 1 GB storage
+
+- **Optimization Tips**:
+  - Use optimistic UI (already implemented)
+  - Cache data in React state
+  - Avoid unnecessary queries
+  - Use pagination for large lists
+
+---
+
+## Troubleshooting
+
+### Problem: "Missing or insufficient permissions"
+
+**Solution**: 
+- Check Firestore rules are deployed correctly
+- Verify user is authenticated
+- Ensure `userId` field matches authenticated user
+
+### Problem: "PERMISSION_DENIED: Missing or insufficient permissions"
+
+**Solution**:
+- Go to Firestore Rules
+- Verify rules are published
+- Check rules syntax (no errors)
+- Test in Rules Playground
+
+### Problem: "Failed to get document because the client is offline"
+
+**Solution**:
+- Check internet connection
+- Verify Firebase config in `.env`
+- Clear browser cache and reload
+
+### Problem: Indexes taking too long
+
+**Solution**:
+- Check Firestore > Indexes tab
+- Look for "Building" status
+- Usually takes 1-5 minutes max
+- Create indexes manually if auto-creation fails
+
+---
+
+## Next Steps
+
+After configuring Firestore:
+
+1. ✅ Test authentication (sign up/login)
+2. ✅ Create a few tasks
+3. ✅ Verify tasks appear in Firestore Console
+4. ✅ Test filtering and sorting
+5. ✅ Test security (try accessing another user's tasks - should fail)
+6. ✅ Deploy to production
+
+---
+
+## Quick Reference Commands
+
+```bash
+# Install Firebase CLI
+npm install -g firebase-tools
+
+# Login to Firebase
+firebase login
+
+# Initialize Firestore
+firebase init firestore
+
+# Deploy rules
+firebase deploy --only firestore:rules
+
+# Deploy app to Firebase Hosting
+firebase deploy --only hosting
+```
+
+---
+
