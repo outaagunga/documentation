@@ -193,7 +193,10 @@ Install Firebase tools:
 ```bash
 npm install -g firebase-tools
 ```
-
+if you get error use this command
+```bash
+curl -sL https://firebase.tools | bash
+```
 Login:
 
 ```bash
