@@ -79,3 +79,71 @@ curl.exe -I https://task-manager-2a5fb.web.app
 1. Go to: `https://www.sslchecker.com/sslchecker`
 2. Enter: `task-manager-2a5fb.web.app`
 3. Click "Check SSL"
+
+
+Let’s go one level deeper and verify that it is serving **your React app** (not Firebase’s default page) and that the **JS bundles exist**.
+
+# 1️⃣ Check the actual `index.html` contents
+
+Run:
+
+```powershell
+curl.exe https://task-manager-2a5fb.web.app/index.html
+```
+
+You should see something like:
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Task Manager</title>
+  …
+</head>
+<body>
+  <div id="root"></div>
+  <script src="/static/js/main.abc123.js"></script>
+</body>
+</html>
+```
+
+### What we are checking
+
+We want to confirm:
+
+✔ `<div id="root"></div>` exists
+✔ There is a `<script src="/static/js/...">` tag
+✔ It is **not** a Firebase “Welcome” page
+
+Paste what you get (you can remove long hashes).
+
+---
+
+# 2️⃣ Extract the JS bundle filename
+
+From the output above, you will see something like:
+
+```
+/static/js/main.8f3b21e7.js
+```
+
+Copy that filename.
+
+Now test it:
+
+```powershell
+curl.exe -I https://task-manager-2a5fb.web.app/static/js/main.XXXXXXXX.js
+```
+
+(replace with the real name you saw)
+
+You should get:
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/javascript
+```
+
+If you get `404` → React was not deployed correctly.
+
