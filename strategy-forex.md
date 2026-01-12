@@ -15,7 +15,7 @@
 ```vb
 here is the guide. highlight the part I should edit and give the replacement. 
 your output should be: 
-* blind spot detected
+* brief comments on blind spot detected
 * look for [the line or words to be replaced] 
 * replace with [replacement]
 ```
