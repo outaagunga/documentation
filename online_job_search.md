@@ -431,4 +431,22 @@ Your first $100 is already waiting.
 All you have to do is start.
 
 ---
+---
+---
+
+
+## Mentorship and career development workflow:
+
+* **Instructions:** General Documents You Will Need for your mentorship
+* **Session 1:** Introduction
+* **Session 2:** Building a Resume or CV
+* **Session 3:** Using AI in your career journey
+* **Session 4:** Building your business network
+* **Session 5:** Developing your career plan
+* **Session 6:** Professional Skills Development
+* **Session 7:** Advanced LinkedIn techniques
+* **Session 8 & 9:** Job interview prep
+* **Session 10:** Job search techniques
+* **Session 11:** Distinguish yourself in the workplace
+* **Session 12:** Navigating the global business environment
 
