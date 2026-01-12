@@ -265,6 +265,43 @@ Example of other logics includes:
 | `M`           | Max bars to remain ACTIVE without WALK | `4 ≤ M ≤ 10`              | Keeps ACTIVE state realistic                                           |
 | `ε`           | Volatility noise threshold             | `0.05 ≤ ε ≤ 0.10`         | Avoids overly sensitive or insensitive expansion/contraction detection |
 
+
+# Strategy Settings
+
+## 1. Indicators
+
+| Setting              | Value |
+|----------------------|-------|
+| BB Period            | 20    |
+| ATR Length           | 14    |
+| HMA Period           | 200   |
+| HMA Slope Lookback   | 5     |
+
+## 2. Logic
+
+| Setting                           | Value |
+|-----------------------------------|-------|
+| N: Min Squeeze Bars               | 6     |
+| P: Percentile Lookback            | 150   |
+| BBWidth Percentile Threshold      | 20    |
+| L: Expansion Window               | 5     |
+| E: Noise Threshold                | 0.07  |
+| M: Max Active without Walk        | 8     |
+
+## 3. Entry
+
+| Setting                   | Value |
+|---------------------------|-------|
+| K: Required Walk Closes   | 3     |
+| ATR Distance to SD1       | 0.5   |
+| Z: Max Bar Size (ATR)     | 1.2   |
+
+## 4. Risk
+
+| Setting              | Value |
+|----------------------|-------|
+| Stop ATR Multiplier  | 1.5   |
+
 **Ensure** all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules
 ```
 ---
