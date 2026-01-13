@@ -709,6 +709,11 @@ export default function InvestorProfile() {
             Unlock with Premium
           </button>
         </div>
+      )}
+    </div>
+  );
+}
+
 )}
 ```
 
@@ -854,6 +859,7 @@ src/api/admin.js
 ```
 
 ```js
+import { db } from "./firebase";
 import {
   collection,
   getDocs,
