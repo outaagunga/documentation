@@ -303,6 +303,7 @@ Create `src/api/firebase.js`
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -317,6 +318,7 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 ```
 
 Create `.env`:
@@ -346,7 +348,7 @@ This replaces WordPress’s `current_user_can()`.
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../api/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const AuthContext = createContext();
 
@@ -566,19 +568,18 @@ import {
   where
 } from "firebase/firestore";
 
-export async function getVerifiedInvestors() {
-  const q = query(
-    collection(db, "investors"),
-    where("verified", "==", true)
-  );
-
+export async function getInvestors(filters = {}) {
+  let q = query(collection(db, "investors"), where("verified", "==", true));
+  
+  if (filters.industry) {
+    q = query(q, where("industryFocus", "==", filters.industry));
+  }
+  if (filters.country) {
+    q = query(q, where("country", "==", filters.country));
+  }
+  
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-}
-
-export async function getInvestor(id) {
-  const snap = await getDoc(doc(db, "investors", id));
-  return { id: snap.id, ...snap.data() };
 }
 ```
 
@@ -597,7 +598,7 @@ src/pages/Investors.jsx
 
 ```jsx
 import { useEffect, useState } from "react";
-import { getVerifiedInvestors } from "../api/investors";
+import { getInvestors } from "../api/investors";
 import { Link } from "react-router-dom";
 
 import { collection, getDocs } from "firebase/firestore"; // Ensure these are imported
@@ -653,7 +654,7 @@ src/pages/InvestorProfile.jsx
 ```
 
 ```jsx
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getInvestor } from "../api/investors";
 import { useAuth } from "../context/AuthContext";
@@ -674,6 +675,8 @@ export default function InvestorProfile() {
 
   const canSeeEmail =
     canSeeContacts || user?.role === "free";
+
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -851,13 +854,13 @@ src/api/admin.js
 ```
 
 ```js
-import { db } from "./firebase";
 import {
   collection,
   getDocs,
   doc,
   updateDoc,
   addDoc,
+  deleteDoc,
   query,
   where
 } from "firebase/firestore";
@@ -1042,11 +1045,30 @@ export default function EditInvestor() {
     <div className="p-10">
       <h1 className="text-2xl font-bold mb-4">Edit {form.investorName}</h1>
       <input 
-        className="border p-2 w-full mb-2"
-        value={form.investorName} 
-        onChange={e => setForm({ ...form, investorName: e.target.value })} 
-      />
-      {/* Repeat for other fields: firmName, email, etc. */}
+      className="border p-2 w-full mb-2"
+      placeholder="Investor Name"
+      value={form.investorName || ''} 
+      onChange={e => setForm({ ...form, investorName: e.target.value })} 
+    />
+    <input 
+      className="border p-2 w-full mb-2"
+      placeholder="Firm Name"
+      value={form.firmName || ''} 
+      onChange={e => setForm({ ...form, firmName: e.target.value })} 
+    />
+    <input 
+      className="border p-2 w-full mb-2"
+      placeholder="Email"
+      value={form.email || ''} 
+      onChange={e => setForm({ ...form, email: e.target.value })} 
+    />
+    <input 
+      className="border p-2 w-full mb-2"
+      placeholder="Phone"
+      value={form.phone || ''} 
+      onChange={e => setForm({ ...form, phone: e.target.value })} 
+    />
+
       <button 
         onClick={handleSave}
         className="bg-blue-600 text-white px-6 py-2 rounded"
@@ -1118,6 +1140,7 @@ src/pages/SubmitFund.jsx
 ```jsx
 import { useState } from "react";
 import { createInvestor } from "../api/admin";
+import { uploadLogo } from "../api/storage";
 
 export default function SubmitFund() {
   const [form, setForm] = useState({});
