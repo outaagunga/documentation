@@ -1,4 +1,12 @@
 
+```vb
+here is the guide. highlight the part I should edit and give the replacement. 
+your output should be: 
+* brief comments on blind spot detected
+* look for [the line or words to be replaced] 
+* replace with [replacement]
+```
+
 Great — I’ll turn what you pasted into something you can literally **code against**, the same way your WordPress guide was structured.
 We’ll do this in **segments**, and each segment will end with **“what should exist in your repo when you’re done”** so you always know if you’re on track.
 
@@ -314,10 +322,14 @@ export const db = getFirestore(app);
 Create `.env`:
 
 ```
-VITE_FIREBASE_API_KEY=...
-VITE_FIREBASE_AUTH_DOMAIN=...
-VITE_FIREBASE_PROJECT_ID=...
-...
+# MUST use VITE_ prefix for Vite to recognize these variables.
+# Do NOT put quotes around the values unless they contain spaces.
+VITE_FIREBASE_API_KEY=your_actual_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
 ```
 
 This is your wp-config.php.
@@ -350,11 +362,23 @@ export function AuthProvider({ children }) {
         return;
       }
 
-      const snap = await getDoc(doc(db, "users", firebaseUser.uid));
-
+      const userRef = doc(db, "users", firebaseUser.uid);
+      let snap = await getDoc(userRef);
+      
+      // If user is new (Auth exists but Firestore doc doesn't), create it
+      if (!snap.exists()) {
+        const defaultUser = {
+          name: firebaseUser.displayName || "New User",
+          email: firebaseUser.email,
+          role: "free",
+          createdAt: new Date().toISOString()
+        };
+        await setDoc(userRef, defaultUser);
+        snap = await getDoc(userRef); // Refresh snap
+      }
+      
       setUser({
         uid: firebaseUser.uid,
-        email: firebaseUser.email,
         ...snap.data()
       });
 
@@ -576,11 +600,26 @@ import { useEffect, useState } from "react";
 import { getVerifiedInvestors } from "../api/investors";
 import { Link } from "react-router-dom";
 
+import { collection, getDocs } from "firebase/firestore"; // Ensure these are imported
+import { db } from "../api/firebase"; // Ensure db is imported
+
 export default function Investors() {
   const [investors, setInvestors] = useState([]);
 
   useEffect(() => {
-    getVerifiedInvestors().then(setInvestors);
+    // Use getDocs for directories to save on Firebase Read costs.
+    // Only use onSnapshot for things like Chat or Real-time Notifications.
+    const fetchInvestors = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "investors"));
+        const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setInvestors(data);
+      } catch (error) {
+        console.error("Error fetching investors:", error);
+      }
+    };
+    
+    fetchInvestors();
   }, []);
 
   return (
@@ -819,6 +858,12 @@ import {
 } from "firebase/firestore";
 
 export async function getPendingInvestors() {
+
+  // NOTE: This multi-field filter REQUIRES a Composite Index.
+  // When you run this, check your Browser Console (F12). 
+  // Firebase will provide a direct URL link. Click it to auto-generate the index, 
+  // or the query will return zero results.
+
   const q = query(
     collection(db, "investors"),
     where("verified", "==", false)
@@ -1195,7 +1240,8 @@ export default function Upgrade() {
 ---
 
 # 4️⃣ Firebase Cloud Function
-
+Setup Note: This is NOT in your src folder. You must run firebase init functions in your root directory first. 
+Then select JavaScript, then place this code in the newly created functions/index.js file:
 ```
 functions/index.js
 ```
@@ -1222,15 +1268,24 @@ When payment succeeds:
 
 ```js
 exports.stripeWebhook = async (event) => {
-  if (event.type === "checkout.session.completed") {
-    const userId = event.data.object.client_reference_id;
+  const userId = event.data.object.client_reference_id || event.data.object.metadata.userId;
 
-    await admin.firestore().doc(`users/${userId}`).update({
-      role: "premium",
-      subscriptionStatus: "active"
-    });
+  switch (event.type) {
+    case "checkout.session.completed":
+    case "invoice.paid":
+      await admin.firestore().doc(`users/${userId}`).update({
+        role: "premium",
+        subscriptionStatus: "active"
+      });
+      break;
+    case "customer.subscription.deleted":
+    case "invoice.payment_failed":
+      await admin.firestore().doc(`users/${userId}`).update({
+        role: "free",
+        subscriptionStatus: "inactive"
+      });
+      break;
   }
-};
 ```
 
 Now Firestore is the **source of truth**.
