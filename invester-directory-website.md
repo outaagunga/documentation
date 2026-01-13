@@ -691,17 +691,22 @@ export default function InvestorProfile() {
       )}
 
       {canSeeContacts ? (
-        <>
-          <p>Phone: {investor.phone}</p>
-          <p>WhatsApp: {investor.whatsapp}</p>
-          <p>LinkedIn: {investor.linkedin}</p>
-        </>
+        <div className="bg-green-50 p-4 rounded">
+          <p className="text-sm text-gray-500">Direct Contact:</p>
+          <p className="text-lg font-bold text-green-700">{investor.phone}</p>
+          <p className="text-lg font-bold text-green-700">{investor.email}</p>
+        </div>
       ) : (
-        <p>🔒 Upgrade to see phone & WhatsApp</p>
-      )}
-    </div>
-  );
-}
+        <div className="border-2 border-dashed border-gray-300 p-6 text-center rounded-xl bg-gray-50">
+          <p className="text-gray-600 mb-4">Contact details are locked for Free members.</p>
+          <button 
+            onClick={() => navigate('/billing')}
+            className="bg-gold-500 hover:bg-gold-600 text-white font-bold py-2 px-6 rounded-full transition-all"
+          >
+            Unlock with Premium
+          </button>
+        </div>
+)}
 ```
 
 This replaces:
@@ -881,14 +886,52 @@ export async function createInvestor(data) {
   return await addDoc(collection(db, "investors"), {
     ...data,
     verified: false,
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    updatedAt: Date.now()
   });
+}
+
+// NEW: Missing Update Function
+export async function updateInvestor(id, data) {
+  const ref = doc(db, "investors", id);
+  return await updateDoc(ref, {
+    ...data,
+    updatedAt: Date.now()
+  });
+}
+
+// NEW: Missing Delete Function (Critical for Admin)
+export async function deleteInvestor(id) {
+  const ref = doc(db, "investors", id);
+  return await deleteDoc(ref);
 }
 ```
 
 This replaces:
 WP Admin queries.
 
+---
+## Storage 
+src/api/storage.js
+```js
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "./firebase";
+
+export async function uploadLogo(file, investorId) {
+  if (!file) return null;
+  
+  // 1. Create a unique path in Storage
+  const storageRef = ref(storage, `logos/${investorId}-${file.name}`);
+  
+  // 2. Upload the raw file
+  const snapshot = await uploadBytes(storageRef, file);
+  
+  // 3. Get the public URL to save in Firestore
+  const downloadURL = await getDownloadURL(snapshot.ref);
+  
+  return downloadURL;
+}
+```
 ---
 
 # 3️⃣ Admin Dashboard
@@ -971,10 +1014,48 @@ Admins can now build the database.
 
 # 5️⃣ Edit Investor
 
-Same pattern:
-
 ```
-src/pages/EditInvestor.jsx
+// src/pages/EditInvestor.jsx
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getInvestor } from "../api/investors";
+import { updateInvestor } from "../api/admin";
+
+export default function EditInvestor() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [form, setForm] = useState(null);
+
+  useEffect(() => {
+    getInvestor(id).then(setForm);
+  }, [id]);
+
+  const handleSave = async () => {
+    await updateInvestor(id, form);
+    alert("Investor Updated");
+    navigate("/dashboard");
+  };
+
+  if (!form) return <p>Loading...</p>;
+
+  return (
+    <div className="p-10">
+      <h1 className="text-2xl font-bold mb-4">Edit {form.investorName}</h1>
+      <input 
+        className="border p-2 w-full mb-2"
+        value={form.investorName} 
+        onChange={e => setForm({ ...form, investorName: e.target.value })} 
+      />
+      {/* Repeat for other fields: firmName, email, etc. */}
+      <button 
+        onClick={handleSave}
+        className="bg-blue-600 text-white px-6 py-2 rounded"
+      >
+        Save Changes
+      </button>
+    </div>
+  );
+}
 ```
 
 Load by ID → update Firestore → save.
@@ -1041,10 +1122,32 @@ import { createInvestor } from "../api/admin";
 export default function SubmitFund() {
   const [form, setForm] = useState({});
 
-  const submit = async () => {
-    await createInvestor(form);
-    alert("Thank you. Your fund is under review.");
+  // Inside src/pages/SubmitInvestor.jsx
+  const [file, setFile] = useState(null);
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // 1. Create a placeholder ID first or use a timestamp
+    const tempId = Date.now().toString();
+    
+    // 2. Upload image first to get the URL
+    let logoUrl = "";
+    if (file) {
+      logoUrl = await uploadLogo(file, tempId);
+    }
+  
+    // 3. Save the full object including the new URL
+    await createInvestor({
+      ...form,
+      logo: logoUrl
+    });
+    
+    alert("Success! Your listing is pending approval.");
   };
+  
+  // Add this to your return/TSX:
+  <input type="file" onChange={(e) => setFile(e.target.files[0])} className="mb-4" />
 
   return (
     <div>
@@ -1267,25 +1370,36 @@ exports.createCheckoutSession = async (req, res) => {
 When payment succeeds:
 
 ```js
-exports.stripeWebhook = async (event) => {
+exports.stripeWebhook = async (req, res) => {
+  const event = req.body;
   const userId = event.data.object.client_reference_id || event.data.object.metadata.userId;
 
-  switch (event.type) {
-    case "checkout.session.completed":
-    case "invoice.paid":
-      await admin.firestore().doc(`users/${userId}`).update({
-        role: "premium",
-        subscriptionStatus: "active"
-      });
-      break;
-    case "customer.subscription.deleted":
-    case "invoice.payment_failed":
-      await admin.firestore().doc(`users/${userId}`).update({
-        role: "free",
-        subscriptionStatus: "inactive"
-      });
-      break;
+  try {
+    switch (event.type) {
+      case "checkout.session.completed":
+      case "invoice.paid":
+        // IMPORTANT: We await the result to ensure Firestore updates before finishing
+        await admin.firestore().doc(`users/${userId}`).update({
+          role: "premium",
+          subscriptionStatus: "active"
+        });
+        break;
+
+      case "customer.subscription.deleted":
+      case "invoice.payment_failed":
+        await admin.firestore().doc(`users/${userId}`).update({
+          role: "free",
+          subscriptionStatus: "inactive"
+        });
+        break;
+    }
+    // Stripe expects a 200 response to acknowledge receipt
+    res.status(200).send({ received: true });
+  } catch (err) {
+    console.error(`Webhook Error: ${err.message}`);
+    res.status(400).send(`Webhook Error: ${err.message}`);
   }
+};
 ```
 
 Now Firestore is the **source of truth**.
