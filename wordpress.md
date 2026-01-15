@@ -1,7 +1,7 @@
 
 To implement role-based access, collect user data, and enable site interactions in 2026 without using Pro versions of plugins, you can use highly capable free alternatives.  
 
-1. **Role-Based Access Control (RBAC)**  
+1. ## **Role-Based Access Control (RBAC)**  
 You can manage what different users can see or do using free role-management plugins:
 
 **User Role Editor (Free):** This is the most popular free solution for creating custom roles or editing existing ones (like Subscriber, Author, or Editor). You can use a simple checklist to grant or deny specific "capabilities" like edit_posts or upload_files.
@@ -10,7 +10,7 @@ You can manage what different users can see or do using free role-management plu
 
 **Elementor Role Manager (Built-in):** Even in the free version, you can go to Elementor > Role Manager to restrict access to the Elementor editor itself for specific roles, ensuring they don't accidentally change your site's design.
 
-3. **Collecting User Data**
+2. ## **Collecting User Data**
 Since you do not have Elementor Pro (which includes a Form widget), use these free dedicated form builders to collect and store data:
 
 **WPForms Lite:** A drag-and-drop builder for creating contact, registration, and survey forms. While it sends email notifications, to store entries directly in your WordPress database for free, you may need a companion plugin like WPForms Lite Database Entries.  
@@ -19,7 +19,7 @@ Since you do not have Elementor Pro (which includes a Form widget), use these fr
 
 **Ultimate Member:** Excellent for creating custom user registration forms that map directly to user profiles.  
 
-4. User Interaction
+3. ## **User Interaction**
 Enhance how users engage with your site using these free tools:
 
 **Ultimate Member (Free Version):** Allows you to create front-end user profiles and member directories where users can see each other and interact.
