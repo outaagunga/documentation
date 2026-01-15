@@ -74,7 +74,7 @@ e.g
 We are going to enfore data validation on `P/NO` so that it does not accept Duplicates  
 
 1. Select `P/NO` column  
-2. Data → Data Validation  
+2. Then go to Data → Data Validation  
 3. Custom formula, then enter this formula:  
    
 `=COUNTIF(tablename[P/NO],A2)=1`  
