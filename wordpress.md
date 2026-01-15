@@ -4,31 +4,31 @@ To implement role-based access, collect user data, and enable site interactions 
 1. ## **Role-Based Access Control (RBAC)**  
 You can manage what different users can see or do using free role-management plugins:
 
-**User Role Editor (Free):** This is the most popular free solution for creating custom roles or editing existing ones (like Subscriber, Author, or Editor). You can use a simple checklist to grant or deny specific "capabilities" like edit_posts or upload_files.
+* **User Role Editor (Free):** This is the most popular free solution for creating custom roles or editing existing ones (like Subscriber, Author, or Editor). You can use a simple checklist to grant or deny specific "capabilities" like edit_posts or upload_files.
 
-**Members Plugin:** Best for membership-style content restriction. It includes a "Role Manager" and allows you to restrict specific posts or pages so only users with a certain role can view them.  
+* **Members Plugin:** Best for membership-style content restriction. It includes a "Role Manager" and allows you to restrict specific posts or pages so only users with a certain role can view them.  
 
-**Elementor Role Manager (Built-in):** Even in the free version, you can go to Elementor > Role Manager to restrict access to the Elementor editor itself for specific roles, ensuring they don't accidentally change your site's design.
+* **Elementor Role Manager (Built-in):** Even in the free version, you can go to Elementor > Role Manager to restrict access to the Elementor editor itself for specific roles, ensuring they don't accidentally change your site's design.
 
 2. ## **Collecting User Data**
 Since you do not have Elementor Pro (which includes a Form widget), use these free dedicated form builders to collect and store data:
 
-**WPForms Lite:** A drag-and-drop builder for creating contact, registration, and survey forms. While it sends email notifications, to store entries directly in your WordPress database for free, you may need a companion plugin like WPForms Lite Database Entries.  
+* **WPForms Lite:** A drag-and-drop builder for creating contact, registration, and survey forms. While it sends email notifications, to store entries directly in your WordPress database for free, you may need a companion plugin like WPForms Lite Database Entries.  
 
-**Participants Database:** A powerful free plugin specifically designed to build a customizable database within WordPress. You can define any number of fields (name, address, custom preferences) and allow users to sign up and manage their own records.
+* **Participants Database:** A powerful free plugin specifically designed to build a customizable database within WordPress. You can define any number of fields (name, address, custom preferences) and allow users to sign up and manage their own records.
 
-**Ultimate Member:** Excellent for creating custom user registration forms that map directly to user profiles.  
+* **Ultimate Member:** Excellent for creating custom user registration forms that map directly to user profiles.  
 
 3. ## **User Interaction**
 Enhance how users engage with your site using these free tools:
 
-**Ultimate Member (Free Version):** Allows you to create front-end user profiles and member directories where users can see each other and interact.
+* **Ultimate Member (Free Version):** Allows you to create front-end user profiles and member directories where users can see each other and interact.
 
-**Wise Chat:** A free, responsive chat system that you can embed on any page via shortcodes to allow real-time user interaction.
+* **Wise Chat:** A free, responsive chat system that you can embed on any page via shortcodes to allow real-time user interaction.
 
-**GamiPress:** A free gamification plugin that rewards users with points or badges for interacting with your site (e.g., leaving a comment or logging in), which encourages repeat visits.  
+* **GamiPress:** A free gamification plugin that rewards users with points or badges for interacting with your site (e.g., leaving a comment or logging in), which encourages repeat visits.  
 
-**WP Statistics:** Provides you with real-time data on how users are moving through your site, helping you understand which interactive elements are working best  
+* **WP Statistics:** Provides you with real-time data on how users are moving through your site, helping you understand which interactive elements are working best  
 
 ---
 This is a strong start — but right now it’s more like **notes for a developer** than a **step-by-step system you can actually follow while building**.
