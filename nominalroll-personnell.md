@@ -1,4 +1,9 @@
 
+Create a helper column, then use formula  
+
+`=DATEVALUE(TEXT(A2,"dd/mm/yyyy"))` : Useful when the date format in the cell is inconsistent or not recognized. This ensures the text is formatted correctly before conversion  
+It will display as digits. To display it as date, select -> right click -> format -> date  
+
 ## STEP 1: STANDARDIZE YOUR SHEET
 
 Open your file e.g `ASTU NOMINAL ROLL -AUTOMATION.xlsx` and  
