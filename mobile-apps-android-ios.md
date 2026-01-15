@@ -42,6 +42,12 @@ Install these before starting:
 
 ---
 
+* **Rork AI** -> To provide context  
+* **Android studio** -> to see if there is a problem  
+* **Kiro** -> To write code  
+* **Phone** -> To see progress  
+
+---
 ## **Step 1 – Install Everything**
 
 ### **1. Install Node.js**
@@ -61,15 +67,222 @@ npm -v
 
 ### **2. Install Android Studio**
 
-Download from
-[https://developer.android.com/studio](https://developer.android.com/studio)
+### Step 1 – Download Android Studio on your pc  
 
-During installation:
-✔ Install Android SDK
-✔ Install Emulator
-✔ Install Google Play image
+1. Open your browser and go to:
+   👉 [https://developer.android.com/studio](https://developer.android.com/studio)
+2. Click **“Download Android Studio”**.
+3. Accept the terms and download the installer for your operating system (Windows/Mac/Linux).
 
-Create a virtual phone (Pixel 6 is fine).
+---
+
+### Step 2 – Start the Installation
+
+1. Open the downloaded file to begin installation.
+
+2. When the installer asks what to install:
+
+   * ✅ Keep **Android Studio** checked
+   * ❌ **Uncheck “Android Virtual Device / Visual Studio integration”** if your PC is low on RAM (emulators use a lot of resources).
+
+3. Click **Next → Install** and wait for installation to finish.
+
+---
+
+### Step 3 – First Launch Setup
+
+1. Open **Android Studio** after installation.
+2. You may see:
+
+   * “Import settings?” → Choose **Do not import settings** (for beginners).
+3. Allow Android Studio to download:
+
+   * SDK tools
+   * Platform tools
+   * Required components
+
+💡 This may take several minutes depending on internet speed.
+
+---
+
+## PART 2: CREATING YOUR FIRST APP PROJECT
+
+### Step 4 – Create New Project
+
+1. Click **“New Project.”**
+2. From templates choose:
+
+👉 **Empty Activity (Recommended for beginners)**
+
+3. Enter:
+
+* **Name:** e.g MyFirstApp
+* **Package name:** leave default
+* **Save location:** choose a folder you can remember
+* **Language:** Kotlin (recommended) or Java
+* **Minimum SDK:**
+  → Select the **lowest version available** so your app works on older phones.
+
+4. Click **Finish** and wait for Gradle build to complete.
+
+---
+
+### Step 5 – Exclude Unnecessary Folders (Optional but Helpful)
+
+If you see a notification about “Exclude folders”:
+
+1. Click the 🔔 notification icon.
+2. Choose **Exclude folders** to improve Android Studio performance.
+
+---
+
+## PART 3: CONNECT YOUR REAL ANDROID PHONE
+
+> Using a real phone is better for beginners because emulators are heavy and slow.
+
+---
+
+### Step 6 – Enable Developer Options on Phone
+
+1. Open your phone:
+
+   * Go to **Settings → About phone**
+2. Find **Build Number**
+3. Tap it **5–7 times**
+4. You will see:
+
+   > “You are now a developer!”
+
+---
+
+### Step 7 – Enable USB Debugging
+
+1. Go back to:
+   👉 Settings → Developer Options
+2. Turn ON:
+
+   * ✅ USB Debugging
+   * ✅ Install via USB (if available)
+   * ✅ Stay awake (optional)
+
+---
+
+### Step 8 – Connect Phone to PC
+
+1. Connect phone using a **good USB data cable**.
+2. On your phone a popup appears:
+
+👉 “Allow USB debugging from this computer?”
+→ Tap **ALLOW**
+
+---
+
+### Step 9 – Detect Phone in Android Studio
+
+1. Open Android Studio.
+2. At the top you will see device dropdown.
+3. Your phone name should appear there.
+
+If not:
+
+* Change USB mode to **File Transfer (MTP)** on phone.
+* Try another USB port or cable.
+
+---
+
+### Step 10 – Remove Emulator (Optional)
+
+To save RAM:
+
+1. Open **Device Manager** in Android Studio.
+2. Delete the default virtual device (Pixel emulator).
+
+> This prevents Android Studio from being slow.
+
+---
+
+### Step 11 – Run App on Your Phone
+
+1. Click ▶ **Run** button in Android Studio.
+2. Select your phone from the list.
+3. On the phone you may see:
+
+👉 “Do you want to install this app?”
+→ Tap **Install**
+
+🎉 Your first app will open on your phone!
+
+---
+
+# PART 4: COMMON PROBLEMS & FIXES
+
+## 1. Phone Not Showing in Android Studio
+
+* Use original USB cable
+* Enable:
+
+  * USB debugging
+  * File transfer mode
+* Install Google USB Driver:
+
+  * Android Studio → SDK Manager → SDK Tools → Google USB Driver
+
+---
+
+## 2. Gradle Build Taking Too Long
+
+* Close other heavy apps
+* Disable emulator
+* File → Invalidate Caches & Restart
+
+---
+
+## 3. “Install blocked” on phone
+
+* Enable:
+
+  * Install via USB
+  * Allow from this source
+
+---
+
+## 4. App Won’t Install
+
+* Uninstall old version from phone
+* Clean project:
+
+  * Build → Clean Project
+  * Build → Rebuild Project
+
+---
+
+# PART 5: WHAT TO DO NEXT (DEVELOPMENT FLOW)
+
+After setup you can:
+
+1. Edit UI in:
+
+   * `activity_main.xml`
+
+2. Write logic in:
+
+   * `MainActivity.kt`
+
+3. Every time you:
+
+   * Click ▶ Run
+     → App updates on your phone.
+
+---
+
+## 💡 Beginner Tips
+
+* Always test on real phone first
+* Avoid emulator on low-RAM PCs
+* Use Kotlin for new projects
+* Keep Minimum SDK low
+* Save project in simple path like:
+  👉 C:\AndroidProjects  
 
 ---
 
@@ -117,9 +330,9 @@ AI-Mobile-Apps/
 
 2. Open **Kiro**
 3. Click **Open Folder**
-4. Select your project folder (TalaClone)
+4. Select your project folder (e.g TalaClone)
 
-This is where all your app files will live.
+Ensure you open the project you created in the adroid studio  
 
 ---
 
@@ -151,8 +364,8 @@ Simple app called Mood Tune built to intelligently match music with how the user
 ChatGPT will generate a **professional app blueprint**.
 
 This is the most important part —
-Bad description = bad app
-Good description = good app
+Bad description = bad app  
+Good description = good app  
 
 ---
 
