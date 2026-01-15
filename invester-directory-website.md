@@ -155,6 +155,14 @@ service cloud.firestore {
     }
   }
 }
+
+match /investors/{id} {
+  // Only admins can see unverified investors
+  allow read: if resource.data.verified == true || request.auth.token.role == 'admin';
+  
+  // Only admins can update (approve) or delete
+  allow update, delete: if request.auth.token.role == 'admin';
+}
 ```
 
 This enforces:
@@ -430,7 +438,49 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 ```
 
 Now your entire app knows who is logged in and their role.
+---
+## src/components/access/PremiumGuard.jsx
+```js
+import { useAuth } from "../../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
 
+export default function PremiumGuard({ children, featureName = "this data" }) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // 1. Check if user is even logged in
+  if (!user) {
+    return (
+      <div className="bg-gray-100 p-6 rounded-lg text-center border-2 border-dashed">
+        <p className="mb-4">Log in to view {featureName}.</p>
+        <button onClick={() => navigate('/login')} className="bg-blue-600 text-white px-4 py-2 rounded">
+          Sign In
+        </button>
+      </div>
+    );
+  }
+
+  // 2. Check for Premium role
+  if (user.role !== 'premium' && user.role !== 'admin') {
+    return (
+      <div className="relative group overflow-hidden rounded-xl border-2 border-amber-200 bg-amber-50 p-8 text-center">
+        <div className="mb-4 text-3xl">🔒</div>
+        <h3 className="text-xl font-bold text-amber-900">Premium Contact Data</h3>
+        <p className="text-amber-800 mb-6">Upgrade your account to unlock direct WhatsApp and Email access.</p>
+        <Link 
+          to="/upgrade" 
+          className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all transform hover:scale-105"
+        >
+          View Pricing Plans
+        </Link>
+      </div>
+    );
+  }
+
+  // 3. If they are Premium, show the actual data
+  return <>{children}</>;
+}
+```
 ---
 
 ## 6️⃣ PrivateRoute (Role Gate)
@@ -711,6 +761,26 @@ export default function InvestorProfile() {
         </div>
       )}
     </div>
+    <div className="mt-8">
+  <h2 className="text-lg font-semibold mb-4">Contact Information</h2>
+  
+  <PremiumGuard featureName="Investor Contacts">
+    <div className="space-y-4">
+      <div className="flex items-center space-x-3">
+        <span className="font-bold">WhatsApp:</span>
+        <a href={`https://wa.me/${investor.whatsapp}`} className="text-green-600 font-medium underline">
+          {investor.whatsapp}
+        </a>
+      </div>
+      <div className="flex items-center space-x-3">
+        <span className="font-bold">Direct Email:</span>
+        <a href={`mailto:${investor.email}`} className="text-blue-600 font-medium underline">
+          {investor.email}
+        </a>
+      </div>
+    </div>
+  </PremiumGuard>
+</div>
   );
 }
 
@@ -885,6 +955,22 @@ export async function getPendingInvestors() {
   const snap = await getDocs(q);
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
+import { db } from "./firebase";
+import { collection, query, where, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+
+export const getPendingInvestors = async () => {
+  const q = query(collection(db, "investors"), where("verified", "==", false));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+export const approveInvestor = async (id) => {
+  const investorRef = doc(db, "investors", id);
+  return await updateDoc(investorRef, { 
+    verified: true,
+    approvedAt: new Date().toISOString() 
+  });
+};
 
 export async function approveInvestor(id) {
   const ref = doc(db, "investors", id);
@@ -893,8 +979,11 @@ export async function approveInvestor(id) {
 
 export async function createInvestor(data) {
   return await addDoc(collection(db, "investors"), {
+    // Ensure the logo URL from Firebase Storage is included
     ...data,
+    logoUrl: data.logoUrl || "", 
     verified: false,
+    submissionSource: "public_form",
     createdAt: Date.now(),
     updatedAt: Date.now()
   });
@@ -981,7 +1070,79 @@ export default function Dashboard() {
 
 This is:
 Pending → Publish.
+---
+## src/pages/AdminDashboard.jsx
+```js
+import { useEffect, useState } from "react";
+import { getPendingInvestors, approveInvestor } from "../api/admin";
 
+export default function AdminDashboard() {
+  const [pending, setPending] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadPending();
+  }, []);
+
+  const loadPending = async () => {
+    const data = await getPendingInvestors();
+    setPending(data);
+    setLoading(false);
+  };
+
+  const handleApprove = async (id) => {
+    await approveInvestor(id);
+    setPending(pending.filter(item => item.id !== id)); // Remove from list instantly
+  };
+
+  if (loading) return <div className="p-10 text-center">Loading submissions...</div>;
+
+  return (
+    <div className="max-w-6xl mx-auto p-8">
+      <h1 className="text-3xl font-bold mb-8">Queue: {pending.length} Pending Submissions</h1>
+      
+      <div className="bg-white shadow-xl rounded-xl overflow-hidden border">
+        <table className="w-full text-left">
+          <thead className="bg-gray-50 border-b">
+            <tr>
+              <th className="p-4 font-semibold">Investor/Firm</th>
+              <th className="p-4 font-semibold">Industry</th>
+              <th className="p-4 font-semibold">Source</th>
+              <th className="p-4 font-semibold text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pending.map((inv) => (
+              <tr key={inv.id} className="border-b hover:bg-gray-50 transition">
+                <td className="p-4">
+                  <div className="font-bold">{inv.investorName}</div>
+                  <div className="text-sm text-gray-500">{inv.firmName}</div>
+                </td>
+                <td className="p-4 text-sm">{inv.industryFocus}</td>
+                <td className="p-4">
+                   <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Public Form</span>
+                </td>
+                <td className="p-4 text-right space-x-2">
+                  <button 
+                    onClick={() => handleApprove(inv.id)}
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
+                  >
+                    Approve & Publish
+                  </button>
+                  <button className="text-red-500 hover:underline text-sm">Reject</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {pending.length === 0 && (
+          <div className="p-20 text-center text-gray-400">All caught up! No pending submissions.</div>
+        )}
+      </div>
+    </div>
+  );
+}
+```
 ---
 
 # 4️⃣ Add Investor (Admin)
@@ -1257,8 +1418,12 @@ Update:
 
 ```js
 match /investors/{id} {
-  allow create: if true;
-  allow read: if resource.data.verified == true || request.auth.token.role == 'admin';
+  // Allow creation only if the new data is marked as unverified
+  allow create: if request.resource.data.verified == false; 
+  
+  allow read: if resource.data.verified == true 
+              || request.auth.token.role == 'admin';
+
   allow update, delete: if request.auth.token.role == 'admin';
 }
 ```
@@ -1364,6 +1529,66 @@ export default function Upgrade() {
       <h1>Upgrade to Premium</h1>
       <p>Unlock phone numbers, WhatsApp & direct investor access.</p>
       <button onClick={upgrade}>Upgrade Now</button>
+      import { useAuth } from "../context/AuthContext";
+
+export default function Upgrade() {
+  const { user } = useAuth();
+
+  const handleSubscription = async (priceId) => {
+    // 1. Call your backend (Firebase Function) to create a checkout session
+    const response = await fetch('YOUR_CLOUD_FUNCTION_URL/createCheckoutSession', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userId: user.uid,
+        email: user.email,
+        priceId: priceId // From your Stripe Dashboard
+      }),
+    });
+
+    const session = await response.json();
+    
+    // 2. Redirect user to Stripe's hosted checkout
+    window.location.href = session.url;
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto py-20 px-4">
+      <h1 className="text-4xl font-bold text-center mb-12">Choose Your Access</h1>
+      <div className="grid md:grid-cols-2 gap-8">
+        {/* Free Plan */}
+        <div className="border p-8 rounded-2xl shadow-sm">
+          <h2 className="text-xl font-bold">Explorer</h2>
+          <p className="text-4xl font-bold my-4">$0</p>
+          <ul className="space-y-3 mb-8">
+            <li>✅ View all investor names</li>
+            <li>✅ Filter by country</li>
+            <li>❌ No contact details</li>
+          </ul>
+          <button disabled className="w-full py-3 bg-gray-100 rounded-xl">Current Plan</button>
+        </div>
+
+        {/* Premium Plan */}
+        <div className="border-2 border-amber-500 p-8 rounded-2xl shadow-xl relative">
+          <span className="absolute top-0 right-8 transform -translate-y-1/2 bg-amber-500 text-white px-3 py-1 rounded-full text-sm">Best Value</span>
+          <h2 className="text-xl font-bold">Premium Access</h2>
+          <p className="text-4xl font-bold my-4">$49<span className="text-lg text-gray-500">/mo</span></p>
+          <ul className="space-y-3 mb-8">
+            <li>✅ Direct WhatsApp Links</li>
+            <li>✅ Personal Email Addresses</li>
+            <li>✅ "Verified" Investor Badges</li>
+          </ul>
+          <button 
+            onClick={() => handleSubscription('price_H5ggY...')} 
+            className="w-full py-3 bg-amber-500 text-white rounded-xl font-bold hover:bg-amber-600"
+          >
+            Upgrade to Premium
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
     </div>
   );
 }
@@ -1379,17 +1604,43 @@ functions/index.js
 ```
 
 ```js
-exports.createCheckoutSession = async (req, res) => {
+const functions = require("firebase-functions");
+const stripe = require("stripe")("sk_test_YOUR_STRIPE_SECRET_KEY");
+
+exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
+  const { userId, email, priceId } = req.body;
+
   const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    line_items: [{ price: priceId, quantity: 1 }],
     mode: "subscription",
-    line_items: [{ price: "price_123", quantity: 1 }],
-    success_url: "https://yoursite.com/success",
-    cancel_url: "https://yoursite.com/upgrade",
-    customer: req.user.stripeCustomerId
+    customer_email: email,
+    success_url: "https://yourdirectory.com/success",
+    cancel_url: "https://yourdirectory.com/upgrade",
+    metadata: { userId: userId }, // Crucial for the webhook
   });
 
   res.json({ url: session.url });
-};
+});
+
+exports.stripeWebhook = functions.https.onRequest(async (req, res) => {
+  const event = req.body;
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    const userId = session.metadata.userId;
+
+    // UPDATE FIRESTORE
+    const admin = require("firebase-admin");
+    await admin.firestore().collection("users").doc(userId).update({
+      role: "premium",
+      subscriptionStatus: "active",
+      stripeCustomerId: session.customer
+    });
+  }
+
+  res.json({ received: true });
+});
 ```
 
 ---
@@ -3161,3 +3412,21 @@ If you want, I can **now assemble a full “Home + Directory + Investor Profile�
 
 Do you want me to do that next?
 
+## Updated Folder Structure  
+src/
+ ├─ api/
+ │   ├─ firebase.js
+ │   ├─ investors.js
+ │   └─ stripe.js       <-- (New: For checkout sessions)
+ ├─ components/
+ │   ├─ layout/
+ │   └─ access/
+ │       └─ PremiumGuard.jsx  <-- (The gatekeeper)
+ ├─ context/
+ │   └─ AuthContext.jsx
+ ├─ pages/
+ │   ├─ Investors.jsx
+ │   ├─ InvestorProfile.jsx
+ │   ├─ Upgrade.jsx     <-- (The conversion page)
+ │   └─ Dashboard.jsx
+ └─ App.jsx
