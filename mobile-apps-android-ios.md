@@ -585,18 +585,19 @@ Now you convert it into:
 ---
 
 ## **2. Initialize Build System**  
-
-Inside your project terminal, run this commands:  
-
-```bash
-// In Android Studio menu:
-Build → Generate Signed Bundle / APK  
-```
+For Native Android on android studio no terminal command is needed.  
+Use Android Studio menu:  
+`Build → Generate Signed Bundle / APK `   
 
 ---
 
 ## **3. Set App Identity**  
-Open `app.json` or `app.config.js`  
+When building on android studio, edit these files:
+
+> `app/build.gradle → applicationId`
+> `AndroidManifest.xml → app name & permissions`
+
+For React Native, Open `app.json` or `app.config.js`  
 Change:  
 
 ```json
@@ -635,7 +636,7 @@ At this stage, you now have real android app
 Run this command:  
 
 ```bash
-// Native iOS:
+// Native iOS: iOS apps can ONLY be built on macOS with Xcode.
 Use Xcode → Product → Archive
 ```
 You’ll get an `.ipa` file.  
@@ -704,8 +705,10 @@ For Africa, best stack:
 
 ```
 // Chat GPT 
-Integrate M-Pesa Daraja ONLY through a backend server (Node/Express/PHP).  
-NEVER place consumer key, secret, or tokens inside the mobile app.
+NEVER store consumer key, secret, tokens, or payment credentials in the mobile app
+ALL payment requests must pass through your backend
+Use environment variables + server-side token generation
+Mobile app should only call YOUR API, not Daraja directly
 I want users to repay loans and fund wallet.
 ```
 AI will give you:  
