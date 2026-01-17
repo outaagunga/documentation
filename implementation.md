@@ -88,10 +88,12 @@
     - Expected users:
     - Growth plan:
     
-    #### Reliability
-    - Availability:
-    - Backup:
-    - Recovery:
+    #### Reliability & Business Continuity
+    - Availability (SLA): % Uptime target
+    - RTO (Recovery Time Objective): Max allowed downtime
+    - RPO (Recovery Point Objective): Max allowed data loss
+    - Backup Strategy: (Point-in-time recovery / Cross-region replication)
+    - Disaster Recovery Plan: (How to rebuild if a cloud region goes down)
     
     #### Usability
     - Accessibility:
@@ -237,18 +239,37 @@
     
     THIS IS THE MOST IMPORTANT SECTION  
     👉 You will code EXACTLY in this order.
+
+    ---
+    ### PHASE 0 – Prerequisites & Identity
+
+    1.  **Identity & Branding**
+        - [ ] Domain name secured
+        - [ ] Brand assets (Logo, Favicon, Brand Colors)
+        - [ ] Social media handles / NPM organization name reserved
+    2.  **Legal & Compliance**
+        - [ ] License selected (MIT, Apache 2.0, Proprietary)
+        - [ ] Terms of Service & Privacy Policy drafts (if public-facing)
+        - [ ] Contributor License Agreement (CLA) (if open-source)
+    3.  **Access Management**
+        - [ ] Cloud provider account (AWS/GCP/Azure) created
+        - [ ] Third-party service accounts (Stripe, Twilio, OpenAI) active
+        - [ ] Team members invited to GitHub/GitLab and Slack/Discord
+    4.  **Security Baseline**
+        - [ ] Password Manager / Team Vault initialized (1Password/Bitwarden)
+        - [ ] Multi-Factor Authentication (MFA) enabled on all root accounts
     
     ---
     
     ### PHASE 1 – Project Setup
-    
+
     1. Create repository  
     2. Initialize project  
     3. Setup:
-       - Linter  
-       - Formatter  
-       - Git hooks  
-       - Environment vars  
+       - Linter & Formatter
+       - .gitignore & .dockerignore (Ensure secrets are excluded)
+       - Pre-commit hooks (Secret scanning with 'gitleaks' or 'talisman')
+       - Environment variables template (`.env.example`) 
     
     DELIVERABLE:
     - Running empty project
@@ -407,11 +428,12 @@
     
     ---
     
-    ## 11. Maintenance
-    
-    - Monitoring  
-    - Logs  
-    - Updates  
+    ## 11. Maintenance & Operations
+
+    - Dashboard Links: (Link to Grafana/Datadog)
+    - Runbooks: (Step-by-step guides for common failures)
+    - Dependency Updates: (Schedule for patching libraries)
+    - Log Rotation: (Retention and archival policy)  
     
     ---
     
@@ -423,12 +445,13 @@
     ---
     
     ## 13. Checklist BEFORE CODING
-    
-    - [ ] Requirements clear  
-    - [ ] Architecture approved  
-    - [ ] Models defined  
-    - [ ] API contracts written  
-    - [ ] Tests planned  
+
+    - [ ] **Phase 0 Complete:** Identity, Legal, and Access secured
+    - [ ] **Requirements:** Business and Functional goals finalized
+    - [ ] **Architecture:** Tech stack and System Design approved
+    - [ ] **Data:** Models defined and API contracts signed-off
+    - [ ] **Infrastructure:** CI/CD and Observability strategy ready
+    - [ ] **Security:** Secret management and .gitignore validated  
     
     👉 ONLY AFTER THIS – START CODING PHASE 1
     ```
