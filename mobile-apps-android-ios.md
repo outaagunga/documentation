@@ -30,8 +30,16 @@ your output should be:
 ### **2. Install Android Studio**
 
 ### Step 1 – Download Android Studio on your pc  
+On linux:
+```
+sudo snap install android-studio --classic
+```
+Then launch it with:
+```
+android-studio
+```
 
-1. Open your browser and go to:
+1. On windows, Open your browser and go to:
    👉 [https://developer.android.com/studio](https://developer.android.com/studio)
 2. Click **“Download Android Studio”**.
 3. Accept the terms and download the installer for your operating system (Windows/Mac/Linux).
