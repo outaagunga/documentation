@@ -45,9 +45,10 @@ your output should be:
 2. When the installer asks what to install:
 
    * ✅ Keep **Android Studio** checked
-   * ❌ **Uncheck “Android Virtual Device / Visual Studio integration”** if your PC is low on RAM (emulators use a lot of resources).
+   * ❌ Uncheck “Android Virtual Device (AVD)/ Visual Studio integration” if your PC has less RAM (emulators use a lot of resources).  
+👉 Do NOT uncheck required SDK components or the app will not run  
 
-3. Click **Next → Install** and wait for installation to finish.
+3. Click **Next → Install** and wait for installation to finish.  
 
 ---
 
@@ -83,7 +84,8 @@ your output should be:
 * **Save location:** choose a folder you can remember
 * **Language:** Kotlin (recommended) or Java
 * **Minimum SDK:**
-  → Select the **lowest version available** so your app works on older phones.
+  → Select a balanced version such as API 24 (Android 7.0). Choosing too low may block modern features.  
+
 
 4. Click **Finish** and wait for Gradle build to complete.
 
@@ -237,12 +239,12 @@ After setup you can:
 
 ---
 
-### **3. Open the project on vs code**
+### **3. Open the Android project you had created in Android Studio on vs code**
 
 Open terminal and `cd` to the project directory e.g   
 
 ```bash
-cd myApp
+code .
 ```
 
 ---
@@ -252,7 +254,7 @@ cd myApp
 From Play Store or App Store:
 Search **Expo Go**
 
-This lets you preview your app instantly.
+You will only use this to let you preview the boiler plate of the app generated in Rork AI. Scan the qr code on the rork AI output to instantly preview the boiler plate on your phone.
 
 ---
 
@@ -397,6 +399,21 @@ NB: Ensure at each phase you create a zipped file as a backup incase things go w
 
 ## **1. Understanding the Project Structure**  
 Inside your project folder you will see something like e.g:  
+
+---
+```
+// Native Android structure looks like:
+
+app/
+ └── src/
+     └── main/
+         ├── java/
+         ├── res/
+         └── AndroidManifest.xml
+```
+---
+
+### For React Native  
 
 ```
 TalaClone/
@@ -568,7 +585,12 @@ Now you convert it into:
 Inside your project terminal, run this commands:  
 
 ```bash
-.[run build commands]
+// For React Native Expo:
+npx expo prebuild
+npx expo run:android
+
+// For Native Android:
+Build → Generate Signed Bundle / APK
 ```
 
 ---
@@ -597,7 +619,8 @@ This is very important — this becomes your store identity
 Run this command:  
 
 ```bash
-[Give the command to run]
+// Native Android:
+Use Android Studio → Build → Generate Signed Bundle / APK
 ```
 Choose:
 
@@ -612,7 +635,8 @@ At this stage, you now have real android app
 Run this command:  
 
 ```bash
-[Give the command to run]
+// Native iOS:
+Use Xcode → Product → Archive
 ```
 You’ll get an `.ipa` file.  
 
@@ -638,7 +662,7 @@ Now your app runs like any commercial app.
 * Create developer account ($25)  
 * Upload AAB  
 * Add screenshots, description  
-* Submit for review or do a clossed testing  
+* Submit for review or do a closed testing  
 
 ### **Apple App Store**  
 
@@ -680,7 +704,8 @@ For Africa, best stack:
 
 ```
 // Chat GPT 
-Integrate M-pesa Daraja API payment gateway into my React Native app.
+Integrate M-Pesa Daraja via backend server (Node/Express).  
+Do NOT put secret keys inside the mobile app.
 I want users to repay loans and fund wallet.
 ```
 AI will give you:  
@@ -742,7 +767,7 @@ You’ll understand
 
 ## Integrate your `app` and `website`  
 
-To intergrate your app and your website ........   
+To integrate your app and your website ........   
 
 ---
 
