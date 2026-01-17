@@ -14,7 +14,7 @@ your output should be:
 * **Chat GPT** - Personal Assistant (Brainstorming features & writing complex logic. Generating a detailed product description)
 * **Rork AI** - To provide initial context (Generating the initial UI and boilerplate code based on the detailed logic and description obtained from chatGPT)
 * **VS Code** - The primary workspace for editing the code
-* **Android studio** - Problem Solver (Managing SDKs, Emulators, and deep debugging)
+* **Android studio** - Official IDE for building native Android apps. Used for SDK management, running apps on phone/emulator, and debugging Kotlin/Java projects  
 * **Phone** - Progress Tracker (Testing touch gestures and "real world" performance)
 * **Git** - Version control
 * **Kiro AI** - Is able to read the entire project structure and create detailed `implementation.md` file  
@@ -261,7 +261,7 @@ You will only use this to let you preview the boiler plate of the app generated 
 
 ---
 
-## **Step 3 – Design the App Using ChatGPT**
+## **Step 3 – Plan the App Features Using ChatGPT (Before Any Coding)**
 
 Now you tell AI **what to build** before code is generated.
 
@@ -581,8 +581,8 @@ Now you convert it into:
 Inside your project terminal, run this commands:  
 
 ```bash
-// For Native Android:
-Build → Generate Signed Bundle / APK
+// In Android Studio menu:
+Build → Generate Signed Bundle / APK  
 ```
 
 ---
