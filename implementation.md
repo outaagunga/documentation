@@ -125,11 +125,28 @@
     #### Database
     - Type:
     - Schema:
+    - Migration Tool: (Prisma / Flyway / Liquibase)
     
-    #### DevOps
+    ### 3.4 Third-Party Services
+    - External APIs: (Stripe / OpenAI / Twilio)
+    - Auth Provider: (Auth0 / Clerk / Firebase Auth)
+    - Webhooks: (Source, Security/Signing Secrets)
+    
+    ### 3.5 Compliance & Privacy
+    - Data Retention: (How long we keep logs/user data)
+    - PII Handling: (Encryption at rest / Masking)
+    - Compliance: (GDPR / HIPAA / SOC2 requirements)
+    
+    #### DevOps & Infrastructure
     - Hosting:
+    - Infrastructure as Code: (Terraform / Pulumi / CloudFormation)
     - CI/CD:
-    - Monitoring:
+    - Secrets Management: (Vault / AWS Secrets Manager)
+    
+    #### Observability
+    - Logging: (Structured JSON / ELK / Axiom)
+    - Error Tracking: (Sentry / GlitchTip)
+    - Metrics & Tracing: (Prometheus / OpenTelemetry)
     
     ---
     
@@ -323,12 +340,13 @@
     
     ---
     
-    ### PHASE 10 – DevOps
-    
-    1. Docker  
-    2. CI/CD  
-    3. Logging  
-    4. Monitoring  
+    ### PHASE 10 – DevOps & Observability
+
+    1. Infrastructure Provisioning (IaC)
+    2. Docker & Containerization
+    3. CI/CD Pipelines
+    4. Error Tracking & Centralized Logging setup
+    5. Alerting rules (What triggers a page/notification?) 
     
     ---
     
