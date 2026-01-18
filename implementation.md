@@ -169,7 +169,10 @@
     ├── src/              # Source code
     ├── tests/            # Unit, Integration, and E2E
     ├── infra/            # Terraform/IaC files
-    ├── docs/             # ADRs (Architecture Decision Records) and Specs
+    ├── docs/
+    │   ├── adr/          # Architecture Decision Records (Log of "Why" decisions)
+    │   ├── api/          # OpenAPI/Swagger specs
+    │   └── specs/        # Technical specifications
     ├── scripts/          # Migration and maintenance scripts
     └── config/           # Environment-specific configs (NOT secrets)
     ```
@@ -475,9 +478,10 @@
     - DevOps/Infrastructure Contact:
 
     ### 12.3 Known Issues & Tech Debt
-    - [ ] Critical technical debt:
-    - [ ] Performance bottlenecks to watch:
-    - [ ] Manual "hacky" processes currently in place:
+    - [ ] Critical technical debt:
+    - [ ] Performance bottlenecks to watch:
+    - [ ] Manual "hacky" processes currently in place:
+    - [ ] Local Dev Setup Time: (Goal: < 30 mins from clone to run)
 
     ## 13. Future Improvements 
     
@@ -491,8 +495,9 @@
         - [ ] CORS Policy: Restricted to specific domains, not `*`.
     - [ ] **HTTP Headers:** - [ ] HSTS, X-Content-Type-Options, Content-Security-Policy (CSP).
     - [ ] **Infrastructure:**
-        - [ ] SSH access restricted to VPN/Private IP.
-        - [ ] Database NOT accessible from the public internet.
+        - [ ] SSH access restricted to VPN/Private IP.
+        - [ ] Database NOT accessible from the public internet.
+        - [ ] Principle of Least Privilege (PoLP): IAM roles have minimal needed access.
     - [ ] **Application:**
         - [ ] Input validation on ALL fields (Server-side).
         - [ ] No sensitive data in URLs (Tokens/IDs).
