@@ -36,18 +36,26 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 * **Confirm the "Gap":** There should be visible "daylight" or white space between the Bollinger Band and the candle's nearest wick.
 
-#### **Step 2: The Return Signal (The Trigger)**
+#### Step 2: The Trigger: 
+* Do not trade while price is outside the bands. The signal is confirmed only when a candle closes back inside the Bollinger Band, signaling a shift in momentum. 
 
-* **Wait for the Re-entry:** Do not trade while the price is still outside the bands. Wait for a subsequent candle to move back toward the mean.
-* The Trigger (Confirmation): A candle must close back inside the Bollinger Band to signal a loss of momentum. This 'Close Inside' activates the execution logic in Step 3. Do not place orders until the close of the first candle that re-enters the band.
+#### Step 3: Entry Execution
+* Hybrid Entry: Upon the 'Close Inside' trigger, calculate R:R using the Free Bar extreme (SL) and current Middle SMA (TP).
 
-#### **Step 3: Entry Execution**
+* Market Entry: If R:R $\ge$ 1:1, execute strategy.entry at Market.
 
-Hybrid Entry Execution: Upon the 'Close Inside' trigger, calculate the R:R using the Free Bar extreme as the SL and the current Middle SMA as the TP. If R:R is $\ge$ 1:1, enter at Market; otherwise, use a Limit Order for 1.25x R:R. Once in the trade, the strategy.exit limit must dynamically update to the SMA value on every bar. Once price covers 60% of the distance to the SMA, activate a trailing stop (using trail_points or a previous-bar-extreme trail). This locks in profit while allowing the trade to "drift" toward the moving target.  
-* Target 2 (Opposite Band): To target the opposite band, bundle the SMA limit, the ATR-based Stop Loss, and the Trailing Stop into a single strategy.exit call. This prevents "ghost" orders and ensures Pine Script's broker emulator handles the exit priority correctly.
+* Limit Entry: If R:R < 1:1, place a Limit Order to secure 1.25x R:R (active for 2 bars).
+
+#### Step 4: Risk Management
+* Stop Loss: Set a persistent SL at the Free Bar extreme $\pm$ 0.2 * ATR. Use a single strategy.exit ID to ensure the SL is active immediately upon entry.
+
+Step 5: Dynamic Exit & Trailing
+* Dynamic Target: Update the limit parameter of strategy.exit on every bar to track the Middle SMA.
+
+* Trailing Stop: When price covers 60% of the distance to the SMA, activate a trailing stop. Note to Coder: For a manual bar-by-bar trail, update the stop parameter; for the built-in engine, use trail_price and trail_offset  
 
 ### **Visualizing the Setup**
-* Plotting the "Gap": Use plotfill() or bgcolor() to highlight the area between the Free Bar and the Bollinger Band. This visual "white space" is the primary filter for high-conviction exhaustion trades 
+* Plotting the "Gap": Use fill() between the Bollinger Band and a plot of the High/Low of the Free Bar when isEligible is true. This highlights the "white space" and allows for immediate visual backtesting of exhaustion points   
 
 ### **Why this works better than a "Touch"**
 
