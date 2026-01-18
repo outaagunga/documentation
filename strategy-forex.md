@@ -44,7 +44,7 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 3: Entry Execution**
 
-* **Execute with R:R Validation**: Enter only if the distance to the Middle SMA is at least 1.5x the distance to your Stop Loss. On successful entry execution: set the "Unlocked" persistent variable to false and clear the Free Bar setup state. This ensures the "Cooldown" begins immediately and prevents the script from entering again on the very next candle. If the trigger candle is too long, wait for a minor retracement or skip the trade to avoid "buying/sell the tail" of the move.
+* **Execute with R:R Validation**: Enter only if the distance to the Middle SMA is at least 1.5x the distance to your Stop Loss. On successful entry execution: set the "Unlocked" persistent variable to false and clear the Free Bar setup state. This ensures the "Cooldown" begins immediately and prevents the script from entering again on the very next candle. If the trigger candle's Close is already more than 50% of the way toward the Middle SMA from the Bollinger Band edge, the trade must be invalidated immediately. This prevents 'buying the tail' where the profit potential has already been exhausted by the trigger bar itself.
 
 #### **Step 4: Risk Management (Stop Loss)**
 
@@ -53,7 +53,7 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 5: Profit Taking (Targets)**
 
-* Target 1 (The Mean): Your primary target is the Middle SMA. To protect gains, move your Stop Loss to Breakeven once the price covers 50% of the distance to the SMA, as the mean will "rise/fall" to meet the price, shortening your window.  
+* **Target 1 (The Mean)**: Your primary target is the Middle SMA. Because the SMA is dynamic, the strategy.exit 'limit' parameter must be updated on every bar (bar_index) to track the current SMA value, ensuring the exit order 'drifts' with the mean. To protect gains, move your Stop Loss to Breakeven once the price covers 50% of the distance to the SMA, as the mean will "rise/fall" to meet the price, shortening your window.  
 * **Target 2 (Execution)**: If aiming for the opposite band, use a single strategy.exit call containing both the limit (Target 1) and a dynamic stop (Trailing/Breakeven). Avoid multiple separate exit calls for the same position to prevent script conflicts and "ghost" orders.
 
 ### **Visualizing the Setup**
