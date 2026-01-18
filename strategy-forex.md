@@ -22,6 +22,49 @@ your output should be:
 ---
 ---
 ```vb
+This "Free Bar" variation is a powerful way to filter out weak signals. It uses the statistical extreme of the Bollinger Bands to identify high-probability reversal points.
+
+### **"Free Bar" Reversal Workflow**
+
+#### **Step 1: Identify the "Overextension" (The Setup)**
+
+* **Identify the "Climax" Free Bar**: Look for a candle entirely outside the bands that occurs while the opposite Bollinger Band is starting to curl inward or flatten. This confirms the volatility expansion is stalling rather than accelerating.  
+* For a **Short** trade: The bar must be entirely above the Upper Band.
+* For a **Long** trade: The bar must be entirely below the Lower Band.
+
+* **Confirm the "Gap":** There should be visible "daylight" or white space between the Bollinger Band and the candle's nearest wick.
+
+#### **Step 2: The Return Signal (The Trigger)**
+
+* **Wait for the Re-entry:** Do not trade while the price is still outside the bands. Wait for a subsequent candle to move back toward the mean.
+* **The Close Requirement:** The trigger is a candle that **closes back inside** the Bollinger Band.
+* *Example:* For a short, wait for a candle to close below the Upper Band after the Free Bar has occurred.
+
+#### **Step 3: Entry Execution**
+
+* **Execute with R:R Validation**: Enter at the close of the re-entry candle only if the distance to the Middle SMA is at least 1.5x the distance to your Stop Loss. If the trigger candle is too long, wait for a minor retracement or skip the trade to avoid "buying/sell the tail" of the move.
+
+#### **Step 4: Risk Management (Stop Loss)**
+
+* **Placement:** Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (for shorts) or below the lowest point of the "Free Bar" (for longs).
+* **Logic:** If the price breaks past the Free Bar's extreme, the momentum is too strong and the reversal thesis is invalidated.
+
+#### **Step 5: Profit Taking (Targets)**
+
+* Target 1 (The Mean): Your primary target is the Middle SMA. To protect gains, move your Stop Loss to Breakeven once the price covers 50% of the distance to the SMA, as the mean will "rise/fall" to meet the price, shortening your window.  
+* **Target 2 (The Opposite Band):** If the trend is strong and you want to ride the move, trail your stop loss and aim for the **opposite outer Bollinger Band**.
+
+### **Visualizing the Setup**
+
+### **Why this works better than a "Touch"**
+
+When price merely touches a band, it can "walk the band" for a long time, leading to stop-outs. A **Free Bar** represents a "climax" or "exhaustion" point. By waiting for the price to close back inside, you are letting the market prove to you that the extreme momentum has ended before you put your capital at risk.
+
+**Ensure** all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules  
+```
+---
+---
+```vb
 ## **Reactive Bollinger Bands Trading Logic**
 
 ### **Core Philosophy (Non-Predictive)**
