@@ -28,7 +28,7 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 1: Identify the "Overextension" (The Setup)**
 
-* **Identify the "Climax" Free Bar**: Look for a candle entirely outside the bands that occurs while the opposite Bollinger Band shows loss of expansion, defined as: the slope of the opposite band over the last 2 bars is ≤ 0 (ta.change(oppositeBand, 2) ≤ 0) or the Bollinger Band width has stopped expanding for at least 2 consecutive bars. **Note**: To prevent signal clustering in flat markets, a new setup on the same side is only valid if the price has touched the Middle SMA or the Opposite Band since the last trade.
+* **Identify the "Climax" Free Bar**: Look for a candle entirely outside the bands that occurs while the opposite Bollinger Band shows loss of expansion, defined as: ta.change(oppositeBand, 2) * (isShort ? 1 : -1) <= 0. This ensures the opposite band is either flat or curling inward, confirming the volatility expansion has peaked. **Note**: To prevent signal clustering in flat markets, a new setup on the same side is only valid if the price has touched the Middle SMA or the Opposite Band since the last trade.
 
 * **For a Short trade**: The Low of the bar must be greater than the Upper Band. 
 * **For a Long trade**: The High of the bar must be less than the Lower Band.
@@ -43,22 +43,11 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 3: Entry Execution**
 
-**Hybrid Entry Execution**: Upon the 'Close Inside' trigger, calculate the potential Reward-to-Risk (R:R) relative to the High/Low of the Free Bar (SL) and the Middle SMA (TP).
-
-* **Market Entry**: If the current Close provides at least a 1:1 R:R, execute a Market Order immediately.
-* **Limit Entry**: If the Close is too far from the SMA (R:R < 1:1), place a Limit Order at a price level that secures a 1.25x R:R. This order should remain active for only 2 bars. If not filled, the setup is void 
-
-#### **Step 4: Risk Management (Stop Loss)**
-
-* **Placement (Variable Persistence)**: Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (shorts) or below the lowest point (longs). **Note to Coder**: Track the extreme of the out-of-bounds sequence plus a 0.2 * ATR buffer using a persistent variable. Reset this only when strategy.position_size == 0 or when longUnlocked is toggled. This ensures the strategy.exit command maintains a valid reference point and prevents premature stop-outs from minor wicks at the exhaustion peak.
-* **Logic:** If the price breaks past the Free Bar's extreme, the momentum is too strong and the reversal thesis is invalidated.
-
-#### **Step 5: Profit Taking (Targets)**
-
-* **Target 1 (The Mean)**: Set the strategy.exit limit to the Middle SMA. This must update every bar to track the dynamic mean. Once price covers 60% of the distance to the SMA, activate a trailing stop (using trail_points or a previous-bar-extreme trail). This locks in profit while allowing the trade to "drift" toward the moving target.  
-* **Target 2 (Execution)**: If aiming for the opposite band, use a single strategy.exit call containing both the limit (Target 1) and a dynamic stop (Trailing/Breakeven). Avoid multiple separate exit calls for the same position to prevent script conflicts and "ghost" orders.
+Hybrid Entry Execution: Upon the 'Close Inside' trigger, calculate the R:R using the Free Bar extreme as the SL and the current Middle SMA as the TP. If R:R is $\ge$ 1:1, enter at Market; otherwise, use a Limit Order for 1.25x R:R. Once in the trade, the strategy.exit limit must dynamically update to the SMA value on every bar. Once price covers 60% of the distance to the SMA, activate a trailing stop (using trail_points or a previous-bar-extreme trail). This locks in profit while allowing the trade to "drift" toward the moving target.  
+* Target 2 (Opposite Band): To target the opposite band, bundle the SMA limit, the ATR-based Stop Loss, and the Trailing Stop into a single strategy.exit call. This prevents "ghost" orders and ensures Pine Script's broker emulator handles the exit priority correctly.
 
 ### **Visualizing the Setup**
+* Plotting the "Gap": Use plotfill() or bgcolor() to highlight the area between the Free Bar and the Bollinger Band. This visual "white space" is the primary filter for high-conviction exhaustion trades 
 
 ### **Why this works better than a "Touch"**
 
