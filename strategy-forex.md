@@ -39,12 +39,14 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 #### **Step 2: The Return Signal (The Trigger)**
 
 * **Wait for the Re-entry:** Do not trade while the price is still outside the bands. Wait for a subsequent candle to move back toward the mean.
-* **The Close Requirement**: The trigger is a candle that closes back inside the Bollinger Band while a Free Bar state is active. Crucially, do not reset the Free Bar variable here. The state should only be cleared in Step 3 once the entry conditions (including R:R validation) are fully met and the trade is executed.
-* *Example:* For a short, wait for a candle to close below the Upper Band after the Free Bar has occurred.
+* **The Close Requirement**: The 'Close Inside' creates a 'Pending Trigger' state. Once this state is active, the script should place a Limit Order at a price level that satisfies the 1.5x R:R requirement (usually near the Bollinger Band edge). This allows the script to 'wait for the retracement' automatically by letting price come to the order, rather than forcing an entry at a sub-optimal market close.
 
 #### **Step 3: Entry Execution**
 
-* **Execute with R:R Validation**: Enter only if the distance to the Middle SMA is at least 1.5x the distance to your Stop Loss. On successful entry execution: set the "Unlocked" persistent variable to false and clear the Free Bar setup state. This ensures the "Cooldown" begins immediately and prevents the script from entering again on the very next candle. If the trigger candle's Close is already more than 50% of the way toward the Middle SMA from the Bollinger Band edge, the trade must be invalidated immediately. This prevents 'buying the tail' where the profit potential has already been exhausted by the trigger bar itself.
+* Execute with Limit Validation: Once the trigger candle closes inside, calculate the 'Max Entry Price' that allows for a 1.5x R:R.
+ * If the current Close satisfies this, enter at Market.
+ * If the Close is too far (the 'tail'), place a Limit Order at that 'Max Entry Price' for the next 3 bars.
+ * If price does not retrace to hit your Limit within 3 bars, or if price touches the SMA first, cancel the setup.
 
 #### **Step 4: Risk Management (Stop Loss)**
 
