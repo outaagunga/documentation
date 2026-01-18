@@ -44,18 +44,16 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 #### **Step 3: Entry Execution**
 
 * Execute with Limit Validation: Once the trigger candle closes inside, calculate the 'Max Entry Price' that allows for a 1.5x R:R.
- * If the current Close satisfies this, enter at Market.
- * If the Close is too far (the 'tail'), place a Limit Order at that 'Max Entry Price' for the next 3 bars.
- * If price does not retrace to hit your Limit within 3 bars, or if price touches the SMA first, cancel the setup.
+ * Hybrid Entry Execution: If the Close allows for at least 1:1 R:R, enter at Market immediately to capture momentum. If the R:R is less than 1:1 (the 'tail' is too long), place a Limit Order at the 1.25x R:R price level valid for the next 2 bars. This ensures you don't miss "fast" trades while still protecting against "chasing" bad prices. 
 
 #### **Step 4: Risk Management (Stop Loss)**
 
-* **Placement (Variable Persistence)**: Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (shorts) or below the lowest point (longs). **Note to Coder**: The Stop Loss variable must track the highest high (for shorts) or lowest low (for longs) of the entire out-of-bounds sequence. Use a rolling max/min comparison to ensure the SL captures the absolute climax point, not just the most recent bar. Reset this variable only when strategy.position_size == 0. If you reset it during the entry phase, your strategy.exit command will default to a null value, leaving your trade with no protection, otherwise the strategy.exit command will lose its reference point and fail to protect the position.
+* **Placement (Variable Persistence)**: Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (shorts) or below the lowest point (longs). **Note to Coder**: The Stop Loss variable must track the highest high/lowest low of the out-of-bounds sequence plus a buffer of 0.2 * ATR. Reset this variable when strategy.position_size == 0 or when longUnlocked is toggled to true. Adding the ATR buffer prevents "wick-outs" from minor stop-runs that frequently occur at exhaustion points before the actual reversal. If you reset it during the entry phase, your strategy.exit command will default to a null value, leaving your trade with no protection, otherwise the strategy.exit command will lose its reference point and fail to protect the position.
 * **Logic:** If the price breaks past the Free Bar's extreme, the momentum is too strong and the reversal thesis is invalidated.
 
 #### **Step 5: Profit Taking (Targets)**
 
-* **Target 1 (The Mean)**: Your primary target is the Middle SMA. Because the SMA is dynamic, the strategy.exit 'limit' parameter must be updated on every bar (bar_index) to track the current SMA value, ensuring the exit order 'drifts' with the mean. To protect gains, move your Stop Loss to Breakeven once the price covers 50% of the distance to the SMA, as the mean will "rise/fall" to meet the price, shortening your window.  
+* **Target 1 (The Mean)**: Your primary target is the Middle SMA. Because the SMA is dynamic, the strategy.exit 'limit' parameter must be updated on every bar (bar_index) to track the current SMA value, ensuring the exit order 'drifts' with the mean. To protect gains, move your Stop Loss to Trailing mode once price covers 60% of the distance to the SMA. Instead of a hard Breakeven, use a trailing stop keyed to the previous bar's high/low. This allows the trade more "room to breathe" as it approaches the mean, accounting for the fact that the SMA target is actively moving toward your position.  
 * **Target 2 (Execution)**: If aiming for the opposite band, use a single strategy.exit call containing both the limit (Target 1) and a dynamic stop (Trailing/Breakeven). Avoid multiple separate exit calls for the same position to prevent script conflicts and "ghost" orders.
 
 ### **Visualizing the Setup**
