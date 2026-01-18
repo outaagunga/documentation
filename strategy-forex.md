@@ -32,7 +32,7 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 * **For a Short trade**: The Low of the bar must be greater than the Upper Band. 
 * **For a Long trade**: The High of the bar must be less than the Lower Band.
-* **State Control (The Latch)**: Use a persistent variable (e.g., var bool longUnlocked = true) to track eligibility. This variable must remain true once the Middle SMA or Opposite Band is touched, and must only be set to false the moment a trade is executed. This "latches" the state so the script doesn't miss setups that happen several bars after the mean was touched.
+* **State Control (The Latch)**: Use a persistent variable (e.g., var bool longUnlocked = true) to track eligibility. This variable remains true once the Middle SMA/Opposite Band is touched, but must be reset to false if: 1. A trade is executed, OR 2. Price touches the Middle SMA again before a trigger occurs, OR 3. A new Free Bar appears on the opposite side. This "latches" the state so the script doesn't miss setups that happen several bars after the mean was touched.
 
 * **Confirm the "Gap":** There should be visible "daylight" or white space between the Bollinger Band and the candle's nearest wick.
 
@@ -48,7 +48,7 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 4: Risk Management (Stop Loss)**
 
-* **Placement (Variable Persistence)**: Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (shorts) or below the lowest point (longs). **Note to Coder**: The variable storing the Free Bar extreme (the Stop Loss level) must persist as long as a position is open. Reset this variable only when strategy.position_size == 0. If you reset it during the entry phase, your strategy.exit command will default to a null value, leaving your trade with no protection, otherwise the strategy.exit command will lose its reference point and fail to protect the position.
+* **Placement (Variable Persistence)**: Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (shorts) or below the lowest point (longs). **Note to Coder**: The Stop Loss variable must track the highest high (for shorts) or lowest low (for longs) of the entire out-of-bounds sequence. Use a rolling max/min comparison to ensure the SL captures the absolute climax point, not just the most recent bar. Reset this variable only when strategy.position_size == 0. If you reset it during the entry phase, your strategy.exit command will default to a null value, leaving your trade with no protection, otherwise the strategy.exit command will lose its reference point and fail to protect the position.
 * **Logic:** If the price breaks past the Free Bar's extreme, the momentum is too strong and the reversal thesis is invalidated.
 
 #### **Step 5: Profit Taking (Targets)**
