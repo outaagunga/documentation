@@ -39,12 +39,14 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 #### **Step 2: The Return Signal (The Trigger)**
 
 * **Wait for the Re-entry:** Do not trade while the price is still outside the bands. Wait for a subsequent candle to move back toward the mean.
-* **The Close Requirement**: The 'Close Inside' creates a 'Pending Trigger' state. Once this state is active, the script should place a Limit Order at a price level that satisfies the 1.5x R:R requirement (usually near the Bollinger Band edge). This allows the script to 'wait for the retracement' automatically by letting price come to the order, rather than forcing an entry at a sub-optimal market close.
+* The Trigger (Confirmation): A candle must close back inside the Bollinger Band to signal a loss of momentum. This 'Close Inside' activates the execution logic in Step 3. Do not place orders until the close of the first candle that re-enters the band.
 
 #### **Step 3: Entry Execution**
 
-* Execute with Limit Validation: Once the trigger candle closes inside, calculate the 'Max Entry Price' that allows for a 1.5x R:R.
- * Hybrid Entry Execution: If the Close allows for at least 1:1 R:R, enter at Market immediately to capture momentum. If the R:R is less than 1:1 (the 'tail' is too long), place a Limit Order at the 1.25x R:R price level valid for the next 2 bars. This ensures you don't miss "fast" trades while still protecting against "chasing" bad prices. 
+**Hybrid Entry Execution**: Upon the 'Close Inside' trigger, calculate the potential Reward-to-Risk (R:R) relative to the High/Low of the Free Bar (SL) and the Middle SMA (TP).
+
+* **Market Entry**: If the current Close provides at least a 1:1 R:R, execute a Market Order immediately.
+* **Limit Entry**: If the Close is too far from the SMA (R:R < 1:1), place a Limit Order at a price level that secures a 1.25x R:R. This order should remain active for only 2 bars. If not filled, the setup is void 
 
 #### **Step 4: Risk Management (Stop Loss)**
 
@@ -53,7 +55,7 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 5: Profit Taking (Targets)**
 
-* **Target 1 (The Mean)**: Your primary target is the Middle SMA. Because the SMA is dynamic, the strategy.exit 'limit' parameter must be updated on every bar (bar_index) to track the current SMA value, ensuring the exit order 'drifts' with the mean. To protect gains, move your Stop Loss to Trailing mode once price covers 60% of the distance to the SMA. Instead of a hard Breakeven, use a trailing stop keyed to the previous bar's high/low. This allows the trade more "room to breathe" as it approaches the mean, accounting for the fact that the SMA target is actively moving toward your position.  
+* **Target 1 (The Mean)**: Your primary target is the Middle SMA. Because the SMA is dynamic, the strategy.exit 'limit' parameter must be updated on every bar (bar_index) to track the current SMA value, ensuring the exit order 'drifts' with the mean. Active Trade Management: Once price reaches 60% of the distance to the Middle SMA, activate a trailing stop. Use strategy.exit with the trail_points and trail_offset parameters, or manually update the SL to the previous bar's High (for shorts) or Low (for longs) to lock in profit while allowing the trade to reach the dynamic SMA target. This allows the trade more "room to breathe" as it approaches the mean, accounting for the fact that the SMA target is actively moving toward your position.  
 * **Target 2 (Execution)**: If aiming for the opposite band, use a single strategy.exit call containing both the limit (Target 1) and a dynamic stop (Trailing/Breakeven). Avoid multiple separate exit calls for the same position to prevent script conflicts and "ghost" orders.
 
 ### **Visualizing the Setup**
