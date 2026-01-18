@@ -84,9 +84,12 @@
     - Authorization:
     - Data protection:
     
-    #### Scalability
-    - Expected users:
-    - Growth plan:
+    #### Scalability & Cost (FinOps)
+    - Expected users:
+    - Growth plan:
+    - Monthly Budget Limit: (e.g., $50/mo)
+    - Cost Monitoring: (Billing alerts setup at 50%, 75%, 100%)
+    - Resource Quotas: (API rate limits, DB storage caps)
     
     #### Reliability & Business Continuity
     - Availability (SLA): % Uptime target
@@ -144,10 +147,11 @@
     - Compliance: (GDPR / HIPAA / SOC2 requirements)
     
     #### DevOps & Infrastructure
-    - Hosting:
-    - Infrastructure as Code: (Terraform / Pulumi / CloudFormation)
-    - CI/CD:
-    - Secrets Management: (Vault / AWS Secrets Manager)
+    - Hosting:
+    - Infrastructure as Code: (Terraform / Pulumi / CloudFormation)
+    - CI/CD:
+    - Secrets Management: (Vault / AWS Secrets Manager)
+    - Artifact Registry: (Docker Hub / ECR / GHCR)
     
     #### Observability
     - Logging: (Structured JSON / ELK / Axiom)
@@ -283,9 +287,10 @@
     ### PHASE 2 – Core Foundation
     
     1. Architecture skeleton  
-    2. Base modules  
+    2. Base modules & Dependency Injection setup
     3. Config system (Env var validation)
     4. Global Error handling & Health-check endpoint (/health)
+    5. Database Connection Pooling logic
     
     TEST:
     - App starts and responds to health-check
@@ -451,7 +456,8 @@
     - On-Call Rotation: (Who is responsible and when)
     - Runbooks: (Step-by-step guides for "The site is down" or "DB is slow")
     - Scheduled Maintenance: (Database vacuuming, certificate renewals)
-    - Patching Strategy: (How we handle 0-day security vulnerabilities)  
+    - Patching Strategy: (How we handle 0-day security vulnerabilities)
+    - Data Backup Testing: (Quarterly schedule to verify backups actually work)  
     
     ---
     
