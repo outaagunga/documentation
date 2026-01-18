@@ -3,7 +3,7 @@
 - give a simplified version that actually works for beginners  
 - give a step-by-step checklist  
 - Give your output in this format
-- Which part of [e.g this guide] should I edit
+- Help me spot redundancies in this  
 - Spot hidden assumptions/ Structural logic conflict/ Logical ambiguity/Blind spot/ Explore multiple perspectives/ Asking the right question?
 - Explain this in clear, concise bulleted points without adding new assumptions    
 - I need help with [your task]. Before you start, ask me 3 questions to make sure you understand exactly what I need.
@@ -32,7 +32,7 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 * **For a Short trade**: The Low of the bar must be greater than the Upper Band. 
 * **For a Long trade**: The High of the bar must be less than the Lower Band.
-* **State Control (The Latch)**: Use a persistent variable (e.g., var bool longUnlocked = true) to track eligibility. This variable remains true once the Middle SMA/Opposite Band is touched, but must be reset to false if: 1. A trade is executed, OR 2. Price touches the Middle SMA again before a trigger occurs, OR 3. A new Free Bar appears on the opposite side. This "latches" the state so the script doesn't miss setups that happen several bars after the mean was touched.
+* **State Control (The Latch)**: Use a persistent Boolean (e.g., isEligible) that sets to true upon touching the Middle SMA/Opposite Band. Reset to false if a trade executes, price re-touches the SMA before a trigger, or a Free Bar appears on the opposite side. This ensures the setup remains valid if the reversal takes several bars to materialize. 
 
 * **Confirm the "Gap":** There should be visible "daylight" or white space between the Bollinger Band and the candle's nearest wick.
 
@@ -50,12 +50,12 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 4: Risk Management (Stop Loss)**
 
-* **Placement (Variable Persistence)**: Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (shorts) or below the lowest point (longs). **Note to Coder**: The Stop Loss variable must track the highest high/lowest low of the out-of-bounds sequence plus a buffer of 0.2 * ATR. Reset this variable when strategy.position_size == 0 or when longUnlocked is toggled to true. Adding the ATR buffer prevents "wick-outs" from minor stop-runs that frequently occur at exhaustion points before the actual reversal. If you reset it during the entry phase, your strategy.exit command will default to a null value, leaving your trade with no protection, otherwise the strategy.exit command will lose its reference point and fail to protect the position.
+* **Placement (Variable Persistence)**: Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (shorts) or below the lowest point (longs). **Note to Coder**: Track the extreme of the out-of-bounds sequence plus a 0.2 * ATR buffer using a persistent variable. Reset this only when strategy.position_size == 0 or when longUnlocked is toggled. This ensures the strategy.exit command maintains a valid reference point and prevents premature stop-outs from minor wicks at the exhaustion peak.
 * **Logic:** If the price breaks past the Free Bar's extreme, the momentum is too strong and the reversal thesis is invalidated.
 
 #### **Step 5: Profit Taking (Targets)**
 
-* **Target 1 (The Mean)**: Your primary target is the Middle SMA. Because the SMA is dynamic, the strategy.exit 'limit' parameter must be updated on every bar (bar_index) to track the current SMA value, ensuring the exit order 'drifts' with the mean. Active Trade Management: Once price reaches 60% of the distance to the Middle SMA, activate a trailing stop. Use strategy.exit with the trail_points and trail_offset parameters, or manually update the SL to the previous bar's High (for shorts) or Low (for longs) to lock in profit while allowing the trade to reach the dynamic SMA target. This allows the trade more "room to breathe" as it approaches the mean, accounting for the fact that the SMA target is actively moving toward your position.  
+* **Target 1 (The Mean)**: Set the strategy.exit limit to the Middle SMA. This must update every bar to track the dynamic mean. Once price covers 60% of the distance to the SMA, activate a trailing stop (using trail_points or a previous-bar-extreme trail). This locks in profit while allowing the trade to "drift" toward the moving target.  
 * **Target 2 (Execution)**: If aiming for the opposite band, use a single strategy.exit call containing both the limit (Target 1) and a dynamic stop (Trailing/Breakeven). Avoid multiple separate exit calls for the same position to prevent script conflicts and "ghost" orders.
 
 ### **Visualizing the Setup**
