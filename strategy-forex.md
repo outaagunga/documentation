@@ -28,7 +28,7 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 1: Identify the "Overextension" (The Setup)**
 
-* **Identify the "Climax" Free Bar**: Look for a candle entirely outside the bands that occurs while the opposite Bollinger Band is starting to curl inward or flatten. **Note**: To prevent signal clustering in flat markets, a new setup on the same side is only valid if the price has touched the Middle SMA or the Opposite Band since the last trade.
+* **Identify the "Climax" Free Bar**: Look for a candle entirely outside the bands that occurs while the opposite Bollinger Band shows loss of expansion, defined as: the slope of the opposite band over the last 2 bars is ≤ 0 (ta.change(oppositeBand, 2) ≤ 0) or the Bollinger Band width has stopped expanding for at least 2 consecutive bars. **Note**: To prevent signal clustering in flat markets, a new setup on the same side is only valid if the price has touched the Middle SMA or the Opposite Band since the last trade.
 
 * **For a Short trade**: The Low of the bar must be greater than the Upper Band. 
 * **For a Long trade**: The High of the bar must be less than the Lower Band.
