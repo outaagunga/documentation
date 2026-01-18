@@ -28,16 +28,18 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 1: Identify the "Overextension" (The Setup)**
 
-* **Identify the "Climax" Free Bar**: Look for a candle entirely outside the bands that occurs while the opposite Bollinger Band is starting to curl inward or flatten. **Note**: To prevent signal clustering in flat markets, a new setup on the same side is only valid if the price has touched the Middle SMA or the Opposite Band since the last trade.  
-* For a **Short** trade: The bar must be entirely above the Upper Band.
-* For a **Long** trade: The bar must be entirely below the Lower Band.
+* **Identify the "Climax" Free Bar**: Look for a candle entirely outside the bands that occurs while the opposite Bollinger Band is starting to curl inward or flatten. **Note**: To prevent signal clustering in flat markets, a new setup on the same side is only valid if the price has touched the Middle SMA or the Opposite Band since the last trade.
+
+* **For a Short trade**: The Low of the bar must be greater than the Upper Band. 
+* **For a Long trade**: The High of the bar must be less than the Lower Band.
+* **State Control**: Use a "persistent variable" to track if the mean has been touched. Once a trade is taken, disable new entries until the price touches the Middle SMA or the opposite band.
 
 * **Confirm the "Gap":** There should be visible "daylight" or white space between the Bollinger Band and the candle's nearest wick.
 
 #### **Step 2: The Return Signal (The Trigger)**
 
 * **Wait for the Re-entry:** Do not trade while the price is still outside the bands. Wait for a subsequent candle to move back toward the mean.
-* **The Close Requirement:** The trigger is a candle that **closes back inside** the Bollinger Band.
+* **The Close Requirement**: The trigger is a candle that closes back inside the Bollinger Band while a Free Bar state is active. Once the trigger fires, the Free Bar state must be reset (set to na) so the script doesn't enter multiple times on the same setup.
 * *Example:* For a short, wait for a candle to close below the Upper Band after the Free Bar has occurred.
 
 #### **Step 3: Entry Execution**
