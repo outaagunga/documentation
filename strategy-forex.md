@@ -39,16 +39,16 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 #### **Step 2: The Return Signal (The Trigger)**
 
 * **Wait for the Re-entry:** Do not trade while the price is still outside the bands. Wait for a subsequent candle to move back toward the mean.
-* **The Close Requirement**: The trigger is a candle that closes back inside the Bollinger Band while a Free Bar state is active. Once the trigger fires, the Free Bar state must be reset (set to na) so the script doesn't enter multiple times on the same setup.
+* **The Close Requirement**: The trigger is a candle that closes back inside the Bollinger Band while a Free Bar state is active. Crucially, do not reset the Free Bar variable here. The state should only be cleared in Step 3 once the entry conditions (including R:R validation) are fully met and the trade is executed.
 * *Example:* For a short, wait for a candle to close below the Upper Band after the Free Bar has occurred.
 
 #### **Step 3: Entry Execution**
 
-* **Execute with R:R Validation**: Enter at the close of the re-entry candle only if the distance to the Middle SMA is at least 1.5x the distance to your Stop Loss. If the trigger candle is too long, wait for a minor retracement or skip the trade to avoid "buying/sell the tail" of the move.
+* **Execute with R:R Validation**: Enter only if the distance to the Middle SMA is at least 1.5x the distance to your Stop Loss. On successful entry execution: set the "Unlocked" persistent variable to false and clear the Free Bar setup state. This ensures the "Cooldown" begins immediately and prevents the script from entering again on the very next candle. If the trigger candle is too long, wait for a minor retracement or skip the trade to avoid "buying/sell the tail" of the move.
 
 #### **Step 4: Risk Management (Stop Loss)**
 
-* **Placement (Variable Persistence)**: Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (shorts) or below the lowest point (longs). **Note to Coder**: Ensure the variable storing this price level (e.g., lastShortFreeBar) is not reset to na until the trade is fully closed, otherwise the strategy.exit command will lose its reference point and fail to protect the position.
+* **Placement (Variable Persistence)**: Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (shorts) or below the lowest point (longs). **Note to Coder**: The variable storing the Free Bar extreme (the Stop Loss level) must persist as long as a position is open. Reset this variable only when strategy.position_size == 0. If you reset it during the entry phase, your strategy.exit command will default to a null value, leaving your trade with no protection, otherwise the strategy.exit command will lose its reference point and fail to protect the position.
 * **Logic:** If the price breaks past the Free Bar's extreme, the momentum is too strong and the reversal thesis is invalidated.
 
 #### **Step 5: Profit Taking (Targets)**
