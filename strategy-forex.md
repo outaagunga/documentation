@@ -32,7 +32,7 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 * **For a Short trade**: The Low of the bar must be greater than the Upper Band. 
 * **For a Long trade**: The High of the bar must be less than the Lower Band.
-* **State Control (The Latch)**: Use a persistent Boolean (e.g., isEligible) that sets to true upon touching the Middle SMA/Opposite Band. Reset to false if a trade executes, price re-touches the SMA before a trigger, or a Free Bar appears on the opposite side. This ensures the setup remains valid if the reversal takes several bars to materialize. 
+* **State Control (The Latch)**: Use a persistent Boolean (e.g., isEligible) that sets to true upon touching the Middle SMA/Opposite Band. Reset to false if a trade executes or a Free Bar appears on the opposite side. If price crosses the Middle SMA without a trigger, the setup is invalidated only if the bar closes on the opposite side of the SMA. This ensures the setup remains valid if the reversal takes several bars to materialize. 
 
 * **Confirm the "Gap":** There should be visible "daylight" or white space between the Bollinger Band and the candle's nearest wick.
 
@@ -44,18 +44,19 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 * Market Entry: If R:R $\ge$ 1:1, execute strategy.entry at Market.
 
-* Limit Entry: If R:R < 1:1, place a Limit Order to secure 1.25x R:R (active for 2 bars).
+* Limit Entry: If R:R < 1:1, place a Limit Order at a price level that secures a 1.5x R:R. If price reaches the Middle SMA before the Limit is filled, cancel the order immediately
 
 #### Step 4: Risk Management
 * Stop Loss: Set a persistent SL at the Free Bar extreme $\pm$ 0.2 * ATR. Use a single strategy.exit ID to ensure the SL is active immediately upon entry.
 
 Step 5: Dynamic Exit & Trailing
-* Dynamic Target: Update the limit parameter of strategy.exit on every bar to track the Middle SMA.
+* Dynamic Target: Update the limit parameter to track the Middle SMA, but offset the target by 0.1 * ATR toward the band to account for "front-running" at the mean. 
 
 * Trailing Stop: When price covers 60% of the distance to the SMA, activate a trailing stop. Note to Coder: For a manual bar-by-bar trail, update the stop parameter; for the built-in engine, use trail_price and trail_offset  
 
 ### **Visualizing the Setup**
-* Plotting the "Gap": Use fill() between the Bollinger Band and a plot of the High/Low of the Free Bar when isEligible is true. This highlights the "white space" and allows for immediate visual backtesting of exhaustion points   
+* Plotting the "Gap": Define two conditional plots: 'GapPrice' (High or Low of the Free Bar) and 'BandPrice' (the corresponding Bollinger Band). Use style=plot.style_linebr for both. Execute fill(plot1, plot2) with a high-transparency color to highlight the 'daylight' only on bars where price is entirely outside the bands.
+* This highlights the "white space" and allows for immediate visual backtesting of exhaustion points   
 
 ### **Why this works better than a "Touch"**
 
