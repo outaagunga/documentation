@@ -63,7 +63,8 @@ Step 5: Dynamic Exit & Trailing
 
 When price merely touches a band, it can "walk the band" for a long time, leading to stop-outs. A **Free Bar** represents a "climax" or "exhaustion" point. By waiting for the price to close back inside, you are letting the market prove to you that the extreme momentum has ended before you put your capital at risk.
 
-**Ensure** all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules  
+**Ensure** all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules
+* The code is strictly non-repainting by utilizing 'calc_on_every_tick=false' and referencing 'close[0]' only for the Trigger. All state-control Booleans must be updated using the 'var' keyword or the ':= ' assignment operator to prevent state-resetting on every new bar. The execution logic must prioritize 'Strategy.Entry' orders strictly AFTER 'isEligible' validation to avoid look-ahead bias  
 ```
 ---
 ---
