@@ -31,6 +31,8 @@ They are used **reactively** to detect **volatility expansion and trend particip
 
 The strategy trades **momentum continuation first** and **exhaustion second**, with continuation having higher priority.
 
+**CRITICAL:** The strategy must be coded to be tradable in real markets, not as a mathematically perfect intersection of conditions. State progression and fallbacks are mandatory  
+
 ## **Indicator Definitions (Explicit)**
 
 * **Bollinger Bands**
@@ -301,6 +303,61 @@ Example of other logics includes:
 | Setting              | Value |
 |----------------------|-------|
 | Stop ATR Multiplier  | 1.5   |
+
+---
+
+### **Implementation Constraints (Mandatory – Do Not Omit)**
+
+The coder must implement the strategy with the following principles:
+
+1. **Faithful Architecture Requirement**
+
+   * The implementation must preserve the conceptual model exactly:
+     SQUEEZE → ACTIVE → WALK → EXIT
+   * All state definitions and transitions must exist as described, without collapsing them into a single-condition strategy.
+
+2. **Tradable Evaluation Order**
+
+   * Conditions must be evaluated in a *causal sequence*, not as a single simultaneous Boolean intersection.
+   * The engine must:
+
+     1. Detect SQUEEZE
+     2. THEN enable ACTIVE on expansion
+     3. THEN evaluate WALK
+     4. THEN apply trend/volatility confirmation
+   * The coder must avoid requiring all filters to be true on the same candle if this creates unreachable logic.
+
+3. **Fallback Logic Requirement**
+
+   * Where multiple conditions can logically block each other, the implementation must include fallbacks such as:
+
+     * Time-outs (e.g., M bars without WALK → IDLE)
+     * Priority ordering (continuation > exhaustion)
+     * Grace bars / tolerances exactly as specified (e.g., 1-bar WALK exception).
+
+4. **Reachability Guarantee**
+
+   * The coder must verify that:
+
+     * WALK states can actually be entered after a real expansion
+     * Exit conditions are reachable from valid entries
+     * No rule contradicts another rule (e.g., SD2 not forbidden before entry while required for exit).
+
+5. **No “Perfect Intersection” Anti-Pattern**
+
+   * The implementation must NOT require:
+
+     * Expansion + WALK + HMA confirmation + volatility filter
+       to all become true on the identical bar.
+   * These must be staged checks consistent with the state machine.
+
+6. **Philosophy Preservation**
+
+   * Never convert this into mean-reversion logic.
+   * Band interaction must be treated as momentum participation first, exhaustion second.
+
+---
+
 
 **Ensure** all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules
 ```
