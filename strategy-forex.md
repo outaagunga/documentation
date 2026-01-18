@@ -56,7 +56,8 @@ Step 5: Dynamic Exit & Trailing
 
 ### **Visualizing the Setup**
 * Plotting the "Gap": Define two conditional plots: 'GapPrice' (High or Low of the Free Bar) and 'BandPrice' (the corresponding Bollinger Band). Use style=plot.style_linebr for both. Execute fill(plot1, plot2) with a high-transparency color to highlight the 'daylight' only on bars where price is entirely outside the bands.
-* This highlights the "white space" and allows for immediate visual backtesting of exhaustion points   
+* This highlights the "white space" and allows for immediate visual backtesting of exhaustion points
+* Color bands differently during eligible state 
 
 ### **Why this works better than a "Touch"**
 
