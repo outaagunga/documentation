@@ -28,10 +28,10 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 1: Identify the "Overextension" (The Setup)**
 
-* **Identify the "Climax" Free Bar**: Look for a candle entirely outside the bands that occurs while the opposite Bollinger Band shows loss of expansion, defined as: ta.change(oppositeBand, 2) * (isShort ? 1 : -1) <= 0. This ensures the opposite band is either flat or curling inward, confirming the volatility expansion has peaked. **Note**: To prevent signal clustering in flat markets, a new setup on the same side is only valid if the price has touched the Middle SMA or the Opposite Band since the last trade.
+* **Identify the "Climax" Free Bar**: Look for a candle entirely outside the bands that occurs while the oppositeBand shows loss of expansion, defined as: ta.change(oppositeBand, 1) * (isShort ? 1 : -1) <= 0.1 * ta.atr(14). This ensures the opposite band is either flat or curling inward, confirming the volatility expansion has peaked. **Note**: To prevent signal clustering in flat markets, a new setup on the same side is only valid if the price has touched the Middle SMA or the Opposite Band since the last trade.
 
-* **For a Short trade**: The Low of the bar must be greater than the Upper Band. 
-* **For a Long trade**: The High of the bar must be less than the Lower Band.
+* **For a Short trade**: The Open and Close of the bar must be greater than the Upper Band. 
+* **For a Long trade**: The Open and Close of the bar must be less than the Lower Band.
 * **State Control (The Latch)**: Use a persistent Boolean (e.g., isEligible) that sets to true upon touching the Middle SMA/Opposite Band. Reset to false if a trade executes or a Free Bar appears on the opposite side. If price crosses the Middle SMA without a trigger, the setup is invalidated only if the bar closes on the opposite side of the SMA. This ensures the setup remains valid if the reversal takes several bars to materialize. 
 
 * **Confirm the "Gap":** There should be visible "daylight" or white space between the Bollinger Band and the candle's nearest wick.
@@ -44,7 +44,9 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 * Market Entry: If R:R $\ge$ 1:1, execute strategy.entry at Market.
 
-* Limit Entry: If R:R < 1:1, place a Limit Order at a price level that secures a 1.5x R:R. If price reaches the Middle SMA before the Limit is filled, cancel the order immediately
+* Aggressive Entry: If R:R $\ge$ 0.8:1, execute at Market. 
+* Limit Entry: If R:R < 0.8:1, place a Limit Order at the mid-point of the Trigger Candle. This balances the need for a better price with the reality of fast-moving mean reversions 
+* If price reaches the Middle SMA before the Limit is filled, cancel the order immediately 
 
 #### Step 4: Risk Management
 * Stop Loss: Set a persistent SL at the Free Bar extreme $\pm$ 0.2 * ATR. Use a single strategy.exit ID to ensure the SL is active immediately upon entry.
