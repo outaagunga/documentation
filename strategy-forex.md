@@ -32,7 +32,7 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 * **For a Short trade**: The Low of the bar must be greater than the Upper Band. 
 * **For a Long trade**: The High of the bar must be less than the Lower Band.
-* **State Control**: Use a "persistent variable" to track if the mean has been touched. Once a trade is taken, disable new entries until the price touches the Middle SMA or the opposite band.
+* **State Control (The Latch)**: Use a persistent variable (e.g., var bool longUnlocked = true) to track eligibility. This variable must remain true once the Middle SMA or Opposite Band is touched, and must only be set to false the moment a trade is executed. This "latches" the state so the script doesn't miss setups that happen several bars after the mean was touched.
 
 * **Confirm the "Gap":** There should be visible "daylight" or white space between the Bollinger Band and the candle's nearest wick.
 
@@ -48,13 +48,13 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 4: Risk Management (Stop Loss)**
 
-* **Placement:** Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (for shorts) or below the lowest point of the "Free Bar" (for longs).
+* **Placement (Variable Persistence)**: Place your Stop Loss (SL) slightly above the highest point of the "Free Bar" (shorts) or below the lowest point (longs). **Note to Coder**: Ensure the variable storing this price level (e.g., lastShortFreeBar) is not reset to na until the trade is fully closed, otherwise the strategy.exit command will lose its reference point and fail to protect the position.
 * **Logic:** If the price breaks past the Free Bar's extreme, the momentum is too strong and the reversal thesis is invalidated.
 
 #### **Step 5: Profit Taking (Targets)**
 
 * Target 1 (The Mean): Your primary target is the Middle SMA. To protect gains, move your Stop Loss to Breakeven once the price covers 50% of the distance to the SMA, as the mean will "rise/fall" to meet the price, shortening your window.  
-* **Target 2 (The Opposite Band):** If the trend is strong and you want to ride the move, trail your stop loss and aim for the **opposite outer Bollinger Band**.
+* **Target 2 (Execution)**: If aiming for the opposite band, use a single strategy.exit call containing both the limit (Target 1) and a dynamic stop (Trailing/Breakeven). Avoid multiple separate exit calls for the same position to prevent script conflicts and "ghost" orders.
 
 ### **Visualizing the Setup**
 
