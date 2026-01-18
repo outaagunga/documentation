@@ -88,7 +88,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 **Conditions:**
 
-* Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), within any rolling 4-bar window, Normalized BBWidth must increase on at least 2 bars relative to their immediately preceding bars, and no single bar contributes more than 50% of the cumulative Normalized BBWidth increase measured from the final squeeze bar to the current bar.
+* Expansion is valid if, within a rolling window of L bars after a squeeze (e.g., L = 5), within any rolling 4-bar window, Normalized BBWidth must increase on at least 2 bars relative to their immediately preceding bars, and no single bar contributes more than 90% of the cumulative Normalized BBWidth increase, ensuring the expansion is not a single-tick outlier while still allowing for strong impulse bars measured from the final squeeze bar to the current bar.
 * No directional bias is assigned during expansion. Expansion only enables participation logic; direction is confirmed exclusively during the WALK phase via sustained price-band interaction
 * The squeeze before expansion must have lasted for at least 4–8 bars, indicating meaningful volatility compression rather than noise
 * Confirmation requires band separation, defined as the band corresponding to price location moving away from the middle band for at least 2 bars, without implying future direction. Simultaneous divergence is optional and has no effect on trade validity
@@ -111,7 +111,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 Price is considered to be “walking” a band when:
 
-* At least K consecutive closes (allowing 1 bar exception) within ATRDistance × ATR of the SD1 band. Interaction with SD2 prior to entry is NOT disqualifying; SD2 closes are treated only as optional strength confirmation and do not invalidate WALK qualification. Any exit conditions related to SD2 apply only after a position is opened  
+* At least K consecutive closes (allowing 1 bar exception) at or above (for Longs) or at or below (for Shorts) the level defined by SD1 ± (ATRDistance × ATR). Interaction with SD2 prior to entry is NOT disqualifying; SD2 closes are treated only as optional strength confirmation and do not invalidate WALK qualification. Any exit conditions related to SD2 apply only after a position is opened  
 * A second consecutive close at the middle band invalidates the WALK state and returns the system to ACTIVE unless an explicit exit condition has already been triggered
 * the middle band slope is used only as confirmation of sustained movement, not as a directional predictor
 
@@ -128,7 +128,7 @@ All conditions must be true:
 2. **Volatility Filter**
 
    * Volatility filter passes if:
-          BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Absolute distance between Leading Band and Middle Band increased by at least 0.5 × ATR compared to the previous bar, while the Trailing Band contraction is less than 0.5 × ATR
+          BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Absolute distance between Leading Band and Middle Band increased by at least 0.5 × ATR compared to the previous bar, while the Trailing Band is not contracting more than twice as fast as the Leading Band is expanding, ensuring the volatility is directional rather than a simple return to mean  
    * BBWidth is considered flat if: abs(Normalized BBWidth − Normalized BBWidth[1]) ≤ ε   where:
           ε = small unitless threshold expressed as a percentage of Normalized BBWidth (e.g. 5–10%)
 
@@ -159,7 +159,7 @@ All conditions must be true:
    * The 200-period HMA slope is used solely to confirm alignment with the current volatility regime and does not imply future price direction
 2. **Volatility Filter**
 
-   * Volatility filter passes if: BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Absolute distance between Leading Band and Middle Band increased by at least 0.5 × ATR compared to the previous bar, confirming accelerating downward momentum
+   * Volatility filter passes if: BBWidth is expanding (Normalized BBWidth > Normalized BBWidth[1]) AND the Absolute distance between Leading Band and Middle Band increased by at least 0.5 × ATR compared to the previous bar, confirming accelerating downward momentum, while the Trailing Band (Upper) does not contract toward the EMA by more than 0.5 × ATR per bar  
 
 3. **Price Location**
 
