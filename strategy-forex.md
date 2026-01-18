@@ -55,7 +55,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 * **Upper Band** = Middle Band + (1 × Std Dev)
 * **Lower Band** = Middle Band − (1 × Std Dev)
 * **Calculation**: Measure the slope over the last 5 bars ($HMA_{current}$ vs $HMA_{5-bars-ago}$).
-* **Slope Confirmation**: To prevent HMA whipsaws, the HMA slope must maintain the same sign (positive or negative) for at least 3 consecutive bars, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(EMASlopeLookback) ≥ EMASlopeATRMultiplier × ATR(ATRLength).
+* **Slope Confirmation**: To prevent HMA whipsaws, The HMA slope must maintain the same sign for 3 bars OR the 20 EMA slope must exceed (EMASlopeATRMultiplier × ATR), providing a high-momentum "fast-track" to bypass HMA lag during explosive moves, UNLESS the Middle Band (20 EMA) slope exceeds a predefined threshold, defined as absolute EMA(current) − EMA(EMASlopeLookback) ≥ EMASlopeATRMultiplier × ATR(ATRLength).
 * **Bollinger Band Width**
   * Defined as: `(Upper Band − Lower Band)`
 
@@ -234,7 +234,7 @@ Exit the trade using the following priority order, where volatility contraction 
 * WALK → ACTIVE if price loses SD1 but expansion persists, provided no exit condition has been triggered and the count of failed WALK attempts during the current ACTIVE phase does not exceed R (e.g. R = 2)
 * A failed WALK attempt is defined as price entering WALK state but losing SD1 before any exit condition is triggered
 * ACTIVE → IDLE if expansion fails or if Normalized BBWidth does not exceed the maximum Normalized BBWidth value recorded during the ACTIVE phase within the last M bars
-* Expansion fails if Normalized BBWidth contracts for 2 consecutive bars below the threshold ε (e.g., ε = 5–10% of Normalized BBWidth) indicating volatility is not sustaining
+* Expansion fails (triggering ACTIVE → IDLE) if Normalized BBWidth contracts for 2 consecutive bars OR if the Leading Band curves toward the Middle Band for 2 consecutive bars before a WALK is established (e.g., ε = 5–10% of Normalized BBWidth) indicating volatility is not sustaining
 * If no WALK occurs within M bars after activation → IDLE (e.g M = 5–10 bars)
 * Exit conditions override WALK → ACTIVE transitions
 
