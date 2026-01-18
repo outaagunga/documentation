@@ -109,7 +109,7 @@ The strategy trades **momentum continuation first** and **exhaustion second**, w
 
 Price is considered to be “walking” a band when:
 
-* At least K consecutive closes (allowing 1 bar exception) within ATRDistance × ATR of the SD1 band, provided price does not close beyond SD2 more than once within the WALK qualification window prior to entry, and any SD2 close does not immediately trigger an exit condition
+* At least K consecutive closes (allowing 1 bar exception) within ATRDistance × ATR of the SD1 band. Interaction with SD2 prior to entry is NOT disqualifying; SD2 closes are treated only as optional strength confirmation and do not invalidate WALK qualification. Any exit conditions related to SD2 apply only after a position is opened  
 * A second consecutive close at the middle band invalidates the WALK state and returns the system to ACTIVE unless an explicit exit condition has already been triggered
 * the middle band slope is used only as confirmation of sustained movement, not as a directional predictor
 
