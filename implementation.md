@@ -104,13 +104,17 @@
     ## 3. Technical Architecture
     
     ### 3.1 System Architecture
-    
-    - Architecture style:
+    
+    - Architecture style:
       - Monolith / Microservices / Serverless / MVC / Clean
-    
+
     - High level diagram:
       - Components
       - Data flow
+
+    - Lifecycle & State:
+      - Graceful Shutdown: (How the app handles SIGTERM to prevent data loss)
+      - Background Workers: (Redis / BullMQ / Sidekiq / Celery)
     
     ### 3.2 Technology Stack
     
@@ -155,15 +159,15 @@
     ### 3.3 Folder Structure
     
     ```
-    
     project/
     │
-    ├── src/
-    ├── tests/
-    ├── docs/
-    ├── scripts/
-    └── config/
-    
+    ├── .github/          # CI/CD workflows and Issue templates
+    ├── src/              # Source code
+    ├── tests/            # Unit, Integration, and E2E
+    ├── infra/            # Terraform/IaC files
+    ├── docs/             # ADRs (Architecture Decision Records) and Specs
+    ├── scripts/          # Migration and maintenance scripts
+    └── config/           # Environment-specific configs (NOT secrets)
     ```
     
     ---
@@ -277,15 +281,15 @@
     ---
     
     ### PHASE 2 – Core Foundation
-    
-    1. Architecture skeleton  
-    2. Base modules  
-    3. Config system  
-    4. Error handling  
-    
-    TEST:
-    - App starts  
-    - Logger works  
+    
+    1. Architecture skeleton  
+    2. Base modules  
+    3. Config system (Env var validation)
+    4. Global Error handling & Health-check endpoint (/health)
+    
+    TEST:
+    - App starts and responds to health-check
+    - Logger outputs structured logs 
     
     ---
     
@@ -342,11 +346,12 @@
     
     ---
     
-    ### PHASE 8 – Security
-    
-    1. Auth  
-    2. Permissions  
-    3. Validation  
+    ### PHASE 8 – Security & Hardening
+
+    1. Implementation of Roles (RBAC)
+    2. API Rate Limiting & Throttling
+    3. Header Security (CSP, HSTS)
+    4. Third-party Dependency Audit (`npm audit` / `snyk`)  
     
     ---
     
@@ -379,11 +384,20 @@
     
     ---
     
-    ### PHASE 12 – Release
-    
-    1. Versioning  
-    2. Changelog  
-    3. Deployment  
+    ### PHASE 12 – Release & Go-Live
+
+    1. **Final Preparation**
+       - [ ] Lower DNS TTL (for fast cutover)
+       - [ ] Final production data migration dry-run
+       - [ ] Sanity check: SSL certificates active
+    2. **Execution**
+       - [ ] Versioning & Tagging (Git tags)
+       - [ ] Production Deployment
+       - [ ] Database "Smoke Tests" (Verify connectivity/data)
+    3. **Post-Launch**
+       - [ ] Monitor Error Logs (Sentry/Datadog) for "New Issues"
+       - [ ] Verify Analytics/Business Tracking is firing
+       - [ ] Update Changelog & Release Notes  
     
     ---
     
@@ -405,11 +419,11 @@
     ---
     
     ## 9. Testing Strategy
-    
-    ### 9.1 Test Pyramid
-    - Unit  
-    - Integration  
-    - E2E  
+    
+    ### 9.1 Test Pyramid & Environment
+    - Unit / Integration / E2E
+    - Data Isolation: (How tests wipe/seed the DB)
+    - Mocking Policy: (Which external APIs are mocked vs. hit in sandbox)  
     
     ### 9.2 Test Cases
     
@@ -421,30 +435,66 @@
     ---
     
     ## 10. Deployment Plan
-    
-    - Environments  
-    - Steps  
-    - Rollback  
+    
+    - Strategy: (Blue-Green / Canary / Rolling Update)
+
+    - Environments: (Staging / UAT / Production)
+    - Cutover Plan: (How we switch traffic to the new version)
+    - Rollback Trigger: (Specific metrics that force an immediate rollback)
+    - Rollback Procedure: (Step-by-step to revert the DB and Code)  
     
     ---
     
     ## 11. Maintenance & Operations
 
-    - Dashboard Links: (Link to Grafana/Datadog)
-    - Runbooks: (Step-by-step guides for common failures)
-    - Dependency Updates: (Schedule for patching libraries)
-    - Log Rotation: (Retention and archival policy)  
+    - Dashboard Links: (Link to Grafana/Datadog)
+    - On-Call Rotation: (Who is responsible and when)
+    - Runbooks: (Step-by-step guides for "The site is down" or "DB is slow")
+    - Scheduled Maintenance: (Database vacuuming, certificate renewals)
+    - Patching Strategy: (How we handle 0-day security vulnerabilities)  
     
     ---
     
-    ## 12. Future Improvements
-    
-    - Ideas  
-    - Tech debt  
+    ## 12. Project Handover & Knowledge Transfer
+
+    ### 12.1 Access Registry
+    - [ ] Hosting Provider (Admin access)
+    - [ ] Domain Registrar (Login/Transfer info)
+    - [ ] Third-party tools (Sentry, Stripe, Postmark)
+    - [ ] Production Database credentials (via Secrets Manager)
+
+    ### 12.2 Key Stakeholders
+    - Technical Lead:
+    - Product Owner:
+    - DevOps/Infrastructure Contact:
+
+    ### 12.3 Known Issues & Tech Debt
+    - [ ] Critical technical debt:
+    - [ ] Performance bottlenecks to watch:
+    - [ ] Manual "hacky" processes currently in place:
+
+    ## 13. Future Improvements 
     
     ---
-    
-    ## 13. Checklist BEFORE CODING
+
+    ## 14. Appendix: Security Hardening (The "No-Go" List)
+
+    Before the firewall is opened to the public, verify:
+
+    - [ ] **Network Security:** - [ ] Rate Limiting (IP-based or User-based) to prevent Brute Force/DDoS.
+        - [ ] CORS Policy: Restricted to specific domains, not `*`.
+    - [ ] **HTTP Headers:** - [ ] HSTS, X-Content-Type-Options, Content-Security-Policy (CSP).
+    - [ ] **Infrastructure:**
+        - [ ] SSH access restricted to VPN/Private IP.
+        - [ ] Database NOT accessible from the public internet.
+    - [ ] **Application:**
+        - [ ] Input validation on ALL fields (Server-side).
+        - [ ] No sensitive data in URLs (Tokens/IDs).
+        - [ ] Secure Cookies (HttpOnly, Secure, SameSite=Strict).
+
+    ---
+
+    ## 15. Checklist BEFORE CODING
 
     - [ ] **Phase 0 Complete:** Identity, Legal, and Access secured
     - [ ] **Requirements:** Business and Functional goals finalized
