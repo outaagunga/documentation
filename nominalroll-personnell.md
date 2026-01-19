@@ -71,6 +71,26 @@ List **P/NO & Name** of all **Active CPL staff** in one Work Station.
 3. Arrange fields as above.
 4. Apply the filters.
 
+## To show:
+
+> **P/NO in one column** and **Name in the next column (same row)**
+
+you just need to change the PivotTable layout.
+
+---
+---
+
+### Fix the Layout (Very Important Step)
+
+1. Click anywhere inside the PivotTable.
+2. On the Excel Ribbon, go to:
+
+**PivotTable Analyze → Design → Report Layout → Show in Tabular Form**
+
+3. Then again go to:
+
+**Design → Report Layout → Repeat All Item Labels**
+
 ---
 ---
 ---
