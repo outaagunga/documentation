@@ -28,24 +28,24 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 
 #### **Step 1: Identify the "Overextension" (The Setup)**
 
-* **Identify the "Climax" Free Bar**: Look for a candle entirely outside the bands that occurs while the oppositeBand shows loss of expansion, defined as: ta.change(oppositeBand, 1) * (isShort ? 1 : -1) <= 0.1 * ta.atr(14). This ensures the opposite band is either flat or curling inward, confirming the volatility expansion has peaked. **Note**: To prevent signal clustering in flat markets, a new setup on the same side is only valid if the price has touched the Middle SMA or the Opposite Band since the last trade.
+* **Identify the "Climax" Free Bar**: Look for a candle entirely outside the bands that occurs while the oppositeBand shows loss of expansion, defined as: (isShort ? ta.change(lowerBand) >= -0.05 * ta.atr(14) : ta.change(upperBand) <= 0.05 * ta.atr(14)). This ensures the opposite band is either flat or curling inward, confirming the volatility expansion has peaked. **Note**: To prevent signal clustering in flat markets, a new setup on the same side is only valid if the price has touched the Middle SMA or the Opposite Band since the last trade.
 
 * **For a Short trade**: The Open and Close of the bar must be greater than the Upper Band. 
 * **For a Long trade**: The Open and Close of the bar must be less than the Lower Band.
-* **State Control (The Latch)**: Use a persistent Boolean (e.g., isEligible) that sets to true upon touching the Middle SMA/Opposite Band. Reset to false if a trade executes or a Free Bar appears on the opposite side. If price crosses the Middle SMA without a trigger, the setup is invalidated only if the bar closes on the opposite side of the SMA. This ensures the setup remains valid if the reversal takes several bars to materialize. 
+* **State Control (The Latch)**: Use a persistent Boolean (e.g., isEligible) that sets to true upon touching the Middle SMA or the Opposite Band. Reset to false only after a trade executes, a Free Bar appears on the opposite side, or a candle closes on the opposite side of the Middle SMA (excluding the Trigger candle). The setup is invalidated if a bar closes on the opposite side of the Middle SMA, provided that bar is not the Trigger candle itself. This ensures high-momentum reversals that reach the mean quickly are still captured. This ensures the setup remains valid if the reversal takes several bars to materialize  
 
 * **Confirm the "Gap":** There should be visible "daylight" or white space between the Bollinger Band and the candle's nearest wick.
 
 #### Step 2: The Trigger: 
-* Do not trade while price is outside the bands. The signal is confirmed only when a candle closes back inside the Bollinger Band, signaling a shift in momentum. 
+* Do not trade while price is outside the bands. The signal is confirmed when a candle closes back inside the Bollinger Band. If this Trigger candle also closes beyond the Middle SMA, the trade is only executed if the Entry Price still offers a valid R:R to the Dynamic Target (Step 5). 
 
 #### Step 3: Entry Execution
-* Hybrid Entry: Upon the 'Close Inside' trigger, calculate R:R using the Free Bar extreme (SL) and current Middle SMA (TP).
+* Hybrid Entry: Upon the 'Close Inside' trigger, calculate R:R using the Free Bar extreme (SL) and the Middle SMA value at the time of the Trigger (Static TP Snapshot). This ensures the trade is filtered based on the reward potential available at the moment of execution.
 
 * Market Entry: If R:R $\ge$ 1:1, execute strategy.entry at Market.
 
 * Aggressive Entry: If R:R $\ge$ 0.8:1, execute at Market. 
-* Limit Entry: If R:R < 0.8:1, place a Limit Order at the mid-point of the Trigger Candle. This balances the need for a better price with the reality of fast-moving mean reversions 
+* Limit Entry: If R:R < 0.8:1, place a Limit Order at the price level required to achieve a 1:1 R:R relative to the Free Bar extreme (SL) and the Static TP Snapshot. This balances the need for a better price with the reality of fast-moving mean reversions 
 * If price reaches the Middle SMA before the Limit is filled, cancel the order immediately 
 
 #### Step 4: Risk Management
@@ -54,12 +54,10 @@ This "Free Bar" variation is a powerful way to filter out weak signals. It uses 
 Step 5: Dynamic Exit & Trailing
 * Dynamic Target: Update the limit parameter to track the Middle SMA, but offset the target by 0.1 * ATR toward the band to account for "front-running" at the mean. 
 
-* Trailing Stop: When price covers 60% of the distance to the SMA, activate a trailing stop. Note to Coder: For a manual bar-by-bar trail, update the stop parameter; for the built-in engine, use trail_price and trail_offset  
+* Trailing Stop: Calculate the 'Activation Price' at 60% of the distance between the Entry Price and the Static TP. Pass this specific value to the trail_price parameter in strategy.exit to ensure the trailing mechanism only engages once the trade is significantly in profit. Note to Coder: For a manual bar-by-bar trail, update the stop parameter; for the built-in engine, use trail_price and trail_offset  
 
 ### **Visualizing the Setup**
-* Plotting the "Gap": Define two conditional plots: 'GapPrice' (High or Low of the Free Bar) and 'BandPrice' (the corresponding Bollinger Band). Use style=plot.style_linebr for both. Execute fill(plot1, plot2) with a high-transparency color to highlight the 'daylight' only on bars where price is entirely outside the bands.
-* This highlights the "white space" and allows for immediate visual backtesting of exhaustion points
-* Shade bands on Free Bar candle   
+* Plotting the "Gap": Define two conditional plots: 'GapPrice' (High/Low of the Free Bar) and 'BandPrice' (the Bollinger Band). Use fill() to highlight only the 'white space' between the wick and the band. Disable general band shading to maintain chart clarity and focus exclusively on the exhaustion gap   
 
 ### **Why this works better than a "Touch"**
 
