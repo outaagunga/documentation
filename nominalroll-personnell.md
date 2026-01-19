@@ -3,6 +3,78 @@ Create a helper column, then use formula
 
 `=DATEVALUE(TEXT(A2,"dd/mm/yyyy"))` : Useful when the date format in the cell is inconsistent or not recognized. This ensures the text is formatted correctly before conversion  
 It will display as digits. To display it as date, select -> right click -> format -> date  
+---
+---
+---
+
+## 1️⃣ Pivot Table 1 – **Staff Count per Work Station**
+
+### Purpose
+
+Count how many **Active CPL staff** are in each **Work Station**.
+
+### Pivot Field Layout
+
+| Area        | Field                         |
+| ----------- | ----------------------------- |
+| **Filters** | Rank, Status                  |
+| **Rows**    | Work Station                  |
+| **Values**  | P/NO (Summarize by **Count**) |
+
+### Filter Settings
+
+* Rank = **CPL**
+* Status = **Active**
+
+### Steps
+
+1. Click anywhere in the table on **Sheet1**
+2. Go to **Insert → PivotTable**
+3. Choose:
+
+   * **From Table/Range**
+   * Place on **Existing Worksheet**
+   * Location: `Sheet2!A3`
+4. Arrange fields as shown above.
+5. In **Values**, ensure:
+
+   * P/NO → **Value Field Settings → Count**
+
+---
+---
+
+## 2️⃣ Pivot Table 2 – **Staff List for a Specific Work Station (e.g., Meru)**
+
+### Purpose
+
+List **P/NO & Name** of all **Active CPL staff** in one Work Station.
+
+### Pivot Field Layout
+
+| Area        | Field                      |
+| ----------- | -------------------------- |
+| **Filters** | Rank, Status, Work Station |
+| **Rows**    | P/NO, Name                 |
+| **Values**  | *(None required)*          |
+
+### Filter Settings
+
+* Rank = **CPL**
+* Status = **Active**
+* Work Station = **Meru**
+
+### Steps
+
+1. Select the same source table.
+2. Insert another PivotTable on **Sheet2**, e.g. at `H3`
+3. Arrange fields as above.
+4. Apply the filters.
+
+---
+---
+---
+---
+---
 
 ## STEP 1: STANDARDIZE YOUR SHEET
 
