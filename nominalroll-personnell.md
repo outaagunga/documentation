@@ -90,6 +90,29 @@ you just need to change the PivotTable layout.
 3. Then again go to:
 
 **Design → Report Layout → Repeat All Item Labels**
+---
+Here is how to fix it so your P/No and Name sit perfectly side-by-side:
+
+1. **Remove Subtotals**
+Even in Tabular Form, Excel often keeps a header row for each P/No.
+
+Click inside the Pivot Table.
+
+* Go to the Design tab on the Ribbon.
+* Click Subtotals → Do Not Show Subtotals.
+
+2. **Check for "Compact" Artifacts**
+If the Name is still appearing slightly below the P/No, ensure you aren't in "Outline Form."
+
+* Go to Design → Report Layout.
+* Ensure Show in Tabular Form is selected (which you've done).
+* Select Repeat All Item Labels (which you've done).
+
+3. **Remove Expand/Collapse Buttons** (Optional)
+To make it look like a standard flat table without the "+/-" icons:
+
+* Go to the PivotTable Analyze tab.
+* In the Show group (far right), toggle off +/- Buttons.
 
 ---
 ---
