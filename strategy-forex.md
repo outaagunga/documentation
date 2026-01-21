@@ -1,4 +1,5 @@
 
+- Extract all key points in bulleted points 
 - give bulleted summary of this [e.g transcript]:  
 - give a simplified version that actually works for beginners  
 - give a step-by-step checklist  
