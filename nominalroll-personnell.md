@@ -554,6 +554,15 @@ IF([@AGE]<=30,"18-30",
 IF([@AGE]<=40,"31-40",
 IF([@AGE]<=50,"41-50","51+"))))
 ```
+
+#### If Your age column is displayed as years and months e.g `39 yrs 5 mos`, use this formula  
+
+```
+=IF([@AGE]="","",
+IF(VALUE(LEFT([@AGE], FIND(" ", [@AGE])-1))<=30,"18-30",
+IF(VALUE(LEFT([@AGE], FIND(" ", [@AGE])-1))<=40,"31-40",
+IF(VALUE(LEFT([@AGE], FIND(" ", [@AGE])-1))<=50,"41-50","51+"))))
+```
 Now add Pivot for the Age group to the Dashboard  
 Repeat the process of creating the pivot table  
 Then under the `Setup`  
