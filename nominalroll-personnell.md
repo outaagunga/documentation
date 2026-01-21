@@ -570,6 +570,9 @@ Then under the `Setup`
 * Drag → P/NO → VALUES  
 * Then set to COUNT  
 
+#### If any data is not visible or not being displayed in the **pivot table** after making changes in the main sheet  
+* Go to **PivotTable Analyze** tab --> then **Refresh**
+    
 ---
 
 # 🟢 FORMAT AS “CARDS”  
