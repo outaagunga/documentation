@@ -104,6 +104,22 @@ To make it look like a standard flat table without the "+/-" icons:
 
 * Go to the PivotTable Analyze tab.
 * In the Show group (far right), toggle off +/- Buttons.
+---
+
+## How to display staff e.g by their ranks for example all CPLs
+
+**Filter Settings**
+
+* Rank = **CPL**
+* Status = **Active**
+  
+**Rows**
+* F/No
+* PF/No
+* Name
+* Coy
+* Date of promotion
+* Duty
 
 ---
 
@@ -1169,5 +1185,25 @@ Replace with the actual values
 Do same pattern for others if you want.  
 
 ---  
+## Combining Data for different excel files based on a common column- using python  
+```vb
+import pandas as pd
 
+# 1. Load the Excel sheets into DataFrames
+df1 = pd.read_excel("file1.xlsx")
+df2 = pd.read_excel("file2.xlsx")
+
+# 2. Merge them based on a common column (e.g., 'ID')
+combined_df = pd.merge(df1, df2, on="ID", how="left")
+
+# 3. Save the result back to a new Excel file
+combined_df.to_excel("merged_output.xlsx", index=False)
+```
+* To use this code- ensure you have python installed on your pc  
+* Then with the code on code editor e.g vs code  
+* Ensure the two files you want to merge are on the project folder  
+ **OR**
+* You can use Google colab (cloud based) if you don't have python installed  
+
+---
 
