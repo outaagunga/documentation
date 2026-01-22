@@ -1,3 +1,9 @@
+**Guiding AI for better reuslts:**
+```
+Here is a [e.g my document], learn from it and wait for my further instructions  
+```
+
+---
 
 Create a helper column, then use formula  
 
