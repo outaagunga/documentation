@@ -62,7 +62,7 @@ List **P/NO & Name** of all **Active CPL staff** in one Work Station.
 | ----------- | -------------------------- |
 | **Filters** | Rank, Status, Work Station |
 | **Rows**    | P/NO, Name                 |
-| **Values**  | *(None required)*          |
+| **Values**  | P/NO (Set to count)        |
 
 ### Filter Settings
 
@@ -127,9 +127,17 @@ To make it look like a standard flat table without the "+/-" icons:
 * Date of promotion
 * Duty
 
+**Values**
+* P/NO (Set to count) 
+
 ---
 
-Clear all filters
+* Double click on the total 
+* The filtered Data will be shown on a new sheet 
+
+---
+
+## Clear all filters
 
 * Go to PivotTable Analyze tab
 * Clear -> Filters 
