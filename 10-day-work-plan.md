@@ -1,4 +1,6 @@
-
+```
+I don't understand this. Explain it in bulleted points
+```
 
 ## **10-Day Full-Stack Refresh Plan**
 
