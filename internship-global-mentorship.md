@@ -49,7 +49,8 @@
 
 ### 3. Review the Current CV (High-Level)  
 **Ask your self this question on every bullet point of your cv:**  
-* Which part are you comfortable/ not comfortable with. Why?  
+* Which part are you comfortable/ not comfortable with. Why?
+* Mimic recruiter question on each part (e.g So what changed because of this dashboard?)
   
 ---
 
