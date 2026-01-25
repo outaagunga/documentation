@@ -1,6 +1,6 @@
 
 
-# Session 1 - Agenda  
+# Session 1 - Agenda (17 January, 2026)  
 
 * .  
 * .  
@@ -8,7 +8,7 @@
 ---
 ---
 
-# Session 2 - Agenda  
+# Session 2 - Agenda (24 January, 2026)  
 
 * Framing & expectations  
 * Resume vs CV clarity  
@@ -63,7 +63,7 @@
 ---  
 ---  
 
-# Session 3 - Agenda  
+# Session 3 - Agenda (31 January, 2026)  
 
 * Check-in and reflections from previous sessions
 * Understanding how AI can support different phases of the job search
