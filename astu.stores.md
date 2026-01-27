@@ -78,7 +78,7 @@ Generate printable issue receipts
 > * Camouflaged P-cap
 > * Black beret
 
-> Please explain the **Excel structure**, sheet layout, and formulas step by step.
+> Implement this is phases. Start by giving the **Excel structure**, sheet layout, and formulas. Then implementation step by step.
 ```
 
 ---
