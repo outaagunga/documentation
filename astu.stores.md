@@ -374,6 +374,9 @@ One protected Excel workbook containing **interlinked sheets**, grouped into log
 ---
 ```
 
+---
+---
+
 ```
 # ASTU Excel-Based Stores Management System  
 ## Pilot Project – Implementation Guide (implementation.md)
@@ -675,9 +678,12 @@ This pilot is not just a system test—it is a **culture shift toward accountabi
 
 Successful pilot = controlled scale-up.
 
----
 ```
 
 ---
+---
+
+
+
 
 
