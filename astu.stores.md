@@ -27,7 +27,14 @@
 > * A **master stock sheet**
 > * A **receiving (inward) sheet**
 > * An **issuing (outward) sheet**
+> * A **Dashboard**
 > * Formulas (and VBA if necessary) to automate calculations
+
+* **Receive Stock form**
+* **Issue Stock form**
+* **Lock sheets automatically**
+
+Generate printable issue receipts
 
 > These are the items currently in the store:
 
