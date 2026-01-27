@@ -374,16 +374,309 @@ One protected Excel workbook containing **interlinked sheets**, grouped into log
 ---
 ```
 
-## 10. **Implementation Readiness (Next Phase – Not Yet Started)**
+```
+# ASTU Excel-Based Stores Management System  
+## Pilot Project – Implementation Guide (implementation.md)
 
-Once this outline is approved, the next stages will be:
+---
 
-1. Workbook structure creation
-2. Master data setup
-3. Transaction logic design
-4. Control & protection configuration
-5. Reporting automation
-6. User training & SOP alignment
+## 1. Purpose of This Implementation
+
+This document provides a **step-by-step implementation guide** for piloting the ASTU Excel-Based Stores Management System before full-scale rollout.
+
+The pilot aims to:
+- Validate system effectiveness
+- Identify operational gaps
+- Test controls, accountability, and reporting
+- Build user confidence before upscaling
+
+---
+
+## 2. Pilot Scope Definition
+
+### 2.1 Items Included in Pilot
+
+#### A. Food Staff
+1. Maize flour  
+2. Rice  
+3. Cooking oil  
+4. Milk powder  
+5. Sugar  
+6. Dry maize  
+7. Dry beans  
+8. Tea leaves  
+9. Table salt  
+10. Compo 10 ration  
+11. Green grams  
+
+#### B. Horse Feed
+1. Horse meal  
+2. Horse cube  
+3. Maize germ  
+4. Wheat bran  
+5. Molasses  
+6. Mineral salt  
+7. Hay (Rhodes grass)  
+
+#### C. Water Treatment Chemicals
+1. Aluminum sulphate  
+2. Soda ash  
+3. Chlorine  
+
+#### D. Police Uniform
+1. Combat  
+2. Jungle boots  
+3. Smoke jacket  
+4. Angola shirt  
+5. Camouflaged T-shirt  
+6. Camouflaged P-cap  
+7. Black beret  
+
+---
+
+## 3. Pilot Duration & Governance
+
+### 3.1 Duration
+- Recommended pilot period: **3 months**
+- Review points:
+  - End of Month 1
+  - End of Month 2
+  - Final evaluation at Month 3
+
+### 3.2 Pilot Team
+- Stores Officer (Primary user)
+- Supervising Officer
+- Command/Audit observer
+- Excel System Administrator
+
+---
+
+## 4. Implementation Phases Overview
+
+| Phase | Name | Output |
+|-----|-----|------|
+| Phase 1 | Preparation & Setup | Approved pilot plan |
+| Phase 2 | Workbook Build | Fully structured Excel system |
+| Phase 3 | Master Data Population | Clean, validated master registers |
+| Phase 4 | Control Configuration | Locked, protected system |
+| Phase 5 | Pilot Go-Live | Live transactions begin |
+| Phase 6 | Monitoring & Review | Issues logged and resolved |
+| Phase 7 | Pilot Evaluation | Go / Modify / Scale decision |
+
+---
+
+## 5. Phase 1 – Preparation & Setup
+
+### 5.1 Approvals
+- Obtain written approval to run pilot
+- Define:
+  - Pilot store/location
+  - Authorized officers
+  - Pilot items list (as above)
+
+### 5.2 Assign Roles
+- Nominate:
+  - Stores Officer
+  - Supervising Officer
+  - Audit observer (read-only)
+
+### 5.3 Baseline Physical Stock Count
+- Conduct **joint physical stock count** for all pilot items
+- Record:
+  - Quantity
+  - Condition
+  - Expiry dates (food & chemicals)
+- This becomes **Opening Balance**
+
+---
+
+## 6. Phase 2 – Excel Workbook Build
+
+### 6.1 Create Core Sheets
+Create the following sheets in one workbook:
+
+1. Item Master Register  
+2. Supplier / Source Register  
+3. Officer Register  
+4. Goods Received (GRN)  
+5. Stock Issue Voucher (SIV)  
+6. Returns & Recoveries  
+7. Adjustments & Losses  
+8. Stores Ledger (Auto)  
+9. Audit & Exception Log  
+10. Reports Dashboard  
+
+### 6.2 Naming & Numbering Standards
+- GRN No: `GRN-YYYY-###`
+- Issue Voucher: `SIV-YYYY-###`
+- Adjustment Ref: `ADJ-YYYY-###`
+
+---
+
+## 7. Phase 3 – Master Data Population
+
+### 7.1 Item Master Register Setup
+
+For each pilot item:
+- Assign unique **Item Code**
+- Category:
+  - Food Supplies
+  - Horse Feed
+  - Chemicals
+  - Uniforms
+- Unit of Measure:
+  - kg, litres, bags, packets, pairs, pieces
+- Shelf life:
+  - Mandatory for food & chemicals
+- Controlled Item:
+  - YES (uniforms, chemicals)
+- Condition Tracking:
+  - YES (uniforms, tools)
+
+Lock sheet after validation.
+
+---
+
+### 7.2 Supplier / Source Register
+Populate:
+- Government procurement
+- Donations
+- Internal transfers
+
+Mark only approved sources as **Active**.
+
+---
+
+### 7.3 Officer Register
+- Enter service number, rank, unit
+- Mark active officers only
+- No free-text officer names allowed in transactions
+
+---
+
+## 8. Phase 4 – Controls & Protection Configuration
+
+### 8.1 Data Validation
+- Drop-downs for:
+  - Item codes
+  - Officer service numbers
+  - Reason codes
+- Prevent:
+  - Negative quantities
+  - Missing expiry dates
+  - Unauthorized item entry
+
+### 8.2 Sheet Protection
+- Lock:
+  - Item Master
+  - Stores Ledger
+- Password-protect formulas
+- Restrict editing rights by role
+
+### 8.3 Conditional Formatting
+- Red flag:
+  - Negative balances
+  - Expired items
+  - Near-expiry (<30 days)
+- Amber flag:
+  - Overstock
+  - Unusual issue quantities
+
+---
+
+## 9. Phase 5 – Pilot Go-Live
+
+### 9.1 Opening Balance Entry
+- Enter opening balances via:
+  - Special “Opening Balance” GRN
+- Verified and approved jointly
+
+### 9.2 Live Transaction Rules
+- No manual ledger editing
+- All movements must be:
+  - GRN
+  - SIV
+  - Return
+  - Adjustment
+- No backdating without approval
+
+---
+
+## 10. Phase 6 – Monitoring & Review
+
+### 10.1 Daily Controls
+- Stores Officer:
+  - Verify stock balances
+  - Check expiry alerts
+- Supervisor:
+  - Review issues and adjustments
+
+### 10.2 Weekly Reviews
+- Generate:
+  - Weekly issue report
+  - Expiry report
+  - Officer-wise issue summary
+- Investigate anomalies immediately
+
+### 10.3 Audit & Exception Logging
+- Log:
+  - Override attempts
+  - Adjustment frequency
+  - Authorization delays
+
+---
+
+## 11. Phase 7 – Pilot Evaluation
+
+### 11.1 Evaluation Criteria
+
+| Area | Measure |
+|----|-------|
+| Stock accuracy | Physical vs system variance |
+| Accountability | Officer-linked issues |
+| Food control | Expiry losses |
+| Compliance | Authorization adherence |
+| Usability | User feedback |
+
+---
+
+### 11.2 Pilot Outcome Decisions
+- **Proceed to scale**
+- **Modify system controls**
+- **Extend pilot duration**
+
+Document lessons learned.
+
+---
+
+## 12. Scaling Readiness Checklist
+
+Before rollout:
+- Controls tested
+- Reports validated
+- Users trained
+- SOPs documented
+- Audit satisfied
+
+---
+
+## 13. Key Success Factors
+
+- Discipline over speed
+- No shortcuts on controls
+- Leadership support
+- Immediate correction of deviations
+
+---
+
+## 14. Conclusion
+
+This pilot is not just a system test—it is a **culture shift toward accountability, transparency, and audit readiness**.
+
+Successful pilot = controlled scale-up.
+
+---
+```
 
 ---
 
