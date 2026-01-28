@@ -528,26 +528,26 @@ Make headers **bold**.
 
 ---
 
-## STEP 2: Item_Code Drop-Down (Same as Receiving)
+## STEP 2: drop-down for Item_Name instead (Same as Receiving)
 
-### 2.1 Select Column A (from A2 down)
+### 2.1 Select Column B (from B2 down)
 
-1. Click **A2**
+1. Click **B2**
 2. Data → Data Validation
 3. Allow: **List**
 4. Source:
 
 ```excel
-=Items_Master!$A:$A
+=Items_Master!$B:$B
 ```
 
 5. OK
 
 ---
 
-## STEP 3: Auto-Fill Item_Name
+## STEP 3: Auto-Fill Item_Code
 
-### Formula in **B2**
+### Formula in **A2**
 
 ```excel
 =IF(A2="","",XLOOKUP(A2,Items_Master!A:A,Items_Master!B:B))
