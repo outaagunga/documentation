@@ -168,23 +168,24 @@ In **Row 1**, type exactly:
 | ---- | ------------- |
 | A1   | Item_Code     |
 | B1   | Item_Name     |
-| C1   | Category      |
+| C1   | Measure    (Drop Down List)   |
+| C1   | Category   (Drop Down List)   |
 | D1   | Opening_Stock |
 
 Make headers **bold**.
 
 ---
 
-## STEP 4: Enter Item Categories (Manual Typing)
+## STEP 4: Enter Item Categories (Drop Down List)
 
-In **Column C (Category)**, you will use ONLY these names:
-
+In **Column D (Category)**, you will use ONLY these names:
+Select the column D → Data Validaiton → List  
 * Food Staff
 * Horse Feed
 * Water Treatment
 * Police Uniform
 
-(Important: spell them exactly the same every time)
+(Important: spell check because this is what you will use every time)
 
 ---
 
@@ -192,7 +193,7 @@ In **Column C (Category)**, you will use ONLY these names:
 
 Now start filling rows **from Row 2 downward**.
 
-### Example (You type this manually):
+### Example (You type manually the columns with no Drop down):
 
 | Item_Code | Item_Name         | Category        | Opening_Stock |
 | --------- | ----------------- | --------------- | ------------- |
@@ -326,10 +327,10 @@ Make headers **bold**.
 
 This prevents wrong item entry.
 
-### 2.1 Select Column A (Item_Name)
+### 2.1 Select Column B (Item_Name)
 
-* Click on **A2**
-* Press **Ctrl + Shift + ↓** (or drag down to row 1000)
+* Click on **B2**
+* Press **Ctrl + Shift + ↓** (or drag down to required number of rows e.g 1000)
 
 ### 2.2 Add Data Validation
 
@@ -343,16 +344,20 @@ This prevents wrong item entry.
 
 4. Click **OK**
 
-✅ Users now select item codes from a drop-down list.
+✅ Users now select item names from a drop-down list.
 
 ---
 
-## STEP 3: Auto-Fill Item_Name (No Typing)
+## STEP 3: Auto-Fill Item_Code (No Typing)
 
-### 3.1 Enter Formula in **B2**
+### 3.1 Enter Formula in **A2**
 
 ```excel
-=IF(A2="","",XLOOKUP(A2,Items_Master!A:A,Items_Master!B:B))
+// In new excel version (XLOOKUP only works in Excel 365 / Excel 2021 or later)
+=IF(B2="","",XLOOKUP(B2, Items_Master!B:B, Items_Master!A:A, "Not Found"))
+
+// In order excel verson (Excel 2019, 2016, or older) use this formula
+=IF(B2="","",INDEX(Items_Master!A:A, MATCH(B2, Items_Master!B:B, 0)))
 ```
 
 ### 3.2 Copy Formula Down
@@ -366,19 +371,41 @@ This prevents wrong item entry.
 * Users **cannot mistype item names**
 
 ---
+## Unit of Measure
+Add a drop down list that pulls data from the `Items_Master` Sheet i.e
+* Select the `Measure` column 
+* 1. Go to **Data → Data Validation**
+* 2. Allow: **List**
+* 3. Source:
+```excel
+=Items_Master!$C:$C
+```
+Where `C` is the column in the `Item_Master` with unit of measure 
+
+---
 
 ## STEP 4: Date Control (Beginner Safe)
 
 ### 4.1 Format Date Column
 
 1. Select **Column D**
-2. Right-click → Format Cells
-3. Date → choose **dd/mm/yyyy**
-4. OK
+2. Right-click → **Format Cells**
+3. Category → **Date**
+4. Locale → **English (United Kingdom)**
+5. Date format →  **dd/mm/yyyy**
+6. OK
 
-(Optional)
+### 4.2 Add Data Validation (Enforce Dates)
 
-* Users can type date or use calendar picker
+* Select Column D
+* Go to Data → **Data Validation**
+* Allow → **Date**
+* Data → **between**
+   * Start date → **=DATE(1/1/1900)** (or your earliest acceptable date)
+   * End date → **=DATE(31/12/2099)** (or your latest acceptable date)
+Optional: Check Show input message → **“Enter date as dd/mm/yyyy”**
+
+Click OK
 
 ---
 
@@ -390,7 +417,8 @@ This prevents wrong item entry.
 2. Data → Data Validation
 3. Allow: **Whole number**
 4. Minimum: **1**
-5. Click OK
+5. Maximum: Enter the largest number possible e.d 125,600,000,000,000,000,000
+6. Click OK
 
 ❌ No negative values
 ❌ No text
@@ -398,19 +426,18 @@ This prevents wrong item entry.
 
 ---
 
-## STEP 6: Visual Guidance for Users
+## STEP 6: Receipt No. Validation
 
-Add a note at the top (Row 1 or Row 2 merged):
+* 1. Select the column with Receipt No.
+> 2. Go to Data - Data validation
+> 3. Allow - Custom
+```
+=E2<>""
+```
+* Ensure you this is NOT ticked **☑ Ignore blank**
+Error Message: `Receipt No. cannot be empty`
 
-> **INSTRUCTIONS:**
->
-> 1. Select Item Code
-> 2. Enter Quantity Received
-> 3. Enter Date Received
-> 4. Enter S11 Number
->    Do NOT edit Item Name
-
-This reduces training time drastically.
+Where `E2` is the cell with receipt No.  
 
 ---
 
@@ -422,12 +449,12 @@ We lock formulas but allow data entry.
 
 Unlock:
 
-* Column A (Item_Code)
+* Column B (Item_Code)
 * Column C (Quantity_Received)
 * Column D (Date_Received)
 * Column E (S11_No)
 
-(Keep Column B locked)
+(Keep Column A locked)
 
 **How:**
 
@@ -456,7 +483,7 @@ Unlock:
 | --------- | ----------- | ----------------- | ------------- | ------- |
 | ITM001    | Maize flour | 200               | 12/01/2026    | S11/034 |
 
-✔ Item_Name fills automatically
+✔ Item_Code fills automatically
 ✔ Quantity validated
 ✔ Date clean
 ✔ Ready for stock calculation
@@ -552,7 +579,11 @@ Make headers **bold**.
 ### Formula in **A2**
 
 ```excel
-=IF(A2="","",XLOOKUP(A2,Items_Master!A:A,Items_Master!B:B))
+// In new excel version (XLOOKUP only works in Excel 365 / Excel 2021 or later)
+=IF(B2="","",XLOOKUP(B2, Items_Master!B:B, Items_Master!A:A, "Not Found"))
+
+// In order excel verson (Excel 2019, 2016, or older) use this formula
+=IF(B2="","",INDEX(Items_Master!A:A, MATCH(B2, Items_Master!B:B, 0)))
 ```
 
 Copy the formula down.
@@ -668,7 +699,6 @@ Unlock:
 Keep locked:
 
 * B (Item_Name)
-* I (Available_Balance)
 
 ---
 
@@ -765,19 +795,19 @@ Make headers **bold**.
 
 ## STEP 2: Pull Item List Automatically
 
-### A6
+### Item_Code
 
 ```excel
 =Items_Master!A2
 ```
 
-### B6
+### Item_Name
 
 ```excel
 =Items_Master!B2
 ```
 
-### C6
+### Opening_Stock
 
 ```excel
 =Items_Master!D2
@@ -789,7 +819,7 @@ Drag **A6:C6 down** until last item.
 
 ## STEP 3: Calculate Total Received
 
-### D6
+### Total_Received
 
 ```excel
 =SUMIFS(Receiving_Inward!C:C, Receiving_Inward!A:A, A6)
@@ -812,6 +842,7 @@ Copy down.
 ---
 
 ## STEP 5: Calculate Current Balance (LIVE)
+(Opening_Stock + Total_Recieved - Total_Issued)
 
 ### F6
 
