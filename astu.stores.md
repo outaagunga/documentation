@@ -80,12 +80,12 @@ Generate printable issue receipts
 
 > Implement this is phases. Start by giving the **Excel structure**, sheet layout, and formulas. Then implementation step by step.
 ```
-```
----
----
----
----
 
+---
+---
+---
+---
+```
 Perfect brief 👍
 What I’ll do is **convert what you already designed into a very clear, beginner-friendly WORKFLOW**, broken into **PHASES + STEPS**, written so **someone with zero Excel skills can follow it without breaking anything**.
 
