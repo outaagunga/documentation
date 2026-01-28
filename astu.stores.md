@@ -436,7 +436,18 @@ Generate printable issue receipts
    Optional: Check Show input message → **“Enter date as dd/mm/yyyy”**
    
    Click OK
+
+   ### 4.3 Change Windows Regional Settings  
+   The date format in Data Validation is controlled by your system's regional settings, not by Excel itself. However, here are some solutions:
    
+   * To Change Windows Regional Settings (affects all programs)
+      * Go to Windows Control Panel
+      * Click Region (or "Clock and Region" then "Region")
+      * Click Additional settings
+      * Go to the Date tab
+      * Change the Short date format to dd/MM/yyyy
+      * Click OK and Apply
+        
    ---
    
    ## STEP 5: Quantity Rules (Avoid Errors)
