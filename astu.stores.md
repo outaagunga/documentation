@@ -320,11 +320,11 @@ Make headers **bold**.
 
 ---
 
-## STEP 2: Create Drop-Down for Item_Code (User-Friendly)
+## STEP 2: Create Drop-Down for Item_Name (User-Friendly)
 
 This prevents wrong item entry.
 
-### 2.1 Select Column A (Item_Code)
+### 2.1 Select Column A (Item_Name)
 
 * Click on **A2**
 * Press **Ctrl + Shift + ↓** (or drag down to row 1000)
@@ -336,7 +336,7 @@ This prevents wrong item entry.
 3. Source:
 
 ```excel
-=Items_Master!$A:$A
+=Items_Master!$B:$B
 ```
 
 4. Click **OK**
