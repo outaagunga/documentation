@@ -89,8 +89,6 @@ Generate printable issue receipts
 Perfect brief 👍
 What I’ll do is **convert what you already designed into a very clear, beginner-friendly WORKFLOW**, broken into **PHASES + STEPS**, written so **someone with zero Excel skills can follow it without breaking anything**.
 
-I’ll **not change your structure** — I’ll *explain it operationally*.
-
 We’ll do this **in segments**.
 This is **Segment 1: Overall workflow + Phase 1 (Workbook setup & Items Master)**.
 
@@ -113,14 +111,8 @@ Think of the Excel system like this:
    👉 Where Excel **automatically calculates balances**, totals, and reports
    👉 *No one types here*
 
-📌 **Golden Rule for Users**
-
-> Users ONLY enter data in:
-
-* Receiving_Inward
-* Issuing_Outward
-
-Everything else is automatic.
+📌 **Users Input Rule**
+* Data entry is allowed only in `Receiving_Inward` and `Issuing_Outward`
 
 ---
 
@@ -174,8 +166,6 @@ In **Row 1**, type exactly:
 | F1   | Total_Recieved   (Use formula to pull data from Received_Inward Sheet)   |
 | G1   | Total_Issueing_Out   (Use formula to pull data from Issueing_Outward Sheet)   |
 | H1   | Current_Balance   (Use formula to calculate the Current_Balance)  |
-
-Make headers **bold**.
 
 ---
 
