@@ -134,6 +134,20 @@ Generate printable issue receipts
 | E   | S11_No            |
 
 ### Data Validation
+**A2 → Data Validation → List**
+
+```excel
+=Items_Master!$B:$B
+```
+
+User sees:
+
+```
+Maize flour
+Rice
+Cooking oil
+```
+
 
 **A:A → List**
 
