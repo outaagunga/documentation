@@ -38,7 +38,7 @@ Generate printable issue receipts
 
 > These are the items currently in the store:
 
-> **A. Food Staff**
+> **A. Food Stuff**
 
 > * Maize flour
 > * Rice
@@ -86,11 +86,10 @@ Generate printable issue receipts
 ---
 ---
 ```
-Perfect brief 👍
-What I’ll do is **convert what you already designed into a very clear, beginner-friendly WORKFLOW**, broken into **PHASES + STEPS**, written so **someone with zero Excel skills can follow it without breaking anything**.
+This guide converts your design into a clear, step-by-step workflow that any user can follow safely, even with no Excel experience  
 
 We’ll do this **in segments**.
-This is **Segment 1: Overall workflow + Phase 1 (Workbook setup & Items Master)**.
+This section covers the overall workflow and initial workbook setup  
 
 ---
 
@@ -163,7 +162,7 @@ In **Row 1**, type exactly:
 | C1   | Measure    (Drop Down List)   |
 | D1   | Category   (Drop Down List)   |
 | E1   | Opening_Stock |
-| F1   | Total_Recieved   (Use formula to pull data from Received_Inward Sheet)   |
+| F1   | Total_Received (Use formula to pull data from Receiving_Inward sheet)   |
 | G1   | Total_Issueing_Out   (Use formula to pull data from Issueing_Outward Sheet)   |
 | H1   | Current_Balance   (Use formula to calculate the Current_Balance)  |
 
@@ -172,7 +171,7 @@ In **Row 1**, type exactly:
 ## STEP 4: Enter Item Categories (Drop Down List)
 
 In **Column D (Category)**, you will use ONLY these names:
-Select the column D → Data Validaiton → List  
+Select Column D → Data tab → Data Validation → Allow: List    
 * Food Stuff
 * Horse Feed
 * Water Treatment
@@ -186,13 +185,13 @@ Select the column D → Data Validaiton → List
 
 Now start filling rows **from Row 2 downward**.
 
-### Example (You type manually the columns with no Drop down):
+### Example (Manually type values only in columns without dropdowns):
 
 | Item_Code | Item_Name         | Category        | Opening_Stock |
 | --------- | ----------------- | --------------- | ------------- |
-| ITM001    | Maize flour       | Food Staff      | 0             |
-| ITM002    | Rice              | Food Staff      | 0             |
-| ITM003    | Cooking oil       | Food Staff      | 0             |
+| ITM001    | Maize flour       | Food Stuff      | 0             |
+| ITM002    | Rice              | Food Stuff      | 0             |
+| ITM003    | Cooking oil       | Food Stuff      | 0             |
 | ITM012    | Horse meal        | Horse Feed      | 0             |
 | ITM019    | Aluminum sulphate | Water Treatment | 0             |
 | ITM028    | Black beret       | Police Uniform  | 0             |
@@ -222,7 +221,7 @@ The following columns are automatic:
 ---
 
 **Formula to pull data from Received_Inward Sheet**
-* For each item, Excel adds up all quantities received in **Receiving_Inward** where the **Item_Code** matches
+* For each item, Excel automatically totals all received quantities for each Item_Code from the Receiving_Inward sheet
 ```
 =SUMIFS(
 Receiving_Inward!$C:$C,
@@ -874,7 +873,7 @@ Copy down.
 ---
 
 ## STEP 5: Calculate Current Balance (LIVE)
-(Opening_Stock + Total_Recieved - Total_Issued)
+(Opening_Stock + Total_Received - Total_Issued_Out)
 
 ### F6
 
