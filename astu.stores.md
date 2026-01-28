@@ -471,14 +471,9 @@ Generate printable issue receipts
    
    * 1. Select the column with Receipt No.
    > 2. Go to Data - Data validation
-   > 3. Allow - Custom
-   ```
-   =E2<>""
-   ```
-   * Ensure you this is NOT ticked **☑ Ignore blank**
+   > 3. Allow - text length
+   > 4. Minimum value 1
    Error Message: `Receipt No. cannot be empty`
-   
-   Where `E2` is the cell with receipt No.  
    
    ---
    
@@ -906,7 +901,11 @@ Generate printable issue receipts
    ### G6
    
    ```excel
-   =XLOOKUP(A6, Items_Master!A:A, Items_Master!C:C)
+   // For new excel version 
+   =XLOOKUP(A6, Items_Master!A:A, Items_Master!D:D)
+
+   // For older versions
+   =INDEX(Items_Master!D:D, MATCH(A6, Items_Master!A:A, 0))
    ```
    
    Copy down.
