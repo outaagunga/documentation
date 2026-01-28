@@ -86,7 +86,7 @@ Generate printable issue receipts
 ---
 ---
 ```
-This guide converts your design into a clear, step-by-step workflow that any user can follow safely, even with no Excel experience  
+This guide converts your design into a clear, step-by-step workflow. Each phase builds gradually, so even users with **no Excel experience** can follow safely   
 
 We’ll do this **in segments**.
 This section covers the overall workflow and initial workbook setup  
@@ -163,12 +163,12 @@ In **Row 1**, type exactly:
 | D1   | Category   (Drop Down List)   |
 | E1   | Opening_Stock |
 | F1   | Total_Received (Use formula to pull data from Receiving_Inward sheet)   |
-| G1   | Total_Issueing_Out   (Use formula to pull data from Issueing_Outward Sheet)   |
+| G1   | Total_Issued (Use formula to pull data from Issuing_Outward sheet)    |
 | H1   | Current_Balance   (Use formula to calculate the Current_Balance)  |
 
 ---
 
-## STEP 4: Enter Item Categories (Drop Down List)
+## STEP 4: Set Up Drop Down Lists (Measure and Category)
 
 In **Column D (Category)**, you will use ONLY these names:
 Select Column D → Data tab → Data Validation → Allow: List    
@@ -229,7 +229,7 @@ Receiving_Inward!$A:$A,
 [@Item_Code]
 )
 ```
-**Formula to pull data from Issueing_Outward Sheet**
+**Formula to pull data from Issuing_Outward sheet Sheet**
 ```
 =SUMIFS(
 Issuing_Outward!$C:$C,
