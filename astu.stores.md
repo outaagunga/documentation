@@ -169,11 +169,11 @@ In **Row 1**, type exactly:
 | A1   | Item_Code     |
 | B1   | Item_Name     |
 | C1   | Measure    (Drop Down List)   |
-| C1   | Category   (Drop Down List)   |
-| D1   | Opening_Stock |
-| C1   | Total_Recieved   (Use formula to pull data from Received_Inward Sheet)   |
-| C1   | Total_Issueing_Out   (Use formula to pull data from Issueing_Outward Sheet)   |
-| C1   | Current_Balance   (Use formula to calculate the Current_Balance)  |
+| D1   | Category   (Drop Down List)   |
+| E1   | Opening_Stock |
+| F1   | Total_Recieved   (Use formula to pull data from Received_Inward Sheet)   |
+| G1   | Total_Issueing_Out   (Use formula to pull data from Issueing_Outward Sheet)   |
+| H1   | Current_Balance   (Use formula to calculate the Current_Balance)  |
 
 Make headers **bold**.
 
@@ -183,7 +183,7 @@ Make headers **bold**.
 
 In **Column D (Category)**, you will use ONLY these names:
 Select the column D → Data Validaiton → List  
-* Food Staff
+* Food Stuff
 * Horse Feed
 * Water Treatment
 * Police Uniform
@@ -214,6 +214,20 @@ Now start filling rows **from Row 2 downward**.
 * Opening_Stock can start at **0** (recommended)
 
 👉 Continue until **all items are entered**.
+
+---
+**Understanding the Automatic Columns**
+The following columns are automatic:
+
+* **Total_Received**
+👉 Excel will sum all quantities received for each Item_Code from the Receiving_Inward sheet
+
+* **Total_Issued**
+👉 Excel will sum all quantities issued for each Item_Code from the Issuing_Outward sheet
+
+* **Current_Balance**
+👉 Excel will calculate:
+`Opening_Stock + Total_Received − Total_Issued`
 
 ---
 
