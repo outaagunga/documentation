@@ -85,7 +85,7 @@ Generate printable issue receipts
 ---
 ---
 ---
-```
+
    This guide converts your design into a clear, step-by-step workflow. Each phase builds gradually, so even users with **no Excel experience** can follow safely   
    
    We’ll do this **in segments**.
@@ -222,15 +222,15 @@ Generate printable issue receipts
    
    **Formula to pull data from Received_Inward Sheet**
    * For each item, Excel automatically totals all received quantities for each Item_Code from the Receiving_Inward sheet
-   ```
+```
    =SUMIFS(
    Receiving_Inward!$C:$C,
    Receiving_Inward!$A:$A,
    [@Item_Code]
    )
-   ```
+```
    **Formula to pull data from Issuing_Outward sheet Sheet**
-   ```
+```
    =SUMIFS(
    Issuing_Outward!$C:$C,
    Issuing_Outward!$A:$A,
