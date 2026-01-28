@@ -223,25 +223,20 @@ Generate printable issue receipts
    **Formula to pull data from Received_Inward Sheet**
    * For each item, Excel automatically totals all received quantities for each Item_Code from the Receiving_Inward sheet
 ```
-   =SUMIFS(
-   Receiving_Inward!$C:$C,
-   Receiving_Inward!$A:$A,
-   [@Item_Code]
-   )
+   =SUMIFS(Receiving_Inward!$C:$C, Receiving_Inward!$A:$A, A2)
 ```
+Where: 
+* Column `C` is the `Quantity_Received` in the `Receiving_Inward` sheet  
+* Column `A` is the `Item_Code` in the `Receiving_Inward` sheet
+* `A2` is the `Item_Code` in `Items_Master` sheet
+  
    **Formula to pull data from Issuing_Outward sheet Sheet**
 ```
-   =SUMIFS(
-   Issuing_Outward!$C:$C,
-   Issuing_Outward!$A:$A,
-   [@Item_Code]
-   )
-   ```
+   =SUMIFS(Issuing_Outward!$C:$C, Issuing_Outward!$A:$A, A2)
+```
    **Formula to calculate the Current_Balance**
    ```
-   =[@Opening_Stock] 
-   + [@Total_Received] 
-   - [@Total_Issued]
+   =E2 +F2 -G2
    ```
    ---
    ## STEP 6: Convert Items_Master into a Table (IMPORTANT)
