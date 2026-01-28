@@ -187,14 +187,14 @@ Now start filling rows **from Row 2 downward**.
 
 ### Example (Manually type values only in columns without dropdowns):
 
-| Item_Code | Item_Name         | Category        | Opening_Stock |
-| --------- | ----------------- | --------------- | ------------- |
-| ITM001    | Maize flour       | Food Stuff      | 0             |
-| ITM002    | Rice              | Food Stuff      | 0             |
-| ITM003    | Cooking oil       | Food Stuff      | 0             |
-| ITM012    | Horse meal        | Horse Feed      | 0             |
-| ITM019    | Aluminum sulphate | Water Treatment | 0             |
-| ITM028    | Black beret       | Police Uniform  | 0             |
+| Item_Code | Item_Name         | Measure | Category        | Opening_Stock |
+| --------- | ----------------- | ------- | --------------- | ------------- |
+| ITM001    | Maize flour       | Kg      | Food Stuff      | 0             |
+| ITM002    | Rice              | Bags    | Food Stuff      | 0             |
+| ITM003    | Cooking oil       | Ltr     | Food Stuff      | 0             |
+| ITM012    | Horse meal        | Kg      | Horse Feed      | 0             |
+| ITM019    | Aluminum sulphate | Kg      | Water Treatment | 0             |
+| ITM028    | Black beret       | Pcs     | Police Uniform  | 0             |
 
 📌 **Rules**
 
