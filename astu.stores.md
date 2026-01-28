@@ -171,6 +171,9 @@ In **Row 1**, type exactly:
 | C1   | Measure    (Drop Down List)   |
 | C1   | Category   (Drop Down List)   |
 | D1   | Opening_Stock |
+| C1   | Total_Recieved   (Use formula to pull data from Received_Inward Sheet)   |
+| C1   | Total_Issueing_Out   (Use formula to pull data from Issueing_Outward Sheet)   |
+| C1   | Current_Balance   (Use formula to calculate the Current_Balance)  |
 
 Make headers **bold**.
 
@@ -214,6 +217,30 @@ Now start filling rows **from Row 2 downward**.
 
 ---
 
+**Formula to pull data from Received_Inward Sheet**
+* For each item, Excel adds up all quantities received in **Receiving_Inward** where the **Item_Code** matches
+```
+=SUMIFS(
+Receiving_Inward!$C:$C,
+Receiving_Inward!$A:$A,
+[@Item_Code]
+)
+```
+**Formula to pull data from Issueing_Outward Sheet**
+```
+=SUMIFS(
+Issuing_Outward!$C:$C,
+Issuing_Outward!$A:$A,
+[@Item_Code]
+)
+```
+**Formula to calculate the Current_Balance**
+```
+=[@Opening_Stock] 
++ [@Total_Received] 
+- [@Total_Issued]
+```
+---
 ## STEP 6: Convert Items_Master into a Table (IMPORTANT)
 
 1. Click **any cell inside your items list**
@@ -756,19 +783,20 @@ Awesome — this is the **brain of the system** 🧠
 ---
 
 # 🟥 SEGMENT 4: DASHBOARD (AUTOMATION + REPORTING)
+**DAILY OPERATIONS RULES**
+* Enter incoming stock only in `Receiving_Inward`
+* Enter issued stock only in `Issuing_Outward`
+* Never edit `Items_Master` (Lock it so users cannot edit it)
+* Dashboard is view-only (Lock it so users cannot edit it)
 
-## 🎯 PURPOSE OF THIS SHEET (Explain to Users)
+## The Dashboard shows:
 
-> This sheet is **READ-ONLY**.
-> It automatically:
-
-* Calculates current stock balances
-* Shows totals received and issued
-* Provides reports and charts for management
-* Acts as the **Stock Register**
-
-❌ No typing allowed here
-
+* Current stock per item 
+* Totals by category 
+* Totals received in a given duration 
+* Totals Issued Out in a given duration 
+* Alerts for low stock
+* All values update automatically.
 ---
 
 # 🟩 PHASE 8: BUILD THE STOCK BALANCE TABLE
