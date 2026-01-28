@@ -226,7 +226,9 @@ This makes Excel smarter and safer.
 
 ## STEP 7: Lock Items_Master (Beginner-Proofing)
 
-We allow users to edit **ONLY Opening_Stock**.
+⚠️ Opening_Stock should be entered **once at setup** by the Store In-Charge. After that, **the entire sheet is locked for normal users**.  
+Users **cannot alter Item_Name, Item_Code, or Opening_Stock** during daily operations.  
+All stock changes should happen **only via Receiving_Inward and Issuing_Outward**.
 
 ### 7.1 Unlock Opening_Stock Column
 
