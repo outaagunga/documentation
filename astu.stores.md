@@ -86,74 +86,61 @@ Generate printable issue receipts
 ---
 ---
 
-   This guide converts your design into a clear, step-by-step workflow. Each phase builds gradually, so even users with **no Excel experience** can follow safely   
+This guide converts your design into a clear, step-by-step workflow. Each phase builds gradually, so even users with **no Excel experience** can follow safely     
    
-   We’ll do this **in segments**.
-   This section covers the overall workflow and initial workbook setup  
+We’ll do this **in segments**. This section covers the overall workflow and initial workbook setup  
    
-   ---
+---
    
-   # 🧭 OVERALL WORKFLOW (BIG PICTURE – FOR NON-EXPERT USERS)
+# 🧭 OVERALL WORKFLOW (BIG PICTURE – FOR NON-EXPERT USERS)
+Think of the Excel system like this:  
+
+1. **Items_Master** --> Where items are defined **once** (names, categories, opening stock)  
+2. **Receiving_Inward** --> Where you record **new stock coming in**  
+3. **Issuing_Outward** --> Where you record **stock given to officers**  
+4. **Dashboard** --> Where Excel **automatically calculates balances**, totals, and reports  
+      👉 *No one types here*  
    
-   Think of the Excel system like this:
+**Users Input Rule**  
+* Data entry is allowed only in `Receiving_Inward` and `Issuing_Outward`
    
-   1. **Items_Master**
-      👉 Where items are defined **once** (names, categories, opening stock)
+---
    
-   2. **Receiving_Inward**
-      👉 Where you record **new stock coming in**
+# 🟩 PHASE 1: CREATE THE EXCEL WORKBOOK (FOUNDATION)  
    
-   3. **Issuing_Outward**
-      👉 Where you record **stock given to officers**
+## STEP 1: Create a New Workbook  
+
+1. Open **Microsoft Excel**  
+2. Click **Blank Workbook**  
+3. Save it immediately:  
+   * File → Save As  
+   * Name: **ASTU_Inventory_System.xlsx**  
+     
+---
    
-   4. **Dashboard**
-      👉 Where Excel **automatically calculates balances**, totals, and reports
-      👉 *No one types here*
+## STEP 2: Create the 4 Sheets (Rename Tabs)  
+At the bottom of Excel:  
+
+1. Sheet1 → rename to **Items_Master**  
+2. Sheet2 → rename to **Receiving_Inward**  
+3. Sheet3 → rename to **Issuing_Outward**  
+4. Click ➕ to add a new sheet → rename to **Dashboard**  
+
+You should now see **ONLY these 4 tabs**  
    
-   📌 **Users Input Rule**
-   * Data entry is allowed only in `Receiving_Inward` and `Issuing_Outward`
+---
    
-   ---
+# 🟩 PHASE 2: ITEMS_MASTER (MOST IMPORTANT SHEET)  
    
-   # 🟩 PHASE 1: CREATE THE EXCEL WORKBOOK (FOUNDATION)
+* This sheet is prepared **ONCE** by you (Store In-Charge)  
+* Normal users should NOT edit it later.  
    
-   ## STEP 1: Create a New Workbook
+---
    
-   1. Open **Microsoft Excel**
-   2. Click **Blank Workbook**
-   3. Save it immediately:
+## STEP 3: Set Up Column Headers (Row 1)  
    
-      * File → Save As
-      * Name:
-        **ASTU_Inventory_System.xlsx**
-   
-   ---
-   
-   ## STEP 2: Create the 4 Sheets (Rename Tabs)
-   
-   At the bottom of Excel:
-   
-   1. Sheet1 → rename to **Items_Master**
-   2. Sheet2 → rename to **Receiving_Inward**
-   3. Sheet3 → rename to **Issuing_Outward**
-   4. Click ➕ to add a new sheet → rename to **Dashboard**
-   
-   📌 You should now see **ONLY these 4 tabs**.
-   
-   ---
-   
-   # 🟩 PHASE 2: ITEMS_MASTER (MOST IMPORTANT SHEET)
-   
-   > ⚠️ This sheet is prepared **ONCE** by you (Store In-Charge)
-   > Normal users should NOT edit it later.
-   
-   ---
-   
-   ## STEP 3: Set Up Column Headers (Row 1)
-   
-   Go to **Items_Master** sheet.
-   
-   In **Row 1**, type exactly:
+Go to **Items_Master** sheet.  
+In **Row 1**, type exactly:  
    
    | Cell | Text to Type  |
    | ---- | ------------- |
@@ -166,26 +153,25 @@ Generate printable issue receipts
    | G1   | Total_Issued (Use formula to pull data from Issuing_Outward sheet)    |
    | H1   | Current_Balance   (Use formula to calculate the Current_Balance)  |
    
-   ---
+---
    
-   ## STEP 4: Set Up Drop Down Lists (Measure and Category)
+## STEP 4: Set Up Drop Down Lists (Measure and Category)  
    
-   In **Column D (Category)**, you will use ONLY these names:
-   Select Column D → Data tab → Data Validation → Allow: List    
-   * Food Stuff
-   * Horse Feed
-   * Water Treatment
-   * Police Uniform
+In **Column D (Category)**, you will use ONLY these names:  
+Select Column D → Data tab → Data Validation → Allow: List    
+   * Food Stuff  
+   * Horse Feed  
+   * Water Treatment  
+   * Police Uniform  
    
-   (Important: spell check because this is what you will use every time)
+(Important: spell check because this is what you will use every time)  
    
-   ---
+---
    
-   ## STEP 5: Enter Items (One Time Only)
+## STEP 5: Enter Items (One Time Only)  
+Now start filling rows **from Row 2 downward**  
    
-   Now start filling rows **from Row 2 downward**.
-   
-   ### Example (Manually type values only in columns without dropdowns):
+### Example (Manually type values only in columns without dropdowns):  
    
    | Item_Code | Item_Name         | Measure | Category        | Opening_Stock |
    | --------- | ----------------- | ------- | --------------- | ------------- |
@@ -196,81 +182,75 @@ Generate printable issue receipts
    | ITM019    | Aluminum sulphate | Kg      | Water Treatment | 0             |
    | ITM028    | Black beret       | Pcs     | Police Uniform  | 0             |
    
-   📌 **Rules**
+**Rules**  
    
-   * Item_Code must be **unique**
-   * Item_Name must be **exact**
-   * Opening_Stock can start at **0** (recommended)
+   * Item_Code must be **unique**  
+   * Item_Name must be **exact**  
+   * Opening_Stock can start at **0** (recommended)  
    
-   👉 Continue until **all items are entered**.
+Continue until **all items are entered**.  
    
-   ---
-   **Understanding the Automatic Columns**
-   The following columns are automatic:
+---
    
-   * **Total_Received**
-   👉 Excel will sum all quantities received for each Item_Code from the Receiving_Inward sheet
+**Understanding the Automatic Columns**  
+The following columns are automatic:  
    
-   * **Total_Issued**
-   👉 Excel will sum all quantities issued for each Item_Code from the Issuing_Outward sheet
+* **Total_Received**: Excel will sum all quantities received for each Item_Code from the Receiving_Inward sheet  
+* **Total_Issued**: Excel will sum all quantities issued for each Item_Code from the Issuing_Outward sheet  
+* **Current_Balance**: Excel will calculate:  
+   `Opening_Stock + Total_Received − Total_Issued`  
    
-   * **Current_Balance**
-   👉 Excel will calculate:
-   `Opening_Stock + Total_Received − Total_Issued`
+---
    
-   ---
-   
-   **Formula to pull data from Received_Inward Sheet**
-   * For each item, Excel automatically totals all received quantities for each Item_Code from the Receiving_Inward sheet
+**Formula to pull data from Received_Inward Sheet**  
+* For each item, Excel automatically totals all received quantities for each Item_Code from the Receiving_Inward sheet  
 ```
-   =SUMIFS(Receiving_Inward!$C:$C, Receiving_Inward!$A:$A, A2)
+=SUMIFS(Receiving_Inward!$C:$C, Receiving_Inward!$A:$A, A2)  
 ```
 Where: 
-* Column `C` is the `Quantity_Received` in the `Receiving_Inward` sheet  
-* Column `A` is the `Item_Code` in the `Receiving_Inward` sheet
-* `A2` is the `Item_Code` in `Items_Master` sheet
+* Column `C` is the `Quantity_Received` in the `Receiving_Inward` sheet   
+* Column `A` is the `Item_Code` in the `Receiving_Inward` sheet  
+* `A2` is the `Item_Code` in `Items_Master` sheet  
   
-   **Formula to pull data from Issuing_Outward sheet Sheet**
+**Formula to pull data from Issuing_Outward sheet Sheet**  
 ```
-   =SUMIFS(Issuing_Outward!$C:$C, Issuing_Outward!$A:$A, A2)
+=SUMIFS(Issuing_Outward!$C:$C, Issuing_Outward!$A:$A, A2)  
 ```
-   **Formula to calculate the Current_Balance**
-   ```
-   =E2 +F2 -G2
-   ```
-   ---
-   ## STEP 6: Convert Items_Master into a Table (IMPORTANT)
+**Formula to calculate the Current_Balance**  
+```
+=E2 +F2 -G2  
+```
+---
+
+## STEP 6: Convert Items_Master into a Table (IMPORTANT)  
    
-   1. Click **any cell inside your items list**
-   2. Press **Ctrl + T**
-   3. Tick **My table has headers**
-   4. Click **OK**
+   1. Click **any cell inside your items list**  
+   2. Press **Ctrl + T**  
+   3. Tick **My table has headers**  
+   4. Click **OK**  
    
-   This makes Excel smarter and safer.
+   This makes Excel smarter and safer.  
    
-   ---
+---
    
-   ## STEP 7: Lock Items_Master (Beginner-Proofing)
+## STEP 7: Lock Items_Master (Beginner-Proofing)  
+All stock changes should happen **only via Receiving_Inward and Issuing_Outward**  
    
-   ⚠️ Opening_Stock should be entered **once at setup** by the Store In-Charge. After that, **the entire sheet is locked for normal users**.  
-   Users **cannot alter Item_Name, Item_Code, or Opening_Stock** during daily operations.  
-   All stock changes should happen **only via Receiving_Inward and Issuing_Outward**.
+### 7.1 Unlock Opening_Stock Column  
    
-   ### 7.1 Unlock Opening_Stock Column
+   1. Select **Column D**  
+   2. Right-click → Format Cells  
+   3. Protection tab  
+   4. Uncheck **Locked**  
+   5. Click OK  
    
-   1. Select **Column D**
-   2. Right-click → Format Cells
-   3. Protection tab
-   4. Uncheck **Locked**
-   5. Click OK
-   
-   ### 7.2 Protect the Sheet
+### 7.2 Protect the Sheet  
    
    1. Go to **Review → Protect Sheet**
    2. (Optional) set password
    3. Click OK
    
-   ✅ Result:
+✅ Result:  
    
    * Users **cannot alter item names or codes**
    * Users **can edit Opening_Stock only**
