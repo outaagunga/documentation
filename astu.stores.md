@@ -92,17 +92,17 @@ We’ll do this **in segments**. This section covers the overall workflow and in
    
 ---
    
-# 🧭 OVERALL WORKFLOW (BIG PICTURE – FOR NON-EXPERT USERS)
+# 🧭 OVERALL WORKFLOW (BIG PICTURE – FOR NON-EXPERT USERS)  
 Think of the Excel system like this:  
 
-1. **Items_Master** --> Where items are defined **once** (names, categories, opening stock)  
-2. **Receiving_Inward** --> Where you record **new stock coming in**  
-3. **Issuing_Outward** --> Where you record **stock given to officers**  
+1. **All_Items** --> Where items are defined **once** (names, categories, opening stock)  
+2. **Incoming_Items** --> Where you record **new stock coming in**  
+3. **Outgoing_Items** --> Where you record **stock given to officers**  
 4. **Dashboard** --> Where Excel **automatically calculates balances**, totals, and reports  
       👉 *No one types here*  
    
 **Users Input Rule**  
-* Data entry is allowed only in `Receiving_Inward` and `Issuing_Outward`
+* Data entry is allowed only in `Receiving_Inward` and `Issuing_Outward`  
    
 ---
    
@@ -121,9 +121,9 @@ Think of the Excel system like this:
 ## STEP 2: Create the 4 Sheets (Rename Tabs)  
 At the bottom of Excel:  
 
-1. Sheet1 → rename to **Items_Master**  
-2. Sheet2 → rename to **Receiving_Inward**  
-3. Sheet3 → rename to **Issuing_Outward**  
+1. Sheet1 → rename to **All_Items**  
+2. Sheet2 → rename to **Incomings**  
+3. Sheet3 → rename to **Outgoing**  
 4. Click ➕ to add a new sheet → rename to **Dashboard**  
 
 You should now see **ONLY these 4 tabs**  
@@ -139,7 +139,7 @@ You should now see **ONLY these 4 tabs**
    
 ## STEP 3: Set Up Column Headers (Row 1)  
    
-Go to **Items_Master** sheet.  
+Go to **All_Items** sheet.  
 In **Row 1**, type exactly:  
    
    | Cell | Text to Type  |
@@ -203,15 +203,13 @@ This prevents data entry mistakes later
    
 ---
    
-**Formula to pull data from Received_Inward Sheet**  
+**Formula to pull data from Incomings Sheet**  
 * For each item, Excel automatically totals all received quantities for each Item_Code from the Receiving_Inward sheet  
 ```
-=SUMIFS(Receiving_Inward!$C:$C, Receiving_Inward!$A:$A, A2)  
+=SUMIFS(Table_Incomings[Total_Received], Table_Incomings[Item_Code], A2)  
 ```
 Where: 
-* Column `C` is the `Quantity_Received` in the `Receiving_Inward` sheet   
-* Column `A` is the `Item_Code` in the `Receiving_Inward` sheet  
-* `A2` is the `Item_Code` in `Items_Master` sheet  
+* `A2` is the `Item_Code` in `All_Items` sheet    
   
 **Formula to pull data from Issuing_Outward sheet Sheet**  
 ```
@@ -372,7 +370,8 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    // In order excel verson (Excel 2019, 2016, or older) use this formula  
    =IF(B2="","", INDEX(Table_ItemMaster[Item_Code], MATCH(B2, Table_ItemMaster[Item_Name], 0)))
    ```
-   Where `B2` is the cell you want to populate the data to  
+   Where `B2` is the lookup value (cell with the data you use as reference). In our case, the the **Item_Name** is what we used as our reference. It is our lookup value   
+   The **1st** column is what changes in the formula e.g **Item_Code** changes to **Category**, to **Measure** e.t.c  
    
    📌 Result:
    
@@ -511,7 +510,7 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    
    ### 👉 NEXT SEGMENT (Segment 3)
    
-   **Issuing_Outward Sheet**
+   **Outgoing Sheet**
    
    * Officer tracking
    * Receipt numbers
@@ -527,7 +526,7 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    
    ---
    
-   # 🟨 SEGMENT 3: ISSUING_OUTWARD (STOCK GOING OUT)
+   # 🟨 SEGMENT 3: Outgoing sheet (STOCK GOING OUT)
    
    ## 🎯 PURPOSE OF THIS SHEET (Explain to Users)
    
@@ -541,11 +540,11 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    
    ---
    
-   # 🟩 PHASE 5: SET UP `Issuing_Outward` SHEET
+   # 🟩 PHASE 5: SET UP `Outgoing` SHEET
    
    ## STEP 1: Create Column Headers (Row 1)
    
-   Go to **Issuing_Outward** sheet.
+   Go to **Outgoing** sheet.
    
    Type exactly in **Row 1**:
    
@@ -571,26 +570,22 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    1. Click **B2**
    2. Data → Data Validation
    3. Allow: **List**
-   4. Source:
-   
-   ```excel
-   =Items_Master!$B:$B
-   ```
-   
+   4. Source: 
+   Press **F3**, then Select the Name list you had created e.g 
    5. OK
    
    ---
    
-   ## STEP 3: Auto-Fill Item_Code
+   ## STEP 3: Auto-Fill Parts that are not being filled by user  
    
-   ### Formula in **A2**
+   ### Use Formula in  .....
    
    ```excel
    // In new excel version (XLOOKUP only works in Excel 365 / Excel 2021 or later)
-   =IF(B2="","",XLOOKUP(B2, Items_Master!B:B, Items_Master!A:A, "Not Found"))
+  
    
    // In order excel verson (Excel 2019, 2016, or older) use this formula
-   =IF(B2="","",INDEX(Items_Master!A:A, MATCH(B2, Items_Master!B:B, 0)))
+   
    ```
    
    Copy the formula down.
@@ -613,9 +608,7 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    
    ## STEP 5: Date Format
    
-   1. Select **Column G**
-   2. Format Cells → Date → **dd/mm/yyyy**
-   3. OK
+   1. 
    
    ---
    
