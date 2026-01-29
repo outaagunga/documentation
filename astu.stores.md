@@ -191,14 +191,15 @@ Now start filling rows **from Row 2 downward**
 Continue until **all items are entered**.  
    
 ---
-   
-**Understanding the Automatic Columns**  
-The following columns are automatic:  
-   
-* **Total_Received**: Excel will sum all quantities received for each Item_Code from the Receiving_Inward sheet  
-* **Total_Issued**: Excel will sum all quantities issued for each Item_Code from the Issuing_Outward sheet  
-* **Current_Balance**: Excel will calculate:  
-   `Opening_Stock + Total_Received − Total_Issued`  
+### Create a Named List for Product IDs  
+This prevents data entry mistakes later  
+* Select the Product ID column (not the header)
+* Go to the Formulas tab
+* Click Define Name
+* Enter desired Name e.g **Items_Names**
+* Click OK  
+
+📌 You will use this name for dropdown lists in any sheet you want to pull names from master  
    
 ---
    
@@ -228,8 +229,12 @@ Where:
    2. Press **Ctrl + T**  
    3. Tick **My table has headers**  
    4. Click **OK**  
-   
-   This makes Excel smarter and safer.  
+
+### Rename the Table  
+* Click anywhere inside the table  
+* Go to the Table Design tab  
+* In the **Table Name** box (top left), rename it to: e.g Items_Master  
+* Press Enter  
    
 ---
    
@@ -294,27 +299,27 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    
    ---
    
-   # 🟦 SEGMENT 2: RECEIVING_INWARD (STOCK COMING IN)
+   # 🟦 SEGMENT 2: RECEIVING_INWARD (STOCK COMING IN)  
    
-   ## 🎯 PURPOSE OF THIS SHEET (Explain to Users)
+   ## 🎯 PURPOSE OF THIS SHEET (Explain to Users)  
    
-   > This sheet is used **ONLY when new stock is received into the store**.
+   > This sheet is used **ONLY when new stock is received into the store**  
    
-   Every time stock arrives:
+   Every time stock arrives:  
    
-   * The store clerk records it **here**
-   * The system later **adds it automatically to stock balance**
-   * No calculations are typed by the user
+   * The store clerk records it **here**  
+   * The system later **adds it automatically to stock balance**  
+   * No calculations are typed by the user  
    
    ---
    
-   # 🟩 PHASE 3: SET UP `Receiving_Inward` SHEET
+   # 🟩 PHASE 3: SET UP `Receiving_Inward` SHEET  
    
-   ## STEP 1: Create Column Headers (Row 1)
+   ## STEP 1: Create Column Headers (Row 1)  
    
-   Go to **Receiving_Inward** sheet.
+   Go to **Receiving_Inward** sheet.  
    
-   In **Row 1**, type exactly:
+   In **Row 1**, type exactly:  
    
    | Cell | Header            |
    | ---- | ----------------- |
@@ -328,64 +333,55 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    
    ---
    
-   ## STEP 2: Create Drop-Down for Item_Name (User-Friendly)
+   ## STEP 2: Create Drop-Down for Item_Name (User-Friendly)  
    
-   This prevents wrong item entry.
+   This prevents wrong item entry.  
    
-   ### 2.1 Select Column B (Item_Name)
+   ### 2.1 Select Column B (Item_Name)  
    
-   * Click on **B2**
-   * Press **Ctrl + Shift + ↓** (or drag down to required number of rows e.g 1000)
+   * Click on **B2**  
+   * Press **Ctrl + Shift + ↓** (or drag down to required number of rows e.g 1000)  
    
-   ### 2.2 Add Data Validation
+   ### 2.2 Add Data Validation  
    
-   1. Go to **Data → Data Validation**
-   2. Allow: **List**
+   1. Go to **Data → Data Validation**  
+   2. Allow: **List**  
    3. Source:
-   
+   4. Press F3 → Then select from the **named list** you had created in the **Items_Master** sheet  
+   e.g 
    ```excel
-   =Items_Master!$B:$B
+   =Items_Master  
    ```
    
-   4. Click **OK**
+   4. Click **OK**  
    
-   ✅ Users now select item names from a drop-down list.
+   ✅ Users now select item names from a drop-down list.  
    
    ---
    
-   ## STEP 3: Auto-Fill Item_Code (No Typing)
+   ## STEP 3: Auto-Fill the remaining columns with the formula  
+   Item_Code (No Typing)  
    
-   ### 3.1 Enter Formula in **A2**
-   
+   ### 3.1 Auto populate Item_Code  
+   Enter this formula in the cell you want to populate the Item_Code  
+   Ensure each data is formatted as tables as you give clear table name  
    ```excel
-   // In new excel version (XLOOKUP only works in Excel 365 / Excel 2021 or later)
-   =IF(B2="","",XLOOKUP(B2, Items_Master!B:B, Items_Master!A:A, "Not Found"))
-   
-   // In order excel verson (Excel 2019, 2016, or older) use this formula
-   =IF(B2="","",INDEX(Items_Master!A:A, MATCH(B2, Items_Master!B:B, 0)))
+   // In new excel version (XLOOKUP only works in Excel 365 / Excel 2021 or later)  
+   =IF(B2="","", XLOOKUP(B2, Table_ItemMaster[Item_Name], Table_ItemMaster[Item_Code], "Not Found"))
+
+   // In order excel verson (Excel 2019, 2016, or older) use this formula  
+   =IF(B2="","", INDEX(Table_ItemMaster[Item_Code], MATCH(B2, Table_ItemMaster[Item_Name], 0)))
    ```
-   
-   ### 3.2 Copy Formula Down
-   
-   * Double-click the small square at bottom-right of B2
+   Where `B2` is the cell you want to populate the data to  
    
    📌 Result:
    
-   * When user selects Item_Code
-   * Item_Name appears automatically
-   * Users **cannot mistype item names**
+   * When user selects Item_Name  
+   * Item_Code appears automatically  
    
    ---
    ## Unit of Measure
-   Add a drop down list that pulls data from the `Items_Master` Sheet i.e
-   * Select the `Measure` column 
-   * 1. Go to **Data → Data Validation**
-   * 2. Allow: **List**
-   * 3. Source:
-   ```excel
-   =Items_Master!$C:$C
-   ```
-   Where `C` is the column in the `Item_Master` with unit of measure 
+  Auto populate Data from the master, use this formula  
    
    ---
    
@@ -406,8 +402,8 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    * Go to Data → **Data Validation**
    * Allow → **Date**
    * Data → **between**
-      * Start date → **=DATE(1/1/1900)** (or your earliest acceptable date)
-      * End date → **=DATE(31/12/2099)** (or your latest acceptable date)
+      * Start date → **1/1/1900** (or your earliest acceptable date)
+      * End date → **=31/12/2099** (or your latest acceptable date)
    Optional: Check Show input message → **“Enter date as dd/mm/yyyy”**
    
    Click OK
@@ -452,26 +448,26 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    
    ---
    
-   # 🟩 PHASE 4: PROTECT THE SHEET (SMART PROTECTION)
+   # 🟩 PHASE 4: PROTECT THE SHEET (SMART PROTECTION)  
    
-   We lock formulas but allow data entry.
+   We lock formulas but allow data entry.  
    
-   ### 6.1 Unlock Input Columns
+   ### 6.1 Unlock Input Columns  
    
-   Unlock:
+   Unlock:  
    
-   * Column B (Item_Code)
-   * Column C (Quantity_Received)
-   * Column D (Date_Received)
-   * Column E (S11_No)
+   * Column B (Item_Code)  
+   * Column C (Quantity_Received)  
+   * Column D (Date_Received)  
+   * Column E (S11_No)  
    
    (Keep Column A locked)
    
-   **How:**
+   **How:**  
    
-   1. Select those columns
-   2. Format Cells → Protection
-   3. Uncheck **Locked**
+   1. Select those columns  
+   2. Format Cells → Protection  
+   3. Uncheck **Locked**  
    
    ---
    
