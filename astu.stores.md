@@ -811,6 +811,274 @@ Use **Conditional Formatting** for the `Current_Balance` or `Status` column:
    ---
    ---
    ---
-  
+
+  Got it 👍
+Below is a **true non-technical, step-by-step workflow**—think *“do this → then this”*, no Excel jargon overload. You can literally follow this like a recipe.
+
+---
+
+# 🧭 STEP-BY-STEP WORKFLOW
+
+**How a non-technical person can build this Excel inventory dashboard**
+
+This is divided into **5 simple phases**.
+Do them in order. Don’t skip ahead.
+
+---
+
+## 🔹 PHASE 1: Prepare Your Excel File (Foundation)
+
+### Step 1: Create the workbook
+
+1. Open Excel
+2. Create a **new blank workbook**
+3. Rename the sheets at the bottom:
+
+   * `Items_Master`
+   * `Inward`
+   * `Outward`
+   * `Dashboard`
+
+> Think of sheets like rooms in a store—each has a job.
+
+---
+
+### Step 2: Enter master item data
+
+Go to **Items_Master** sheet.
+
+Create these column headers (Row 1):
+
+* Item_Code
+* Item_Name
+* Category
+* Reorder_Level
+
+Fill in your items (example):
+
+* ITM001 | Maize Flour | Food Stuff | 50
+* ITM002 | Jungle Boots | Uniform | 20
+
+👉 This sheet is **typed once and rarely changed**.
+
+---
+
+## 🔹 PHASE 2: Daily Store Operations (Easy Data Entry)
+
+### Step 3: Inward sheet (Receiving items)
+
+Go to **Inward** sheet.
+
+Headers:
+
+* Date
+* Item_Name
+* Quantity_Received
+
+How it works:
+
+* Every time items arrive → **add a new row**
+* No formulas needed here
+* Just type what came in
+
+---
+
+### Step 4: Outward sheet (Issuing items)
+
+Go to **Outward** sheet.
+
+Headers:
+
+* Date
+* Item_Name
+* Quantity_Issued
+* Issued_To
+
+How it works:
+
+* Every issue → **add a new row**
+* This is your issue register (digital)
+
+---
+
+## 🔹 PHASE 3: Make Excel “Think” (Behind-the-scenes logic)
+
+> This happens once. After this, Excel works for you.
+
+### Step 5: Calculate stock balance (simple logic)
+
+Excel will:
+
+* **Add all Inward quantities**
+* **Subtract all Outward quantities**
+* Show **Current Balance per item**
+
+This calculation feeds the dashboard automatically.
+(You don’t need to understand the math—just know this is where totals come from.)
+
+---
+
+### Step 6: Define stock status (In Stock / Low / Out)
+
+Each item is labeled automatically:
+
+* ✅ In Stock → balance is safe
+* ⚠️ Low Stock → balance near reorder level
+* ❌ Out of Stock → balance is zero
+
+This drives the **green / amber / red badges**.
+
+---
+
+## 🔹 PHASE 4: Build the Dashboard (What users actually see)
+
+Now go to the **Dashboard** sheet.
+
+---
+
+### Step 7: Make Excel look like an app
+
+1. Click **View tab**
+2. Uncheck **Gridlines**
+3. Fill background with **light grey**
+
+✅ Instantly looks professional.
+
+---
+
+### Step 8: Create the navigation sidebar
+
+1. Insert → Shapes → Rectangle
+2. Place it on the **left side**
+3. Color it **dark navy blue**
+4. Insert → Icons:
+
+   * Home
+   * Inward
+   * Outward
+   * Reports
+
+👉 These are **visual only** (no clicking needed for now).
+
+---
+
+### Step 9: KPI Cards (Top summary boxes)
+
+Create 3 rounded rectangles at the top:
+
+**Card 1:** Total Stock
+**Card 2:** Items Low
+**Card 3:** Recent Issues
+
+Steps:
+
+1. Insert → Shapes → Rounded Rectangle
+2. Fill: White
+3. Add subtle shadow
+4. Inside each shape, insert a **text box**
+5. Link it to totals (Excel pulls numbers automatically)
+
+Result:
+📊 Live numbers that update when data changes.
+
+---
+
+## 🔹 PHASE 5: Tables, Colors & Interaction (Polish)
+
+---
+
+### Step 10: Item status table
+
+Insert a clean table showing:
+
+* Item_Name
+* Category
+* Current_Balance
+* Status
+
+This is your **central dashboard table**.
+
+---
+
+### Step 11: Add color badges (Very important)
+
+Use **Conditional Formatting**:
+
+* 🟢 Green → In Stock
+* 🟠 Amber → Low Stock
+* 🔴 Red → Out of Stock
+
+Tip for non-technical users:
+
+> You are just telling Excel:
+> “If this word appears, color it like this.”
+
+---
+
+### Step 12: Add the category bar chart
+
+1. Insert → Bar Chart
+2. Show totals by Category:
+
+   * Food Stuff
+   * Uniform
+   * Stationery, etc.
+
+This gives management **quick insight**.
+
+---
+
+### Step 13: Add slicers (One-click filtering)
+
+1. Insert → Slicer
+2. Choose:
+
+   * Category
+   * Date
+3. Format slicer to match navy blue theme
+4. Place near the top
+
+👉 Now the clerk can filter everything with **one click**.
+
+---
+
+## ✅ FINAL HOW IT ALL WORKS (Plain English)
+
+* Store clerk **only types** in:
+
+  * Inward sheet
+  * Outward sheet
+* Excel:
+
+  * Calculates balances
+  * Flags low stock
+  * Updates dashboard automatically
+* Management:
+
+  * Opens Dashboard
+  * Sees everything instantly
+  * No formulas, no confusion
+
+---
+
+## 🧠 Mental Model (Remember This)
+
+> **Type data → Dashboard updates → Decisions made**
+
+If you want, next I can:
+
+* Convert this into a **1-page printable checklist**
+* Design the **exact column formulas**
+* Help you **lock sheets** so users don’t break anything
+* Build a **very simple dashboard first**, then upgrade
+
+Just tell me your next step 👌
+
+---
+---
+---
+
+
+
 
 
