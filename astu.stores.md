@@ -92,21 +92,7 @@ We’ll do this **in segments**. This section covers the overall workflow and in
    
 ---
    
-# 🧭 OVERALL WORKFLOW (BIG PICTURE – FOR NON-EXPERT USERS)  
-Think of the Excel system like this:  
-
-1. **All_Items** --> Where items are defined **once** (names, categories, opening stock)  
-2. **Incoming_Items** --> Where you record **new stock coming in**  
-3. **Outgoing_Items** --> Where you record **stock given to officers**  
-4. **Dashboard** --> Where Excel **automatically calculates balances**, totals, and reports  
-      👉 *No one types here*  
-   
-**Users Input Rule**  
-* Data entry is allowed only in `Receiving_Inward` and `Issuing_Outward`  
-   
----
-   
-# 🟩 PHASE 1: CREATE THE EXCEL WORKBOOK (FOUNDATION)  
+# 🟩 PHASE 1: Prepare your Excel File (Foundation)  
    
 ## STEP 1: Create a New Workbook  
 
@@ -114,33 +100,23 @@ Think of the Excel system like this:
 2. Click **Blank Workbook**  
 3. Save it immediately:  
    * File → Save As  
-   * Name: **ASTU_Inventory_System.xlsx**  
+   * Name: **ASTU_Stores_Inventory.xlsx**  
      
 ---
    
-## STEP 2: Create the 4 Sheets (Rename Tabs)  
-At the bottom of Excel:  
-
-1. Sheet1 → rename to **All_Items**  
-2. Sheet2 → rename to **Incomings**  
-3. Sheet3 → rename to **Outgoing**  
-4. Click ➕ to add a new sheet → rename to **Dashboard**  
-
-You should now see **ONLY these 4 tabs**  
+## STEP 2: Create the 4 Sheets  
+Then rename the sheets, i.e  
+1. Sheet1 → rename to **Items_Master**  
+2. Sheet2 → rename to **Inward**  
+3. Sheet3 → rename to **Outward**  
+4. Sheet4 → rename to **Dashboard**
+5. Sheet5 → rename to **Calculations** (We will hide it later)
    
 ---
    
-# 🟩 PHASE 2: ITEMS_MASTER (MOST IMPORTANT SHEET)  
+# 🟩 PHASE 2: Enter Data in the Items_Master Sheet    
    
-* This sheet is prepared **ONCE** by you (Store In-Charge)  
-* Normal users should NOT edit it later.  
-   
----
-   
-## STEP 3: Set Up Column Headers (Row 1)  
-   
-Go to **All_Items** sheet.  
-In **Row 1**, type exactly:  
+Go to the **Items_Master** Sheet and create the following columns   
    
    | Cell | Text to Type  |
    | ---- | ------------- |
@@ -148,30 +124,24 @@ In **Row 1**, type exactly:
    | B1   | Item_Name     |
    | C1   | Measure    (Drop Down List)   |
    | D1   | Category   (Drop Down List)   |
-   | E1   | Opening_Stock |
-   | F1   | Total_Received (Use formula to pull data from Receiving_Inward sheet)   |
-   | G1   | Total_Issued (Use formula to pull data from Issuing_Outward sheet)    |
-   | H1   | Current_Balance   (Use formula to calculate the Current_Balance)  |
+   | E1   | Opening_Stock |  
    
 ---
    
 ## STEP 4: Set Up Drop Down Lists (Measure and Category)  
    
-In **Column D (Category)**, you will use ONLY these names:  
+In **Column e.g `D` (Category)**, you will use ONLY these names:  
 Select Column D → Data tab → Data Validation → Allow: List    
    * Food Stuff  
    * Horse Feed  
    * Water Treatment  
    * Police Uniform  
-   
-(Important: spell check because this is what you will use every time)  
-   
+Do the same for **Measure** column, adding different measures in the Data validation list  
+ 
 ---
    
 ## STEP 5: Enter Items (One Time Only)  
-Now start filling rows **from Row 2 downward**  
-   
-### Example (Manually type values only in columns without dropdowns):  
+In the Items_Master sheet enter the items data e.g  
    
    | Item_Code | Item_Name         | Measure | Category        | Opening_Stock |
    | --------- | ----------------- | ------- | --------------- | ------------- |
@@ -182,46 +152,23 @@ Now start filling rows **from Row 2 downward**
    | ITM019    | Aluminum sulphate | Kg      | Water Treatment | 0             |
    | ITM028    | Black beret       | Pcs     | Police Uniform  | 0             |
    
-**Rules**  
-   
-   * Item_Code must be **unique**  
-   * Item_Name must be **exact**  
-   * Opening_Stock can start at **0** (recommended)  
-   
-Continue until **all items are entered**.  
+Continue until **all items are entered**  
    
 ---
+
 ### Create a Named List for Product IDs  
 This prevents data entry mistakes later  
-* Select the Product ID column (not the header)
-* Go to the Formulas tab
-* Click Define Name
-* Enter desired Name e.g **Items_Names**
+* Select the Product ID column (Do not select the header)  
+* Go to the Formulas tab  
+* Click Define Name  
+* Enter desired Name e.g **Items_Names**  
 * Click OK  
 
-📌 You will use this name for dropdown lists in any sheet you want to pull names from master  
+You will use this name for dropdown lists in any sheet you want to pull items names from Item_Master sheet  
    
----
-   
-**Formula to pull data from Incomings Sheet**  
-* For each item, Excel automatically totals all received quantities for each Item_Code from the Receiving_Inward sheet  
-```
-=SUMIFS(Table_Incomings[Total_Received], Table_Incomings[Item_Code], A2)  
-```
-Where: 
-* `A2` is the `Item_Code` in `All_Items` sheet    
-  
-**Formula to pull data from Issuing_Outward sheet Sheet**  
-```
-=SUMIFS(Issuing_Outward!$C:$C, Issuing_Outward!$A:$A, A2)  
-```
-**Formula to calculate the Current_Balance**  
-```
-=E2 +F2 -G2  
-```
----
+---  
 
-## STEP 6: Convert Items_Master into a Table (IMPORTANT)  
+## STEP 6: Convert Items_Master sheet into a Table   
    
    1. Click **any cell inside your items list**  
    2. Press **Ctrl + T**  
@@ -237,132 +184,61 @@ Where:
 ---
    
 ## STEP 7: Lock Items_Master (Beginner-Proofing)  
-All stock changes should happen **only via Receiving_Inward and Issuing_Outward**  
+All stock entry and changes should happen **only via inward and Outward sheets**  
+
+After locking the sheets, all items in the sheet will be uneditable. To Unlock the column you want to remain editable   
    
-### 7.1 Unlock Opening_Stock Column  
-   
-   1. Select **Column D**  
+   1. Select **Column e.g D**  
    2. Right-click → Format Cells  
    3. Protection tab  
    4. Uncheck **Locked**  
    5. Click OK  
+   6. Then **tick locked** to all other remaining columns   
    
 ### 7.2 Protect the Sheet  
    
-   1. Go to **Review → Protect Sheet**
-   2. (Optional) set password
-   3. Click OK
+   1. Go to **Review → Protect Sheet**  
+   2. Set password  
+   3. Click OK  
    
-✅ Result:  
+**Result**:  
    
-   * Users **cannot alter item names or codes**
-   * Users **can edit Opening_Stock only**
-   
-   ---
-   
-   # 🧠 WHAT USERS NEED TO KNOW (SIMPLE INSTRUCTIONS)
-   
-   > ❌ DO NOT type balances manually
-   > ❌ DO NOT add new items anywhere else
-   > ✅ ONLY use Receiving_Inward and Issuing_Outward
+   * Users **cannot alter item names or codes**  
+   * Users **can only edit edit the column** you allowed  
    
    ---
    
-   ## ✔ CHECKPOINT (END OF SEGMENT 1)
+   # 🟦 SEGMENT 2: Inward sheet  
+Go to **Inward** sheet and create the following columns  
    
-   At this stage, you now have:
+   | Cell | Text to Type  |
+   | ---- | ------------- |
+   | A1   | Item_Code  (Pulled from Items_Master) |
+   | B1   | Item_Name (Drop-dowm from named-list you had created) |
+   | C1   | Measure    (Pulled from Items_Master) |
+   | D1   | Category   (Pulled from Items_Master) |
+   | D1   | Quantity_Received |
+   | D1   | Date_Received |
+   | E1   | S11_No.  |  
    
-   ✅ Workbook created
-   ✅ 4 sheets named correctly
-   ✅ All items safely stored
-   ✅ Items_Master protected
-   ✅ Ready for automation
+   ---  
    
-   ---
-   
-   ### 👉 NEXT SEGMENT (Segment 2)
-   
-   **Receiving_Inward Sheet**
-   
-   * Drop-downs
-   * Auto item names
-   * Fool-proof data entry
-   * Zero formulas for users
-   
-   Say **“Continue to Segment 2”** when ready.
-   ---
-   ---
-   Nice, let’s keep rolling 🚀
-   This is **SEGMENT 2**, and it’s where the system starts to feel *automatic* to users.
-   
-   ---
-   
-   # 🟦 SEGMENT 2: RECEIVING_INWARD (STOCK COMING IN)  
-   
-   ## 🎯 PURPOSE OF THIS SHEET (Explain to Users)  
-   
-   > This sheet is used **ONLY when new stock is received into the store**  
-   
-   Every time stock arrives:  
-   
-   * The store clerk records it **here**  
-   * The system later **adds it automatically to stock balance**  
-   * No calculations are typed by the user  
-   
-   ---
-   
-   # 🟩 PHASE 3: SET UP `Receiving_Inward` SHEET  
-   
-   ## STEP 1: Create Column Headers (Row 1)  
-   
-   Go to **Receiving_Inward** sheet.  
-   
-   In **Row 1**, type exactly:  
-   
-   | Cell | Header            |
-   | ---- | ----------------- |
-   | A1   | Item_Code         |
-   | B1   | Item_Name         |
-   | C1   | Quantity_Received |
-   | D1   | Date_Received     |
-   | E1   | S11_No            |
-   
-   Make headers **bold**.
-   
-   ---
-   
-   ## STEP 2: Create Drop-Down for Item_Name (User-Friendly)  
-   
-   This prevents wrong item entry.  
-   
-   ### 2.1 Select Column B (Item_Name)  
-   
-   * Click on **B2**  
-   * Press **Ctrl + Shift + ↓** (or drag down to required number of rows e.g 1000)  
-   
-   ### 2.2 Add Data Validation  
-   
+   ## STEP 2: Create Drop-Down for Item_Name  
+   This allows you to use the items names from the items master sheet. You just click and it is added  
+
+   Select the column with the items name e.g column `B`  
    1. Go to **Data → Data Validation**  
    2. Allow: **List**  
-   3. Source:
+   3. Source:  
    4. Press F3 → Then select from the **named list** you had created in the **Items_Master** sheet  
-   e.g 
-   ```excel
-   =Items_Master  
-   ```
-   
-   4. Click **OK**  
-   
-   ✅ Users now select item names from a drop-down list.  
+   e.g `named-list`  
+   4. Click ok   
    
    ---
    
-   ## STEP 3: Auto-Fill the remaining columns with the formula  
-   Item_Code (No Typing)  
+   ## STEP 3: Auto-Fill the remaining columns by pulling Data from the items_master sheet   
    
-   ### 3.1 Auto populate Item_Code  
-   Enter this formula in the cell you want to populate the Item_Code  
-   Ensure each data is formatted as tables as you give clear table name  
+   Enter this formula in the cell you want to populate the data e.g Item_Code   
    ```excel
    // In new excel version (XLOOKUP only works in Excel 365 / Excel 2021 or later)  
    =IF(B2="","", XLOOKUP(B2, Table_ItemMaster[Item_Name], Table_ItemMaster[Item_Code], "Not Found"))
@@ -372,23 +248,14 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    ```
    Where `B2` is the lookup value (cell with the data you use as reference). In our case, the the **Item_Name** is what we used as our reference. It is our lookup value   
    The **1st** column is what changes in the formula e.g **Item_Code** changes to **Category**, to **Measure** e.t.c  
-   
-   📌 Result:
-   
-   * When user selects Item_Name  
-   * Item_Code appears automatically  
-   
-   ---
-   ## Unit of Measure
-  Auto populate Data from the master, use this formula  
-   
+
    ---
    
    ## STEP 4: Date Control (Beginner Safe)
    
    ### 4.1 Format Date Column
    
-   1. Select **Column D**
+   1. Select **Column e.g D**
    2. Right-click → **Format Cells**
    3. Category → **Date**
    4. Locale → **English (United Kingdom)**
@@ -420,25 +287,20 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
         
    ---
    
-   ## STEP 5: Quantity Rules (Avoid Errors)
+   ## STEP 5: Quantity Rules (Avoid Errors)  
+   Restrict quantity to numbers only  
    
-   ### 5.1 Restrict Quantity to Numbers Only
-   
-   1. Select **Column C**
+   1. Select **Column e.g C**
    2. Data → Data Validation
    3. Allow: **Whole number**
    4. Minimum: **1**
    5. Maximum: Enter the largest number possible e.d 125,600,000,000,000,000,000
-   6. Click OK
-   
-   ❌ No negative values
-   ❌ No text
-   ✅ Clean data
+   6. Click OK  
    
    ---
    
    ## STEP 6: Receipt No. Validation
-   
+   This ensures the receipt column cannot be Empty  
    * 1. Select the column with Receipt No.
    > 2. Go to Data - Data validation
    > 3. Allow - text length
@@ -447,106 +309,28 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    
    ---
    
-   # 🟩 PHASE 4: PROTECT THE SHEET (SMART PROTECTION)  
+   ## Protect the **Inward** sheet  
+   This ensures that the users can only edit the columns they will use to add data.  
+   All the columns that pull data from other sheets will be locked  
    
-   We lock formulas but allow data entry.  
+  Select all the columns that user will be adding input data and unlock them e.g  
    
-   ### 6.1 Unlock Input Columns  
-   
-   Unlock:  
-   
-   * Column B (Item_Code)  
+   * Column B (Item_Name)  
    * Column C (Quantity_Received)  
    * Column D (Date_Received)  
    * Column E (S11_No)  
    
-   (Keep Column A locked)
-   
-   **How:**  
-   
-   1. Select those columns  
-   2. Format Cells → Protection  
-   3. Uncheck **Locked**  
+ **Note**: Keep all other columns locked  
+ Then protect the sheet using password e.g  
+ 
+   1. Review → Protect Sheet  
    
    ---
    
-   ### 6.2 Protect the Sheet
+   # 🟨 SEGMENT 3: Outgoing sheet  
+   This sheet is used to record all items that have been given out (Issued to officers or to coys)
    
-   1. Review → Protect Sheet
-   2. Allow:
-   
-      * Select unlocked cells
-   3. Set password (optional)
-   4. OK
-   
-   ---
-   
-   # 🧪 HOW USERS WILL USE THIS SHEET (REAL WORKFLOW)
-   
-   ### Example Entry:
-   
-   | Item_Code | Item_Name   | Quantity_Received | Date_Received | S11_No  |
-   | --------- | ----------- | ----------------- | ------------- | ------- |
-   | ITM001    | Maize flour | 200               | 12/01/2026    | S11/034 |
-   
-   ✔ Item_Code fills automatically
-   ✔ Quantity validated
-   ✔ Date clean
-   ✔ Ready for stock calculation
-   
-   ---
-   
-   # ✅ END OF SEGMENT 2 CHECKLIST
-   
-   You now have:
-   
-   ✔ Drop-down controlled items
-   ✔ Auto item names
-   ✔ Clean quantity & date entry
-   ✔ Beginner-proof sheet
-   ✔ No formulas touched by users
-   
-   ---
-   
-   ### 👉 NEXT SEGMENT (Segment 3)
-   
-   **Outgoing Sheet**
-   
-   * Officer tracking
-   * Receipt numbers
-   * Prevent issuing more than available stock (important)
-   
-   Say **“Continue to Segment 3”** when ready.
-   
-   ---
-   ---
-   
-   Great, this is where the system becomes **operationally powerful** 💪
-   **SEGMENT 3** covers issuing stock, officer tracking, and error prevention.
-   
-   ---
-   
-   # 🟨 SEGMENT 3: Outgoing sheet (STOCK GOING OUT)
-   
-   ## 🎯 PURPOSE OF THIS SHEET (Explain to Users)
-   
-   > This sheet is used **ONLY when items are issued to officers or units**.
-   
-   Every issue entry will:
-   
-   * Reduce stock automatically (later via Dashboard)
-   * Record **who received what**
-   * Create a permanent audit trail
-   
-   ---
-   
-   # 🟩 PHASE 5: SET UP `Outgoing` SHEET
-   
-   ## STEP 1: Create Column Headers (Row 1)
-   
-   Go to **Outgoing** sheet.
-   
-   Type exactly in **Row 1**:
+   Go to **Outgoing** sheet and add the following columns    
    
    | Cell | Header          |
    | ---- | --------------- |
@@ -559,180 +343,22 @@ All stock changes should happen **only via Receiving_Inward and Issuing_Outward*
    | G1   | Date_Issued     |
    | H1   | S11_No          |
    
-   Make headers **bold**.
+   
+   Repeat the valdation process as done in the **inward** sheet  
    
    ---
    
-   ## STEP 2: drop-down for Item_Name instead (Same as Receiving)
+   ## Prevent the user from issuing more than the available stock balance   
    
-   ### 2.1 Select Column B (from B2 down)
    
-   1. Click **B2**
-   2. Data → Data Validation
-   3. Allow: **List**
-   4. Source: 
-   Press **F3**, then Select the Name list you had created e.g 
-   5. OK
    
-   ---
-   
-   ## STEP 3: Auto-Fill Parts that are not being filled by user  
-   
-   ### Use Formula in  .....
-   
-   ```excel
-   // In new excel version (XLOOKUP only works in Excel 365 / Excel 2021 or later)
-  
-   
-   // In order excel verson (Excel 2019, 2016, or older) use this formula
-   
-   ```
-   
-   Copy the formula down.
-   
-   📌 Users never type item names.
-   
-   ---
-   
-   ## STEP 4: Quantity Control (Critical)
-   
-   ### 4.1 Restrict Quantity to Whole Numbers
-   
-   1. Select **Column C**
-   2. Data → Data Validation
-   3. Allow: **Whole number**
-   4. Minimum: **1**
-   5. OK
-   
-   ---
-   
-   ## STEP 5: Date Format
-   
-   1. 
-   
-   ---
-   
-   # 🟩 PHASE 6: PREVENT ISSUING MORE THAN AVAILABLE STOCK
-   
-   This is **VERY IMPORTANT** for accuracy.
-   
-   We’ll do this **without VBA** so beginners don’t break it.
-   
-   ---
-   
-   ## STEP 6: Create a Helper Column (Hidden Later)
-   
-   ### 6.1 Insert New Column I
-   
-   Header:
-   
-   ```
-   Available_Balance
-   ```
-   
-   ---
-   
-   ### 6.2 Formula in **I2**
-   
-   ```excel
-   =IF(A2="","",
-      XLOOKUP(
-         A2,
-         Dashboard!A:A,
-         Dashboard!F:F
-      )
-   )
-   ```
-   
-   ➡️ Copy down.
-   
-   📌 This pulls **real-time balance** from Dashboard.
-   
-   ---
-   
-   ## STEP 7: Data Validation Against Balance
-   
-   ### Apply Validation to **Quantity_Issued (Column C)**
-   
-   1. Select Column C (from C2 down)
-   2. Data → Data Validation
-   3. Allow: **Whole number**
-   4. Minimum: **1**
-   5. Maximum:
-   
-   ```excel
-   =I2
-   ```
-   
-   6. Error Alert:
-   
-      * Title: **Insufficient Stock**
-      * Message: *Issued quantity exceeds available stock*
-   
-   ✅ Users cannot over-issue stock.
-   
-   ---
-   
-   ## STEP 8: Hide Helper Column
-   
+   ## Create a **Calculation** sheet  
+   For our Dashboard to remain clean, we will do all calculations in the calculation sheet and only pull the data to the dashboard   
+   We will then hide it so that users never see the calculation sheet  
    1. Right-click Column **I**
    2. Click **Hide**
-   
    Users never see it.
    
-   ---
-   
-   # 🟩 PHASE 7: PROTECT ISSUING_OUTWARD SHEET
-   
-   ### Unlock Input Columns
-   
-   Unlock:
-   
-   * A (Item_Code)
-   * C (Quantity_Issued)
-   * D (Service_No)
-   * E (Officer_Name)
-   * F (Coy)
-   * G (Date_Issued)
-   * H (S11_No)
-   
-   Keep locked:
-   
-   * B (Item_Name)
-   
-   ---
-   
-   ### Protect Sheet
-   
-   1. Review → Protect Sheet
-   2. Allow **Select unlocked cells**
-   3. Set password (optional)
-   4. OK
-   
-   ---
-   
-   # 🧪 HOW USERS WILL USE THIS SHEET (REAL EXAMPLE)
-   
-   | Item_Code | Item_Name   | Qty | Service_No | Officer    | Coy   | Date       | S11_No  |
-   | --------- | ----------- | --- | ---------- | ---------- | ----- | ---------- | ------- |
-   | ITM001    | Maize flour | 20  | 237891     | Sgt. Kamau | A Coy | 14/01/2026 | S11/056 |
-   
-   ✔ Name fills automatically
-   ✔ Stock checked automatically
-   ✔ Officer recorded
-   ✔ Balance updates later
-   
-   ---
-   
-   # ✅ END OF SEGMENT 3 CHECKLIST
-   
-   You now have:
-   
-   ✔ Issuing control
-   ✔ Officer accountability
-   ✔ Over-issue prevention
-   ✔ Clean audit trail
-   ✔ Beginner-safe protection
    
    ---
    
