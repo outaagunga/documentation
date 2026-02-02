@@ -355,7 +355,7 @@ Go to **Inward** sheet and create the following columns
    ## Create a **Calculation** sheet  
    For our Dashboard to remain clean, we will do all calculations in the calculation sheet and only pull the data to the dashboard   
    We will then hide it so that users never see the calculation sheet  
-   1. Right-click Column **I**
+   1. Right-click the sheet name  
    2. Click **Hide**
    Users never see it.
    
