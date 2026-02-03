@@ -488,6 +488,21 @@ Enter this formula to calculate the total number of staff
 
 Where `tblName` is the name of the main sheet  
 `P/NO` is the cell with unique identity in the main sheet  
+```
+=COUNTIFS(
+  Nomi[Status],"",
+  Nomi[Rank],"Senior"
+)
+```
+```
+=COUNTIF(Nomi[Status],"")
+```
+```
+=COUNTIF(Nomi[Status],"*Haiti*")
+```
+
+
+
 
 ---
 
