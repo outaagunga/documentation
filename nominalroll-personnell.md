@@ -498,9 +498,23 @@ Where `tblName` is the name of the main sheet
 =COUNTIF(Nomi[Status],"")
 ```
 ```
+=COUNTIF(Nomi[STATUS],"<>")
+```
+```
 =COUNTIF(Nomi[Status],"*Haiti*")
 ```
-
+Percentage
+```
+=IFERROR(C4/$C$7, 0)
+```
+Count rank
+```
+=SUM(COUNTIF(Nomi[RANK],{"ASP","SP","SSP","CP","AIG","SAIG"}))
+```
+Count only Active 
+```
+=SUM(COUNTIFS(Nomi[RANK],{"ASP","SP","SSP","CP","AIG","SAIG"},Nomi[STATUS],""))
+```
 
 
 
