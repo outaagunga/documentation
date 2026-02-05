@@ -16,12 +16,19 @@ Use screen recording software so assessors see your actual actions.
 👉 I strongly recommend **OBS Studio** if you can learn it (very simple once set up).
 
 ### OBS Quick Setup
-
-1. Install OBS Studio
-2. Open → click **+ under Sources**
-3. Choose **Display Capture**
-4. Add **Audio Input Capture** (your microphone)
-5. Click **Start Recording**
+* If using windows- download it from microsoft store
+* After opening it- auto configuration pops up- you can also open auto configurations by going to tools- auto configurations
+* To prepare for your recording- create scene- give scene name
+* To add source- click the + icon- select display capture - also select cursor(mouse) capture
+* Click the + icon again - select audio capture
+* To add webcam - click + icon again - select video capture deveice
+* To record sound coming from computer - click the + icon - select audio output capture
+* Set where recording is saved - click file - settings - setting output - browse path
+* To set video format - file - setting - select video format - choose fvs
+* Click start recording - then minimize the obs
+* To locate recorded video -go to file - show recording
+* To add hot keys - go to file - settings - hot keys - add keyboard key
+* To adjust voulume - use slider - to reduce or add volume  
 
 ---
 
