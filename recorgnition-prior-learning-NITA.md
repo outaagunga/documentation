@@ -19,7 +19,7 @@ Use screen recording software so assessors see your actual actions.
 * If using windows- download it from microsoft store
 * After opening it- auto configuration pops up- you can also open auto configurations by going to tools- auto configurations
 * To prepare for your recording- create scene- give scene name
-* To add source- click the + icon- select display capture - also select cursor(mouse) capture
+* To add source- click the + icon- select display capture (ENSURE YOU SELECT THE DISPLAY YOU WANT TO CAPTURE ON THE DROP DOWN BUTTON OR ELSE YOU WILL SEE A BLACK SCREEN) - also select cursor(mouse) capture
 * Click the + icon again - select audio capture
 * To add webcam - click + icon again - select video capture deveice
 * To record sound coming from computer - click the + icon - select audio output capture
