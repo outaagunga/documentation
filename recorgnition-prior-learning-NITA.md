@@ -28,7 +28,8 @@ Use screen recording software so assessors see your actual actions.
 * Click start recording - then minimize the obs
 * To locate recorded video -go to file - show recording
 * To add hot keys - go to file - settings - hot keys - add keyboard key
-* To adjust voulume - use slider - to reduce or add volume  
+* To adjust voulume - use slider - to reduce or add volume
+* **NB**: To reset OBS Studio to default settings, open OBS, click File in the top-left corner, and select Show Settings Folder. Close OBS immediately, delete all files within that folder, and relaunch the application. This forces a factory reset, clearing all scenes, sources, and custom settings.  
 
 ---
 
