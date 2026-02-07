@@ -21,6 +21,7 @@ Instead of reading the whole thing, feed sections into AI and say something like
 > * Common mistakes
 > * Real-world examples
 > * What I must learn first vs later”
+> * Practice tasks/ exercises
 
 This gives you the **learning roadmap** instead of raw text.
 
