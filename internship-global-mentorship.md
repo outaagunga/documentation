@@ -251,6 +251,7 @@ Do this instead:
 Each bullet follows:
 
 > **Action + Tool → Result**
+> Worked in [organization type/team], responsible for [main tasks/tools], supporting [process, operations, reporting, or outcomes].
 
 **Example:**
 
@@ -263,6 +264,12 @@ Each bullet follows:
 * CV = tight, formal, quantified
 * LinkedIn = readable, narrative, still professional
 
+---
+**Profile Headline**
+* e.g Data Analyst & Visualization Specialist | Turning Raw Data into Decision-Ready Insights | Power BI, Python, SQL, Excel, Dashboards
+---
+**Title** 
+* e.g Data analysis and records support role within an NGO research and administrative environment, focusing on data cleaning, reporting, dashboard development and improving internal data workflows to support monitoring and decision-making across teams  
 ---
 
 ### D. Activity: What “Being Active” Actually Means
