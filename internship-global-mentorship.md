@@ -511,7 +511,12 @@ Then ask:
 
 # Session 5 - Agenda (14 February, 2026)  
 
-* Framing & expectations 
+* Reflecting on skills, interests, and progress so far
+* Clarifying short-term and long-term career direction
+* Identifying roles and problem areas to focus on
+* Understanding skill gaps and learning priorities
+* Building a flexible, future-ready career plan
+* Defining next practical steps 
 
 
 ---
