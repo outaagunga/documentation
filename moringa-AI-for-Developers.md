@@ -667,6 +667,521 @@ Known issues or common user questions:
 
 ---
 ---
+# A. Tracing Error Messages and Stack Traces  
+### Prompt 1: Error Message Translation
+I need help understanding this error message from my [language/framework] application.
+
+Here's the complete error message and stack trace:
+
+[paste full error message and stack trace or log file]
+
+My application context:
+
+- This happened when I was trying to [action that triggered the error]
+
+- The application is a [brief description of application type]
+
+- I'm using [language version] and [framework version]
+
+Could you:
+
+1. Explain what this error means in simple, non-technical terms
+
+2. Identify the most relevant lines in the stack trace (which ones actually point to my code)
+
+3. List 2-3 of the most likely causes based on this type of error
+
+4. Suggest what specific information I should look for in my code
+
+5. Provide a step-by-step debugging approach I could follow
+
+I'm particularly unfamiliar with [specific technology or concept] mentioned in the error, so extra explanation there would help.
+
+---
+---
+### Prompt 2: Root Cause Analysis
+
+I need help diagnosing the root cause of an error in my [language/framework] application.
+
+Here's the error and stack trace:
+
+[paste complete error and stack trace or log file]
+
+Here are the relevant code snippets from files mentioned in the stack trace:
+
+File: [filename 1]
+
+[code snippet from file 1]
+
+File: [filename 2]
+
+[code snippet from file 2]
+
+Additional context:
+
+- This error occurs when [specific scenario or user action]
+
+- It happens [consistently/intermittently]
+
+- I've already tried [mention any debugging steps already taken]
+
+- These files interact by [brief explanation of how these components connect]
+
+Could you please:
+
+1. Identify the likely root cause (not just the symptoms)
+
+2. Explain the chain of events leading to this error
+
+3. Suggest 2-3 specific code changes that might fix the issue
+
+4. Recommend tests I could write to verify the fix
+
+5. Explain any patterns or anti-patterns you notice that might cause similar problems elsewhere
+
+6. Suggest debugging tools or techniques specific to this type of error
+
+I'm most confused about [specific aspect of the error or code], so detailed explanation there would be helpful.
+
+---
+---
+
+### Prompt 3: Dependency and Version Tracing
+I'm debugging an error that appears to be related to dependencies in my [language/framework] project.
+
+Here's the error message:
+
+[paste error message and relevant parts of stack trace of log file]
+
+My project's environment:
+
+- Operating System: [OS name and version]
+
+- Language: [language and version]
+
+- Framework: [framework and version]
+
+- Package Manager: [npm/yarn/pip/etc. and version]
+
+Key dependencies from my package file:
+
+[package.json/requirements.txt/etc. snippet showing dependencies and versions]
+
+Recent changes:
+
+- Recently [updated/installed/removed] these packages: [list of recent dependency changes]
+
+- Last working version was: [previous working state if known]
+
+- The error started after [specific change or update if known]
+
+Could you:
+
+1. Identify if this is a known issue with any of these dependencies
+
+2. Detect any version conflicts or compatibility issues
+
+3. Explain what's happening at the dependency level
+
+4. Suggest specific version combinations that would resolve the issue
+
+5. Recommend a strategy for updating dependencies without breaking changes
+
+6. Provide commands I should run to fix or diagnose further
+
+I've searched for solutions and found [mention any resources or solutions already discovered], but they didn't resolve my issue because [reason previous solutions didn't work].
+
+---
+---
+---
+
+# A. Identifying Performance Bottlenecks
+### Prompt 1: Slow Code Analysis
+I have a piece of code that's running slowly. I'd like to understand why and how to improve it.
+
+Here's the slow-performing code:
+
+[paste your code here]
+
+Context about the issue:
+
+- What this code is supposed to do: [brief explanation of purpose]
+
+- Typical input size/data:[describe the data size, like "processing 10,000 records"]
+
+- Current performance: [describe how slow it is, like "takes about 30 seconds to run"]
+
+- Environment: [language version, framework, hardware limitations if relevant]
+
+Could you please:
+
+1. Explain in simple terms why this code might be slow
+
+2. Identify the specific operations or patterns that are likely causing the slowdown
+
+3. Suggest 2-3 specific improvements I could make
+
+4. Explain the performance concepts I should learn to avoid similar issues in the future
+
+5. If there are any tools or techniques I could use to measure the actual bottlenecks, please suggest them
+
+I'm particularly interested in learning the underlying performance concepts, not just getting a quick fix.
+
+---
+---
+### Prompt 2: Memory Usage Optimization  
+My application is using too much memory and sometimes crashes with out-of-memory errors. I'd like to understand why and how to fix it.
+
+Here's the code that I suspect is causing memory issues:
+
+[paste your code here]
+
+Additional context:
+
+- Application type: [web app, data processing script, etc.]
+
+- When the issue occurs: [e.g., "after processing about 1,000 images" or "when multiple users are active"]
+
+- Error message (if any): [paste any error messages]
+
+- Memory limit in my environment: [e.g., "8GB RAM on my development machine"]
+
+- Language and runtime: [e.g., "Python 3.9, Node.js 16, etc."]
+
+Could you please:
+
+1. Explain in simple terms what might be causing the high memory usage
+
+2. Identify specific memory-intensive operations or potential memory leaks
+
+3. Suggest 2-3 practical ways to reduce memory consumption
+
+4. Recommend any tools I could use to profile memory usage
+
+5. Explain the memory management concepts I should understand for my language/environment
+
+I want to both fix this issue and learn how to write more memory-efficient code in the future.
+
+---
+---
+### Prompt 3: Slow Database Query Analysis 
+I have a database query that's running very slowly. I'd like to understand why and how to optimize it.
+
+Here's the slow query:
+
+[paste your query here]
+
+Database context:
+
+- Database type: [MySQL, PostgreSQL, MongoDB, etc.]
+
+- Table sizes: [approximate number of rows in relevant tables]
+
+- Table structure: [key columns and their data types]
+
+- Existing indexes (if known): [any indexes you're aware of]
+
+- When the slowness occurs: [all the time, or only with certain parameters?]
+
+- Approximate execution time: [how long the query takes to run]
+
+Could you please:
+
+1. Explain in simple terms why this query might be slow
+
+2. Identify specific parts of the query that are likely causing performance issues
+
+3. Suggest improvements to make the query faster (both query rewrites and potential indexes)
+
+4. Explain the database concepts I should learn to write better queries
+
+5. Suggest how I could measure the query performance before and after changes
+
+I'm a junior developer, so explanations about the underlying database concepts would be very helpful.
+
+---
+---
+---
+
+# C. Limitations and Verification
+### Prompt 1: Collaborative Solution Verification
+
+I'd like to verify a solution you've suggested before implementing it. Let me share both the solution and my current understanding of how to test it.
+
+The solution you provided:
+
+[Paste AI's suggested code or explanation]
+
+My understanding of this solution:
+
+- What I think it does: [Your explanation of how the solution works]
+
+- How I think it fixes the original problem: [Your understanding of why it addresses the issue]
+
+My ideas for testing this solution:
+
+- Test cases I'm considering: [List 2-3 test cases you've thought of]
+
+- Edge cases I'm concerned about: [Any edge cases you can think of]
+
+- Parts I'm unsure how to test: [Mention any aspects you're not sure how to verify]
+
+Could you please:
+
+1. Confirm if my understanding is accurate or correct any misconceptions
+
+2. Evaluate my proposed test cases and suggest improvements
+
+3. Recommend additional edge cases I might have missed
+
+4. Provide a simple verification plan that would help ensure this solution works properly
+
+5. Highlight any assumptions in the solution that might not be obvious to me
+
+My environment/constraints:
+
+[Describe relevant details about your system, versions, etc.]
+
+I want to learn how to properly verify solutions, not just implement them blindly.
+
+---
+---
+### Prompt 2: Learning Through Alternative Approaches
+You suggested this approach to solve my problem:
+
+[Paste AI's suggested solution]
+
+I'd like to explore alternative approaches to deepen my understanding. Here are my thoughts:
+
+My understanding of the current solution:
+
+- How it works: [Your explanation of the suggested approach]
+
+- Pros: [What you think are advantages of this solution]
+
+- Cons: [Any disadvantages or concerns you see]
+
+Alternative ideas I'm considering:
+
+- Idea 1: [Your own alternative approach if you have one]
+
+- Idea 2: [Another approach if you have one, or just write "I don't have other ideas yet"]
+
+Could you please:
+
+1. Let me know if my understanding of the original solution is accurate
+
+2. Provide 2-3 different approaches to solve the same problem
+
+3. Compare all approaches (including mine if applicable) in terms of:
+
+- Performance considerations
+
+- Code readability and maintainability
+
+- Scalability for future extensions
+
+- Typical situations where each approach shines
+
+4. Explain the principles or patterns behind each approach so I can learn when to apply them in the future
+
+I'm not just looking for the "best" solution, but to understand the trade-offs and reasoning behind different approaches.
+
+---
+---
+### Prompt 3: Developing a Critical Eye
+I want to develop my critical thinking skills by analyzing a solution together. Let's examine this solution you provided:
+
+[Paste AI's suggested solution]
+
+My initial assessment:
+
+- Strengths I see: [What you think is good about the solution]
+
+- Concerns I have: [Any aspects you're unsure about]
+
+- Questions that came to mind: [1-2 specific questions you have]
+
+Could we collaborate on a critical review where:
+
+1. You confirm or correct my initial assessment
+
+2. We identify potential weaknesses in this solution that I might have missed
+
+3. We consider what assumptions this code makes about:
+
+- The environment it runs in
+
+- The input data
+
+- Error handling expectations
+
+- Performance requirements
+
+4. We discuss how maintainable this solution would be if:
+
+- Requirements change slightly in the future
+
+- The codebase scales significantly
+
+- Another developer needs to modify it without context
+
+5. You suggest improvements that would address the biggest concerns
+
+I'm trying to develop the skill of critically evaluating solutions before implementing them. Explaining your thought process would help me learn this skill better.
+
+---
+---
+---
+
+# A. Understanding What to Test
+### Prompt 1: Behavior Analysis Questions
+I'm learning how to test this function, and I want to understand what behaviors I should test:
+
+[Paste function code]
+
+Rather than generating tests for me, please:
+
+1. Ask me questions about what I think this function does
+
+2. After I answer, help identify any behaviors I missed
+
+3. Ask me what edge cases I think should be tested
+
+4. Help me identify additional edge cases I didn't think of
+
+5. Ask me which test I should write first and why
+
+---
+---
+### Prompt 2: Test Planning Guidance
+I'm learning to write tests for this code:
+
+[Paste code]
+
+Instead of writing tests for me, please:
+
+1. Help me create a testing plan by asking me questions
+
+2. For each behavior I identify, ask me how I would test it
+
+3. If I miss something important, give me hints rather than answers
+
+4. For each edge case we identify, ask me what I expect to happen
+
+5. Help me create a checklist of tests I should write, organized by priority
+
+---
+---
+---
+
+# B. Improving a Single Test
+### Prompt 1: Single Test Enhancement
+I wrote this test for the following function:
+
+Function:
+
+[Paste function code]
+
+My test:
+
+[Paste your test]
+
+Instead of rewriting it for me, please:
+
+1. Ask me questions about what my test is trying to verify
+
+2. Help me identify if my test is checking behavior or implementation details
+
+3. Suggest how I could make the test's purpose clearer
+
+4. Ask me what edge cases my test might be missing
+
+5. Guide me in improving my assertions to be more precise
+
+---
+---
+
+### Prompt 2: Learning From Test Examples
+I'm trying to understand how to better test this function:
+
+[Paste function code]
+
+I've written this basic test:
+
+[Paste your test]
+
+Please:
+
+1. Explain the principles of a good test for this type of function
+
+2. Show me ONE example of a better test with comments explaining why it's better
+
+3. Ask me questions about how I would improve my test based on this example
+
+4. Challenge me to identify what edge cases I should add
+
+5. Guide me in writing more precise assertions
+
+---
+---
+---
+# C. Learning Test-Driven Development
+### Prompt 1: Guided TDD Practice
+I want to learn Test-Driven Development for this feature:
+
+[Describe the feature you want to implement]
+
+Instead of writing code and tests for me, please:
+
+1. Ask me what I think the first test should be and why
+
+2. Give me feedback on my proposed test
+
+3. After I write the test, ask me what minimal code would make it pass
+
+4. Once I've implemented the code, guide me on what test to add next
+
+5. Help me understand when it's time to refactor vs. add new functionality
+
+---
+---
+### Prompt 2: TDD Code Review Guidance
+I've been practicing TDD and wrote these tests and implementation:
+
+Tests:
+
+[Paste your tests]
+
+Implementation:
+
+[Paste your code]
+
+Please:
+
+1. Ask me to explain my TDD process and what order I wrote things in
+
+2. Help me identify if I truly followed TDD principles
+
+3. Ask questions about tests I might have skipped
+
+4. Guide me on opportunities for refactoring
+
+5. Help me recognize if my implementation does more than needed for the tests
+
+=== 
+# Using AI to refactor and enhance code
+===
+
+
+
+
+
+
+
+
+
+
 
 
 
