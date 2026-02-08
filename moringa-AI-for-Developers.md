@@ -1169,15 +1169,260 @@ Please:
 
 5. Help me recognize if my implementation does more than needed for the tests
 
-=== 
+---
+---
+---
+
 # Using AI to refactor and enhance code
-===
+---
+---
+# A. Understanding What to Change with AI
+### Prompt 1: Code Readability Improvement
+I want to make this code more readable and maintainable. Please help me by:
 
+1. Identifying parts that are difficult to understand
 
+2. Suggesting better variable and function names
 
+3. Recommending ways to break down complex sections
 
+4. Pointing out any inconsistent style or formatting issues
 
+[Paste code here]
 
+Language/Framework: [e.g., JavaScript/React]
+
+Team coding standards: [e.g., camelCase for variables, max line length 80 chars
+
+---
+---
+### Prompt 2: Function Refactoring
+I have a function that I think is doing too much. Please help me refactor it by:
+
+1. Identifying the different responsibilities this function has
+
+2. Suggesting how to break it into smaller, focused functions
+
+3. Improving the organization and flow of the code
+
+4. Pointing out any other issues you notice
+
+[Paste function here]
+
+What this function should do: [Brief description of intended purpose]
+
+---
+---
+### Prompt 3: Code Duplication Detection
+I suspect there might be repeated patterns in this code that could be consolidated. Please help me by:
+
+1. Identifying similar code segments that appear multiple times
+
+2. Suggesting ways to eliminate the duplication (e.g., helper functions, loops)
+
+3. Showing me what the refactored code could look like
+
+4. Explaining the benefits of the suggested changes
+
+[Paste code with potential duplication]
+
+---
+---
+---
+# B. Breaking Down Complex Functions
+### Prompt 1: Function Responsibility Analysis
+I have a complex function that I'd like to refactor by breaking it down into smaller functions:
+
+[Paste complex function here]
+
+Please:
+
+1. Identify the distinct responsibilities/concerns in this function
+
+2. Suggest a decomposition strategy with smaller functions
+
+3. Show which parts of the original code would move to each new function
+
+4. Provide a refactored version with the main function delegating to the smaller functions
+
+---
+---
+### Prompt 2: Single-Responsibility Extraction
+I'd like to extract a single responsibility from this complex function:
+
+[Paste complex function here]
+
+Specifically, I want to extract the logic that handles:
+
+[Describe the specific responsibility to extract, e.g., "validation", "data transformation", "error handling"]
+
+Please:
+
+1. Identify all code related to this responsibility
+
+2. Create a new function that encapsulates just this responsibility
+
+3. Show how to modify the original function to call the new function
+
+4. Suggest an appropriate name and parameters for the extracted function
+
+---
+---
+### Prompt 3: Conditional Logic Simplification
+This function contains complex conditional logic that I want to simplify:
+
+[Paste function with complex conditionals]
+
+Please:
+
+1. Identify the different logical paths through the conditionals
+
+2. Extract each conditional branch into a separate named function
+
+3. Suggest a pattern (Strategy, Command, etc.) that could replace the conditionals
+
+4. Provide a refactored version with simplified logic in the main function
+
+---
+---
+---
+# C. Improving Code Readability
+### Prompt 1: Variable and Function Naming Enhancement
+Please improve the readability of this code by enhancing variable and function names:
+
+[Paste code with poor naming here]
+
+Guidelines:
+
+1. Replace single-letter or cryptic variable names with descriptive ones
+
+2. Ensure function names clearly describe their purpose and behavior
+
+3. Use consistent naming conventions
+
+4. Preserve the code's functionality exactly
+
+5. Explain your naming choices and any patterns you've applied
+
+---
+---
+
+### Prompt 2: Comment and Documentation Addition
+I need to improve this code's readability by adding appropriate comments and documentation:
+
+[Paste poorly documented code here]
+
+Please:
+
+1. Add a clear function/method description comment that explains purpose, inputs, and outputs
+
+2. Add comments for complex or non-obvious code sections
+
+3. Document any assumptions, edge cases, or limitations
+
+4. Explain any algorithms or business rules implemented
+
+5. Don't add obvious comments that just repeat what the code clearly says
+
+6. Use the standard comment style for the language
+
+---
+---
+### Prompt 3: Code Structure Improvement  
+Please improve the readability of this code by enhancing its structure and formatting:
+
+[Paste poorly structured code here]
+
+Specifically:
+
+1. Apply consistent indentation and spacing
+
+2. Break up long expressions into more readable parts with appropriate variable names
+
+3. Extract complex conditions into well-named boolean variables
+
+4. Reduce nesting levels where possible
+
+5. Add line breaks to separate logical sections
+
+6. Replace "magic numbers" with named constants
+
+7. Ensure the functionality remains exactly the same
+
+---
+---
+---
+# D. Implementing Design Patterns
+### Prompt 1: Pattern Opportunity Identification
+I'd like to identify potential design patterns that could improve this code:
+
+[Paste code here]
+
+Please:
+
+1. Identify code structures or problems that could benefit from design patterns
+
+2. Suggest which specific patterns would be appropriate and why
+
+3. Explain the benefits each pattern would bring to this code
+
+4. Highlight any potential drawbacks or implementation challenges
+
+5. Prioritize suggestions based on impact vs. implementation effort
+
+---
+---
+### Prompt 2: Pattern Implementation Guidance
+I'd like to refactor this code to implement the [PATTERN_NAME] design pattern:
+
+[Paste code to refactor]
+
+I think this pattern is applicable because [YOUR REASON FOR CHOOSING THIS PATTERN FOR THIS CODE].
+
+I am thinking of implementing it by making this changes:
+
+[SUMMARY OF HOW YOU ARE THINKING ABOUT IMPLEMENTING THE PATTERN]
+
+Please:
+
+1. Verify if my chosen design pattern and implementation ideas makes sense, and point out errors in my thinking.
+
+2. If the pattern is applicable, provide a step-by-step refactoring plan to help guide me.
+
+3. Show the refactored implementation with the pattern applied
+
+4. Highlight key changes and how they align with the pattern principles
+
+5. Explain how to verify the refactoring preserves the original behavior
+
+6. If the pattern is not applicable, please refer me to alternative patterns I can look at that are more applicable to this code.
+
+---
+---
+### Prompt 3: Multi-Pattern Architecture Transformation
+I want to improve the architecture of this codebase by applying appropriate design patterns:
+
+[Paste related code files or describe the system]
+
+Current issues/limitations:
+
+[Describe pain points in the current implementation]
+
+Please:
+
+1. Suggest an improved architecture using complementary design patterns
+
+2. Explain how these patterns would work together
+
+3. Outline a gradual refactoring approach to transform the current code
+
+4. Address potential risks and how to mitigate them
+
+5. Describe how the new architecture improves maintainability and extensibility
+
+---
+---
+---
 
 
 
