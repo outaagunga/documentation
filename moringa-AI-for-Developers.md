@@ -8,6 +8,21 @@ Compress into:
 * A few-hours crash learning plan
 * Practice exercises.”
 ```
+**When dealing with error:**
+Error Analysis: [Error Type]
+
+Error Description:
+[Explain what the error message means in plain language]
+
+Root Cause:
+[Identify the actual problem causing the error]
+
+Solution:
+[Provide specific code changes to fix the issue]
+
+Learning Points:
+[Share insights to prevent similar errors in the future]
+
 ## ⚡ 1. Turn the Documentation into a Structured Summary
 
 Instead of reading the whole thing, feed sections into AI and say something like:
