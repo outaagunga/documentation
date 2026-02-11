@@ -1,3 +1,10 @@
+Learning by telling what you think you already know  
+```
+"Let me try explaining [e.g Java interfaces] as I understand them:
+[your explanation e.g ... ]
+
+What parts of my understanding are correct? What am I missing or misunderstanding?"
+```
 ```
 “I only have a few hours to learn this.
 Compress into:
@@ -1438,6 +1445,78 @@ Please:
 ---
 ---
 ---
+# Learning with AI
+### Prompt: Idiomatic Code
+Use the prompt below to ensure your code is aligned with industry best practices for your language, and in the process learn more about the programming language. 
+
+I'm learning to write more idiomatic [language]. Here's my current code:
+[paste your code]
+
+Could you:
+
+1. Suggest ways to make this more idiomatic
+
+2. Explain why these changes follow language best practices
+
+3. Point out any language features I'm not taking advantage of
+
+4. Show me both my version and an improved version side by side
+
+---
+
+### Prompt: Code Quality Improvements
+I'm a junior developer working with [language]. Could you review this code for quality improvements:
+[paste code]
+
+Please:
+
+1. Identify any code smells or quality issues
+
+2. Suggest specific improvements
+
+3. Explain why these improvements matter in [language]
+
+4. Rate the code's readability, performance, and maintainability
+
+---
+
+### Prompt: Understanding Language Feature 
+I want to improve my understanding of [specific feature] in [language].
+
+1. Could you explain this feature with simple examples?
+
+2. Show me 3 practical use cases where this would be valuable
+
+3. Provide a small project idea that would help me practice this feature
+
+4. What common mistakes should I avoid when using this feature?
+
+---
+### Vocabulary Discovery
+"I'm beginning to learn [Java] coming from [Python]. Before diving in, could you:
+1. List the key technical terms I should know in [Java]  
+2. Provide a brief explanation of each term
+3. Show how these terms relate to each other
+This will help me ask better questions as I learn."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
