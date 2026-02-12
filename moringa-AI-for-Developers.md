@@ -15,121 +15,16 @@ Compress into:
 * A few-hours crash learning plan
 * Practice exercises.”
 ```
-**When dealing with error:**
-Error Analysis: [Error Type]
-
-Error Description:
-[Explain what the error message means in plain language]
-
-Root Cause:
-[Identify the actual problem causing the error]
-
-Solution:
-[Provide specific code changes to fix the issue]
-
-Learning Points:
-[Share insights to prevent similar errors in the future]
-
-## ⚡ 1. Turn the Documentation into a Structured Summary
-
-Instead of reading the whole thing, feed sections into AI and say something like:
-
-👉 **Prompt example**
-
-> “Summarize this documentation into:
->
-> * Key concepts
-> * Practical steps
-> * Common mistakes
-> * Real-world examples
-> * What I must learn first vs later”
-> * Practice tasks/ exercises
-
-This gives you the **learning roadmap** instead of raw text.
-
-💡 Tip: Don’t paste the whole document at once — use sections (5–10 pages or a chapter).
-
----
-
-## 🧠 2. Ask AI to Create a Learning Path (Very Powerful)
-
-Tell AI your **goal + current level**.
-
-👉 Example:
-
-> “I am a beginner/intermediate in [skill].
-> My goal is to become job-ready/practical in [X].
-> Create a 7-day or 14-day accelerated learning plan from this documentation.”
-
-Now you have a **compressed curriculum**.
-
----
-
-## 🎯 3. Convert Documentation into Action (This is where speed comes from)
-
-Reading ≠ learning. Doing = learning.
-
-After each section say:
-
-> “Turn this into practical exercises I can complete in 30–60 minutes.”
-
-Even better:
-
-> “Give me real-world tasks similar to what professionals actually do.”
-
----
-
-## 🧩 4. Use AI as a Personal Tutor (Massively underrated)
-
-Instead of Googling:
-
-* “Explain this like I’m new.”
-* “Give me a simple analogy.”
-* “Test me with quiz questions.”
-* “Ask me interview-style questions based on this section.”
-
-You’ll retain more because you’re **interacting**, not passively reading.
-
----
-
-## 🚀 5. Use the 3-Layer Speed Method (My favorite)
-
-For each chapter:
-
-1️⃣ **Ultra-short summary** – “Explain in 10 bullet points”
-2️⃣ **Core skills extraction** – “What skills are actually being taught here?”
-3️⃣ **Practice challenge** – “Give me a mini project from this section”
-
-Boom — you’ve turned theory into skill.
-
----
-
-## ⚙️ 6. Bonus: Super-Fast “Compression Prompt”
-
-You can literally copy-paste this:
-
-> “Act as a fast-learning coach. Compress this documentation into:
->
-> * 20% of content that gives 80% mastery
-> * Step-by-step learning order
-> * Hands-on exercises
-> * Key terms to memorize
-> * Mistakes beginners make
-> * Interview-level knowledge”
-
----
-
-## 🔥 Reality Check (Most people miss this)
-
-AI won’t make learning fast by summarizing alone.
-Speed comes from:
-
-* Structured summaries
-* Practice tasks
-* Active questioning
-* Teaching-back (ask AI to test you)
-
----
+Super-Fast “Compression Prompt”
+```
+Act as a fast-learning coach. Compress this documentation into:
+* 20% of content that gives 80% mastery
+* Step-by-step learning order
+* Hands-on exercises
+* Key terms to memorize
+* Mistakes beginners make
+* Interview-level knowledge
+```
 ---
 ---
 # Using AI for everyday work  
@@ -137,116 +32,115 @@ Speed comes from:
 ## 2.	Using AI to comprehend existing codebases  
 
 ### A.	Knowing Where to Start  
-Prompt 1: Understanding Project Structure and Technology Stack   
-Prompt 2: Finding Feature Implementation Locations   
-Prompt 3: Understanding Domain Models and Business Concepts   
+* Prompt 1: Understanding Project Structure and Technology Stack   
+* Prompt 2: Finding Feature Implementation Locations   
+* Prompt 3: Understanding Domain Models and Business Concepts   
 
 ### B.	Understanding Existing Code Functionality  
-Prompt 1: Understand how a specific feature works  
-Prompt 2: Deepen understanding of a codebase  
-Prompt 3: Mapping Data Flow and State Management  
+* Prompt 1: Understand how a specific feature works  
+* Prompt 2: Deepen understanding of a codebase  
+* Prompt 3: Mapping Data Flow and State Management  
 
 ### C.	Deciphering Complex Functions and Algorithms  
-Prompt 1: Understand an Algorithm Through Step-by-Step Analysis  
-Prompt 2: Decipher Code with Unclear Intent or Poor Documentation  
-Prompt 3: Understand Complex Logic and Control Flow  
+* Prompt 1: Understand an Algorithm Through Step-by-Step Analysis  
+* Prompt 2: Decipher Code with Unclear Intent or Poor Documentation  
+* Prompt 3: Understand Complex Logic and Control Flow  
 
 ## 3.	Generating and Improving Documentation with AI  
 ### A.	Code Documentation Generation  
-Prompt Template: Comprehensive Function Documentation  
-Prompt Template: Intent and Logic Explanation  
-Prompt Template: Documentation Style Conversion  
+* Prompt Template: Comprehensive Function Documentation  
+* Prompt Template: Intent and Logic Explanation  
+* Prompt Template: Documentation Style Conversion  
 
 ### B.	API Documentation  
-Prompt Template: Endpoint Documentation Generation   
-Prompt Template: API Reference Conversion  
-Prompt Template: API Usage Guide Creation  
+* Prompt Template: Endpoint Documentation Generation   
+* Prompt Template: API Reference Conversion  
+* Prompt Template: API Usage Guide Creation  
 
 ### C.	User Guides and README Files  
-Prompt Template: Project README Generation  
-Prompt Template: Step-by-Step Guide Creation  
-Prompt Template: FAQ Document Generation  
+* Prompt Template: Project README Generation  
+* Prompt Template: Step-by-Step Guide Creation  
+* Prompt Template: FAQ Document Generation  
 
 # Craft: Refactoring, Design, and Best Practices  
 ## 4.	Using AI to debug errors  
 ### A.	Tracing Error Messages and Stack Traces  
-Prompt 1: Error Message Translation  
-Prompt 2: Root Cause Analysis  
-Prompt 3: Dependency and Version Tracing  
+* Prompt 1: Error Message Translation  
+* Prompt 2: Root Cause Analysis  
+* Prompt 3: Dependency and Version Tracing  
 
 ### B.	Identifying Performance Bottlenecks  
-Prompt 1: Slow Code Analysis  
-Prompt 2: Memory Usage Optimization  
-Prompt 3: Slow Database Query Analysis  
+* Prompt 1: Slow Code Analysis  
+* Prompt 2: Memory Usage Optimization  
+* Prompt 3: Slow Database Query Analysis  
 
 ### C.	Limitations and Verification  
-Prompt 1: Collaborative Solution Verification  
-Prompt 2: Learning Through Alternative Approaches  
-Prompt 3: Developing a Critical Eye  
+* Prompt 1: Collaborative Solution Verification  
+* Prompt 2: Learning Through Alternative Approaches  
+* Prompt 3: Developing a Critical Eye  
 
 ## 5.	Using AI to help with testing  
 ### A.	Understanding What to Test  
-Prompt 1: Behavior Analysis Questions  
-Prompt 2: Test Planning Guidance  
+* Prompt 1: Behavior Analysis Questions  
+* Prompt 2: Test Planning Guidance  
 
 ### B.	Improving a Single Test  
-Prompt 1: Single Test Enhancement  
-Prompt 2: Learning From Test Examples  
+* Prompt 1: Single Test Enhancement  
+* Prompt 2: Learning From Test Examples  
 
 ### C.	Learning Test-Driven Development  
-Prompt 1: Guided TDD Practice  
-Prompt 2: TDD Code Review Guidance  
+* Prompt 1: Guided TDD Practice  
+* Prompt 2: TDD Code Review Guidance  
 
 ## 6.	Using AI to refactor and enhance code  
 ### A.	Understanding What to Change with AI  
-Prompt 1: Code Readability Improvement  
-Prompt 2: Function Refactoring  
-Prompt 3: Code Duplication Detection  
+* Prompt 1: Code Readability Improvement  
+* Prompt 2: Function Refactoring  
+* Prompt 3: Code Duplication Detection  
 
 ### B.	Breaking Down Complex Functions  
-Prompt 1: Function Responsibility Analysis  
-Prompt 2: Single-Responsibility Extraction  
-Prompt 3: Conditional Logic Simplification  
+* Prompt 1: Function Responsibility Analysis  
+* Prompt 2: Single-Responsibility Extraction  
+* Prompt 3: Conditional Logic Simplification  
 
 ### C.	Improving Code Readability  
-Prompt 1: Variable and Function Naming Enhancement  
-Prompt 2: Comment and Documentation Addition  
-Prompt 3: Code Structure Improvement  
+* Prompt 1: Variable and Function Naming Enhancement  
+* Prompt 2: Comment and Documentation Addition  
+* Prompt 3: Code Structure Improvement  
 
 ### D.	Implementing Design Patterns  
-Prompt 1: Pattern Opportunity Identification  
-Prompt 2: Pattern Implementation Guidance  
-Prompt 3: Multi-Pattern Architecture Transformation  
-
+* Prompt 1: Pattern Opportunity Identification  
+* Prompt 2: Pattern Implementation Guidance  
+* Prompt 3: Multi-Pattern Architecture Transformation  
 
 Growth: Learning with AI (Languages, Libraries, APIs)  
 ## 7.	Learning with AI  
 
 ## 8.	Deepening Knowledge of Your Current Programming Language  
 ### A.	AI-Powered Code Suggestions  
-Prompt: Idiomatic Code  
+* Prompt: Idiomatic Code  
 
 ### B.	Code Quality Enhancement  
-Prompt: Code Quality Improvements  
+* Prompt: Code Quality Improvements  
 
 ### C.	Exploring Advanced Language Features  
-Prompt: Understanding Language Feature  
+* Prompt: Understanding Language Feature  
 
 ## 9.	Learning a New Programming Language with AI  
 ### A.	Structured Learning Prompts for Programming Languages  
-Conceptual Understanding  
-Step-by-Step Breakdown  
-Guided Implementation  
-Understanding Verification  
+* Conceptual Understanding  
+* Step-by-Step Breakdown  
+* Guided Implementation  
+* Understanding Verification  
 
 ### B.	Advanced Prompting Techniques for Language Learning  
-Using Context Effectively  
-Promoting Deep Understanding  
-Learning Through Teaching  
-Using a Tutor  
+* Using Context Effectively  
+* Promoting Deep Understanding  
+* Learning Through Teaching  
+* Using a Tutor  
 ### C.	Building Technical Vocabulary  
-Vocabulary Discovery  
-Terminology Verification  
+* Vocabulary Discovery  
+* Terminology Verification  
 
 ## 10.	Learn a new framework, library or API  
 ## 11.	Principles when using AI  
