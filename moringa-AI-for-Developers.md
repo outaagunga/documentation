@@ -27,123 +27,123 @@ Act as a fast-learning coach. Compress this documentation into:
 ```
 ---
 ---
-# [Using AI for everyday work] 
-## 1.	[Using AI for everyday work](#using-ai-for-everyday-work)  
-## 2.	[Using AI to comprehend existing codebases](#using-ai-to-comprehend-existing-codebases)  
+# Using AI for everyday work 
+## 1.	Using AI for everyday work
+## 2.	Using AI to comprehend existing codebases
 
-### A.	[Knowing Where to Start](#Knowing-Where-to-Start)  
+### A.	Knowing Where to Start 
 * [Prompt 1: Understanding Project Structure and Technology Stack](#Prompt-1-Understanding-Project-Structure-and-Technology-Stack)   
 * [Prompt 2: Finding Feature Implementation Locations](#Prompt-2-Finding-Feature-Implementation-Locations)   
 * [Prompt 3: Understanding Domain Models and Business Concepts](#Prompt-3-Understanding-Domain-Models-and-Business-Concepts)   
 
-### B.	[Understanding Existing Code Functionality](#Understanding-Existing-Code-Functionality)  
+### B.	Understanding Existing Code Functionality
 * [Prompt 1: Understand how a specific feature works](#Prompt-1-Understand-how-a-specific-feature-works)  
 * [Prompt 2: Deepen understanding of a codebase](#Prompt-2-Deepen-understanding-of-a-codebase)  
 * [Prompt 3: Mapping Data Flow and State Management](#Prompt-3-Mapping-Data-Flow-and-State-Management)  
 
-### C.	[Deciphering Complex Functions and Algorithms](#Deciphering-Complex-Functions-and-Algorithms)  
+### C.	Deciphering Complex Functions and Algorithms
 * [Prompt 1: Understand an Algorithm Through Step-by-Step Analysis](#Prompt-1-Understand-an-Algorithm-Through-Step-by-Step-Analysis)  
 * [Prompt 2: Decipher Code with Unclear Intent or Poor Documentation](#Prompt-2-Decipher-Code-with-Unclear-Intent-or-Poor-Documentation)  
 * [Prompt 3: Understand Complex Logic and Control Flow](#Prompt-3-Understand-Complex-Logic-and-Control-Flow)  
 
-## 3.	[Generating and Improving Documentation with AI](#Generating-and-Improving-Documentation-with-AI)  
+## 3.	Generating and Improving Documentation with AI
 ### A.	[Code Documentation Generation](#Code-Documentation-Generation)  
 * [Prompt Template: Comprehensive Function Documentation](#Prompt-Template-Comprehensive-Function-Documentation)  
 * [Prompt Template: Intent and Logic Explanation](#Prompt-Template-Intent-and-Logic-Explanation)  
 * [Prompt Template: Documentation Style Conversion](#Prompt-Template-Documentation-Style-Conversion)  
 
-### B.	[API Documentation](#API Documentation)  
+### B.	API Documentation
 * [Prompt Template: Endpoint Documentation Generation](#Prompt-Template-Endpoint-Documentation-Generation)   
 * [Prompt Template: API Reference Conversion](#Prompt-Template-API-Reference-Conversion)  
 * [Prompt Template: API Usage Guide Creation](#Prompt-Template-API-Usage-Guide-Creation)  
 
-### C.	[User Guides and README Files](#User-Guides-and-README-Files)  
+### C.	User Guides and README Files 
 * [Prompt Template: Project README Generation](#Prompt-Template-Project-README-Generation)  
 * [Prompt Template: Step-by-Step Guide Creation](#Prompt-Template-Step-by-Step-Guide-Creation)  
 * [Prompt Template: FAQ Document Generation](#Prompt-Template-FAQ-Document-Generation)  
 
-# [Craft: Refactoring, Design, and Best Practices](#Craft-Refactoring,-Design,-and-Best-Practices)  
-## 4.	[Using AI to debug errors](#Using-AI-to-debug-errors)  
-### A.	[Tracing Error Messages and Stack Traces](#Tracing-Error-Messages-and-Stack-Traces)  
+# Craft: Refactoring, Design, and Best Practices
+## 4.	Using AI to debug errors 
+### A.	Tracing Error Messages and Stack Traces
 * [Prompt 1: Error Message Translation](#Prompt-1-Error-Message-Translation)  
 * [Prompt 2: Root Cause Analysis](#Prompt-2-Root-Cause-Analysis)  
 * [Prompt 3: Dependency and Version Tracing](#Prompt-3-Dependency-and-Version-Tracing)  
 
-### B.	[Identifying Performance Bottlenecks]  
+### B.	Identifying Performance Bottlenecks  
 * [Prompt 1: Slow Code Analysis](#Prompt-1-Slow-Code-Analysis)  
 * [Prompt 2: Memory Usage Optimization](#Prompt-2-Memory-Usage-Optimization)  
 * [Prompt 3: Slow Database Query Analysis](#Prompt-3-Slow-Database-Query-Analysis)  
 
-### C.	[Limitations and Verification](#Limitations-and-Verification)  
+### C.	Limitations and Verification
 * [Prompt 1: Collaborative Solution Verification](#Prompt-1-Collaborative-Solution-Verification)  
 * [Prompt 2: Learning Through Alternative Approaches](#Prompt-2-Learning-Through-Alternative-Approaches)  
 * [Prompt 3: Developing a Critical Eye](#Prompt-3-Developing-a-Critical-Eye)  
 
-## 5.	[Using AI to help with testing](#Using-AI-to-help-with-testing)  
-### A.	[Understanding What to Test](#Understanding-What-to-Test)  
+## 5.	Using AI to help with testing
+### A.	Understanding What to Test 
 * [Prompt 1: Behavior Analysis Questions](#Prompt-1-Behavior-Analysis-Questions)  
 * [Prompt 2: Test Planning Guidance](#Prompt-2-Test-Planning-Guidance)  
 
-### B.	[Improving a Single Test](#Improving-a-Single-Test)  
+### B.	Improving a Single Test
 * [Prompt 1: Single Test Enhancement](#Prompt-1-Single-Test-Enhancement)  
 * [Prompt 2: Learning From Test Examples](#Prompt-2-Learning-From-Test-Examples)  
 
-### C.	[Learning Test-Driven Development](#Learning-Test-Driven-Development)  
+### C.	Learning Test-Driven Development
 * [Prompt 1: Guided TDD Practice](#Prompt-1-Guided-TDD-Practice)  
 * [Prompt 2: TDD Code Review Guidance](#Prompt-2-TDD-Code-Review-Guidance)  
 
-## 6.	[Using AI to refactor and enhance code](#Using-AI-to-refactor-and-enhance-code)  
-### A.	[Understanding What to Change with AI](#Understanding-What-to-Change-with-AI)  
+## 6.	Using AI to refactor and enhance code
+### A.	Understanding What to Change with AI
 * [Prompt 1: Code Readability Improvement](#Prompt-1-Code-Readability-Improvement)  
 * [Prompt 2: Function Refactoring](#Prompt-2-Function-Refactoring)  
 * [Prompt 3: Code Duplication Detection](#Prompt-3-Code-Duplication-Detection)  
 
-### B.	[Breaking Down Complex Functions](#Breaking-Down-Complex-Functions)  
+### B.	Breaking Down Complex Functions 
 * [Prompt 1: Function Responsibility Analysis](#Prompt-1-Function-Responsibility-Analysis)  
 * [Prompt 2: Single-Responsibility Extraction](#Prompt-2-Single-Responsibility-Extraction)  
 * [Prompt 3: Conditional Logic Simplification](#Prompt-3-Conditional-Logic-Simplification)  
 
-### C.	[Improving Code Readability](#Improving-Code-Readability) 
+### C.	Improving Code Readability
 * [Prompt 1: Variable and Function Naming Enhancement](#Prompt-1-Variable-and-Function-Naming-Enhancement)  
 * [Prompt 2: Comment and Documentation Addition](#Prompt-2-Comment-and-Documentation-Addition)  
 * [Prompt 3: Code Structure Improvement](#Prompt-3-Code-Structure-Improvement)  
 
-### D.	[Implementing Design Patterns](#Implementing-Design-Patterns)  
+### D.	Implementing Design Patterns
 * [Prompt 1: Pattern Opportunity Identification](#Prompt-1-Pattern-Opportunity-Identification)  
 * [Prompt 2: Pattern Implementation Guidance](#Prompt-2-Pattern-Implementation-Guidance)  
 * [Prompt 3: Multi-Pattern Architecture Transformation](#Prompt-3-Multi-Pattern-Architecture-Transformation)  
 
 Growth: Learning with AI (Languages, Libraries, APIs)  
-## 7.	[Learning with AI](#Learning-with-AI)  
+## 7.	Learning with AI 
 
-## 8.	[Deepening Knowledge of Your Current Programming Language](#Deepening Knowledge of Your Current Programming Language)  
-### A.	[AI-Powered Code Suggestions](#AI-Powered-Code-Suggestions)  
+## 8.	Deepening Knowledge of Your Current Programming Language
+### A.	AI-Powered Code Suggestions
 * [Prompt: Idiomatic Code](#Prompt-Idiomatic-Code)  
 
-### B.	[Code Quality Enhancement](#Code-Quality-Enhancement)  
+### B.	Code Quality Enhancement 
 * [Prompt: Code Quality Improvements](#Prompt-Code-Quality-Improvements)  
 
-### C.	[Exploring Advanced Language Features](#Exploring-Advanced-Language-Features)  
+### C.	Exploring Advanced Language Features
 * [Prompt: Understanding Language Feature](#Prompt-Understanding-Language-Feature)  
 
-## 9.	[Learning a New Programming Language with AI](#Learning-a-New-Programming-Language-with-AI)  
-### A.	[Structured Learning Prompts for Programming Languages](#Structured-Learning-Prompts-for-Programming-Languages)  
+## 9.	Learning a New Programming Language with AI 
+### A.	Structured Learning Prompts for Programming Languages
 * [Conceptual Understanding](#Conceptual-Understanding)  
 * [Step-by-Step Breakdown](#Step-by-Step-Breakdown)  
 * [Guided Implementation](#Guided-Implementation)  
 * [Understanding Verification](#Understanding-Verification)  
 
-### B.	[Advanced Prompting Techniques for Language Learning](#Advanced-Prompting-Techniques-for-Language-Learning)  
+### B.	Advanced Prompting Techniques for Language Learning
 * [Using Context Effectively](#Using-Context-Effectively)  
 * [Promoting Deep Understanding](#Promoting-Deep-Understanding)  
 * [Learning Through Teaching](#Learning-Through-Teaching)  
 * [Using a Tutor](#Using-a-Tutor)  
-### C.	[Building Technical Vocabulary](#Building-Technical-Vocabulary)  
+### C.	Building Technical Vocabulary
 * [Vocabulary Discovery](#Vocabulary-Discovery)  
 * [Terminology Verification](#Terminology-Verification)  
 
-## 10.	[Learn a new framework, library or API](#Learn-a-new-framework,-library-or-API)  
-## 11.	[Principles when using AI](#Principles-when-using-AI)  
+## 10.	Learn a new framework, library or API  
+## 11.	Principles when using AI  
 
 ---
 ---
