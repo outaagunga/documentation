@@ -150,7 +150,7 @@ Growth: Learning with AI (Languages, Libraries, APIs)
 # A. Knowing Where to Start  
 ### Prompt 1: Understanding Project Structure and Technology Stack
 
-I'm a junior developer who just joined this project. I've read the README but still need help understanding the project structure and technology stack.
+`I'm a junior developer who just joined this project. I've read the README but still need help understanding the project structure and technology stack.
 
 Here's my current understanding of the project:
 
@@ -182,13 +182,13 @@ Could you:
 
 I'm particularly confused about [mention specific areas of confusion, if any].
 
-After your explanation, could you suggest a small exploration exercise I could do to verify my understanding of the project structure?
+After your explanation, could you suggest a small exploration exercise I could do to verify my understanding of the project structure?`
 
 ---
 ---
 
 ### Prompt 2: Finding Feature Implementation Locations 
-I need to work on the [specific feature] in this codebase, but I'm not sure where the code for this feature lives.
+`I need to work on the [specific feature] in this codebase, but I'm not sure where the code for this feature lives.
 
 My approach so far:
 
@@ -220,13 +220,13 @@ Can you help me:
 
 Also, what questions could I ask myself as I'm exploring the code to ensure I'm on the right track? What specific patterns should I look for to confirm I've found all the relevant parts?
 
-After your guidance, could you give me a small challenge to test my understanding of how to navigate this feature's code?  
+After your guidance, could you give me a small challenge to test my understanding of how to navigate this feature's code?`  
 
 ---
 ---
 ### Prompt 3: Understanding Domain Models and Business Concepts 
 
-I'd like you to act as a senior developer who deeply understands our codebase's domain model. I'm a junior developer trying to make sense of the business logic and domain concepts in this application.
+`I'd like you to act as a senior developer who deeply understands our codebase's domain model. I'm a junior developer trying to make sense of the business logic and domain concepts in this application.
 
 Here's what I've found in the codebase:
 
@@ -256,7 +256,7 @@ Could you, as a senior developer:
 
 Then, please ask me 3-5 questions that would test my understanding of this domain model. These should be questions that make me think about the business logic, not just the code syntax.
 
-Finally, suggest a simple diagram I could sketch to visualize these relationships that would help solidify my understanding.
+Finally, suggest a simple diagram I could sketch to visualize these relationships that would help solidify my understanding.`
 
 ---
 ---
@@ -265,7 +265,7 @@ Finally, suggest a simple diagram I could sketch to visualize these relationship
 # B. Understanding Existing Code Functionality
 ### Prompt 1: Understand how a specific feature works
 
-I'm trying to understand how [specific feature] works in our [language/framework] codebase.
+`I'm trying to understand how [specific feature] works in our [language/framework] codebase.
 
 This feature seems to handle [brief description of what you think it does].
 
@@ -299,14 +299,14 @@ Could you:
 
 I'm particularly confused about [specific aspect], so extra detail there would help.
 
-Finally, suggest 3 small code changes I could make to validate my understanding. Do not give the me change, and instead give me the requirement.
+Finally, suggest 3 small code changes I could make to validate my understanding. Do not give the me change, and instead give me the requirement.`
 
 ---
 ---
 
 ### Prompt 2: Deepen understanding of a codebase
 
-I'd like your help in deepening my understanding of a codebase by you acting as my senior development pair programmer.
+`I'd like your help in deepening my understanding of a codebase by you acting as my senior development pair programmer.
 
 First, I'll share my current understanding of the code I'm exploring. Please acknowledge what parts I've understood correctly, then guide me with thoughtful questions rather than direct explanations.
 
@@ -342,14 +342,14 @@ What's still unclear to me is [mention specific parts that confuse you].
 
 4. End with a practical question about how I might use or modify this code
 
-Please don't give me direct explanations - help me discover the answers through guided questioning.
+Please don't give me direct explanations - help me discover the answers through guided questioning.`
 
 ---
 ---
 
 ### Prompt 3: Mapping Data Flow and State Management
 
-I need help understanding how data flows through our [language/framework] application, specifically for the [feature name] functionality.
+`I need help understanding how data flows through our [language/framework] application, specifically for the [feature name] functionality.
 
 Here's what I know so far:
 
@@ -395,7 +395,7 @@ Could you help me create a clear mental model of:
 
 4. What I should consider if I need to modify this data flow in the future
 
-Please include any relevant descriptions, design patterns or principles that would help me understand the existing code decisions.
+Please include any relevant descriptions, design patterns or principles that would help me understand the existing code decisions.`
 
 ---
 ---
@@ -404,7 +404,7 @@ Please include any relevant descriptions, design patterns or principles that wou
 # C. Deciphering Complex Functions and Algorithms  
 ### Prompt 1: Understand an Algorithm Through Step-by-Step Analysis
 
-I'm trying to understand this algorithm/function in our codebase:
+`I'm trying to understand this algorithm/function in our codebase:
 
 [Paste complex function here]
 
@@ -434,14 +434,14 @@ After your explanation, could you ask me 2-3 targeted questions that would test 
 
 - Performance characteristics
 
-This will help me make sure I've really grasped how it works.
+This will help me make sure I've really grasped how it works.`
 
 ---
 ---
 
 ### Prompt 2: Decipher Code with Unclear Intent or Poor Documentation  
 
-I need help understanding the intent behind this poorly documented/named code:
+`I need help understanding the intent behind this poorly documented/named code:
 
 [Paste code with unclear naming or sparse comments]
 
@@ -467,14 +467,14 @@ Please help me by:
 
 Then, please share 3-4 questions I should ask myself to validate whether my new understanding is correct. These questions should help me check my understanding against the rest of the codebase and application behavior.
 
-Finally, what are some small, safe experiments I could run to verify how this code actually behaves without disrupting the system?
+Finally, what are some small, safe experiments I could run to verify how this code actually behaves without disrupting the system?`
 
 ---
 ---
 
 ### Prompt 3: Understand Complex Logic and Control Flow
 
-I'm trying to untangle the logic in this complex function with nested conditionals and loops:
+`I'm trying to untangle the logic in this complex function with nested conditionals and loops:
 
 [Paste complex code with nested logic]
 
@@ -508,14 +508,14 @@ Then, guide me through an exercise where I can test my understanding:
 
 - Explain what actually happens and why
 
-This will help me build an accurate mental model of this complex logic.
+This will help me build an accurate mental model of this complex logic.`
 
 ---
 ---
 ---
 # A. Code Documentation Generation
 ### Prompt Template: Comprehensive Function Documentation
-Please create comprehensive code comments for this function following [JSDoc/Python docstring/etc.] conventions:
+`Please create comprehensive code comments for this function following [JSDoc/Python docstring/etc.] conventions:
 
 ```[language]
 [Paste function code here]
@@ -528,12 +528,12 @@ All parameters with types and descriptions
 Return value with type and description
 Any exceptions or errors that might be thrown
 Example usage
-Any important notes or edge cases developers should be aware of
+Any important notes or edge cases developers should be aware of`
 
 ---
 ---
 ## Prompt Template: Intent and Logic Explanation
-I need help documenting the intent and logic behind this code. Please:
+`I need help documenting the intent and logic behind this code. Please:
 
 ```[language]
 [Paste code here]
@@ -543,13 +543,13 @@ Explain what this code is trying to accomplish at a high level
 Break down the logic step-by-step
 Identify any assumptions or edge cases in the implementation
 Suggest inline comments for complex parts
-Note any potential improvements while maintaining the original functionality
+Note any potential improvements while maintaining the original functionality`
 
 ---
 ---
 
 ### Prompt Template: Documentation Style Conversion
-Please convert this documentation to [target style] format:
+`Please convert this documentation to [target style] format:
 
 Original documentation:
 
@@ -561,7 +561,7 @@ Target style: [JSDoc/Google style/NumPy style/etc.]
 
 Language: [JavaScript/Python/etc.]
 
-Please ensure all information from the original is preserved while following the conventions of the target style.
+Please ensure all information from the original is preserved while following the conventions of the target style.`
 
 ---
 ---
@@ -570,7 +570,7 @@ Please ensure all information from the original is preserved while following the
 # B. API Documentation
 ### Prompt 1: Endpoint Documentation Generation
 
-Please create comprehensive documentation for this API endpoint:
+`Please create comprehensive documentation for this API endpoint:
 
 Endpoint: [HTTP method] [endpoint path]
 
@@ -586,13 +586,13 @@ Please include:
 4. Authentication requirements
 5. Potential error responses with codes and messages
 6. At least 2 example requests with their responses
-7. Any rate limiting or special considerations
+7. Any rate limiting or special considerations`
 
 ---
 ---
 ### Prompt 2: API Reference Conversion 
 
-Please convert this API information into a structured [Swagger/OpenAPI/API Blueprint/Markdown] document:
+`Please convert this API information into a structured [Swagger/OpenAPI/API Blueprint/Markdown] document:
 
 API details:
 [Paste API information, can be informal description]
@@ -604,13 +604,13 @@ I need the documentation to include:
 4. Example requests and responses
 5. Error handling information
 
-Format the output as a complete, valid [Swagger/OpenAPI/etc.] document.
+Format the output as a complete, valid [Swagger/OpenAPI/etc.] document.`
 
 ---
 ---
 
 ### Prompt 3: API Usage Guide Creation
-Please create a developer guide for using this API endpoint. The guide should explain how to:
+`Please create a developer guide for using this API endpoint. The guide should explain how to:
 
 1. Authenticate with the API
 2. Properly format requests
@@ -622,7 +622,7 @@ API information:
 [Paste endpoint documentation]
 
 Target audience: [Describe experience level and background of users]
-Tone: [Friendly/formal/technical/etc.]
+Tone: [Friendly/formal/technical/etc.]`
 
 ---
 ---
@@ -631,7 +631,7 @@ Tone: [Friendly/formal/technical/etc.]
 # C. User Guides and README Files
 ### Prompt Template: Project README Generation
 
-Please create a comprehensive README.md file for my project based on the following information:
+`Please create a comprehensive README.md file for my project based on the following information:
 
 Project name: [Name]
 
@@ -658,13 +658,13 @@ Contributing guidelines
 License information
 Code structure overview:
 
-[Briefly describe main directories/files or paste project structure]
+[Briefly describe main directories/files or paste project structure]`
 
 ---
 ---
 
 ### Prompt Template: Step-by-Step Guide Creation
-Please create a step-by-step guide for how to [specific task/process] in our application.
+`Please create a step-by-step guide for how to [specific task/process] in our application.
 
 The guide should:
 
@@ -677,13 +677,13 @@ Process overview:
 
 [Describe the task or provide notes on what the user needs to accomplish]
 
-User experience level: [Beginner/Intermediate/Advanced]
+User experience level: [Beginner/Intermediate/Advanced]`
 
 ---
 ---
 
 ### Prompt Template: FAQ Document Generation
-Please help me create a comprehensive FAQ document for [project/feature/product].
+`Please help me create a comprehensive FAQ document for [project/feature/product].
 
 Basic information:
 
@@ -700,13 +700,13 @@ For each question, provide a clear, concise answer that would be helpful to our 
 
 Known issues or common user questions:
 
-[List any specific questions or issues to include]
+[List any specific questions or issues to include]`
 
 ---
 ---
 # A. Tracing Error Messages and Stack Traces  
 ### Prompt 1: Error Message Translation
-I need help understanding this error message from my [language/framework] application.
+`I need help understanding this error message from my [language/framework] application.
 
 Here's the complete error message and stack trace:
 
@@ -732,13 +732,13 @@ Could you:
 
 5. Provide a step-by-step debugging approach I could follow
 
-I'm particularly unfamiliar with [specific technology or concept] mentioned in the error, so extra explanation there would help.
+I'm particularly unfamiliar with [specific technology or concept] mentioned in the error, so extra explanation there would help.`
 
 ---
 ---
 ### Prompt 2: Root Cause Analysis
 
-I need help diagnosing the root cause of an error in my [language/framework] application.
+`I need help diagnosing the root cause of an error in my [language/framework] application.
 
 Here's the error and stack trace:
 
@@ -778,13 +778,13 @@ Could you please:
 
 6. Suggest debugging tools or techniques specific to this type of error
 
-I'm most confused about [specific aspect of the error or code], so detailed explanation there would be helpful.
+I'm most confused about [specific aspect of the error or code], so detailed explanation there would be helpful.`
 
 ---
 ---
 
 ### Prompt 3: Dependency and Version Tracing
-I'm debugging an error that appears to be related to dependencies in my [language/framework] project.
+`I'm debugging an error that appears to be related to dependencies in my [language/framework] project.
 
 Here's the error message:
 
@@ -826,7 +826,7 @@ Could you:
 
 6. Provide commands I should run to fix or diagnose further
 
-I've searched for solutions and found [mention any resources or solutions already discovered], but they didn't resolve my issue because [reason previous solutions didn't work].
+I've searched for solutions and found [mention any resources or solutions already discovered], but they didn't resolve my issue because [reason previous solutions didn't work].`
 
 ---
 ---
@@ -834,7 +834,7 @@ I've searched for solutions and found [mention any resources or solutions alread
 
 # A. Identifying Performance Bottlenecks
 ### Prompt 1: Slow Code Analysis
-I have a piece of code that's running slowly. I'd like to understand why and how to improve it.
+`I have a piece of code that's running slowly. I'd like to understand why and how to improve it.
 
 Here's the slow-performing code:
 
@@ -862,12 +862,12 @@ Could you please:
 
 5. If there are any tools or techniques I could use to measure the actual bottlenecks, please suggest them
 
-I'm particularly interested in learning the underlying performance concepts, not just getting a quick fix.
+I'm particularly interested in learning the underlying performance concepts, not just getting a quick fix.`
 
 ---
 ---
 ### Prompt 2: Memory Usage Optimization  
-My application is using too much memory and sometimes crashes with out-of-memory errors. I'd like to understand why and how to fix it.
+`My application is using too much memory and sometimes crashes with out-of-memory errors. I'd like to understand why and how to fix it.
 
 Here's the code that I suspect is causing memory issues:
 
@@ -897,12 +897,12 @@ Could you please:
 
 5. Explain the memory management concepts I should understand for my language/environment
 
-I want to both fix this issue and learn how to write more memory-efficient code in the future.
+I want to both fix this issue and learn how to write more memory-efficient code in the future.`
 
 ---
 ---
 ### Prompt 3: Slow Database Query Analysis 
-I have a database query that's running very slowly. I'd like to understand why and how to optimize it.
+`I have a database query that's running very slowly. I'd like to understand why and how to optimize it.
 
 Here's the slow query:
 
@@ -934,7 +934,7 @@ Could you please:
 
 5. Suggest how I could measure the query performance before and after changes
 
-I'm a junior developer, so explanations about the underlying database concepts would be very helpful.
+I'm a junior developer, so explanations about the underlying database concepts would be very helpful.`
 
 ---
 ---
@@ -943,7 +943,7 @@ I'm a junior developer, so explanations about the underlying database concepts w
 # C. Limitations and Verification
 ### Prompt 1: Collaborative Solution Verification
 
-I'd like to verify a solution you've suggested before implementing it. Let me share both the solution and my current understanding of how to test it.
+`I'd like to verify a solution you've suggested before implementing it. Let me share both the solution and my current understanding of how to test it.
 
 The solution you provided:
 
@@ -979,12 +979,12 @@ My environment/constraints:
 
 [Describe relevant details about your system, versions, etc.]
 
-I want to learn how to properly verify solutions, not just implement them blindly.
+I want to learn how to properly verify solutions, not just implement them blindly.`
 
 ---
 ---
 ### Prompt 2: Learning Through Alternative Approaches
-You suggested this approach to solve my problem:
+`You suggested this approach to solve my problem:
 
 [Paste AI's suggested solution]
 
@@ -1022,12 +1022,12 @@ Could you please:
 
 4. Explain the principles or patterns behind each approach so I can learn when to apply them in the future
 
-I'm not just looking for the "best" solution, but to understand the trade-offs and reasoning behind different approaches.
+I'm not just looking for the "best" solution, but to understand the trade-offs and reasoning behind different approaches.`
 
 ---
 ---
 ### Prompt 3: Developing a Critical Eye
-I want to develop my critical thinking skills by analyzing a solution together. Let's examine this solution you provided:
+`I want to develop my critical thinking skills by analyzing a solution together. Let's examine this solution you provided:
 
 [Paste AI's suggested solution]
 
@@ -1065,7 +1065,7 @@ Could we collaborate on a critical review where:
 
 5. You suggest improvements that would address the biggest concerns
 
-I'm trying to develop the skill of critically evaluating solutions before implementing them. Explaining your thought process would help me learn this skill better.
+I'm trying to develop the skill of critically evaluating solutions before implementing them. Explaining your thought process would help me learn this skill better.`
 
 ---
 ---
@@ -1073,7 +1073,7 @@ I'm trying to develop the skill of critically evaluating solutions before implem
 
 # A. Understanding What to Test
 ### Prompt 1: Behavior Analysis Questions
-I'm learning how to test this function, and I want to understand what behaviors I should test:
+`I'm learning how to test this function, and I want to understand what behaviors I should test:
 
 [Paste function code]
 
@@ -1087,12 +1087,12 @@ Rather than generating tests for me, please:
 
 4. Help me identify additional edge cases I didn't think of
 
-5. Ask me which test I should write first and why
+5. Ask me which test I should write first and why`
 
 ---
 ---
 ### Prompt 2: Test Planning Guidance
-I'm learning to write tests for this code:
+`I'm learning to write tests for this code:
 
 [Paste code]
 
@@ -1106,7 +1106,7 @@ Instead of writing tests for me, please:
 
 4. For each edge case we identify, ask me what I expect to happen
 
-5. Help me create a checklist of tests I should write, organized by priority
+5. Help me create a checklist of tests I should write, organized by priority`
 
 ---
 ---
@@ -1114,7 +1114,7 @@ Instead of writing tests for me, please:
 
 # B. Improving a Single Test
 ### Prompt 1: Single Test Enhancement
-I wrote this test for the following function:
+`I wrote this test for the following function:
 
 Function:
 
@@ -1134,13 +1134,13 @@ Instead of rewriting it for me, please:
 
 4. Ask me what edge cases my test might be missing
 
-5. Guide me in improving my assertions to be more precise
+5. Guide me in improving my assertions to be more precise`
 
 ---
 ---
 
 ### Prompt 2: Learning From Test Examples
-I'm trying to understand how to better test this function:
+`I'm trying to understand how to better test this function:
 
 [Paste function code]
 
@@ -1158,14 +1158,14 @@ Please:
 
 4. Challenge me to identify what edge cases I should add
 
-5. Guide me in writing more precise assertions
+5. Guide me in writing more precise assertions`
 
 ---
 ---
 ---
 # C. Learning Test-Driven Development
 ### Prompt 1: Guided TDD Practice
-I want to learn Test-Driven Development for this feature:
+`I want to learn Test-Driven Development for this feature:
 
 [Describe the feature you want to implement]
 
@@ -1179,12 +1179,12 @@ Instead of writing code and tests for me, please:
 
 4. Once I've implemented the code, guide me on what test to add next
 
-5. Help me understand when it's time to refactor vs. add new functionality
+5. Help me understand when it's time to refactor vs. add new functionality`
 
 ---
 ---
 ### Prompt 2: TDD Code Review Guidance
-I've been practicing TDD and wrote these tests and implementation:
+`I've been practicing TDD and wrote these tests and implementation:
 
 Tests:
 
@@ -1204,7 +1204,7 @@ Please:
 
 4. Guide me on opportunities for refactoring
 
-5. Help me recognize if my implementation does more than needed for the tests
+5. Help me recognize if my implementation does more than needed for the tests`
 
 ---
 ---
@@ -1215,7 +1215,7 @@ Please:
 ---
 # A. Understanding What to Change with AI
 ### Prompt 1: Code Readability Improvement
-I want to make this code more readable and maintainable. Please help me by:
+`I want to make this code more readable and maintainable. Please help me by:
 
 1. Identifying parts that are difficult to understand
 
@@ -1229,12 +1229,12 @@ I want to make this code more readable and maintainable. Please help me by:
 
 Language/Framework: [e.g., JavaScript/React]
 
-Team coding standards: [e.g., camelCase for variables, max line length 80 chars
+Team coding standards: [e.g., camelCase for variables, max line length 80 chars`
 
 ---
 ---
 ### Prompt 2: Function Refactoring
-I have a function that I think is doing too much. Please help me refactor it by:
+`I have a function that I think is doing too much. Please help me refactor it by:
 
 1. Identifying the different responsibilities this function has
 
@@ -1246,12 +1246,12 @@ I have a function that I think is doing too much. Please help me refactor it by:
 
 [Paste function here]
 
-What this function should do: [Brief description of intended purpose]
+What this function should do: [Brief description of intended purpose]`
 
 ---
 ---
 ### Prompt 3: Code Duplication Detection
-I suspect there might be repeated patterns in this code that could be consolidated. Please help me by:
+`I suspect there might be repeated patterns in this code that could be consolidated. Please help me by:
 
 1. Identifying similar code segments that appear multiple times
 
@@ -1261,14 +1261,14 @@ I suspect there might be repeated patterns in this code that could be consolidat
 
 4. Explaining the benefits of the suggested changes
 
-[Paste code with potential duplication]
+[Paste code with potential duplication]`
 
 ---
 ---
 ---
 # B. Breaking Down Complex Functions
 ### Prompt 1: Function Responsibility Analysis
-I have a complex function that I'd like to refactor by breaking it down into smaller functions:
+`I have a complex function that I'd like to refactor by breaking it down into smaller functions:
 
 [Paste complex function here]
 
@@ -1280,12 +1280,12 @@ Please:
 
 3. Show which parts of the original code would move to each new function
 
-4. Provide a refactored version with the main function delegating to the smaller functions
+4. Provide a refactored version with the main function delegating to the smaller functions`
 
 ---
 ---
 ### Prompt 2: Single-Responsibility Extraction
-I'd like to extract a single responsibility from this complex function:
+`I'd like to extract a single responsibility from this complex function:
 
 [Paste complex function here]
 
@@ -1301,12 +1301,12 @@ Please:
 
 3. Show how to modify the original function to call the new function
 
-4. Suggest an appropriate name and parameters for the extracted function
+4. Suggest an appropriate name and parameters for the extracted function`
 
 ---
 ---
 ### Prompt 3: Conditional Logic Simplification
-This function contains complex conditional logic that I want to simplify:
+`This function contains complex conditional logic that I want to simplify:
 
 [Paste function with complex conditionals]
 
@@ -1318,14 +1318,14 @@ Please:
 
 3. Suggest a pattern (Strategy, Command, etc.) that could replace the conditionals
 
-4. Provide a refactored version with simplified logic in the main function
+4. Provide a refactored version with simplified logic in the main function`
 
 ---
 ---
 ---
 # C. Improving Code Readability
 ### Prompt 1: Variable and Function Naming Enhancement
-Please improve the readability of this code by enhancing variable and function names:
+`Please improve the readability of this code by enhancing variable and function names:
 
 [Paste code with poor naming here]
 
@@ -1339,13 +1339,13 @@ Guidelines:
 
 4. Preserve the code's functionality exactly
 
-5. Explain your naming choices and any patterns you've applied
+5. Explain your naming choices and any patterns you've applied`
 
 ---
 ---
 
 ### Prompt 2: Comment and Documentation Addition
-I need to improve this code's readability by adding appropriate comments and documentation:
+`I need to improve this code's readability by adding appropriate comments and documentation:
 
 [Paste poorly documented code here]
 
@@ -1361,12 +1361,12 @@ Please:
 
 5. Don't add obvious comments that just repeat what the code clearly says
 
-6. Use the standard comment style for the language
+6. Use the standard comment style for the language`
 
 ---
 ---
 ### Prompt 3: Code Structure Improvement  
-Please improve the readability of this code by enhancing its structure and formatting:
+`Please improve the readability of this code by enhancing its structure and formatting:
 
 [Paste poorly structured code here]
 
@@ -1384,14 +1384,14 @@ Specifically:
 
 6. Replace "magic numbers" with named constants
 
-7. Ensure the functionality remains exactly the same
+7. Ensure the functionality remains exactly the same`
 
 ---
 ---
 ---
 # D. Implementing Design Patterns
 ### Prompt 1: Pattern Opportunity Identification
-I'd like to identify potential design patterns that could improve this code:
+`I'd like to identify potential design patterns that could improve this code:
 
 [Paste code here]
 
@@ -1405,12 +1405,12 @@ Please:
 
 4. Highlight any potential drawbacks or implementation challenges
 
-5. Prioritize suggestions based on impact vs. implementation effort
+5. Prioritize suggestions based on impact vs. implementation effort`
 
 ---
 ---
 ### Prompt 2: Pattern Implementation Guidance
-I'd like to refactor this code to implement the [PATTERN_NAME] design pattern:
+`I'd like to refactor this code to implement the [PATTERN_NAME] design pattern:
 
 [Paste code to refactor]
 
@@ -1432,12 +1432,12 @@ Please:
 
 5. Explain how to verify the refactoring preserves the original behavior
 
-6. If the pattern is not applicable, please refer me to alternative patterns I can look at that are more applicable to this code.
+6. If the pattern is not applicable, please refer me to alternative patterns I can look at that are more applicable to this code.`
 
 ---
 ---
 ### Prompt 3: Multi-Pattern Architecture Transformation
-I want to improve the architecture of this codebase by applying appropriate design patterns:
+`I want to improve the architecture of this codebase by applying appropriate design patterns:
 
 [Paste related code files or describe the system]
 
@@ -1455,14 +1455,14 @@ Please:
 
 4. Address potential risks and how to mitigate them
 
-5. Describe how the new architecture improves maintainability and extensibility
+5. Describe how the new architecture improves maintainability and extensibility`
 
 ---
 ---
 ---
 # Learning with AI
 ### Prompt: Idiomatic Code
-Use the prompt below to ensure your code is aligned with industry best practices for your language, and in the process learn more about the programming language. 
+`Use the prompt below to ensure your code is aligned with industry best practices for your language, and in the process learn more about the programming language. 
 
 I'm learning to write more idiomatic [language]. Here's my current code:
 [paste your code]
@@ -1475,12 +1475,12 @@ Could you:
 
 3. Point out any language features I'm not taking advantage of
 
-4. Show me both my version and an improved version side by side
+4. Show me both my version and an improved version side by side`
 
 ---
 
 ### Prompt: Code Quality Improvements
-I'm a junior developer working with [language]. Could you review this code for quality improvements:
+`I'm a junior developer working with [language]. Could you review this code for quality improvements:
 [paste code]
 
 Please:
@@ -1491,12 +1491,12 @@ Please:
 
 3. Explain why these improvements matter in [language]
 
-4. Rate the code's readability, performance, and maintainability
+4. Rate the code's readability, performance, and maintainability`
 
 ---
 
 ### Prompt: Understanding Language Feature 
-I want to improve my understanding of [specific feature] in [language].
+`I want to improve my understanding of [specific feature] in [language].
 
 1. Could you explain this feature with simple examples?
 
@@ -1504,15 +1504,15 @@ I want to improve my understanding of [specific feature] in [language].
 
 3. Provide a small project idea that would help me practice this feature
 
-4. What common mistakes should I avoid when using this feature?
+4. What common mistakes should I avoid when using this feature?`
 
 ---
 ### Vocabulary Discovery
-"I'm beginning to learn [Java] coming from [Python]. Before diving in, could you:
+`"I'm beginning to learn [Java] coming from [Python]. Before diving in, could you:
 1. List the key technical terms I should know in [Java]  
 2. Provide a brief explanation of each term
 3. Show how these terms relate to each other
-This will help me ask better questions as I learn."
+This will help me ask better questions as I learn."`
 
 
 
