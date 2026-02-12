@@ -38,28 +38,28 @@ Act as a fast-learning coach. Compress this documentation into:
 
 ### B.	[Understanding Existing Code Functionality](#Understanding Existing Code Functionality)  
 * [Prompt 1: Understand how a specific feature works](#Prompt 1: Understand how a specific feature works)  
-* [Prompt 2: Deepen understanding of a codebase]  
-* [Prompt 3: Mapping Data Flow and State Management]  
+* [Prompt 2: Deepen understanding of a codebase](#Prompt 2: Deepen understanding of a codebase)  
+* [Prompt 3: Mapping Data Flow and State Management](#Prompt 3: Mapping Data Flow and State Management)  
 
-### C.	[Deciphering Complex Functions and Algorithms]  
-* [Prompt 1: Understand an Algorithm Through Step-by-Step Analysis]  
-* [Prompt 2: Decipher Code with Unclear Intent or Poor Documentation]  
-* [Prompt 3: Understand Complex Logic and Control Flow]  
+### C.	[Deciphering Complex Functions and Algorithms](#Deciphering Complex Functions and Algorithms)  
+* [Prompt 1: Understand an Algorithm Through Step-by-Step Analysis](#Prompt 1: Understand an Algorithm Through Step-by-Step Analysis)  
+* [Prompt 2: Decipher Code with Unclear Intent or Poor Documentation](#Prompt 2: Decipher Code with Unclear Intent or Poor Documentation)  
+* [Prompt 3: Understand Complex Logic and Control Flow](#Prompt 3: Understand Complex Logic and Control Flow)  
 
-## 3.	[Generating and Improving Documentation with AI]  
-### A.	[Code Documentation Generation]  
-* [Prompt Template: Comprehensive Function Documentation]  
-* [Prompt Template: Intent and Logic Explanation]  
-* [Prompt Template: Documentation Style Conversion]  
+## 3.	[Generating and Improving Documentation with AI](#Generating and Improving Documentation with AI)  
+### A.	[Code Documentation Generation](#Code Documentation Generation)  
+* [Prompt Template: Comprehensive Function Documentation](#Prompt Template: Comprehensive Function Documentation)  
+* [Prompt Template: Intent and Logic Explanation](#Prompt Template: Intent and Logic Explanation)  
+* [Prompt Template: Documentation Style Conversion](#Prompt Template: Documentation Style Conversion)  
 
-### B.	[API Documentation]  
-* [Prompt Template: Endpoint Documentation Generation]   
-* [Prompt Template: API Reference Conversion]  
-* [Prompt Template: API Usage Guide Creation]  
+### B.	[API Documentation](#API Documentation)  
+* [Prompt Template: Endpoint Documentation Generation](#Prompt Template: Endpoint Documentation Generation)   
+* [Prompt Template: API Reference Conversion](#Prompt Template: API Reference Conversion)  
+* [Prompt Template: API Usage Guide Creation](#Prompt Template: API Usage Guide Creation)  
 
-### C.	[User Guides and README Files]  
-* [Prompt Template: Project README Generation]  
-* [Prompt Template: Step-by-Step Guide Creation]  
+### C.	[User Guides and README Files](#User Guides and README Files)  
+* [Prompt Template: Project README Generation](#Prompt Template: Project README Generation)  
+* [Prompt Template: Step-by-Step Guide Creation](#Prompt Template: Step-by-Step Guide Creation)  
 * [Prompt Template: FAQ Document Generation]  
 
 # [Craft: Refactoring, Design, and Best Practices]  
