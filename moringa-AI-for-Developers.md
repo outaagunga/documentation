@@ -1355,8 +1355,11 @@ Please:
 
 4. Provide a refactored version with the main function delegating to the smaller functions`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
+
 ### Prompt 2: Single-Responsibility Extraction
 `I'd like to extract a single responsibility from this complex function:
 
@@ -1395,9 +1398,12 @@ Please:
 
 4. Provide a refactored version with simplified logic in the main function`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ---
+
 # C. Improving Code Readability
 ### Prompt 1: Variable and Function Naming Enhancement
 `Please improve the readability of this code by enhancing variable and function names:
@@ -1439,6 +1445,8 @@ Please:
 5. Don't add obvious comments that just repeat what the code clearly says
 
 6. Use the standard comment style for the language`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -1486,8 +1494,11 @@ Please:
 
 5. Prioritize suggestions based on impact vs. implementation effort`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
+
 ### Prompt 2: Pattern Implementation Guidance
 `I'd like to refactor this code to implement the [PATTERN_NAME] design pattern:
 
@@ -1517,6 +1528,7 @@ Please:
 
 ---
 ---
+
 ### Prompt 3: Multi-Pattern Architecture Transformation
 `I want to improve the architecture of this codebase by applying appropriate design patterns:
 
@@ -1543,6 +1555,7 @@ Please:
 ---
 ---
 ---
+
 # Learning with AI
 ### Prompt: Idiomatic Code
 `Use the prompt below to ensure your code is aligned with industry best practices for your language, and in the process learn more about the programming language. 
@@ -1578,6 +1591,7 @@ Please:
 
 4. Rate the code's readability, performance, and maintainability`
 
+[🔝 Back to Top](#top)
 ---
 
 ### Prompt: Understanding Language Feature 
@@ -1625,6 +1639,8 @@ Potential error responses with codes and messages
 At least 2 example requests with their responses
 Any rate limiting or special considerations
 
+[🔝 Back to Top](#top)
+
 ---
 ### Prompt Template: API Reference Conversion 
 
@@ -1642,6 +1658,8 @@ Response schemas with status codes
 Example requests and responses
 Error handling information
 Format the output as a complete, valid [Swagger/OpenAPI/etc.] document.
+
+[🔝 Back to Top](#top)
 
 ---
 
@@ -1661,6 +1679,8 @@ Target audience: [Describe experience level and background of users]
 
 Tone: [Friendly/formal/technical/etc.]
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ### Conceptual Understanding 
@@ -1672,6 +1692,7 @@ Tone: [Friendly/formal/technical/etc.]
 4. What are common misconceptions Python developers have about Java?"
 
 ---
+
 ### Step-by-Step Breakdown  
 "I want to understand Java's object-oriented implementation. Could you break down:
 1. The essential components of a Java class
@@ -1679,6 +1700,8 @@ Tone: [Friendly/formal/technical/etc.]
 3. The concept of interfaces (which doesn't exist in Python)
 4. How method overriding and overloading work
 Let's not write complex code yet, just focus on structure and concepts."
+
+[🔝 Back to Top](#top)
 
 ---
 ### Guided Implementation  
@@ -1717,7 +1740,10 @@ Could you:
 3. Suggest what I should learn next?
 4. Point out any Python habits that might be showing in my Java code?"
 
+[🔝 Back to Top](#top)
+
 ---
+
 ### Using Context Effectively  
 Example 1:
 "I'm learning Spring Boot coming from Express.js. Could you explain dependency injection by comparing it to concepts I'm familiar with in the Node.js ecosystem?"  
@@ -1740,6 +1766,8 @@ Example 2:
 3. How would extensive use of exceptions affect application design?
 4. When should I create custom exception classes?"
 
+[🔝 Back to Top](#top)
+
 ---
 ### Learning Through Teaching  
 Template Example:  
@@ -1751,6 +1779,8 @@ Example:
 'An interface in Java is like a contract that a class promises to fulfill. It defines methods that implementing classes must provide, but doesn't include the implementation itself. It's somewhat similar to Python's abstract base classes, but more focused on defining behavior rather than sharing code.'
 
 What parts of my understanding are correct? What am I missing or misunderstanding?"
+
+[🔝 Back to Top](#top)
 
 ---
 ### Using a Tutor  
@@ -1778,6 +1808,8 @@ Let's start with understanding how Java handles memory differently from Python."
 "I'm trying to describe what I want to do in Java, but I don't know the proper terms.
 In Python, I would use a dictionary to store key-value pairs. What's the equivalent
 in Java, and what's the proper terminology I should use when discussing this?"
+
+[🔝 Back to Top](#top)
 
 ---
 ---
