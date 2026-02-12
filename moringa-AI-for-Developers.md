@@ -27,6 +27,8 @@ Act as a fast-learning coach. Compress this documentation into:
 ```
 ---
 ---
+<a id="top"></a>
+
 # Using AI for everyday work 
 ## 1.	Using AI for everyday work
 ## 2.	Using AI to comprehend existing codebases
@@ -184,6 +186,8 @@ I'm particularly confused about [mention specific areas of confusion, if any].
 
 After your explanation, could you suggest a small exploration exercise I could do to verify my understanding of the project structure?`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 
@@ -222,6 +226,8 @@ Also, what questions could I ask myself as I'm exploring the code to ensure I'm 
 
 After your guidance, could you give me a small challenge to test my understanding of how to navigate this feature's code?`  
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ### Prompt 3: Understanding Domain Models and Business Concepts 
@@ -257,6 +263,8 @@ Could you, as a senior developer:
 Then, please ask me 3-5 questions that would test my understanding of this domain model. These should be questions that make me think about the business logic, not just the code syntax.
 
 Finally, suggest a simple diagram I could sketch to visualize these relationships that would help solidify my understanding.`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
