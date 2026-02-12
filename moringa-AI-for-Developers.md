@@ -28,16 +28,16 @@ Act as a fast-learning coach. Compress this documentation into:
 ---
 ---
 # [Using AI for everyday work](#Using-AI-for-everyday-work)  
-## 1.	[Using AI for everyday work]  
-## 2.	[Using AI to comprehend existing codebases]  
+## 1.	[Using AI for everyday work](#Using-AI-for-everyday-work)  
+## 2.	[Using AI to comprehend existing codebases](#Using AI to comprehend existing codebases)  
 
-### A.	[Knowing Where to Start]  
-* [Prompt 1: Understanding Project Structure and Technology Stack]   
-* [Prompt 2: Finding Feature Implementation Locations]   
-* [Prompt 3: Understanding Domain Models and Business Concepts]   
+### A.	[Knowing Where to Start](#Knowing Where to Start)  
+* [Prompt 1: Understanding Project Structure and Technology Stack](#Prompt 1: Understanding Project Structure and Technology Stack)   
+* [Prompt 2: Finding Feature Implementation Locations](#Prompt 2: Finding Feature Implementation Locations)   
+* [Prompt 3: Understanding Domain Models and Business Concepts](#Prompt 3: Understanding Domain Models and Business Concepts)   
 
-### B.	[Understanding Existing Code Functionality]  
-* [Prompt 1: Understand how a specific feature works]  
+### B.	[Understanding Existing Code Functionality](#Understanding Existing Code Functionality)  
+* [Prompt 1: Understand how a specific feature works](#Prompt 1: Understand how a specific feature works)  
 * [Prompt 2: Deepen understanding of a codebase]  
 * [Prompt 3: Mapping Data Flow and State Management]  
 
