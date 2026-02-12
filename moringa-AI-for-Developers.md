@@ -27,7 +27,7 @@ Act as a fast-learning coach. Compress this documentation into:
 ```
 ---
 ---
-# [Using AI for everyday work]  
+# [Using AI for everyday work](#Using-AI-for-everyday-work)  
 ## 1.	[Using AI for everyday work]  
 ## 2.	[Using AI to comprehend existing codebases]  
 
