@@ -309,6 +309,8 @@ I'm particularly confused about [specific aspect], so extra detail there would h
 
 Finally, suggest 3 small code changes I could make to validate my understanding. Do not give the me change, and instead give me the requirement.`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 
@@ -352,6 +354,7 @@ What's still unclear to me is [mention specific parts that confuse you].
 
 Please don't give me direct explanations - help me discover the answers through guided questioning.`
 
+[🔝 Back to Top](#top)
 ---
 ---
 
@@ -405,6 +408,8 @@ Could you help me create a clear mental model of:
 
 Please include any relevant descriptions, design patterns or principles that would help me understand the existing code decisions.`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ---
@@ -444,6 +449,8 @@ After your explanation, could you ask me 2-3 targeted questions that would test 
 
 This will help me make sure I've really grasped how it works.`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 
@@ -476,6 +483,8 @@ Please help me by:
 Then, please share 3-4 questions I should ask myself to validate whether my new understanding is correct. These questions should help me check my understanding against the rest of the codebase and application behavior.
 
 Finally, what are some small, safe experiments I could run to verify how this code actually behaves without disrupting the system?`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -518,6 +527,8 @@ Then, guide me through an exercise where I can test my understanding:
 
 This will help me build an accurate mental model of this complex logic.`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ---
@@ -538,6 +549,8 @@ Any exceptions or errors that might be thrown
 Example usage
 Any important notes or edge cases developers should be aware of`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ## Prompt Template: Intent and Logic Explanation
@@ -552,6 +565,8 @@ Break down the logic step-by-step
 Identify any assumptions or edge cases in the implementation
 Suggest inline comments for complex parts
 Note any potential improvements while maintaining the original functionality`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -570,6 +585,8 @@ Target style: [JSDoc/Google style/NumPy style/etc.]
 Language: [JavaScript/Python/etc.]
 
 Please ensure all information from the original is preserved while following the conventions of the target style.`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -596,6 +613,8 @@ Please include:
 6. At least 2 example requests with their responses
 7. Any rate limiting or special considerations`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ### Prompt 2: API Reference Conversion 
@@ -614,6 +633,8 @@ I need the documentation to include:
 
 Format the output as a complete, valid [Swagger/OpenAPI/etc.] document.`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 
@@ -631,6 +652,8 @@ API information:
 
 Target audience: [Describe experience level and background of users]
 Tone: [Friendly/formal/technical/etc.]`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -668,6 +691,8 @@ Code structure overview:
 
 [Briefly describe main directories/files or paste project structure]`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 
@@ -686,6 +711,8 @@ Process overview:
 [Describe the task or provide notes on what the user needs to accomplish]
 
 User experience level: [Beginner/Intermediate/Advanced]`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -709,6 +736,8 @@ For each question, provide a clear, concise answer that would be helpful to our 
 Known issues or common user questions:
 
 [List any specific questions or issues to include]`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -741,6 +770,8 @@ Could you:
 5. Provide a step-by-step debugging approach I could follow
 
 I'm particularly unfamiliar with [specific technology or concept] mentioned in the error, so extra explanation there would help.`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -787,6 +818,8 @@ Could you please:
 6. Suggest debugging tools or techniques specific to this type of error
 
 I'm most confused about [specific aspect of the error or code], so detailed explanation there would be helpful.`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -836,6 +869,8 @@ Could you:
 
 I've searched for solutions and found [mention any resources or solutions already discovered], but they didn't resolve my issue because [reason previous solutions didn't work].`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ---
@@ -872,6 +907,8 @@ Could you please:
 
 I'm particularly interested in learning the underlying performance concepts, not just getting a quick fix.`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ### Prompt 2: Memory Usage Optimization  
@@ -906,6 +943,8 @@ Could you please:
 5. Explain the memory management concepts I should understand for my language/environment
 
 I want to both fix this issue and learn how to write more memory-efficient code in the future.`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -943,6 +982,8 @@ Could you please:
 5. Suggest how I could measure the query performance before and after changes
 
 I'm a junior developer, so explanations about the underlying database concepts would be very helpful.`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -989,6 +1030,8 @@ My environment/constraints:
 
 I want to learn how to properly verify solutions, not just implement them blindly.`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ### Prompt 2: Learning Through Alternative Approaches
@@ -1031,6 +1074,8 @@ Could you please:
 4. Explain the principles or patterns behind each approach so I can learn when to apply them in the future
 
 I'm not just looking for the "best" solution, but to understand the trade-offs and reasoning behind different approaches.`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -1075,6 +1120,8 @@ Could we collaborate on a critical review where:
 
 I'm trying to develop the skill of critically evaluating solutions before implementing them. Explaining your thought process would help me learn this skill better.`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ---
@@ -1097,6 +1144,8 @@ Rather than generating tests for me, please:
 
 5. Ask me which test I should write first and why`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ### Prompt 2: Test Planning Guidance
@@ -1115,6 +1164,8 @@ Instead of writing tests for me, please:
 4. For each edge case we identify, ask me what I expect to happen
 
 5. Help me create a checklist of tests I should write, organized by priority`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -1144,6 +1195,8 @@ Instead of rewriting it for me, please:
 
 5. Guide me in improving my assertions to be more precise`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 
@@ -1168,6 +1221,8 @@ Please:
 
 5. Guide me in writing more precise assertions`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ---
@@ -1188,6 +1243,8 @@ Instead of writing code and tests for me, please:
 4. Once I've implemented the code, guide me on what test to add next
 
 5. Help me understand when it's time to refactor vs. add new functionality`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -1214,6 +1271,8 @@ Please:
 
 5. Help me recognize if my implementation does more than needed for the tests`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ---
@@ -1239,6 +1298,8 @@ Language/Framework: [e.g., JavaScript/React]
 
 Team coding standards: [e.g., camelCase for variables, max line length 80 chars`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ### Prompt 2: Function Refactoring
@@ -1256,6 +1317,8 @@ Team coding standards: [e.g., camelCase for variables, max line length 80 chars`
 
 What this function should do: [Brief description of intended purpose]`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ### Prompt 3: Code Duplication Detection
@@ -1270,6 +1333,8 @@ What this function should do: [Brief description of intended purpose]`
 4. Explaining the benefits of the suggested changes
 
 [Paste code with potential duplication]`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -1311,6 +1376,8 @@ Please:
 
 4. Suggest an appropriate name and parameters for the extracted function`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ### Prompt 3: Conditional Logic Simplification
@@ -1348,6 +1415,8 @@ Guidelines:
 4. Preserve the code's functionality exactly
 
 5. Explain your naming choices and any patterns you've applied`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -1393,6 +1462,8 @@ Specifically:
 6. Replace "magic numbers" with named constants
 
 7. Ensure the functionality remains exactly the same`
+
+[🔝 Back to Top](#top)
 
 ---
 ---
@@ -1442,6 +1513,8 @@ Please:
 
 6. If the pattern is not applicable, please refer me to alternative patterns I can look at that are more applicable to this code.`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ### Prompt 3: Multi-Pattern Architecture Transformation
@@ -1465,6 +1538,8 @@ Please:
 
 5. Describe how the new architecture improves maintainability and extensibility`
 
+[🔝 Back to Top](#top)
+
 ---
 ---
 ---
@@ -1484,6 +1559,8 @@ Could you:
 3. Point out any language features I'm not taking advantage of
 
 4. Show me both my version and an improved version side by side`
+
+[🔝 Back to Top](#top)
 
 ---
 
@@ -1521,6 +1598,8 @@ Please:
 2. Provide a brief explanation of each term
 3. Show how these terms relate to each other
 This will help me ask better questions as I learn."`
+
+[🔝 Back to Top](#top)
 
 
 
