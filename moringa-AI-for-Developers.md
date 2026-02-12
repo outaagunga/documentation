@@ -1601,30 +1601,186 @@ This will help me ask better questions as I learn."`
 
 [🔝 Back to Top](#top)
 
+---
+---
+### Prompt Template: Endpoint Documentation Generation 
+
+Please create comprehensive documentation for this API endpoint:  
+
+Endpoint: [HTTP method] [endpoint path]
+
+Implementation code:
+
+```[language]
+[Paste endpoint implementation code]
+```
+
+Please include:
+
+A clear description of the endpoint's purpose
+Request parameters (path, query, body) with types and descriptions
+Response format with status codes and examples
+Authentication requirements
+Potential error responses with codes and messages
+At least 2 example requests with their responses
+Any rate limiting or special considerations
+
+---
+### Prompt Template: API Reference Conversion 
+
+Please convert this API information into a structured [Swagger/OpenAPI/API Blueprint/Markdown] document:
+
+API details:
+
+[Paste API information, can be informal description]
+
+I need the documentation to include:
+
+Endpoint definitions with paths and methods
+Request parameters and body schemas
+Response schemas with status codes
+Example requests and responses
+Error handling information
+Format the output as a complete, valid [Swagger/OpenAPI/etc.] document.
+
+---
+
+### Prompt Template: API Usage Guide Creation  
+Please create a developer guide for using our API. The guide should explain how to:
+
+Get started (authentication, base URL, general concepts)
+Perform common operations using the following endpoints:
+[List key endpoints with brief descriptions]
+Handle errors and troubleshoot common issues
+Follow best practices when integrating with our API
+API information:
+
+[Paste API details or link to documentation]
+
+Target audience: [Describe experience level and background of users]
+
+Tone: [Friendly/formal/technical/etc.]
+
+---
+---
+### Conceptual Understanding 
+
+"I'm currently proficient in Python and want to learn Java. Before diving into code:
+1. What are the key philosophical differences between Java and Python?
+2. What problems was Java designed to solve?
+3. What mental models should I adjust coming from Python?
+4. What are common misconceptions Python developers have about Java?"
+
+---
+### Step-by-Step Breakdown  
+"I want to understand Java's object-oriented implementation. Could you break down:
+1. The essential components of a Java class
+2. How inheritance works compared to Python
+3. The concept of interfaces (which doesn't exist in Python)
+4. How method overriding and overloading work
+Let's not write complex code yet, just focus on structure and concepts."
+
+---
+### Guided Implementation  
+"I'm ready to implement my first Java class. Could you guide me through creating a
+'Student' class with name, ID, and grades? Please explain each part of the syntax,
+especially the parts that differ from Python's approach to classes."
+
+---
+### Understanding Verification  
+"I've created this Java class:
 
 
+public class Student {
+    private String name;
+    private int id;
+    private double[] grades;
 
+    public Student(String name, int id) {
+        this.name = name;
+        this.id = id;
+        this.grades = new double[5];
+    }
 
+    public double calculateAverage() {
+        double sum = 0;
+        for(double grade : grades) {
+            sum += grade;
+        }
+        return sum / grades.length;
+    }
+}
 
+Could you:
+1. Verify if I've followed Java best practices?
+2. Explain any improvements I should make?
+3. Suggest what I should learn next?
+4. Point out any Python habits that might be showing in my Java code?"
 
+---
+### Using Context Effectively  
+Example 1:
+"I'm learning Spring Boot coming from Express.js. Could you explain dependency injection by comparing it to concepts I'm familiar with in the Node.js ecosystem?"  
 
+Example 2:
+"I've been programming in Python for 2 years, focusing on data analysis with pandas and numpy. Now I need to learn Java for a backend role. Could you explain Java's stream API by comparing it to pandas operations I'm familiar with?"
 
+---
+### Promoting Deep Understanding  
+Template Example:  
+"I've implemented this solution for [problem]. Could you help me understand:
+1. What are the performance implications?
+2. What alternative approaches could I have taken?
+3. How would this need to change if the requirements scaled 10x?"
 
+Example 2:  
+"I've learned the basics of Java exceptions. Could you help me understand:
+1. Why Java uses checked exceptions when Python doesn't?
+2. What are the performance implications of exception handling in Java?
+3. How would extensive use of exceptions affect application design?
+4. When should I create custom exception classes?"
 
+---
+### Learning Through Teaching  
+Template Example:  
+"Could you verify my understanding? Here's how I would explain [concept] to another developer: [explanation]. What am I missing or misunderstanding?"
 
+Example:  
+"Let me try explaining Java interfaces as I understand them:
 
+'An interface in Java is like a contract that a class promises to fulfill. It defines methods that implementing classes must provide, but doesn't include the implementation itself. It's somewhat similar to Python's abstract base classes, but more focused on defining behavior rather than sharing code.'
 
+What parts of my understanding are correct? What am I missing or misunderstanding?"
 
+---
+### Using a Tutor  
+Example 1:  
+"I'm new to Python and fairly new to coding, and I'd like you to be my Python tutor. Instead of giving direct answers, please help me learn by:
+- Asking guiding questions that help me discover solutions
+- Breaking down problems into smaller steps
+- Giving hints when I'm stuck rather than complete solutions
+- Encouraging me to explain my thinking
+- Pointing out patterns and connections to previous concepts
+- Helping me debug by asking me to examine my assumptions
+Let's start with [specific coding or python question]"
 
+Example 2:  
+"I'd like you to be my Java tutor as I learn it coming from Python. Instead of giving direct answers, please:
+- Ask me guiding questions
+- Break down complex concepts into smaller pieces
+- Give hints when I'm stuck
+- Point out conceptual differences from Python
+- Correct misunderstandings gently
 
+Let's start with understanding how Java handles memory differently from Python."
 
+### Terminology Verification  
+"I'm trying to describe what I want to do in Java, but I don't know the proper terms.
+In Python, I would use a dictionary to store key-value pairs. What's the equivalent
+in Java, and what's the proper terminology I should use when discussing this?"
 
-
-
-
-
-
-
+---
+---
 
 
 
