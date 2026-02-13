@@ -146,10 +146,10 @@ Growth: Learning with AI (Languages, Libraries, APIs)
 
 ## 10.	Learn a new framework, library or API  
 **Getting Started Quickly**
-* [Generate "Hello World" Examples](#Generate-"Hello-World"-Examples)
-* [Obtain Simplified Conceptual Overviews](#Obtain-Simplified-Conceptual-Overviews)
-* [Clarify Core Concepts and Terminology](#Clarify-Core-Concepts-and-Terminology)
-* [Structure Learning Paths](#Structure-Learning-Paths)
+* [Generate "Hello World" Examples](#generate-hello-world-examples)
+* [Obtain Simplified Conceptual Overviews](#obtain-simplified-conceptual-overviews)
+* [Clarify Core Concepts and Terminology](#clarify-core-concepts-and-terminology)
+* [Structure Learning Paths](#structure-learning-paths)
 
 **Contextual Learning**
 * [Comparing New Tech with What You Already Know](#Comparing-New-Tech-with-What-You-Already-Know)   
