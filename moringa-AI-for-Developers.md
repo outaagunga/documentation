@@ -145,21 +145,21 @@ Growth: Learning with AI (Languages, Libraries, APIs)
 * [Terminology Verification](#Terminology-Verification)  
 
 ## 10.	Learn a new framework, library or API  
-### Getting Started Quickly
-* [Generate "Hello World" Examples](#generate-hello-world-examples)
-* [Obtain Simplified Conceptual Overviews](#obtain-simplified-conceptual-overviews)
-* [Clarify Core Concepts and Terminology](#clarify-core-concepts-and-terminology)
-* [Structure Learning Paths](#structure-learning-paths)
+**Getting Started Quickly**
+* [1. Generate "Hello World" Examples](#1-generate-hello-world-examples)
+* [2. Obtain Simplified Conceptual Overviews](#2-obtain-simplified-conceptual-overviews)
+* [3. Clarify Core Concepts and Terminology](#3-clarify-core-concepts-and-terminology)
+* [4. Structure Learning Paths](#4-structure-learning-paths)
 
 **Contextual Learning**
-* [Comparing New Tech with What You Already Know](#Comparing-New-Tech-with-What-You-Already-Know)   
-* [Requesting Analogies Between Familiar and New Frameworks](#Requesting-Analogies-Between-Familiar-and-New-Frameworks)  
-* [Understanding the "Why" Behind Design Decisions](#Understanding-the-"Why"-Behind-Design-Decisions)  
+* [1. Comparing New Tech with What You Already Know](#1-Comparing-New-Tech-with-What-You-Already-Know)   
+* [2. Requesting Analogies Between Familiar and New Frameworks](#2-Requesting-Analogies-Between-Familiar-and-New-Frameworks)  
+* [3. Understanding the "Why" Behind Design Decisions](#3-Understanding-the-"Why"-Behind-Design-Decisions)  
 
 **Documentation Navigation**
-* [Using AI to Summarize Dense Documentation](#Using-AI-to-Summarize-Dense-Documentation)
-* [Getting AI to Highlight Important Areas to Focus On](#Getting-AI-to-Highlight-Important-Areas-to-Focus-On)
-* [Asking for Practical Examples of Abstract Concepts](#Asking-for-Practical-Examples-of-Abstract-Concepts)
+* [1. Using AI to Summarize Dense Documentation](#1-Using-AI-to-Summarize-Dense-Documentation)
+* [2. Getting AI to Highlight Important Areas to Focus On](2-#Getting-AI-to-Highlight-Important-Areas-to-Focus-On)
+* [3. Asking for Practical Examples of Abstract Concepts](#3-Asking-for-Practical-Examples-of-Abstract-Concepts)
 
   
 ## 11.	Principles when using AI  
