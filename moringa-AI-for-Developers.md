@@ -145,7 +145,7 @@ Growth: Learning with AI (Languages, Libraries, APIs)
 * [Terminology Verification](#Terminology-Verification)  
 
 ## 10.	Learn a new framework, library or API  
-**Getting Started Quickly**
+### Getting Started Quickly
 * [Generate "Hello World" Examples](#generate-hello-world-examples)
 * [Obtain Simplified Conceptual Overviews](#obtain-simplified-conceptual-overviews)
 * [Clarify Core Concepts and Terminology](#clarify-core-concepts-and-terminology)
@@ -1834,8 +1834,7 @@ in Java, and what's the proper terminology I should use when discussing this?"
 
 ## Getting Started Quickly
 
-### 1. 
-Generate "Hello World" Examples
+### 1. Generate "Hello World" Examples
 AI excels at creating starter code that demonstrates the minimum viable implementation:
 
 * Request framework-specific boilerplate code tailored to your needs
