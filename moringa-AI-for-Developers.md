@@ -1834,7 +1834,8 @@ in Java, and what's the proper terminology I should use when discussing this?"
 
 ## Getting Started Quickly
 
-### 1. Generate "Hello World" Examples
+### 1. 
+Generate "Hello World" Examples
 AI excels at creating starter code that demonstrates the minimum viable implementation:
 
 * Request framework-specific boilerplate code tailored to your needs
