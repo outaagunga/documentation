@@ -154,11 +154,11 @@ Growth: Learning with AI (Languages, Libraries, APIs)
 **Contextual Learning**
 * [1. Comparing New Tech with What You Already Know](#1-Comparing-New-Tech-with-What-You-Already-Know)   
 * [2. Requesting Analogies Between Familiar and New Frameworks](#2-Requesting-Analogies-Between-Familiar-and-New-Frameworks)  
-* [3. Understanding the "Why" Behind Design Decisions](#3-Understanding-the-"Why"-Behind-Design-Decisions)  
+* [3. Understanding the "Why" Behind Design Decisions](#3-Understanding-the-Why-Behind-Design-Decisions)  
 
 **Documentation Navigation**
 * [1. Using AI to Summarize Dense Documentation](#1-Using-AI-to-Summarize-Dense-Documentation)
-* [2. Getting AI to Highlight Important Areas to Focus On](2-#Getting-AI-to-Highlight-Important-Areas-to-Focus-On)
+* [2. Getting AI to Highlight Important Areas to Focus On](#2-Getting-AI-to-Highlight-Important-Areas-to-Focus-On)
 * [3. Asking for Practical Examples of Abstract Concepts](#3-Asking-for-Practical-Examples-of-Abstract-Concepts)
 
   
