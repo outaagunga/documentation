@@ -60,7 +60,16 @@ rm -r <directory-name>
 pwd <file-name>
 
 # To rename file or folder
-mv "old name" "new name"  #e.g mv Appp.js App.js  
+mv "old name" "new name"  #e.g mv Appp.js App.js
+
+# To zip a folder  
+zip -r folder_name.zip folder_name/
+
+# To unzip a folder
+unzip -l folder_name.zip
+
+# Install zip 
+sudo apt install zip 
 ```
 
 ## 6. Update Ubuntu System
