@@ -30,6 +30,13 @@ Act as a fast-learning coach. Compress this documentation into:
 <a id="top"></a>
 
 # Using AI for everyday work 
+---
+* a. [Prompt 2: Finding Feature Implementation Locations](#Prompt-2-Finding-Feature-Implementation-Locations)  
+* b. [Prompt 3: Understand Complex Logic and Control Flow](#Prompt-3-Understand-Complex-Logic-and-Control-Flow)  
+* c. [Prompt 3: Mapping Data Flow and State Management](#Prompt-3-Mapping-Data-Flow-and-State-Management)  
+* d. [Prompt 1: Understand how a specific feature works](#Prompt-1-Understand-how-a-specific-feature-works)  
+* e. [Prompt 2: Root Cause Analysis](#Prompt-2-Root-Cause-Analysis)  
+---
 ## 1.	Using AI for everyday work
 ## 2.	Using AI to comprehend existing codebases
 
