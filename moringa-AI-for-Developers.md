@@ -1610,7 +1610,7 @@ Could you:
 ---
 
 ### Prompt: Code Quality Improvements
-`I'm a junior developer working with [language]. Could you review this code for quality improvements:
+`I'm a junior developer working with [language]. Could you review this [logic/ code] for quality improvements:
 [paste code]
 
 Please:
