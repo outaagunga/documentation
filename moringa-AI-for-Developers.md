@@ -44,7 +44,7 @@ Act as a fast-learning coach. Compress this documentation into:
 * e. [Prompt 2: Root Cause Analysis](#Prompt-2-Root-Cause-Analysis)
 * f. [Search Logic](#Search-Logic)
 * .
-* g. [Prompt: Code Quality Improvements](#Prompt-Code-Quality-Improvements)
+* g. improve [Prompt: Code Quality Improvements](#Prompt-Code-Quality-Improvements)
 * h. Test [Prompt 1: Behavior Analysis Questions](#Prompt-1-Behavior-Analysis-Questions)
 * i. Test [Prompt 2: Learning From Test Examples](#Prompt-2-Learning-From-Test-Examples)
 ---
