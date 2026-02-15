@@ -43,6 +43,7 @@ Act as a fast-learning coach. Compress this documentation into:
 * d. [Prompt 1: Understand how a specific feature works](#Prompt-1-Understand-how-a-specific-feature-works)  
 * e. [Prompt 2: Root Cause Analysis](#Prompt-2-Root-Cause-Analysis)
 * f. [Search Logic](#Search-Logic)
+* g. [Prompt: Code Quality Improvements](#Prompt-Code-Quality-Improvements) 
 ---
 ## 1.	Using AI for everyday work
 ## 2.	Using AI to comprehend existing codebases
@@ -1621,6 +1622,7 @@ Please:
 3. Explain why these improvements matter in [language]
 
 4. Rate the code's readability, performance, and maintainability`
+5. Show me both my version and an improved version side by side  
 
 [🔝 Back to Top](#top)
 ---
