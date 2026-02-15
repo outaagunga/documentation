@@ -2408,7 +2408,9 @@ That’s where it gets serious.
 
 ---
 ### Search Logic
-Absolutely — let’s break down **best practices** for handling something like your `Cast` collection in a Firestore-backed search app. I’ll focus on maintainability, security, and performance.
+
+* **Goal**: Fetch all items from multiple collections for a unified search.
+* Each document is tagged with `type: col` so the frontend can render it differently depending on whether it’s a `Movie`, `Profile`, or `Cast member`.
 
 ---
 
