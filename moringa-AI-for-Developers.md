@@ -2416,10 +2416,11 @@ That’s where it gets serious.
 
 ## **1. Firestore Security Rules**
 ```javascript
-// firestore rules to make cast publicly accessible 
+// Firestore rules- only author can edit their cast
 match /Cast/{document} {
-  allow read: if true;   // anyone can read
-  allow write: if request.auth != null; // only authenticated can write
+  allow read: if true;
+  allow write: if request.auth != null && 
+               (resource == null || resource.data.user == request.auth.uid);
 }
 ```
 
