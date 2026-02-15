@@ -1616,13 +1616,11 @@ Could you:
 Please:
 
 1. Identify any code smells or quality issues
-
 2. Suggest specific improvements
-
-3. Explain why these improvements matter in [language]
-
-4. Rate the code's readability, performance, and maintainability`
-5. Show me both my version and an improved version side by side  
+3. Ensure Single Responsibility Principle  
+4. Explain why these improvements matter in [language]
+5. Rate the code's readability, performance, and maintainability`
+6. Show me both my version and an improved version side by side  
 
 [🔝 Back to Top](#top)
 ---
