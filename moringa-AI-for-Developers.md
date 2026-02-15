@@ -1,5 +1,11 @@
 Learning by telling what you think you already know  
 ```
+ } catch (collectionError) {
+        console.warn(`Collection ${col} might not exist or is inaccessible:`, collectionError);
+    }
+```
+
+```
 "Let me try explaining [e.g Java interfaces] as I understand them:
 [your explanation e.g ... ]
 
