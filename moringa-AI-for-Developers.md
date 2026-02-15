@@ -43,7 +43,10 @@ Act as a fast-learning coach. Compress this documentation into:
 * d. [Prompt 1: Understand how a specific feature works](#Prompt-1-Understand-how-a-specific-feature-works)  
 * e. [Prompt 2: Root Cause Analysis](#Prompt-2-Root-Cause-Analysis)
 * f. [Search Logic](#Search-Logic)
-* g. [Prompt: Code Quality Improvements](#Prompt-Code-Quality-Improvements) 
+* .
+* g. [Prompt: Code Quality Improvements](#Prompt-Code-Quality-Improvements)
+* h. Test [Prompt 1: Behavior Analysis Questions](#Prompt-1-Behavior-Analysis-Questions)
+* i. Test [Prompt 2: Learning From Test Examples](#Prompt-2-Learning-From-Test-Examples)
 ---
 ## 1.	Using AI for everyday work
 ## 2.	Using AI to comprehend existing codebases
