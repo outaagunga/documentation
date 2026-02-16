@@ -2,7 +2,8 @@
 ## In trading, an **Order Block (OB)** is a specific price zone where large institutions (like central banks and hedge funds) are believed to have placed massive buy or sell orders. Because these players deal with such high volume, they often "block" their orders together at a specific level, leaving a "footprint" that retail traders can follow.  
 
 <img width="400" height="400" alt="image" src="https://github.com/outaagunga/documentation/blob/main/order_block.PNG" />
-<img width="400" height="400" alt="image" src="https://github.com/outaagunga/documentation/blob/main/FVG.PNG" />
+<img style="float: left; margin-right: 15px;" width="400" height="400" alt="image" src="https://github.com/outaagunga/documentation/blob/main/FVG.PNG" />
+
 **How to Identify an Order Block**
 Technically, an order block is defined as the **last opposing candle** before a strong, impulsive move that breaks the market structure.  
  * **Bullish Order Block:** The last **bearish candle** before a sharp move upward that breaks a recent high. It acts as a future support zone.  
