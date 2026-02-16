@@ -3,7 +3,7 @@
 
  <img align="left" width="400" height="400" alt="image" src="https://github.com/outaagunga/documentation/blob/main/order_block.PNG" />  
  <img align="right" width="400" height="400" alt="image" src="https://github.com/outaagunga/documentation/blob/main/FVG.PNG" />  
-
+</br>
 
 **How to Identify an Order Block**
 Technically, an order block is defined as the **last opposing candle** before a strong, impulsive move that breaks the market structure.  
