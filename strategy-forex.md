@@ -22,6 +22,30 @@ your output should be:
 * replace with [replacement]
 ```
 ---
+
+## In trading, an **Order Block (OB)** is a specific price zone where large institutions (like central banks and hedge funds) are believed to have placed massive buy or sell orders. Because these players deal with such high volume, they often "block" their orders together at a specific level, leaving a "footprint" that retail traders can follow.  
+
+**How to Identify an Order Block**
+Technically, an order block is defined as the **last opposing candle** before a strong, impulsive move that breaks the market structure.  
+ * **Bullish Order Block:** The last **bearish candle** before a sharp move upward that breaks a recent high. It acts as a future support zone.  
+ * **Bearish Order Block:** The **last bullish candle** before a sharp drop that breaks a recent low. It acts as a future resistance zone.  
+
+**What Makes an Order Block "High Probability"?**  
+Not every candle is a valid order block. To be considered strong in 2026, it should meet these criteria:  
+ * **Displacement:** The price must move away from the candle aggressively and quickly, showing clear institutional intent.  
+ * **Break of Structure (BOS):** The move away must break a previous high or low, confirming a shift in market direction.  
+ * **Fair Value Gap (FVG):** A valid OB often leaves an FVG (an imbalance) immediately after it forms. This gap acts as a "magnet" that draws the price back to the block.  
+ * **Unmitigated:** The strongest blocks are "fresh," meaning the price has not yet returned to touch or "mitigate" the zone since it was created.   
+
+**How to Trade It**  
+ * **Mark the Zone:** Use the entire range (from high to low) of that last opposing candle as your "box".  
+ * **Wait for the Return:** Patiently wait for the price to retrace back into this box (called mitigation).  
+ * **Refine Entry:** On a lower timeframe (like 5-minute), look for a rejection or a small market structure shift within that box.  
+ * **Set Stop Loss:** Place your stop loss just outside the other side of the order block.  
+
+**Pro Tip:** Your **FVG Sessions [LuxAlgo]** indicator is essentially highlighting the "displacement" move that follows these order blocks. When you see a session FVG, look directly to the left to find the candle that started that move—that is your **Order Block**.   
+
+---
 ---
 ```vb
 This "Free Bar" variation is a powerful way to filter out weak signals. It uses the statistical extreme of the Bollinger Bands to identify high-probability reversal points.
