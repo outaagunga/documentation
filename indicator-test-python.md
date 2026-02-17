@@ -1201,7 +1201,14 @@ SYMBOLS = [
 3. **If too few signals** → Loosen proximity or add more S/R levels
 4. **Before going live** → Paper trade for at least 2-4 weeks to verify in real-time
 
-This is your **bridge between unit tests and live trading** — it shows you what signals would have actually fired on real price data!
+This is your **bridge between unit tests and live trading** — it shows you what signals would have actually fired on real price data!  
+
+### For real test to work, ensure you have two files as shown  
+```
+your-directory/
+├── test_indicator.py       # Unit tests (pytest) (contains test two code)
+├── test_real_data.py       # Real market test (python) (contains real data test code)
+```
 
 ```
 """
