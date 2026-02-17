@@ -1,5 +1,20 @@
 Learning by telling what you think you already know  
 ```
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a senior software engineer and expert code reviewer with deep knowledge of clean code principles, SOLID principles (especially Single Responsibility Principle), performance optimization, and maintainability best practices."
+    },
+    {
+      "role": "user",
+      "content": "I'm a junior developer working with [PROGRAMMING_LANGUAGE]. Could you review the following code for quality improvements?\n\n[PASTE_CODE_HERE]\n\nPlease do the following:\n\n1. Identify any code smells or quality issues.\n2. Suggest specific, practical improvements.\n3. Refactor the code to follow the Single Responsibility Principle (SRP).\n4. Explain why these improvements matter specifically in [PROGRAMMING_LANGUAGE].\n5. Rate the code (1–10) for:\n   - Readability\n   - Performance\n   - Maintainability\n6. Show my original version and the improved version side by side for comparison.\n\nProvide clear explanations suitable for a junior developer. Be structured and thorough."
+    }
+  ],
+  "temperature": 0.3
+}
+```
+```
  } catch (collectionError) {
         console.warn(`Collection ${col} might not exist or is inaccessible:`, collectionError);
     }
