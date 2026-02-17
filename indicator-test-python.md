@@ -1,10 +1,13 @@
 
-## Python indicatr test suite with 13 test cases.
+## Python indicatr test suite with 13 test cases.  
+* `Create a project direcory`
+* `activate virtual environment`
+* `create test file and add code e.g test_indicator.py`
 
-**Install dependencies**
+**Install dependencies**  
 `pip install pytest pandas numpy --break-system-packages`
 
-**Run the tests**
+**Run the tests**  
 `pytest test_indicator.py -v`
 
 ```
