@@ -11,6 +11,7 @@ This guide converts the **FVG Sessions [LuxAlgo]** indicator into a fully functi
 Every section below **must be implemented**. Nothing is optional unless explicitly marked.
 
 **Ensure** all function calls are written on a single line, with no line breaks inside function arguments, to comply with Pine Script syntax rules  
+
 ---
 
 ## Phase 1 — Script Header & Declaration
