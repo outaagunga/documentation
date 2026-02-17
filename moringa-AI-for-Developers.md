@@ -47,6 +47,7 @@ Act as a fast-learning coach. Compress this documentation into:
 * g. improve [Prompt: Code Quality Improvements](#Prompt-Code-Quality-Improvements)
 * h. Test [Prompt 1: Behavior Analysis Questions](#Prompt-1-Behavior-Analysis-Questions)
 * i. Test [Prompt 2: Learning From Test Examples](#Prompt-2-Learning-From-Test-Examples)
+* j. Single responsibilty [Prompt 1: Function Responsibility Analysis](#Prompt-1-Function-Responsibility-Analysis)
 ---
 ## 1.	Using AI for everyday work
 ## 2.	Using AI to comprehend existing codebases
