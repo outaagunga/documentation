@@ -1,3 +1,8 @@
+```
+// ... [Keep all original BigBeluga code here exactly as it is] ...
+// [The following code should be pasted at the very bottom of the script]
+```
+
 
 ## Python indicatr test suite with 13 test cases.  
 * `Create a project direcory`
