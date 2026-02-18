@@ -14,39 +14,39 @@ or
 
 ```
 """
-Test Suite for EMA/RSI/MACD + S&R Signal Indicator
-Version: 2.0
-Purpose: Verify signal logic correctness with automated tests
+EMA/RSI/MACD + S&R Signal Indicator — SRP Refactor
+Version: 3.0
 
-FIXES FROM v1.0:
-  [FIX-1]  Deprecated '24H'/'60min' pandas aliases replaced with '24h'/'60min' (lowercase)
-  [FIX-2]  T01/T02: buy_signal INCLUDES volatile_enough — test assertion updated to match
-  [FIX-3]  T11: Leading-edge test was comparing apples-to-oranges (buy_trigger vs
-            buy_signal rising edges). buy_trigger is additionally gated by
-            price_moved_enough & htf_bull, so the counts can legitimately diverge.
-            Test now verifies the correct invariant: buy_edge fires exactly once per
-            buy_signal rising-edge transition.
-  [FIX-4]  Deterministic test data: replaced np.random with a fixed synthetic walk
-            so every test run produces identical results.
-  [FIX-5]  Added missing test for strict_momentum mode (use_strict_momentum=True).
-  [FIX-6]  Added missing test for volatility filter ON path.
-  [FIX-7]  Added missing test for HTF alignment boundary (htf_bull gating triggers).
-  [FIX-8]  Added performance smoke-test (O(n) loop scales acceptably to 5 000 bars).
-  [FIX-9]  pivot_high/pivot_low use deprecated .iloc setter pattern; wrapped with
-            pd.Series constructor to avoid FutureWarning chained-assignment.
-  [FIX-10] resample offset kwarg: older pandas uses 'base', newer uses 'offset'.
-            Added compatibility shim.
+SINGLE RESPONSIBILITY PRINCIPLE
+================================
+Each class owns exactly one concern:
+
+  IndicatorMath              — pure, stateless maths (EMA, RSI, MACD, ATR/TR)
+  SwingDetector              — pivot-high / pivot-low detection
+  PivotCalculator            — daily pivot levels (resampling + broadcast)
+  TrendAnalyser              — trend direction + optional strength filter
+  HTFConfirmation            — higher-timeframe EMA trend alignment
+  MomentumAnalyser           — RSI & MACD signal columns + composite logic
+  VolatilityFilter           — ATR-based volatility gate
+  SupportResistanceClassifier— S/R proximity classification per bar
+  SignalStateMachine         — leading-edge detection + anti-spam price filter
+  SignalOrchestrator         — composes all components; owns pipeline order
+  SignalIndicator            — thin public façade (backward-compatible API)
 
 REQUIREMENTS:
     pip install pandas numpy --break-system-packages
 
 USAGE:
-    python test_indicator.py
+    python indicator_srp.py          # runs the test suite
 """
+
+from __future__ import annotations
 
 import time
 import traceback
 import warnings
+from dataclasses import dataclass, field
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -55,298 +55,664 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Shared infrastructure helper
 # ---------------------------------------------------------------------------
 
-def _resample_offset_kwarg(rule: str, offset: str) -> dict:
+def _resample_offset_kwarg(offset: str) -> dict:
     """
-    [FIX-10] pandas ≥ 1.1 supports 'offset'; older versions used 'base' (integer minutes).
-    We detect support by inspecting the pandas version directly — probing with an
-    empty Series raises TypeError on newer pandas because it requires a DatetimeIndex,
-    making probe-based detection unreliable.
+    pandas ≥ 1.1 uses 'offset='; older versions used 'base=' (integer minutes).
+    Detects via version parsing — probe-based detection is unreliable because
+    an empty Series raises TypeError on newer pandas regardless.
     """
     major, minor = (int(x) for x in pd.__version__.split(".")[:2])
     if (major, minor) >= (1, 1):
         return {"offset": offset}
-    else:
-        hours = int(offset.replace("h", ""))
-        return {"base": hours * 60}
+    hours = int(offset.replace("h", ""))
+    return {"base": hours * 60}
 
 
-# ---------------------------------------------------------------------------
-# SignalIndicator
-# ---------------------------------------------------------------------------
+# ===========================================================================
+# 1. IndicatorMath
+#    Responsibility: pure, stateless mathematical transforms on price series.
+#    No trading logic, no configuration flags, no DataFrame mutation.
+# ===========================================================================
 
-class SignalIndicator:
-    """
-    Python implementation of the Pine Script indicator logic.
-    Replicates EMA/RSI/MACD + S&R signal generation.
-    """
+class IndicatorMath:
+    """Pure mathematical indicator calculations. No state, no side-effects."""
 
-    def __init__(
-        self,
-        ema_fast_len: int = 9,
-        ema_slow_len: int = 21,
-        rsi_len: int = 14,
-        rsi_ob: float = 60,
-        rsi_os: float = 40,
-        macd_fast: int = 12,
-        macd_slow: int = 26,
-        macd_sig: int = 9,
-        swing_len: int = 10,
-        sr_proximity: float = 0.0010,
-        min_price_move: float = 0.0025,
-        htf_multiplier: int = 4,
-        use_strict_momentum: bool = False,
-        use_volatility_filter: bool = False,
-        min_atr_ratio: float = 0.8,
-        use_trend_strength: bool = False,
-        min_ema_separation: float = 0.0005,
-    ):
-        self.ema_fast_len = ema_fast_len
-        self.ema_slow_len = ema_slow_len
-        self.rsi_len = rsi_len
-        self.rsi_ob = rsi_ob
-        self.rsi_os = rsi_os
-        self.macd_fast = macd_fast
-        self.macd_slow = macd_slow
-        self.macd_sig = macd_sig
-        self.swing_len = swing_len
-        self.sr_proximity = sr_proximity
-        self.min_price_move = min_price_move
-        self.htf_multiplier = htf_multiplier
-        self.use_strict_momentum = use_strict_momentum
-        self.use_volatility_filter = use_volatility_filter
-        self.min_atr_ratio = min_atr_ratio
-        self.use_trend_strength = use_trend_strength
-        self.min_ema_separation = min_ema_separation
-
-        # Hard caps — not user-configurable
-        self.RSI_HARD_CAP_HIGH = 80
-        self.RSI_HARD_CAP_LOW = 20
-
-    # ------------------------------------------------------------------
-    # Pure indicator math
-    # ------------------------------------------------------------------
-
-    def ema(self, series: pd.Series, period: int) -> pd.Series:
+    @staticmethod
+    def ema(series: pd.Series, period: int) -> pd.Series:
+        """Exponential Moving Average."""
         return series.ewm(span=period, adjust=False).mean()
 
-    def rsi(self, series: pd.Series, period: int) -> pd.Series:
-        """Wilder's smoothing — matches TradingView."""
-        delta = series.diff()
-        gain = delta.where(delta > 0, 0.0)
-        loss = -delta.where(delta < 0, 0.0)
+    @staticmethod
+    def rsi(series: pd.Series, period: int) -> pd.Series:
+        """RSI using Wilder's smoothing (matches TradingView)."""
+        delta    = series.diff()
+        gain     = delta.where(delta > 0, 0.0)
+        loss     = -delta.where(delta < 0, 0.0)
         avg_gain = gain.ewm(alpha=1 / period, adjust=False).mean()
         avg_loss = loss.ewm(alpha=1 / period, adjust=False).mean()
         rs = avg_gain / avg_loss
         return 100 - (100 / (1 + rs))
 
-    def macd(self, series: pd.Series, fast: int, slow: int, signal: int):
-        ema_fast = self.ema(series, fast)
-        ema_slow = self.ema(series, slow)
-        macd_line = ema_fast - ema_slow
-        signal_line = self.ema(macd_line, signal)
-        histogram = macd_line - signal_line
+    @staticmethod
+    def macd(
+        series: pd.Series, fast: int, slow: int, signal: int
+    ) -> Tuple[pd.Series, pd.Series, pd.Series]:
+        """Returns (macd_line, signal_line, histogram)."""
+        ema_fast    = IndicatorMath.ema(series, fast)
+        ema_slow    = IndicatorMath.ema(series, slow)
+        macd_line   = ema_fast - ema_slow
+        signal_line = IndicatorMath.ema(macd_line, signal)
+        histogram   = macd_line - signal_line
         return macd_line, signal_line, histogram
 
-    def pivot_high(self, series: pd.Series, left: int, right: int) -> pd.Series:
+    @staticmethod
+    def true_range(high: pd.Series, low: pd.Series, close: pd.Series) -> pd.Series:
+        """True Range — building block for ATR."""
+        prev_close = close.shift(1)
+        return pd.concat(
+            [high - low, (high - prev_close).abs(), (low - prev_close).abs()],
+            axis=1,
+        ).max(axis=1)
+
+    @staticmethod
+    def atr(high: pd.Series, low: pd.Series, close: pd.Series, period: int = 14) -> pd.Series:
+        """Average True Range (simple rolling mean of TR)."""
+        tr = IndicatorMath.true_range(high, low, close)
+        return tr.rolling(window=period).mean()
+
+
+# ===========================================================================
+# 2. SwingDetector
+#    Responsibility: detect local swing highs and swing lows in a price series.
+#    No pivot math, no S/R logic, no trend awareness.
+# ===========================================================================
+
+class SwingDetector:
+    """Detects swing pivot highs and lows in a price series."""
+
+    def __init__(self, lookback: int = 10):
+        self.lookback = lookback
+
+    def swing_highs(self, series: pd.Series) -> pd.Series:
         """
-        [FIX-9] Build result as a plain list then construct Series once to avoid
-        chained-assignment FutureWarning from pandas.
+        Returns a Series with the swing-high value at each pivot bar, NaN elsewhere.
+        Uses a plain list to avoid pandas chained-assignment FutureWarning.
         """
-        values = [np.nan] * len(series)
-        arr = series.to_numpy()
+        left = right = self.lookback
+        arr    = series.to_numpy()
+        values = [np.nan] * len(arr)
         for i in range(left, len(arr) - right):
             window = arr[i - left : i + right + 1]
             if arr[i] == window.max():
                 values[i] = arr[i]
-        return pd.Series(values, index=series.index)
+        return pd.Series(values, index=series.index, name="swing_high")
 
-    def pivot_low(self, series: pd.Series, left: int, right: int) -> pd.Series:
-        """[FIX-9] Same pattern as pivot_high."""
-        values = [np.nan] * len(series)
-        arr = series.to_numpy()
+    def swing_lows(self, series: pd.Series) -> pd.Series:
+        """Returns a Series with the swing-low value at each pivot bar, NaN elsewhere."""
+        left = right = self.lookback
+        arr    = series.to_numpy()
+        values = [np.nan] * len(arr)
         for i in range(left, len(arr) - right):
             window = arr[i - left : i + right + 1]
             if arr[i] == window.min():
                 values[i] = arr[i]
-        return pd.Series(values, index=series.index)
+        return pd.Series(values, index=series.index, name="swing_low")
 
-    def calculate_daily_pivots(self, high: pd.Series, low: pd.Series, close: pd.Series):
-        """
-        Pivots aligned to the NY Close (5 PM EST / 17:00 UTC).
 
-        [FIX-1] '24H' → '24h'  (pandas ≥ 2.2 requires lowercase time aliases)
-        [FIX-10] resample offset compatibility shim for older vs newer pandas.
-        """
+# ===========================================================================
+# 3. PivotCalculator
+#    Responsibility: compute standard floor-pivot levels from daily OHLC,
+#    aligned to the NY Close (17:00 UTC), and broadcast them back to the
+#    intraday index.  This is the only class that touches pandas resampling.
+# ===========================================================================
+
+@dataclass
+class PivotLevels:
+    """Value object holding all seven pivot levels as aligned intraday Series."""
+    pivot: pd.Series
+    r1: pd.Series
+    r2: pd.Series
+    r3: pd.Series
+    s1: pd.Series
+    s2: pd.Series
+    s3: pd.Series
+
+
+class PivotCalculator:
+    """
+    Computes daily pivot levels.
+    Responsibility: resampling + arithmetic + broadcasting.
+    No S/R logic, no trend awareness, no signal state.
+    """
+
+    NY_CLOSE_OFFSET = "17h"   # 5 PM UTC / NY session close
+
+    def calculate(
+        self,
+        high:  pd.Series,
+        low:   pd.Series,
+        close: pd.Series,
+    ) -> PivotLevels:
         daily = (
             pd.DataFrame({"high": high, "low": low, "close": close})
-            .resample("24h", **_resample_offset_kwarg("24h", "17h"))   # FIX-1 + FIX-10
+            .resample("24h", **_resample_offset_kwarg(self.NY_CLOSE_OFFSET))
             .agg({"high": "max", "low": "min", "close": "last"})
         )
 
-        prev_day = daily.shift(1)
-        p_high  = prev_day["high"].reindex(high.index, method="ffill")
-        p_low   = prev_day["low"].reindex(low.index,  method="ffill")
-        p_close = prev_day["close"].reindex(close.index, method="ffill")
+        prev   = daily.shift(1)
+        p_high = prev["high"].reindex(high.index,  method="ffill")
+        p_low  = prev["low"].reindex(low.index,    method="ffill")
+        p_close= prev["close"].reindex(close.index, method="ffill")
 
         pivot    = (p_high + p_low + p_close) / 3
         range_dl = p_high - p_low
 
-        r1 = (2 * pivot) - p_low
-        s1 = (2 * pivot) - p_high
-        r2 = pivot + range_dl
-        s2 = pivot - range_dl
-        r3 = p_high + 2 * (pivot - p_low)
-        s3 = p_low  - 2 * (p_high - pivot)
+        return PivotLevels(
+            pivot = pivot,
+            r1    = (2 * pivot) - p_low,
+            s1    = (2 * pivot) - p_high,
+            r2    = pivot + range_dl,
+            s2    = pivot - range_dl,
+            r3    = p_high + 2 * (pivot - p_low),
+            s3    = p_low  - 2 * (p_high - pivot),
+        )
 
-        return pivot, r1, r2, r3, s1, s2, s3
 
-    def f_near(self, close_price: float, level: float, threshold: float) -> bool:
-        """Price within threshold of level. NaN-safe."""
-        if pd.isna(level):
-            return False
-        epsilon = 1e-8
-        return abs(close_price - level) <= threshold + epsilon
+# ===========================================================================
+# 4. TrendAnalyser
+#    Responsibility: compute bull/bear trend columns from EMA relationship.
+#    Optionally applies a trend-strength (EMA-separation) filter.
+#    No momentum, no S/R, no HTF awareness.
+# ===========================================================================
 
-    # ------------------------------------------------------------------
-    # Main pipeline
-    # ------------------------------------------------------------------
+class TrendAnalyser:
+    """
+    Determines trend direction from EMA crossover.
+    Optionally filters weak trends by EMA separation.
+    """
 
-    def generate_signals(self, df: pd.DataFrame) -> pd.DataFrame:
+    def __init__(
+        self,
+        fast_len:       int   = 9,
+        slow_len:       int   = 21,
+        use_strength:   bool  = False,
+        min_separation: float = 0.0005,
+    ):
+        self.fast_len       = fast_len
+        self.slow_len       = slow_len
+        self.use_strength   = use_strength
+        self.min_separation = min_separation
+
+    def analyse(self, close: pd.Series) -> pd.DataFrame:
         """
-        Main signal generation.
+        Returns a DataFrame with columns:
+            ema_fast, ema_slow, ema_separation (optional),
+            strong_enough, bull_trend, bear_trend
+        """
+        ema_fast = IndicatorMath.ema(close, self.fast_len)
+        ema_slow = IndicatorMath.ema(close, self.slow_len)
 
+        bull_base = (close > ema_fast) & (ema_fast > ema_slow)
+        bear_base = (close < ema_fast) & (ema_fast < ema_slow)
+
+        result = pd.DataFrame({"ema_fast": ema_fast, "ema_slow": ema_slow}, index=close.index)
+
+        if self.use_strength:
+            separation             = (ema_fast - ema_slow).abs() / close
+            result["ema_separation"] = separation
+            strong_enough            = separation >= self.min_separation
+        else:
+            strong_enough = pd.Series(True, index=close.index)
+
+        result["strong_enough"] = strong_enough
+        result["bull_trend"]    = bull_base & strong_enough
+        result["bear_trend"]    = bear_base & strong_enough
+        return result
+
+
+# ===========================================================================
+# 5. HTFConfirmation
+#    Responsibility: resample base-timeframe data to a higher timeframe,
+#    compute EMA alignment there, and broadcast back.
+#    No signal logic, no S/R, no momentum.
+# ===========================================================================
+
+class HTFConfirmation:
+    """
+    Computes higher-timeframe EMA trend and aligns it to the base index.
+    Uses a 1-bar shift on HTF to avoid lookahead from the current incomplete bar.
+    """
+
+    BASE_MINUTES = 15   # hardcoded base timeframe in minutes
+
+    def __init__(self, fast_len: int = 9, slow_len: int = 21, multiplier: int = 4):
+        self.fast_len   = fast_len
+        self.slow_len   = slow_len
+        self.multiplier = multiplier
+
+    def confirm(self, ohlcv: pd.DataFrame) -> pd.DataFrame:
+        """
         Args:
-            df: DataFrame with columns ['open', 'high', 'low', 'close', 'volume']
+            ohlcv: base-timeframe DataFrame with open/high/low/close columns.
 
         Returns:
-            DataFrame with added signal columns.
+            DataFrame with columns htf_bull, htf_bear aligned to ohlcv.index.
         """
-        data = df.copy()
-
-        # ① EMAs
-        data["ema_fast"] = self.ema(data["close"], self.ema_fast_len)
-        data["ema_slow"] = self.ema(data["close"], self.ema_slow_len)
-
-        # ② Base trend
-        data["bull_trend_base"] = (data["close"] > data["ema_fast"]) & (data["ema_fast"] > data["ema_slow"])
-        data["bear_trend_base"] = (data["close"] < data["ema_fast"]) & (data["ema_fast"] < data["ema_slow"])
-
-        # ② Optional trend-strength filter
-        if self.use_trend_strength:
-            data["ema_separation"] = abs(data["ema_fast"] - data["ema_slow"]) / data["close"]
-            data["strong_enough"]  = data["ema_separation"] >= self.min_ema_separation
-        else:
-            data["strong_enough"] = True
-
-        data["bull_trend"] = data["bull_trend_base"] & data["strong_enough"]
-        data["bear_trend"] = data["bear_trend_base"] & data["strong_enough"]
-
-        # ③ HTF confirmation
-        # [FIX-1] f'{self.htf_multiplier * 15}min' — 'min' is already lowercase, no change needed here
-        htf_rule = f"{self.htf_multiplier * 15}min"
+        rule     = f"{self.multiplier * self.BASE_MINUTES}min"
         htf_data = (
-            data.resample(htf_rule)
+            ohlcv.resample(rule)
             .agg({"close": "last", "high": "max", "low": "min", "open": "first"})
             .dropna()
         )
-        htf_ema_fast = self.ema(htf_data["close"], self.ema_fast_len).shift(1)
-        htf_ema_slow = self.ema(htf_data["close"], self.ema_slow_len).shift(1)
-        htf_bull = htf_ema_fast > htf_ema_slow
-        htf_bear = htf_ema_fast < htf_ema_slow
 
-        data["htf_bull"] = htf_bull.reindex(data.index, method="ffill").fillna(False)
-        data["htf_bear"] = htf_bear.reindex(data.index, method="ffill").fillna(False)
+        htf_fast = IndicatorMath.ema(htf_data["close"], self.fast_len).shift(1)
+        htf_slow = IndicatorMath.ema(htf_data["close"], self.slow_len).shift(1)
 
-        # ④ RSI
-        data["rsi"]      = self.rsi(data["close"], self.rsi_len)
-        data["rsi_bull"] = (data["rsi"] > self.rsi_os)  & (data["rsi"] < self.RSI_HARD_CAP_HIGH)
-        data["rsi_bear"] = (data["rsi"] < self.rsi_ob)  & (data["rsi"] > self.RSI_HARD_CAP_LOW)
+        htf_bull = (htf_fast > htf_slow).reindex(ohlcv.index, method="ffill").fillna(False)
+        htf_bear = (htf_fast < htf_slow).reindex(ohlcv.index, method="ffill").fillna(False)
 
-        # ⑤ MACD
-        macd_line, signal_line, hist = self.macd(
-            data["close"], self.macd_fast, self.macd_slow, self.macd_sig
+        return pd.DataFrame(
+            {"htf_bull": htf_bull, "htf_bear": htf_bear},
+            index=ohlcv.index,
         )
-        data["macd_line"]   = macd_line
-        data["signal_line"] = signal_line
-        data["hist"]        = hist
 
-        data["macd_bull"] = (data["macd_line"] > data["signal_line"]) & (data["macd_line"] > 0)
-        data["macd_bear"] = (data["macd_line"] < data["signal_line"]) & (data["hist"] < 0)
 
-        # ⑥ Momentum composite
-        if self.use_strict_momentum:
-            data["momentum_bull"] = data["rsi_bull"] & data["macd_bull"]
-            data["momentum_bear"] = data["rsi_bear"] & data["macd_bear"]
-        else:
-            data["momentum_bull"] = data["rsi_bull"] | data["macd_bull"]
-            data["momentum_bear"] = data["rsi_bear"] | data["macd_bear"]
+# ===========================================================================
+# 6. MomentumAnalyser
+#    Responsibility: compute RSI and MACD signal columns, apply hard caps,
+#    and combine them into a momentum composite.
+#    No trend direction, no S/R, no state.
+# ===========================================================================
 
-        # ⑦ Volatility filter
-        if self.use_volatility_filter:
-            high_low   = data["high"] - data["low"]
-            high_close = (data["high"] - data["close"].shift(1)).abs()
-            low_close  = (data["low"]  - data["close"].shift(1)).abs()
-            tr = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
-            data["atr"]            = tr.rolling(window=14).mean()
-            data["atr_sma"]        = data["atr"].rolling(window=20).mean()
-            data["volatile_enough"] = data["atr"] > data["atr_sma"] * self.min_atr_ratio
-        else:
-            data["volatile_enough"] = True
+class MomentumAnalyser:
+    """
+    Computes RSI + MACD signals and combines them into momentum_bull / momentum_bear.
+    The combination mode (OR vs AND) is controlled by strict_mode.
+    """
 
-        # ⑧ Daily pivots
-        pivot, r1, r2, r3, s1, s2, s3 = self.calculate_daily_pivots(
-            data["high"], data["low"], data["close"]
+    RSI_HARD_CAP_HIGH = 80
+    RSI_HARD_CAP_LOW  = 20
+
+    def __init__(
+        self,
+        rsi_len:     int   = 14,
+        rsi_ob:      float = 60,
+        rsi_os:      float = 40,
+        macd_fast:   int   = 12,
+        macd_slow:   int   = 26,
+        macd_sig:    int   = 9,
+        strict_mode: bool  = False,
+    ):
+        self.rsi_len   = rsi_len
+        self.rsi_ob    = rsi_ob
+        self.rsi_os    = rsi_os
+        self.macd_fast = macd_fast
+        self.macd_slow = macd_slow
+        self.macd_sig  = macd_sig
+        self.strict_mode = strict_mode
+
+    def analyse(self, close: pd.Series) -> pd.DataFrame:
+        """
+        Returns a DataFrame with columns:
+            rsi, rsi_bull, rsi_bear,
+            macd_line, signal_line, hist, macd_bull, macd_bear,
+            momentum_bull, momentum_bear
+        """
+        rsi = IndicatorMath.rsi(close, self.rsi_len)
+        rsi_bull = (rsi > self.rsi_os)  & (rsi < self.RSI_HARD_CAP_HIGH)
+        rsi_bear = (rsi < self.rsi_ob)  & (rsi > self.RSI_HARD_CAP_LOW)
+
+        macd_line, signal_line, hist = IndicatorMath.macd(
+            close, self.macd_fast, self.macd_slow, self.macd_sig
         )
-        data["pivot"] = pivot
-        data["r1"] = r1;  data["r2"] = r2;  data["r3"] = r3
-        data["s1"] = s1;  data["s2"] = s2;  data["s3"] = s3
+        macd_bull = (macd_line > signal_line) & (macd_line > 0)
+        macd_bear = (macd_line < signal_line) & (hist < 0)
 
-        # ⑨ Swing highs/lows
-        swing_high = self.pivot_high(data["high"], self.swing_len, self.swing_len)
-        swing_low  = self.pivot_low(data["low"],  self.swing_len, self.swing_len)
-        data["last_swing_high"] = swing_high.ffill()
-        data["last_swing_low"]  = swing_low.ffill()
+        if self.strict_mode:
+            momentum_bull = rsi_bull & macd_bull
+            momentum_bear = rsi_bear & macd_bear
+        else:
+            momentum_bull = rsi_bull | macd_bull
+            momentum_bear = rsi_bear | macd_bear
 
-        # ⑩ Proximity threshold (vectorised, pre-computed once per bar)
-        data["sr_threshold"] = data["close"] * self.sr_proximity
+        return pd.DataFrame(
+            {
+                "rsi":          rsi,
+                "rsi_bull":     rsi_bull,
+                "rsi_bear":     rsi_bear,
+                "macd_line":    macd_line,
+                "signal_line":  signal_line,
+                "hist":         hist,
+                "macd_bull":    macd_bull,
+                "macd_bear":    macd_bear,
+                "momentum_bull": momentum_bull,
+                "momentum_bear": momentum_bear,
+            },
+            index=close.index,
+        )
 
-        # ⑪ Support / Resistance classification
-        data["near_support"]    = False
-        data["near_resistance"] = False
 
-        # NOTE: This loop is a known performance pitfall (see design doc).
-        # It is preserved here for 1-to-1 correctness with Pine Script.
-        # For large datasets consider vectorising with np.isclose / broadcasting.
-        for i in range(len(data)):
-            close_price = data["close"].iloc[i]
-            threshold   = data["sr_threshold"].iloc[i]
-            bull        = data["bull_trend"].iloc[i]
-            bear        = data["bear_trend"].iloc[i]
+# ===========================================================================
+# 7. VolatilityFilter
+#    Responsibility: decide per-bar whether volatility is sufficient to trade.
+#    Computes ATR vs its own moving average.
+#    No trend, no momentum, no signal state.
+# ===========================================================================
 
-            fn = self.f_near  # local alias for speed
+class VolatilityFilter:
+    """
+    Filters bars by ATR relative to its rolling mean.
+    When disabled, every bar is marked volatile_enough=True.
+    """
 
-            near_support = (
-                fn(close_price, data["s1"].iloc[i], threshold)
-                or fn(close_price, data["s2"].iloc[i], threshold)
-                or fn(close_price, data["s3"].iloc[i], threshold)
-                or (fn(close_price, data["pivot"].iloc[i], threshold) and bull)
-                or fn(close_price, data["last_swing_low"].iloc[i], threshold)
+    def __init__(
+        self,
+        enabled:    bool  = False,
+        atr_period: int   = 14,
+        sma_period: int   = 20,
+        min_ratio:  float = 0.8,
+    ):
+        self.enabled    = enabled
+        self.atr_period = atr_period
+        self.sma_period = sma_period
+        self.min_ratio  = min_ratio
+
+    def apply(
+        self,
+        high:  pd.Series,
+        low:   pd.Series,
+        close: pd.Series,
+    ) -> pd.DataFrame:
+        """
+        Returns a DataFrame with columns:
+            atr (optional), atr_sma (optional), volatile_enough
+        """
+        if not self.enabled:
+            return pd.DataFrame(
+                {"volatile_enough": pd.Series(True, index=close.index)},
+                index=close.index,
             )
-            near_resistance = (
-                fn(close_price, data["r1"].iloc[i], threshold)
-                or fn(close_price, data["r2"].iloc[i], threshold)
-                or fn(close_price, data["r3"].iloc[i], threshold)
-                or (fn(close_price, data["pivot"].iloc[i], threshold) and bear)
-                or fn(close_price, data["last_swing_high"].iloc[i], threshold)
+
+        atr_vals = IndicatorMath.atr(high, low, close, self.atr_period)
+        atr_sma  = atr_vals.rolling(window=self.sma_period).mean()
+
+        return pd.DataFrame(
+            {
+                "atr":            atr_vals,
+                "atr_sma":        atr_sma,
+                "volatile_enough": atr_vals > atr_sma * self.min_ratio,
+            },
+            index=close.index,
+        )
+
+
+# ===========================================================================
+# 8. SupportResistanceClassifier
+#    Responsibility: given pre-computed pivot / swing levels and the current
+#    trend, classify each bar as near support, near resistance, or neither.
+#    No indicator math, no signal state.
+# ===========================================================================
+
+class SupportResistanceClassifier:
+    """
+    Classifies each bar as near_support / near_resistance based on:
+      - Daily pivot levels (s1/s2/s3, r1/r2/r3, pivot)
+      - Last swing high / swing low
+      - Current trend direction (pivot counts as support only in bull trend)
+
+    proximity_pct: price fraction defining the proximity band
+    """
+
+    EPSILON = 1e-8  # float-precision guard
+
+    def __init__(self, proximity_pct: float = 0.0010):
+        self.proximity_pct = proximity_pct
+
+    def is_near(self, price: float, level: float, threshold: float) -> bool:
+        """True if price is within threshold of level. NaN-safe."""
+        if pd.isna(level):
+            return False
+        return abs(price - level) <= threshold + self.EPSILON
+
+    def classify(
+        self,
+        close:           pd.Series,
+        bull_trend:      pd.Series,
+        bear_trend:      pd.Series,
+        levels:          PivotLevels,
+        last_swing_high: pd.Series,
+        last_swing_low:  pd.Series,
+    ) -> pd.DataFrame:
+        """
+        Returns a DataFrame with columns: near_support, near_resistance, sr_threshold.
+
+        NOTE: Row-by-row loop preserved for 1-to-1 Pine Script parity.
+        For large datasets consider vectorising with np.isclose / broadcasting.
+        """
+        n          = len(close)
+        thresholds = (close * self.proximity_pct).to_numpy()
+        close_arr  = close.to_numpy()
+        bull_arr   = bull_trend.to_numpy()
+        bear_arr   = bear_trend.to_numpy()
+
+        # Pre-extract level arrays for speed
+        s1_arr  = levels.s1.to_numpy();   s2_arr = levels.s2.to_numpy();  s3_arr = levels.s3.to_numpy()
+        r1_arr  = levels.r1.to_numpy();   r2_arr = levels.r2.to_numpy();  r3_arr = levels.r3.to_numpy()
+        pv_arr  = levels.pivot.to_numpy()
+        swh_arr = last_swing_high.to_numpy()
+        swl_arr = last_swing_low.to_numpy()
+
+        near_sup = np.zeros(n, dtype=bool)
+        near_res = np.zeros(n, dtype=bool)
+
+        is_near = self.is_near  # local alias
+
+        for i in range(n):
+            p   = close_arr[i]
+            thr = thresholds[i]
+
+            near_sup[i] = (
+                is_near(p, s1_arr[i],  thr)
+                or is_near(p, s2_arr[i],  thr)
+                or is_near(p, s3_arr[i],  thr)
+                or (is_near(p, pv_arr[i], thr) and bool(bull_arr[i]))
+                or is_near(p, swl_arr[i], thr)
+            )
+            near_res[i] = (
+                is_near(p, r1_arr[i],  thr)
+                or is_near(p, r2_arr[i],  thr)
+                or is_near(p, r3_arr[i],  thr)
+                or (is_near(p, pv_arr[i], thr) and bool(bear_arr[i]))
+                or is_near(p, swh_arr[i], thr)
             )
 
-            data.loc[data.index[i], "near_support"]    = near_support
-            data.loc[data.index[i], "near_resistance"] = near_resistance
+        return pd.DataFrame(
+            {
+                "sr_threshold":   thresholds,
+                "near_support":   near_sup,
+                "near_resistance": near_res,
+            },
+            index=close.index,
+        )
 
-        # ⑫ Base signals
+
+# ===========================================================================
+# 9. SignalStateMachine
+#    Responsibility: convert a continuous signal boolean into discrete trigger
+#    events. Owns two concerns that must be co-located because they share state:
+#      a) Leading-edge detection (0→1 transition only)
+#      b) Anti-spam price-movement filter (suppresses signals too close in price)
+#    No indicator math, no S/R, no trend.
+# ===========================================================================
+
+class SignalStateMachine:
+    """
+    Converts raw buy/sell boolean signals into deduplicated trigger events.
+
+    Leading-edge: fires once per signal rising-edge (state 0→1 transition).
+    Anti-spam:    suppresses an edge if price hasn't moved enough since the
+                  last accepted trigger.
+    """
+
+    def __init__(self, min_price_move: float = 0.0025):
+        self.min_price_move = min_price_move
+
+    @staticmethod
+    def _leading_edge(signal: pd.Series) -> pd.Series:
+        """
+        Returns a boolean Series that is True only on the first bar of each
+        run of True values (0→1 rising edge).
+
+        Uses explicit .astype(bool) before ~ to guard against object-dtype
+        corruption where ~ performs bitwise NOT on integers instead of
+        boolean NOT.
+        """
+        prev = signal.shift(1).fillna(False).astype(bool)
+        return signal & ~prev
+
+    def _price_moved_filter(
+        self,
+        buy_edge:  pd.Series,
+        sell_edge: pd.Series,
+        close:     pd.Series,
+    ) -> pd.Series:
+        """
+        Returns a boolean Series: True when price has moved at least
+        min_price_move from the last accepted signal price.
+        """
+        moved        = np.ones(len(close), dtype=bool)
+        last_price   = np.nan
+        buy_arr      = buy_edge.to_numpy()
+        sell_arr     = sell_edge.to_numpy()
+        close_arr    = close.to_numpy()
+
+        for i in range(len(close_arr)):
+            if not np.isnan(last_price):
+                moved[i] = (
+                    abs(close_arr[i] - last_price) / last_price >= self.min_price_move
+                )
+            if (buy_arr[i] or sell_arr[i]) and moved[i]:
+                last_price = close_arr[i]
+
+        return pd.Series(moved, index=close.index, name="price_moved_enough")
+
+    def process(
+        self,
+        buy_signal:  pd.Series,
+        sell_signal: pd.Series,
+        close:       pd.Series,
+    ) -> pd.DataFrame:
+        """
+        Args:
+            buy_signal:  raw boolean buy condition (continuous)
+            sell_signal: raw boolean sell condition (continuous)
+            close:       close price series
+
+        Returns:
+            DataFrame with columns:
+                buy_edge, sell_edge, price_moved_enough
+        """
+        buy_edge  = self._leading_edge(buy_signal)
+        sell_edge = self._leading_edge(sell_signal)
+        price_ok  = self._price_moved_filter(buy_edge, sell_edge, close)
+
+        return pd.DataFrame(
+            {
+                "buy_edge":          buy_edge,
+                "sell_edge":         sell_edge,
+                "price_moved_enough": price_ok,
+            },
+            index=close.index,
+        )
+
+
+# ===========================================================================
+# 10. SignalOrchestrator
+#     Responsibility: wire all components together in the correct order.
+#     Owns the pipeline sequence — nothing else.
+#     No math, no indicator logic, no state.
+# ===========================================================================
+
+class SignalOrchestrator:
+    """
+    Composes all signal-generation components into a single pipeline.
+    This class only knows the ORDER in which components run and which
+    outputs feed into which inputs.  It contains no math or business rules.
+    """
+
+    def __init__(
+        self,
+        trend_analyser:   TrendAnalyser,
+        htf_confirmation: HTFConfirmation,
+        momentum_analyser: MomentumAnalyser,
+        volatility_filter: VolatilityFilter,
+        swing_detector:   SwingDetector,
+        pivot_calculator: PivotCalculator,
+        sr_classifier:    SupportResistanceClassifier,
+        state_machine:    SignalStateMachine,
+    ):
+        self.trend       = trend_analyser
+        self.htf         = htf_confirmation
+        self.momentum    = momentum_analyser
+        self.volatility  = volatility_filter
+        self.swings      = swing_detector
+        self.pivots      = pivot_calculator
+        self.sr          = sr_classifier
+        self.state       = state_machine
+
+    def run(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Execute the full pipeline.
+
+        Args:
+            df: OHLCV DataFrame with columns ['open','high','low','close','volume']
+
+        Returns:
+            DataFrame containing all intermediate and final signal columns.
+        """
+        data = df.copy()
+
+        # ① Trend direction
+        trend_cols = self.trend.analyse(data["close"])
+        data = pd.concat([data, trend_cols], axis=1)
+
+        # ② HTF confirmation
+        htf_cols = self.htf.confirm(data[["open", "high", "low", "close"]])
+        data = pd.concat([data, htf_cols], axis=1)
+
+        # ③ Momentum (RSI + MACD)
+        mom_cols = self.momentum.analyse(data["close"])
+        data = pd.concat([data, mom_cols], axis=1)
+
+        # ④ Volatility filter
+        vol_cols = self.volatility.apply(data["high"], data["low"], data["close"])
+        data = pd.concat([data, vol_cols], axis=1)
+
+        # ⑤ Pivot levels
+        levels = self.pivots.calculate(data["high"], data["low"], data["close"])
+        data["pivot"] = levels.pivot
+        data["r1"]    = levels.r1;  data["r2"] = levels.r2;  data["r3"] = levels.r3
+        data["s1"]    = levels.s1;  data["s2"] = levels.s2;  data["s3"] = levels.s3
+
+        # ⑥ Swing highs/lows → forward-filled last level
+        data["last_swing_high"] = self.swings.swing_highs(data["high"]).ffill()
+        data["last_swing_low"]  = self.swings.swing_lows(data["low"]).ffill()
+
+        # ⑦ S/R classification
+        sr_cols = self.sr.classify(
+            data["close"],
+            data["bull_trend"],
+            data["bear_trend"],
+            levels,
+            data["last_swing_high"],
+            data["last_swing_low"],
+        )
+        data = pd.concat([data, sr_cols], axis=1)
+
+        # ⑧ Base signals (raw boolean, may persist for many bars)
         data["buy_signal_base"] = (
             data["bull_trend"]
             & data["momentum_bull"]
@@ -360,37 +726,21 @@ class SignalIndicator:
             & data["volatile_enough"]
         )
 
-        # ⑬ Leading-edge detection (fires once per state transition 0→1)
-        # [FIX-BUG] .shift(1).fillna(False) produces object dtype on some pandas versions.
-        # Applying ~ to an object Series does bitwise NOT (integer), not boolean NOT,
-        # producing corrupt results (-1, -2 …). Cast to bool explicitly before inverting.
-        prev_buy  = data["buy_signal_base"].shift(1).fillna(False).astype(bool)
-        prev_sell = data["sell_signal_base"].shift(1).fillna(False).astype(bool)
-        data["buy_edge"]  = data["buy_signal_base"]  & ~prev_buy
-        data["sell_edge"] = data["sell_signal_base"] & ~prev_sell
+        # ⑨ State machine: edge detection + anti-spam
+        state_cols = self.state.process(
+            data["buy_signal_base"],
+            data["sell_signal_base"],
+            data["close"],
+        )
+        data = pd.concat([data, state_cols], axis=1)
 
-        # ⑭ Price-movement anti-spam filter (stateful)
-        price_moved = [True] * len(data)
-        last_signal_price = np.nan
-
-        buy_edge_arr  = data["buy_edge"].to_numpy()
-        sell_edge_arr = data["sell_edge"].to_numpy()
-        close_arr     = data["close"].to_numpy()
-
-        for i in range(len(data)):
-            if not np.isnan(last_signal_price):
-                price_moved[i] = (
-                    abs(close_arr[i] - last_signal_price) / last_signal_price
-                    >= self.min_price_move
-                )
-            if (buy_edge_arr[i] or sell_edge_arr[i]) and price_moved[i]:
-                last_signal_price = close_arr[i]
-
-        data["price_moved_enough"] = price_moved
-
-        # ⑮ Final triggers
-        data["buy_trigger"]  = data["buy_edge"]  & data["price_moved_enough"] & data["htf_bull"]
-        data["sell_trigger"] = data["sell_edge"] & data["price_moved_enough"] & data["htf_bear"]
+        # ⑩ Final triggers: edge + price filter + HTF gate
+        data["buy_trigger"]  = (
+            data["buy_edge"]  & data["price_moved_enough"] & data["htf_bull"]
+        )
+        data["sell_trigger"] = (
+            data["sell_edge"] & data["price_moved_enough"] & data["htf_bear"]
+        )
 
         # Backward-compatibility aliases
         data["buy_signal"]  = data["buy_signal_base"]
@@ -399,50 +749,101 @@ class SignalIndicator:
         return data
 
 
-# ---------------------------------------------------------------------------
-# Deterministic test data
-# ---------------------------------------------------------------------------
+# ===========================================================================
+# 11. SignalIndicator  (public façade)
+#     Responsibility: expose a single, stable public API.
+#     Translates flat constructor params into component instances and
+#     delegates everything to the orchestrator.
+#     No math, no logic — just construction and delegation.
+# ===========================================================================
+
+class SignalIndicator:
+    """
+    Public façade.  Accepts the same flat parameter list as v1/v2 so
+    existing callers require no changes.
+
+    Internally constructs all SRP components and delegates to
+    SignalOrchestrator.
+    """
+
+    def __init__(
+        self,
+        ema_fast_len:          int   = 9,
+        ema_slow_len:          int   = 21,
+        rsi_len:               int   = 14,
+        rsi_ob:                float = 60,
+        rsi_os:                float = 40,
+        macd_fast:             int   = 12,
+        macd_slow:             int   = 26,
+        macd_sig:              int   = 9,
+        swing_len:             int   = 10,
+        sr_proximity:          float = 0.0010,
+        min_price_move:        float = 0.0025,
+        htf_multiplier:        int   = 4,
+        use_strict_momentum:   bool  = False,
+        use_volatility_filter: bool  = False,
+        min_atr_ratio:         float = 0.8,
+        use_trend_strength:    bool  = False,
+        min_ema_separation:    float = 0.0005,
+    ):
+        # Expose for tests that read these directly
+        self.sr_proximity        = sr_proximity
+        self.RSI_HARD_CAP_HIGH   = MomentumAnalyser.RSI_HARD_CAP_HIGH
+        self.RSI_HARD_CAP_LOW    = MomentumAnalyser.RSI_HARD_CAP_LOW
+
+        self._orchestrator = SignalOrchestrator(
+            trend_analyser    = TrendAnalyser(
+                fast_len       = ema_fast_len,
+                slow_len       = ema_slow_len,
+                use_strength   = use_trend_strength,
+                min_separation = min_ema_separation,
+            ),
+            htf_confirmation  = HTFConfirmation(
+                fast_len   = ema_fast_len,
+                slow_len   = ema_slow_len,
+                multiplier = htf_multiplier,
+            ),
+            momentum_analyser = MomentumAnalyser(
+                rsi_len     = rsi_len,
+                rsi_ob      = rsi_ob,
+                rsi_os      = rsi_os,
+                macd_fast   = macd_fast,
+                macd_slow   = macd_slow,
+                macd_sig    = macd_sig,
+                strict_mode = use_strict_momentum,
+            ),
+            volatility_filter = VolatilityFilter(
+                enabled   = use_volatility_filter,
+                min_ratio = min_atr_ratio,
+            ),
+            swing_detector    = SwingDetector(lookback=swing_len),
+            pivot_calculator  = PivotCalculator(),
+            sr_classifier     = SupportResistanceClassifier(proximity_pct=sr_proximity),
+            state_machine     = SignalStateMachine(min_price_move=min_price_move),
+        )
+
+    def generate_signals(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Run the full pipeline. Returns df with all signal columns added."""
+        return self._orchestrator.run(df)
+
+    def f_near(self, close_price: float, level: float, threshold: float) -> bool:
+        """Proxy to SupportResistanceClassifier.is_near — preserved for test compatibility."""
+        return self._orchestrator.sr.is_near(close_price, level, threshold)
+
+
+# ===========================================================================
+#  TEST DATA FACTORIES
+# ===========================================================================
 
 def create_test_data(bars: int = 200, seed: int = 42) -> pd.DataFrame:
-    """
-    [FIX-4] Deterministic synthetic OHLCV data.
-    Uses a fixed seed AND a structured (non-random-walk) price series so that
-    tests are reproducible and boundary conditions are predictable.
-    """
+    """Deterministic synthetic OHLCV — fixed seed, reproducible across runs."""
     rng   = np.random.default_rng(seed)
     dates = pd.date_range(start="2024-01-01", periods=bars, freq="15min")
 
-    # Structured random walk with fixed seed
     returns = rng.normal(0, 0.002, bars)
     close   = 100.0 * np.cumprod(1 + returns)
-    noise_h = np.abs(rng.normal(0, 0.001, bars))
-    noise_l = np.abs(rng.normal(0, 0.001, bars))
-    high    = close * (1 + noise_h)
-    low     = close * (1 - noise_l)
-
-    close_s     = pd.Series(close, index=dates)
-    open_price  = close_s.shift(1).fillna(close[0])
-    volume      = rng.integers(1000, 10_000, bars)
-
-    return pd.DataFrame(
-        {"open": open_price, "high": high, "low": low, "close": close, "volume": volume},
-        index=dates,
-    )
-
-
-def create_trending_data(bars: int = 200, direction: str = "up") -> pd.DataFrame:
-    """Synthetic data with a clear monotonic trend for condition isolation tests."""
-    dates = pd.date_range(start="2024-01-01", periods=bars, freq="15min")
-    if direction == "up":
-        close = np.linspace(100, 130, bars)
-    else:
-        close = np.linspace(130, 100, bars)
-
-    rng    = np.random.default_rng(0)
-    noise  = rng.normal(0, 0.05, bars)
-    close  = close + noise
-    high   = close + np.abs(rng.normal(0, 0.1, bars))
-    low    = close - np.abs(rng.normal(0, 0.1, bars))
+    high    = close * (1 + np.abs(rng.normal(0, 0.001, bars)))
+    low     = close * (1 - np.abs(rng.normal(0, 0.001, bars)))
 
     close_s    = pd.Series(close, index=dates)
     open_price = close_s.shift(1).fillna(close[0])
@@ -454,313 +855,371 @@ def create_trending_data(bars: int = 200, direction: str = "up") -> pd.DataFrame
     )
 
 
-# ============================================================
-#  GROUP A — CORE BEHAVIOUR
-# ============================================================
+def create_trending_data(bars: int = 200, direction: str = "up") -> pd.DataFrame:
+    """Synthetic OHLCV with a clear monotonic trend for isolation tests."""
+    dates = pd.date_range(start="2024-01-01", periods=bars, freq="15min")
+    base  = np.linspace(100, 130, bars) if direction == "up" else np.linspace(130, 100, bars)
+
+    rng   = np.random.default_rng(0)
+    close = base + rng.normal(0, 0.05, bars)
+    high  = close + np.abs(rng.normal(0, 0.1, bars))
+    low   = close - np.abs(rng.normal(0, 0.1, bars))
+
+    close_s    = pd.Series(close, index=dates)
+    open_price = close_s.shift(1).fillna(close[0])
+    volume     = rng.integers(1000, 10_000, bars)
+
+    return pd.DataFrame(
+        {"open": open_price, "high": high, "low": low, "close": close, "volume": volume},
+        index=dates,
+    )
+
+
+# ===========================================================================
+#  UNIT TESTS FOR INDIVIDUAL SRP COMPONENTS
+# ===========================================================================
+
+# --- IndicatorMath ----------------------------------------------------------
+
+def test_unit_ema_converges():
+    """EMA of a flat series must equal that constant."""
+    s      = pd.Series([10.0] * 50)
+    result = IndicatorMath.ema(s, 9)
+    assert abs(result.iloc[-1] - 10.0) < 1e-6, "EMA did not converge on flat series"
+
+
+def test_unit_rsi_range():
+    """RSI must always be in [0, 100]."""
+    close  = create_test_data(bars=100)["close"]
+    result = IndicatorMath.rsi(close, 14)
+    assert result.dropna().between(0, 100).all(), "RSI values outside [0, 100]"
+
+
+def test_unit_macd_histogram_definition():
+    """histogram must equal macd_line − signal_line by definition."""
+    close              = create_test_data(bars=100)["close"]
+    macd_line, sig, hist = IndicatorMath.macd(close, 12, 26, 9)
+    diff               = (macd_line - sig - hist).abs()
+    assert diff.max() < 1e-10, "MACD histogram != macd_line - signal_line"
+
+
+def test_unit_swing_detector_high_is_local_max():
+    """Every detected swing high must be the max in its [left, right] window."""
+    df       = create_test_data(bars=200)
+    detector = SwingDetector(lookback=5)
+    highs    = detector.swing_highs(df["high"])
+
+    for i, val in highs.dropna().items():
+        loc     = df.index.get_loc(i)
+        window  = df["high"].iloc[max(0, loc - 5): loc + 6]
+        assert val == window.max(), f"Swing high at {i} is not the local maximum"
+
+
+def test_unit_swing_detector_low_is_local_min():
+    """Every detected swing low must be the min in its [left, right] window."""
+    df       = create_test_data(bars=200)
+    detector = SwingDetector(lookback=5)
+    lows     = detector.swing_lows(df["low"])
+
+    for i, val in lows.dropna().items():
+        loc    = df.index.get_loc(i)
+        window = df["low"].iloc[max(0, loc - 5): loc + 6]
+        assert val == window.min(), f"Swing low at {i} is not the local minimum"
+
+
+def test_unit_trend_analyser_bull_requires_fast_above_slow():
+    """bull_trend must be False whenever ema_fast ≤ ema_slow."""
+    df      = create_test_data(bars=100)
+    result  = TrendAnalyser().analyse(df["close"])
+    bad_bars = result["bull_trend"] & (result["ema_fast"] <= result["ema_slow"])
+    assert not bad_bars.any(), "bull_trend True when ema_fast <= ema_slow"
+
+
+def test_unit_momentum_or_logic():
+    """In default OR mode, momentum_bull is True when RSI alone passes."""
+    df     = create_test_data(bars=100)
+    result = MomentumAnalyser().analyse(df["close"])
+    rsi_only = result["rsi_bull"] & ~result["macd_bull"]
+    if rsi_only.any():
+        assert result.loc[rsi_only, "momentum_bull"].all(), \
+            "OR mode: momentum_bull False when RSI alone passes"
+
+
+def test_unit_momentum_and_logic():
+    """In strict AND mode, momentum_bull requires BOTH RSI and MACD."""
+    df     = create_test_data(bars=100)
+    result = MomentumAnalyser(strict_mode=True).analyse(df["close"])
+    rsi_only = result["rsi_bull"] & ~result["macd_bull"]
+    if rsi_only.any():
+        assert not result.loc[rsi_only, "momentum_bull"].any(), \
+            "AND mode: momentum_bull True when only RSI passes"
+
+
+def test_unit_volatility_filter_disabled():
+    """When disabled, every bar must be marked volatile_enough."""
+    df     = create_test_data(bars=100)
+    result = VolatilityFilter(enabled=False).apply(df["high"], df["low"], df["close"])
+    assert result["volatile_enough"].all(), "Disabled filter marked some bars as not volatile"
+
+
+def test_unit_volatility_filter_enabled_suppresses_low_vol():
+    """When enabled, bars with ATR < ATR_SMA × ratio must NOT be volatile_enough."""
+    df     = create_test_data(bars=300)
+    vf     = VolatilityFilter(enabled=True, atr_period=14, sma_period=20, min_ratio=0.8)
+    result = vf.apply(df["high"], df["low"], df["close"])
+    # Verify the flag is consistent with the arithmetic
+    warm   = result.dropna()
+    expected = warm["atr"] > warm["atr_sma"] * 0.8
+    assert (expected == warm["volatile_enough"]).all(), \
+        "volatile_enough flag inconsistent with ATR arithmetic"
+
+
+def test_unit_sr_classifier_f_near_inside():
+    """is_near: price just INSIDE threshold (99%) must return True."""
+    clf   = SupportResistanceClassifier(proximity_pct=0.001)
+    price = 100.0
+    thr   = price * clf.proximity_pct
+    assert clf.is_near(price, price + thr * 0.99, thr)
+
+
+def test_unit_sr_classifier_f_near_outside():
+    """is_near: price just OUTSIDE threshold (101%) must return False."""
+    clf   = SupportResistanceClassifier(proximity_pct=0.001)
+    price = 100.0
+    thr   = price * clf.proximity_pct
+    assert not clf.is_near(price, price + thr * 1.01, thr)
+
+
+def test_unit_sr_classifier_nan_safe():
+    """is_near must return False for a NaN level — no exception."""
+    clf = SupportResistanceClassifier()
+    assert not clf.is_near(100.0, np.nan, 0.1)
+
+
+def test_unit_state_machine_leading_edge():
+    """buy_edge must fire exactly once per 0→1 transition of buy_signal."""
+    sm         = SignalStateMachine(min_price_move=0.0)  # disable price filter
+    signal     = pd.Series([False, True, True, False, True, True, True, False])
+    close      = pd.Series([100.0] * len(signal))
+    result     = sm.process(signal, pd.Series([False] * len(signal)), close)
+    edge_count = result["buy_edge"].sum()
+    rise_count = (signal.astype(int).diff().fillna(0) == 1).sum()
+    assert edge_count == rise_count, (
+        f"buy_edge count ({edge_count}) != rising-edge count ({rise_count})"
+    )
+
+
+def test_unit_state_machine_price_filter():
+    """Anti-spam filter: second edge within min_price_move must be suppressed."""
+    sm     = SignalStateMachine(min_price_move=0.01)  # 1% required
+    # Two edges, but close prices are almost identical → second should be suppressed
+    signal = pd.Series([False, True, False, True])
+    close  = pd.Series([100.0, 100.0, 100.0, 100.05])  # only 0.05% move
+    result = sm.process(signal, pd.Series([False] * 4), close)
+    assert result["buy_trigger"].sum() if "buy_trigger" in result.columns else True, \
+        "Anti-spam check: examine price_moved_enough"
+    assert not result["price_moved_enough"].iloc[3], \
+        "price_moved_enough should be False when price barely moved"
+
+
+# ===========================================================================
+#  INTEGRATION TESTS (full pipeline via SignalIndicator façade)
+# ===========================================================================
 
 def test_01_buy_all_conditions_met():
-    """
-    T01: buy_signal == bull_trend & momentum_bull & near_support & volatile_enough
-
-    [FIX-2] Original test omitted the volatile_enough gate that was added in v4.0.
-    The assertion now matches the actual definition of buy_signal_base.
-    """
-    indicator = SignalIndicator()
-    df     = create_test_data(bars=100)
-    result = indicator.generate_signals(df)
-
+    """T01: buy_signal == bull_trend & momentum_bull & near_support & volatile_enough."""
+    ind    = SignalIndicator()
+    result = ind.generate_signals(create_test_data(bars=100))
     expected = (
-        result["bull_trend"]
-        & result["momentum_bull"]
-        & result["near_support"]
-        & result["volatile_enough"]  # FIX-2: was missing in original test
+        result["bull_trend"] & result["momentum_bull"]
+        & result["near_support"] & result["volatile_enough"]
     )
-    assert (expected == result["buy_signal"]).all(), (
-        "buy_signal does not match bull_trend & momentum_bull & near_support & volatile_enough"
-    )
+    assert (expected == result["buy_signal"]).all()
 
 
 def test_02_sell_all_conditions_met():
-    """
-    T02: sell_signal == bear_trend & momentum_bear & near_resistance & volatile_enough
-
-    [FIX-2] Same fix as T01 for the sell side.
-    """
-    indicator = SignalIndicator()
-    df     = create_test_data(bars=100)
-    result = indicator.generate_signals(df)
-
+    """T02: sell_signal == bear_trend & momentum_bear & near_resistance & volatile_enough."""
+    ind    = SignalIndicator()
+    result = ind.generate_signals(create_test_data(bars=100))
     expected = (
-        result["bear_trend"]
-        & result["momentum_bear"]
-        & result["near_resistance"]
-        & result["volatile_enough"]  # FIX-2
+        result["bear_trend"] & result["momentum_bear"]
+        & result["near_resistance"] & result["volatile_enough"]
     )
-    assert (expected == result["sell_signal"]).all(), (
-        "sell_signal does not match bear_trend & momentum_bear & near_resistance & volatile_enough"
-    )
+    assert (expected == result["sell_signal"]).all()
 
-
-# ============================================================
-#  GROUP B — CONDITION ISOLATION
-# ============================================================
 
 def test_03_no_buy_when_fast_below_slow():
     """T03: bull_trend is False whenever ema_fast < ema_slow."""
-    indicator = SignalIndicator()
-    result    = indicator.generate_signals(create_test_data(bars=100))
-
-    fast_below_slow      = result["ema_fast"] < result["ema_slow"]
-    bull_when_fast_below = result.loc[fast_below_slow, "bull_trend"]
-    assert not bull_when_fast_below.any(), "bull_trend is True even when ema_fast < ema_slow"
+    result = SignalIndicator().generate_signals(create_test_data(bars=100))
+    assert not (result["bull_trend"] & (result["ema_fast"] < result["ema_slow"])).any()
 
 
 def test_04_no_momentum_when_both_fail():
     """T04: momentum_bull is False when BOTH rsi_bull and macd_bull are False."""
-    indicator = SignalIndicator()
-    result    = indicator.generate_signals(create_test_data(bars=100))
-
-    both_fail               = ~result["rsi_bull"] & ~result["macd_bull"]
-    momentum_when_both_fail = result.loc[both_fail, "momentum_bull"]
-    assert not momentum_when_both_fail.any(), "momentum_bull is True even when both RSI and MACD fail"
+    result   = SignalIndicator().generate_signals(create_test_data(bars=100))
+    both_fail = ~result["rsi_bull"] & ~result["macd_bull"]
+    assert not result.loc[both_fail, "momentum_bull"].any()
 
 
 def test_05_rsi_alone_triggers_momentum():
     """T05: RSI alone is sufficient for momentum_bull (OR logic)."""
-    indicator = SignalIndicator()
-    result    = indicator.generate_signals(create_test_data(bars=100))
-
+    result   = SignalIndicator().generate_signals(create_test_data(bars=100))
     rsi_only = result["rsi_bull"] & ~result["macd_bull"]
     if rsi_only.any():
-        assert result.loc[rsi_only, "momentum_bull"].all(), (
-            "momentum_bull is False even when RSI alone qualifies"
-        )
+        assert result.loc[rsi_only, "momentum_bull"].all()
 
 
 def test_06_macd_alone_triggers_momentum():
     """T06: MACD alone is sufficient for momentum_bull (OR logic)."""
-    indicator = SignalIndicator()
-    result    = indicator.generate_signals(create_test_data(bars=100))
-
+    result    = SignalIndicator().generate_signals(create_test_data(bars=100))
     macd_only = result["macd_bull"] & ~result["rsi_bull"]
     if macd_only.any():
-        assert result.loc[macd_only, "momentum_bull"].all(), (
-            "momentum_bull is False even when MACD alone qualifies"
-        )
+        assert result.loc[macd_only, "momentum_bull"].all()
 
 
 def test_07_rsi_hard_cap_kills_momentum():
-    """T07: RSI ≥ 80 prevents rsi_bull; momentum_bull must rely solely on MACD."""
-    indicator = SignalIndicator()
-    df        = create_trending_data(bars=150, direction="up")
-    result    = indicator.generate_signals(df)
-
-    above_cap   = result["rsi"] >= indicator.RSI_HARD_CAP_HIGH
-    macd_no_bull = ~result["macd_bull"]
-    both         = above_cap & macd_no_bull
-
+    """T07: RSI ≥ 80 + no MACD → momentum_bull must be False."""
+    result     = SignalIndicator().generate_signals(create_trending_data(bars=150, direction="up"))
+    above_cap  = result["rsi"] >= SignalIndicator().RSI_HARD_CAP_HIGH
+    both       = above_cap & ~result["macd_bull"]
     if both.any():
-        assert not result.loc[both, "momentum_bull"].any(), (
-            "momentum_bull fires when RSI ≥ 80 and MACD also fails"
-        )
+        assert not result.loc[both, "momentum_bull"].any()
 
 
 def test_07b_strict_momentum_requires_both():
-    """
-    [FIX-5] NEW — T07b: With use_strict_momentum=True, BOTH RSI and MACD
-    must pass; either failing alone must suppress momentum_bull.
-    """
-    indicator = SignalIndicator(use_strict_momentum=True)
-    result    = indicator.generate_signals(create_test_data(bars=100))
+    """T07b: use_strict_momentum=True — AND logic; either alone must fail."""
+    ind    = SignalIndicator(use_strict_momentum=True)
+    result = ind.generate_signals(create_test_data(bars=100))
 
-    # RSI passes but MACD fails → momentum_bull must be False
     rsi_only = result["rsi_bull"] & ~result["macd_bull"]
     if rsi_only.any():
-        assert not result.loc[rsi_only, "momentum_bull"].any(), (
-            "strict_momentum: momentum_bull fires with only RSI passing"
-        )
+        assert not result.loc[rsi_only, "momentum_bull"].any()
 
-    # MACD passes but RSI fails → momentum_bull must be False
     macd_only = result["macd_bull"] & ~result["rsi_bull"]
     if macd_only.any():
-        assert not result.loc[macd_only, "momentum_bull"].any(), (
-            "strict_momentum: momentum_bull fires with only MACD passing"
-        )
+        assert not result.loc[macd_only, "momentum_bull"].any()
 
-    # Both pass → momentum_bull must be True
     both = result["rsi_bull"] & result["macd_bull"]
     if both.any():
-        assert result.loc[both, "momentum_bull"].all(), (
-            "strict_momentum: momentum_bull is False even when both RSI and MACD pass"
-        )
+        assert result.loc[both, "momentum_bull"].all()
 
 
 def test_07c_volatility_filter():
-    """
-    [FIX-6] NEW — T07c: With use_volatility_filter=True, buy/sell signals must
-    be False on bars where ATR < ATR_SMA * min_atr_ratio.
-    """
-    indicator = SignalIndicator(use_volatility_filter=True)
-    # Need enough bars for ATR (14) + ATR_SMA (20) to warm up
-    result = indicator.generate_signals(create_test_data(bars=300))
-
+    """T07c: use_volatility_filter=True — low-ATR bars suppress signals."""
+    result      = SignalIndicator(use_volatility_filter=True).generate_signals(
+        create_test_data(bars=300)
+    )
     not_volatile = ~result["volatile_enough"]
     if not_volatile.any():
-        assert not result.loc[not_volatile, "buy_signal"].any(), (
-            "buy_signal fires on a low-volatility bar"
-        )
-        assert not result.loc[not_volatile, "sell_signal"].any(), (
-            "sell_signal fires on a low-volatility bar"
-        )
+        assert not result.loc[not_volatile, "buy_signal"].any()
+        assert not result.loc[not_volatile, "sell_signal"].any()
 
-
-# ============================================================
-#  GROUP C — BOUNDARY CONDITIONS
-# ============================================================
 
 def test_08_proximity_just_inside_fires():
-    """T08: Price just INSIDE threshold (99 %) triggers f_near."""
-    indicator   = SignalIndicator()
-    close_price = 100.0
-    threshold   = close_price * indicator.sr_proximity
-    level       = close_price + threshold * 0.99
-    assert indicator.f_near(close_price, level, threshold), (
-        "f_near returns False for price just inside the threshold"
-    )
+    """T08: f_near returns True when price is just inside the threshold (99%)."""
+    ind   = SignalIndicator()
+    p     = 100.0
+    thr   = p * ind.sr_proximity
+    assert ind.f_near(p, p + thr * 0.99, thr)
 
 
 def test_09_proximity_just_outside_does_not_fire():
-    """T09: Price just OUTSIDE threshold (101 %) does NOT trigger f_near."""
-    indicator   = SignalIndicator()
-    close_price = 100.0
-    threshold   = close_price * indicator.sr_proximity
-    level       = close_price + threshold * 1.01
-    assert not indicator.f_near(close_price, level, threshold), (
-        "f_near returns True for price just outside the threshold"
-    )
+    """T09: f_near returns False when price is just outside the threshold (101%)."""
+    ind = SignalIndicator()
+    p   = 100.0
+    thr = p * ind.sr_proximity
+    assert not ind.f_near(p, p + thr * 1.01, thr)
 
 
 def test_10_proximity_exact_boundary_fires():
-    """T10: Price at exact boundary (≤) triggers f_near."""
-    indicator   = SignalIndicator()
-    close_price = 100.0
-    threshold   = close_price * indicator.sr_proximity
-    level       = close_price + threshold * 0.9999  # marginally inside
-    assert indicator.f_near(close_price, level, threshold), (
-        "f_near returns False at the exact boundary"
-    )
+    """T10: f_near returns True at the exact boundary (≤)."""
+    ind = SignalIndicator()
+    p   = 100.0
+    thr = p * ind.sr_proximity
+    assert ind.f_near(p, p + thr * 0.9999, thr)
 
-
-# ============================================================
-#  GROUP D — EDGE CASES
-# ============================================================
 
 def test_11_leading_edge_buy_fires_once_per_transition():
-    """
-    T11: buy_edge fires exactly ONCE per 0→1 transition of buy_signal_base.
-
-    [FIX-3] Original test compared buy_trigger count to buy_signal rising-edge
-    count.  buy_trigger has additional gates (price_moved_enough, htf_bull) so
-    counts will legitimately differ.  The correct invariant is:
-
-        count(buy_edge) == count(rising edges in buy_signal_base)
-
-    buy_trigger is a SUBSET of buy_edge, not its equal.
-    """
-    indicator = SignalIndicator()
-    result    = indicator.generate_signals(create_test_data(bars=200))
-
-    # Rising edges in buy_signal_base (state changes 0 → 1)
-    rising_edges = (result["buy_signal_base"].astype(int).diff().fillna(0) == 1).sum()
-    edge_count   = result["buy_edge"].sum()
-
-    assert edge_count == rising_edges, (
-        f"buy_edge count ({edge_count}) != buy_signal_base rising-edge count ({rising_edges}). "
-        "Leading-edge guard is broken."
+    """T11: buy_edge count == rising-edge count of buy_signal_base."""
+    result      = SignalIndicator().generate_signals(create_test_data(bars=200))
+    rising      = (result["buy_signal_base"].astype(int).diff().fillna(0) == 1).sum()
+    edge_count  = result["buy_edge"].sum()
+    assert edge_count == rising, (
+        f"buy_edge ({edge_count}) != rising edges ({rising}) — leading-edge guard broken"
     )
 
 
 def test_12_na_swing_level_safe():
-    """T12: NaN swing levels do NOT crash or produce false positives in f_near."""
-    indicator   = SignalIndicator()
-    close_price = 100.0
-    threshold   = close_price * indicator.sr_proximity
-    assert not indicator.f_near(close_price, np.nan, threshold), (
-        "f_near returns True for a NaN level — NaN guard is missing"
-    )
+    """T12: f_near returns False for NaN level — no exception."""
+    ind = SignalIndicator()
+    assert not ind.f_near(100.0, np.nan, 0.1)
 
 
 def test_13_pivot_not_support_in_bear_trend():
-    """T13: Pivot does NOT count as support when price is in a bear trend."""
-    indicator = SignalIndicator()
-    result    = indicator.generate_signals(create_test_data(bars=100))
+    """T13: Pivot does NOT count as support when in bear trend."""
+    ind    = SignalIndicator()
+    result = ind.generate_signals(create_test_data(bars=100))
+    sr_clf = ind._orchestrator.sr
 
     for i in range(len(result)):
-        close_price = result["close"].iloc[i]
-        pivot       = result["pivot"].iloc[i]
-        threshold   = result["sr_threshold"].iloc[i]
-        bear_trend  = result["bear_trend"].iloc[i]
+        p      = result["close"].iloc[i]
+        pivot  = result["pivot"].iloc[i]
+        thr    = result["sr_threshold"].iloc[i]
+        bear   = result["bear_trend"].iloc[i]
 
-        if indicator.f_near(close_price, pivot, threshold) and bear_trend:
-            # Check that no OTHER support levels are nearby
-            s1_near    = indicator.f_near(close_price, result["s1"].iloc[i], threshold)
-            s2_near    = indicator.f_near(close_price, result["s2"].iloc[i], threshold)
-            s3_near    = indicator.f_near(close_price, result["s3"].iloc[i], threshold)
-            swing_near = indicator.f_near(close_price, result["last_swing_low"].iloc[i], threshold)
-
-            if not (s1_near or s2_near or s3_near or swing_near):
-                assert not result["near_support"].iloc[i], (
-                    f"Pivot counted as support during bear trend at bar {i}"
-                )
+        if sr_clf.is_near(p, pivot, thr) and bear:
+            other = (
+                sr_clf.is_near(p, result["s1"].iloc[i], thr)
+                or sr_clf.is_near(p, result["s2"].iloc[i], thr)
+                or sr_clf.is_near(p, result["s3"].iloc[i], thr)
+                or sr_clf.is_near(p, result["last_swing_low"].iloc[i], thr)
+            )
+            if not other:
+                assert not result["near_support"].iloc[i], \
+                    f"Pivot counted as support in bear trend at bar {i}"
 
 
 def test_14_htf_bull_gates_buy_trigger():
-    """
-    [FIX-7] NEW — T14: buy_trigger must be False on any bar where htf_bull is False,
-    regardless of whether buy_edge and price_moved_enough are True.
-    """
-    indicator = SignalIndicator()
-    result    = indicator.generate_signals(create_test_data(bars=200))
+    """T14: buy_trigger must be False on every bar where htf_bull is False."""
+    result = SignalIndicator().generate_signals(create_test_data(bars=200))
+    htf_off = ~result["htf_bull"]
+    if htf_off.any():
+        assert not result.loc[htf_off, "buy_trigger"].any()
 
-    htf_bear_bars = ~result["htf_bull"]
-    if htf_bear_bars.any():
-        buys_in_htf_bear = result.loc[htf_bear_bars, "buy_trigger"]
-        assert not buys_in_htf_bear.any(), (
-            "buy_trigger fired on a bar where htf_bull is False"
-        )
-
-
-# ============================================================
-#  GROUP E — PERFORMANCE
-# ============================================================
 
 def test_15_performance_5000_bars():
-    """
-    [FIX-8] NEW — T15: generate_signals must complete in < 60 s for 5 000 bars.
-    This is a smoke-test for the O(n) Python loop not regressing badly.
-    60 s is a very generous bound; typical runtime should be < 5 s.
-    """
-    indicator = SignalIndicator()
-    df        = create_test_data(bars=5_000)
-
-    start = time.monotonic()
-    indicator.generate_signals(df)
+    """T15: Full pipeline completes in < 60 s for 5 000 bars."""
+    start   = time.monotonic()
+    SignalIndicator().generate_signals(create_test_data(bars=5_000))
     elapsed = time.monotonic() - start
-
-    assert elapsed < 60, (
-        f"generate_signals took {elapsed:.1f}s for 5 000 bars — likely regression in the loop"
-    )
+    assert elapsed < 60, f"Pipeline took {elapsed:.1f}s for 5 000 bars"
 
 
-# ============================================================
+# ===========================================================================
 #  RUNNER
-# ============================================================
+# ===========================================================================
 
-TESTS = [
-    # Group A — Core behaviour
+UNIT_TESTS = [
+    ("U01: EMA converges on flat series",         test_unit_ema_converges),
+    ("U02: RSI in [0, 100]",                      test_unit_rsi_range),
+    ("U03: MACD histogram definition",            test_unit_macd_histogram_definition),
+    ("U04: Swing high is local max",              test_unit_swing_detector_high_is_local_max),
+    ("U05: Swing low is local min",               test_unit_swing_detector_low_is_local_min),
+    ("U06: TrendAnalyser bull/slow guard",        test_unit_trend_analyser_bull_requires_fast_above_slow),
+    ("U07: Momentum OR logic",                    test_unit_momentum_or_logic),
+    ("U08: Momentum AND logic",                   test_unit_momentum_and_logic),
+    ("U09: VolatilityFilter disabled → all True", test_unit_volatility_filter_disabled),
+    ("U10: VolatilityFilter flag consistent",     test_unit_volatility_filter_enabled_suppresses_low_vol),
+    ("U11: SRClassifier inside fires",            test_unit_sr_classifier_f_near_inside),
+    ("U12: SRClassifier outside skips",           test_unit_sr_classifier_f_near_outside),
+    ("U13: SRClassifier NaN safe",                test_unit_sr_classifier_nan_safe),
+    ("U14: StateMachine leading edge",            test_unit_state_machine_leading_edge),
+    ("U15: StateMachine price filter",            test_unit_state_machine_price_filter),
+]
+
+INTEGRATION_TESTS = [
     ("T01: BUY  — all conditions",          test_01_buy_all_conditions_met),
     ("T02: SELL — all conditions",          test_02_sell_all_conditions_met),
-    # Group B — Condition isolation
     ("T03: No BUY when fast < slow",        test_03_no_buy_when_fast_below_slow),
     ("T04: No momentum when both fail",     test_04_no_momentum_when_both_fail),
     ("T05: RSI alone triggers momentum",    test_05_rsi_alone_triggers_momentum),
@@ -768,28 +1227,35 @@ TESTS = [
     ("T07: RSI hard-cap kills momentum",    test_07_rsi_hard_cap_kills_momentum),
     ("T07b: Strict momentum (AND logic)",   test_07b_strict_momentum_requires_both),
     ("T07c: Volatility filter gate",        test_07c_volatility_filter),
-    # Group C — Boundary conditions
     ("T08: Proximity just inside fires",    test_08_proximity_just_inside_fires),
     ("T09: Proximity just outside skips",   test_09_proximity_just_outside_does_not_fire),
     ("T10: Proximity exact boundary fires", test_10_proximity_exact_boundary_fires),
-    # Group D — Edge cases
     ("T11: Leading-edge fires once",        test_11_leading_edge_buy_fires_once_per_transition),
     ("T12: NaN swing level is safe",        test_12_na_swing_level_safe),
     ("T13: Pivot not support in bear",      test_13_pivot_not_support_in_bear_trend),
     ("T14: HTF bull gates buy trigger",     test_14_htf_bull_gates_buy_trigger),
-    # Group E — Performance
     ("T15: 5 000-bar performance smoke",    test_15_performance_5000_bars),
 ]
 
 
 def run_tests():
+    all_tests = (
+        [("── UNIT", None)]
+        + UNIT_TESTS
+        + [("── INTEGRATION", None)]
+        + INTEGRATION_TESTS
+    )
+
     passed = failed = 0
 
     print("\n" + "=" * 70)
-    print("  EMA/RSI/MACD + S&R INDICATOR TEST SUITE  v2.0")
-    print("=" * 70 + "\n")
+    print("  EMA/RSI/MACD + S&R INDICATOR TEST SUITE  v3.0  (SRP)")
+    print("=" * 70)
 
-    for name, fn in TESTS:
+    for name, fn in all_tests:
+        if fn is None:
+            print(f"\n  {name}")
+            continue
         try:
             fn()
             print(f"  ✓  PASS   {name}")
@@ -813,7 +1279,6 @@ def run_tests():
 if __name__ == "__main__":
     import sys
     sys.exit(0 if run_tests() else 1)
-
 ```
 
 ---
