@@ -617,7 +617,11 @@ This session is about:
 
 # Session 7 - Agenda (28 February, 2026)  
 
-* Framing & expectations 
+* Refining your LinkedIn positioning using the right keywords  
+* Strengthening your profile to reflect your automation focused direction  
+* Strategic connection-building with relevant professionals  
+* Requesting endorsements and recommendations professionally  
+* Creating a consistent LinkedIn growth strategy  
 
 
 ---
