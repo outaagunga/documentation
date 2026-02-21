@@ -524,8 +524,93 @@ Then ask:
 
 # Session 6 - Agenda (21 February, 2026)  
 
-* Framing & expectations 
+* Review of your chosen career direction  
+* Identifying professional skills required in your field  
+* Evaluating your current skills vs. market expectations  
+* Education, certifications and training options  
+* Creating SMART goals for the next phase of your development  
 
+---
+
+The session will cover:
+
+### 🔹 A. Additional Skills for Your Chosen Profession
+
+You’ll need to:
+
+* Identify **skills beyond technical knowledge**
+* Assess your **personal readiness**
+* Pinpoint **skill gaps**
+* Decide where you need more preparation
+
+This is about moving from *“I know the theory”* to *“I’m employable.”*
+
+---
+
+## 2. Why This Is Important
+
+### 🔹 A. Preparing for Hiring Managers
+
+They will assess:
+
+* Technical competence
+* Soft skills (communication, teamwork, problem-solving)
+* Professional behavior
+* Readiness and confidence
+
+You should be ready to:
+
+* Explain your skills clearly
+* Give examples
+* Show growth mindset
+
+---
+
+### 🔹 B. SMART Goal System
+
+You’ll learn about the **SMART goal framework**, which is widely used in companies.
+
+SMART =
+
+* **S** – Specific
+* **M** – Measurable
+* **A** – Achievable
+* **R** – Relevant
+* **T** – Time-bound
+
+Why this matters:
+
+* Employers like structured thinkers
+* Shows planning ability
+* Helps you set real career goals
+* Helps you answer interview questions like:
+
+  * “What are your career goals?”
+  * “Where do you see yourself in 3–5 years?”  
+
+---
+
+## 4. What You Should Start Thinking About Now
+
+To prepare well, ask yourself:
+
+1. What job am I targeting?
+2. What technical skills does it require?
+3. What soft skills are important?
+4. Where am I strong?
+5. Where am I weak?
+6. What specific goals should I set for improvement?
+
+---
+
+## 5. Big Picture
+
+This session is about:
+
+* Transitioning from **student mindset → professional mindset**
+* Preparing for real-world job interviews
+* Being intentional about skill development
+* Learning structured goal-setting (SMART)  
 
 ---
 ---
