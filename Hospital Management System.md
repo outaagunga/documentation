@@ -290,7 +290,7 @@ Even 20 clients paying KSh 5,000/month is KSh 100,000 recurring revenue.
 ---
 ---
 
-# Complete Project Structure
+# Software as a Service (SaaS) - Complete Project Structure  
 
 ```text
 sha-hmis-platform/
@@ -391,7 +391,7 @@ backend/
 │   │   ├── database.py
 │   │   └── exceptions.py
 │   │
-│   ├── models/
+│   ├── models/            # ensure you add facility_id to every relevant table  
 │   │   ├── user.py
 │   │   ├── patient.py
 │   │   ├── claim.py
@@ -404,7 +404,7 @@ backend/
 │   │   ├── claim.py
 │   │   └── provider.py
 │   │
-│   ├── api/
+│   ├── api/v1
 │   │   │
 │   │   ├── auth/
 │   │   │   ├── login.py
@@ -421,6 +421,17 @@ backend/
 │   │   │   ├── submit.py
 │   │   │   ├── approve.py
 │   │   │   └── status.py
+│   │   │
+│   │   ├── jobs/
+│   │   │   ├── celery_app.py
+│   │   │   ├── claims_tasks.py       # Submit_claim.   retry_failed_claim  
+│   │   │   ├── verification_tasks.py
+│   │   │
+│   ├── compliance/
+│   │   ├── encryption.py      # field-level encryption for PII/PHI    
+│   │   ├── consent.py         # consent capture + tracking     
+│   │   ├── retention.py       # data retention/deletion policy jobs     
+│   │   └── data_subject.py    # access/erasure request handling     
 │   │   │
 │   │   ├── providers/
 │   │   │
