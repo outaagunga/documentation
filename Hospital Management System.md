@@ -286,3 +286,252 @@ Even 20 clients paying KSh 5,000/month is KSh 100,000 recurring revenue.
 7. Offer integration assessment and support services.
 8. Convert the solution into a subscription-based product.
 
+---
+---
+---
+
+# Complete Project Structure
+
+```text
+sha-hmis-platform/
+
+├── README.md
+├── LICENSE
+├── .gitignore
+├── docker-compose.yml
+├── .env.example
+
+├── docs/
+│   ├── architecture.md
+│   ├── api-specification.md
+│   ├── database-design.md
+│   └── deployment.md
+
+├── frontend/
+│
+├── backend/
+│
+├── database/
+│
+├── scripts/
+│
+└── tests/
+```
+
+---
+
+# FRONTEND STRUCTURE
+
+```text
+frontend/
+
+├── package.json
+├── vite.config.ts
+├── tsconfig.json
+
+├── public/
+
+├── src/
+
+│   ├── main.tsx
+│   ├── App.tsx
+
+│   ├── assets/
+
+│   ├── components/
+│   │
+│   ├── pages/
+│   │   ├── auth/
+│   │   ├── dashboard/
+│   │   ├── patients/
+│   │   ├── claims/
+│   │   ├── providers/
+│   │   ├── reports/
+│   │   └── admin/
+│   │
+│   ├── layouts/
+│   │   ├── MainLayout.tsx
+│   │   └── AuthLayout.tsx
+│   │
+│   ├── services/
+│   │   ├── api.ts
+│   │   ├── auth.ts
+│   │   ├── patient.ts
+│   │   ├── claims.ts
+│   │   └── provider.ts
+│   │
+│   ├── hooks/
+│   │
+│   ├── store/
+│   │
+│   ├── utils/
+│   │
+│   ├── types/
+│   │
+│   └── routes/
+```
+
+---
+
+# BACKEND STRUCTURE
+
+```text
+backend/
+
+├── requirements.txt
+├── .env
+
+├── app/
+
+│   ├── main.py
+
+│   ├── core/
+│   │   ├── config.py
+│   │   ├── security.py
+│   │   ├── database.py
+│   │   └── exceptions.py
+│   │
+│   ├── models/
+│   │   ├── user.py
+│   │   ├── patient.py
+│   │   ├── claim.py
+│   │   ├── provider.py
+│   │   └── audit.py
+│   │
+│   ├── schemas/
+│   │   ├── user.py
+│   │   ├── patient.py
+│   │   ├── claim.py
+│   │   └── provider.py
+│   │
+│   ├── api/
+│   │   │
+│   │   ├── auth/
+│   │   │   ├── login.py
+│   │   │   └── register.py
+│   │   │
+│   │   ├── patients/
+│   │   │   ├── create.py
+│   │   │   ├── update.py
+│   │   │   ├── search.py
+│   │   │   └── verify.py
+│   │   │
+│   │   ├── claims/
+│   │   │   ├── create.py
+│   │   │   ├── submit.py
+│   │   │   ├── approve.py
+│   │   │   └── status.py
+│   │   │
+│   │   ├── providers/
+│   │   │
+│   │   ├── reports/
+│   │   │
+│   │   └── admin/
+│   │
+│   ├── services/
+│   │   ├── auth_service.py
+│   │   ├── patient_service.py
+│   │   ├── claim_service.py
+│   │   ├── provider_service.py
+│   │   └── audit_service.py
+│   │
+│   ├── repositories/
+│   │   ├── patient_repository.py
+│   │   ├── claim_repository.py
+│   │   └── user_repository.py
+│   │
+│   ├── middleware/
+│   │
+│   ├── integrations/
+│   │   ├── sha/
+│   │   │   ├── auth.py
+│   │   │   ├── patients.py
+│   │   │   ├── claims.py
+│   │   │   └── verification.py
+│   │   │
+│   │   └── hmis/
+│   │
+│   └── utils/
+```
+
+---
+
+# DATABASE STRUCTURE
+
+```text
+database/
+
+├── migrations/
+
+├── schema/
+
+│   ├── users.sql
+│   ├── patients.sql
+│   ├── claims.sql
+│   ├── providers.sql
+│   ├── facilities.sql
+│   ├── payments.sql
+│   └── audits.sql
+
+└── seeds/
+```
+
+---
+
+# TESTING
+
+```text
+tests/
+
+├── unit/
+│   ├── test_auth.py
+│   ├── test_patients.py
+│   └── test_claims.py
+
+├── integration/
+│   ├── test_sha.py
+│   └── test_hmis.py
+
+└── e2e/
+```
+---
+
+## PHASE 1 — Foundation
+
+**Goal:** Get the project running.
+
+```text
+✓ React setup
+✓ FastAPI setup
+✓ PostgreSQL
+✓ User authentication
+✓ Login page
+✓ Registration page
+✓ Dashboard
+```
+
+---
+
+# Database Tables (Minimum Viable Product)
+
+```text
+users
+roles
+permissions
+
+patients
+
+providers
+
+claims
+claim_items
+claim_status
+
+payments
+
+appointments
+
+audit_logs
+
+notifications
+```
