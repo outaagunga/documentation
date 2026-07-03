@@ -97,15 +97,31 @@ Display:
 * Rejected claims
 * Patient verification logs
 
-Technologies:
+*Technologies:*  
+Frontend:  
+- React  
+- TypeScript  
+- Material UI  
 
-* Backend: Node.js + Express + TypeScript
-* Database: PostgreSQL
-* Authentication: JWT
-* Documentation: Swagger/OpenAPI
-* Frontend: React or Next.js
+Backend:  
+- Python FastAPI  
 
-This project becomes your portfolio.
+Database:  
+- PostgreSQL  
+
+Cache:  
+- Redis  
+
+Authentication:  
+- JWT/OAuth2  
+
+Documentation:  
+- Swagger/OpenAPI  
+
+Deployment:  
+- Docker  
+
+This project becomes your portfolio.  
 
 ---
 
