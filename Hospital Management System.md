@@ -1,4 +1,4 @@
-*Hospital Management System*
+**Hospital Management System**
 
 This is actually a very good opportunity for a junior developer in Kenya. Whenever the government mandates a digital transition with a strict deadline, many small and medium-sized healthcare facilities struggle to comply because they lack in-house developers. That creates a temporary but valuable market for developers who can help with integration.
 
@@ -97,28 +97,28 @@ Display:
 * Rejected claims
 * Patient verification logs
 
-*Technologies:*  
-Frontend:  
+**Technologies:**  
+*Frontend:*  
 - React  
 - TypeScript  
 - Material UI  
 
-Backend:  
+*Backend:*  
 - Python FastAPI  
 
-Database:  
+*Database:*  
 - PostgreSQL  
 
-Cache:  
+*Cache:*  
 - Redis  
 
-Authentication:  
+*Authentication:*  
 - JWT/OAuth2  
 
-Documentation:  
+*Documentation:*  
 - Swagger/OpenAPI  
 
-Deployment:  
+*Deployment:*  
 - Docker  
 
 This project becomes your portfolio.  
