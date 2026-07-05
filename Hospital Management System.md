@@ -546,3 +546,135 @@ audit_logs
 
 notifications
 ```
+
+**Here's the MVP schema**  
+
+## Core / Tenancy
+
+**facilities** *(this is new — everything else scopes off it)*
+```
+id, name, facility_type (clinic/hospital/lab/pharmacy),
+sha_facility_code, sha_api_credentials_encrypted,
+subscription_tier (small/medium/large), subscription_status,
+address, phone, created_at, updated_at
+```
+
+**users**
+```
+id, facility_id (FK), email, password_hash, full_name,
+role_id (FK), is_active, last_login_at, created_at
+```
+
+**roles**
+```
+id, name (Admin/Doctor/Nurse/Cashier/ClaimsOfficer/SHAOfficer),
+description
+```
+
+**permissions**
+```
+id, name, resource, action (create/read/update/delete)
+```
+
+**role_permissions**
+```
+role_id (FK), permission_id (FK)
+```
+
+## Patients
+
+**patients**
+```
+id, facility_id (FK), national_id_encrypted, patient_number,
+first_name, last_name, dob, gender, phone_encrypted,
+sha_member_number, sha_verification_status,
+sha_verified_at, created_at, updated_at
+```
+
+**patient_consents** *(compliance — new)*
+```
+id, patient_id (FK), consent_type (data_sharing/treatment/sha_verification),
+granted, granted_at, revoked_at, ip_address
+```
+
+## Providers
+
+**providers**
+```
+id, facility_id (FK), full_name, license_number,
+specialization, sha_provider_code, is_active
+```
+
+## Claims
+
+**claims**
+```
+id, facility_id (FK), patient_id (FK), provider_id (FK),
+idempotency_key (unique, new — prevents duplicate submission),
+diagnosis, diagnosis_code (ICD-10), amount, currency,
+status (draft/pending/submitted/approved/rejected/paid),
+sha_claim_reference, submitted_at, resolved_at,
+created_at, updated_at
+```
+
+**claim_items**
+```
+id, claim_id (FK), service_code, description,
+quantity, unit_price, total_price
+```
+
+**claim_status_history** *(new — replaces flat "claim_status", gives you an audit trail of state changes)*
+```
+id, claim_id (FK), previous_status, new_status,
+changed_by (user_id FK), reason, changed_at
+```
+
+## Payments
+
+**payments**
+```
+id, claim_id (FK), facility_id (FK), amount,
+payment_method, payment_status, sha_payment_reference,
+paid_at, created_at
+```
+
+## Appointments
+
+**appointments**
+```
+id, facility_id (FK), patient_id (FK), provider_id (FK),
+scheduled_at, status (scheduled/completed/cancelled/no_show),
+notes, created_at
+```
+
+## Audit & Compliance
+
+**audit_logs**
+```
+id, facility_id (FK), user_id (FK), action, resource_type,
+resource_id, purpose (new — required for DPA access justification),
+ip_address, user_agent, created_at
+```
+
+**data_subject_requests** *(new — DPA 2019 access/erasure requests)*
+```
+id, patient_id (FK), request_type (access/erasure/correction),
+status, requested_at, resolved_at, handled_by (user_id FK)
+```
+
+## Jobs / Integration
+
+**sha_api_jobs** *(new — backs your retry queue)*
+```
+id, job_type (verify_patient/submit_claim/check_status),
+reference_id (claim_id or patient_id), status (pending/processing/success/failed),
+attempts, last_error, next_retry_at, created_at
+```
+
+## Notifications
+
+**notifications**
+```
+id, facility_id (FK), user_id (FK), type, title, message,
+is_read, created_at
+```
