@@ -3,20 +3,31 @@
 
 > * **ChatGPT:** Generate and refine your ideas.
 ```text
-[Enter your deep prompt so the next model has substantial material to critique]
+[Insert your raw thoughts/intent]. Brainstorm 3 distinct angles or frameworks to approach this. Provide a comprehensive, detailed draft for the strongest angle.
 ```
 
 > * **Gemini:** Critique the output and explore alternative viewpoints.
 ```text
-Act as a critical reviewer. Point out any logical flaws, factual errors, or unbacked assumptions in the following
+Act as a hostile editor and fact-checker. Analyze this draft. Point out any logical leaps, unbacked assumptions, or factual vulnerabilities. Provide 2 counter-arguments to the main thesis. 
+[Paste ChatGPT output]
 ```
 
 > * **Claude:** Verify the reasoning, check for consistency, and produce the strongest final response.
 ```text
-Here is a draft and a critique of that draft. Synthesize them into a highly accurate, polished final version that fixes the identified errors while maintaining a strong flow
+You are an elite editor. Below is a raw draft and a harsh critique of it. Synthesize them into a flawless, authoritative final version. Seamlessly integrate the fixes to the critique's valid points while maintaining an elegant, engaging tone.
+[Paste Draft + Critique]
 ```
 ## All in one prompt you can use in one AI
 ```text
-Before giving me the final answer, think through this in three steps: First, generate a detailed draft answer. Second, act as a harsh critic and find flaws or potential hallucinations in that draft. Third, rewrite the final response to correct those flaws
+You will process this request using a strict three-step internal monologue. Do not skip any step.
+
+### STEP 1: INITIAL DRAFT
+Generate a comprehensive, detailed draft answering this prompt: [Insert Prompt]
+
+### STEP 2: AGGRESSIVE CRITIQUE
+Analyze your own draft above. Act as an independent, skeptical expert. List specific flaws, logical gaps, or weak phrasings in that draft.
+
+### STEP 3: FINAL SYNTHESIS
+Rewrite the response from scratch, directly correcting the flaws identified in Step 2. Ensure the tone is polished and highly persuasive.
 ```
 
