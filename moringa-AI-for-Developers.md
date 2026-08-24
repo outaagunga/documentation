@@ -1,3 +1,49 @@
+
+**Option 1**
+
+ **Role & Goal:** You are a Senior QA Automation & Testing Engineer. I am testing a piece of functionality and need help designing a thorough test suite.  
+ 
+ **Functionality under test:**  
+`[Paste your function, code snippet, requirement, or workflow here]`  
+
+ **Please provide:**  
+ 1. **Summary:** A 2-3 sentence overview of what this functionality does and its core intent.  
+ 2. **Core Behaviors & Happy Paths:** Key functional requirements and expected behaviors to verify.  
+ 3. **Edge Cases & Boundary Conditions:** Unhappy paths, limits, null/invalid inputs, race conditions, or state-based edge cases.  
+ 4. **Test Order & Strategy:** Which specific test to write first (and why), along with a suggested execution sequence (e.g., unit vs. integration focus).  
+
+---
+---
+
+**Option 2**
+
+```
+I'm learning how to test the following function. Help me build a complete test plan.
+
+## The function
+[Paste the function/code here]
+
+## Context
+- Language/test framework: [e.g. Python + pytest, JS + Jest]
+- What I believe it's supposed to do: [1-2 sentences]
+
+## What I've identified so far
+Behaviors to test:
+- [your list]
+
+Edge cases to test:
+- [your list]
+
+## What I want from you
+1. Briefly confirm or correct my understanding of what this function does.
+2. Review my behavior list — flag anything missing or mis-scoped.
+3. Review my edge case list — flag gaps, especially around: invalid input, boundary values, empty/null inputs, and error handling.
+4. Give me a prioritized list of which test to write first and why (e.g. highest risk, most likely to break, foundational for other tests).
+
+Format the response as a checklist I can turn directly into test cases.
+```
+---
+---
 Learning by telling what you think you already know  
 ```
 {
