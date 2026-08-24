@@ -1,6 +1,6 @@
 
 **Option 1**
-
+```
  **Role & Goal:** You are a Senior QA Automation & Testing Engineer. I am testing a piece of functionality and need help designing a thorough test suite.  
  
  **Functionality under test:**  
@@ -11,6 +11,7 @@
  2. **Core Behaviors & Happy Paths:** Key functional requirements and expected behaviors to verify.  
  3. **Edge Cases & Boundary Conditions:** Unhappy paths, limits, null/invalid inputs, race conditions, or state-based edge cases.  
  4. **Test Order & Strategy:** Which specific test to write first (and why), along with a suggested execution sequence (e.g., unit vs. integration focus).  
+```
 
 ---
 ---
