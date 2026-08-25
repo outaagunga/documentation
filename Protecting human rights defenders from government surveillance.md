@@ -1,4 +1,4 @@
-# Router-Level Location Masking & Censorship Circumvention Guide
+# 1 Router-Level Location Masking & Censorship Circumvention Guide
 ### (GL.iNet / OpenWrt — fine-tuned for DPI evasion and leak protection)
 
 **Read this first:** This setup masks your *network location*. It does not protect your identity if any account you use is tied to your real name, phone number, payment method, or writing style your government already associates with you. Treat network masking and identity separation as two separate problems — both matter.
@@ -84,7 +84,7 @@ Network masking protects your *connection*. It does not protect *who you are onc
 ---
 --- 
 
-# Router-Level Location Masking & Censorship Circumvention Guide
+# 2 Router-Level Location Masking & Censorship Circumvention Guide
 ### (MikroTik RouterOS — fine-tuned for DPI evasion and leak protection)
 
 **Read this first:** MikroTik RouterOS is architecturally different from OpenWrt/GL.iNet — it has no Passwall-style plugin, and no native Shadowsocks/V2Ray support. You can still build a solid, leak-proof setup, but genuine DPI evasion (making your tunnel invisible to a government firewall, not just IP-masked) requires an extra piece described in Step 2B. Read that section even if you're tempted to stop at 2A.
@@ -188,6 +188,46 @@ If the account you're posting from is tied to your real identity, phone number, 
 ---
 
 *For technical or emergency digital security support: Access Now Digital Security Helpline — help@accessnow.org (24/7). For broader protection support: Front Line Defenders — +353-1-212-3750 / info@frontlinedefenders.org.*
+
+---
+---
+---
+# sdg how websites detect user locations to apply geographic restrictions and the steps required to bypass these controls  
+(http://www.youtube.com/watch?v=HgZw0q_I7Ok)
+
+---
+
+### Step-by-Step Overview of Geoblocking & Bypassing Methods
+
+1. **IP Geolocation Detection (Primary Block)**
+* **How it works:** Websites cross-reference your IP address against geolocation databases to identify your physical country or region.  
+* **Impact:** Used by streaming platforms, e-commerce stores (price discrimination), and news outlets  
+* **How to Bypass:** Route internet traffic through a Virtual Private Network (VPN) or proxy to mask your original IP address  
+
+2. **DNS Resolution & Region Binding**
+* **How it works:** Regional DNS servers route users to geographically restricted server instances or content libraries based on location  
+* **How to Bypass:** Configure custom or Smart DNS settings on your network adapters  
+* *Note:* Some smart TVs and streaming devices (e.g., Roku, Chromecast) hardcode DNS servers into their firmware, making simple DNS overrides ineffective  
+
+3. **Account Region Lock**
+* **How it works:** Digital platforms (such as gaming storefronts like Steam) lock accounts to the specific region in which they were created  
+* **How to Bypass:** Register a new account while connected to a server in the target country via Proxy or VPN  
+
+4. **Financial & Payment Verification**
+* **How it works:** Content platforms verify whether credit cards, billing addresses, or local banking details match the target region  
+* **How to Bypass:** Use region-specific virtual credit cards, local gift cards, or local payment methods on top of a VPN connection  
+
+5. **Mobile-Specific Location Controls**  
+* **How it works:** Mobile operating systems verify user locations using SIM Mobile Country Codes (MCC/MNC) and GPS/HTML5 location APIs  
+* **How to Bypass:** Disable location permissions for specific applications or spoof GPS coordinates via system tools  
+
+6. **Billing address verification**  
+* **How it works:** Most websites ....    
+* **How to Bypass:** Ensure you .....
+  
+7. **Browser language, Time Zone and Date detection**  
+* **How it works:** Most websites ....    
+* **How to Bypass:** Ensure you .....
 
 ---
 ---
