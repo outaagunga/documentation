@@ -192,7 +192,7 @@ If the account you're posting from is tied to your real identity, phone number, 
 ---
 ---
 ---
-# sdg how websites detect user locations to apply geographic restrictions and the steps required to bypass these controls  
+# 3 how websites detect user locations to apply geographic restrictions and the steps required to bypass these controls  
 (http://www.youtube.com/watch?v=HgZw0q_I7Ok)
 
 ---
@@ -257,5 +257,114 @@ Bypassing the website's initial geo-block is only the first step. Handshake's st
 * U.S. Phone Verification: Handshake requires a mobile number to sign up and sends a one-time SMS verification code. VOIP numbers (like Google Voice) are frequently flagged, meaning you will need a real U.S. cell phone SIM card or a premium non-VOIP text-receiving service.  
 * Identity Checks: Handshake AI programs request an official U.S. photo identity document (such as a U.S. Driver's License) to clear background and identity credentials. Without valid matching documentation, accounts are typically flagged and suspended.   
 
+---
+---
+---
 
+# Complete Location & Identity Protection Guide
+### Network layer + Identity layer + Device layer, for advocacy work under state surveillance risk
+
+**Core principle:** State-level tracking works across *four separate layers*. Fixing only one (network) while ignoring the others gives a false sense of security — the weakest layer gives you away regardless of how good the rest are.
+
+| Layer | What it catches | Fixed by |
+|---|---|---|
+| Network | IP geolocation, DNS | Router tunnel (your existing guide) |
+| Device/browser | Fingerprint, timezone, WebRTC, HTML5 geolocation | This guide, Sections 1–2 |
+| Mobile hardware | GPS, cell tower, carrier data | This guide, Section 3 |
+| Identity/money | Payment records, billing address, account linkage | This guide, Section 4 |
+
+---
+
+## Section 1 — Browser & Device Fingerprint Hardening
+
+*Your router tunnel masks IP/DNS. None of this section is fixed by the router — do it per device.*
+
+1. **Timezone & language:** Set your OS and browser locale/timezone to match your masked exit location. A US IP with an EAT system clock is a visible mismatch.
+2. **WebRTC:** Disable it or block leaks.
+   - Firefox: `about:config` → `media.peerconnection.enabled` → `false`
+   - Or install a dedicated WebRTC-leak-blocking extension.
+3. **HTML5 Geolocation API:** This is separate from your IP. Browsers can report actual GPS/Wi-Fi-positioning coordinates to any website that asks, *regardless of your VPN*.
+   - In browser settings, set Location permission to **"Ask" or "Block"** for all sites, and deny it for anything you don't explicitly trust.
+   - In Firefox you can go further: `about:config` → `geo.enabled` → `false` disables the API entirely.
+4. **Use a hardened browser for sensitive work:**
+   - Firefox with `privacy.resistFingerprinting` enabled, or
+   - **Tor Browser** for your highest-risk sessions — it standardizes fingerprints across all its users, which defeats unique-fingerprint tracking in a way a VPN alone cannot.
+5. **Check your exposure** at `amiunique.org` and `browserleaks.com` — a masked IP with a highly unique fingerprint can still single you out over repeated visits, even without ever revealing your real IP.
+6. **Cookies/storage:** Use a separate browser profile (or container tabs) exclusively for advocacy accounts — never mixed with personal browsing, so tracking cookies/fingerprints can't link the two identities.
+
+---
+
+## Section 2 — Mobile-Specific Tracking (router masking does not reach this at all)
+
+Your phone has three independent ways to reveal location that have **nothing to do with your Wi-Fi/router setup**:
+
+**Cellular network / carrier:**
+- If your phone is on mobile data, your carrier knows your location via cell-tower triangulation continuously, regardless of any VPN. A VPN encrypts *content*, not the fact that your SIM is pinging towers in a specific place.
+- **Mitigation:** For your most sensitive sessions, put the phone in airplane mode and use Wi-Fi only (through your protected router). If you need a phone that's genuinely separate from your identity, consider a dedicated device with a prepaid/anonymous SIM used only for advocacy, never carried alongside or powered on near your personal phone.
+
+**GPS:**
+- A hardware radio, entirely independent of network routing. Any app or browser with location permission granted can read it directly.
+- **Mitigation:** Disable location services at the OS level (Settings → Privacy → Location) for advocacy-related browsers/apps, or disable GPS system-wide when doing sensitive work.
+
+**HTML5 Geolocation (browser/app level):**
+- Can pull from GPS, nearby Wi-Fi SSIDs, or cell tower data — none of which route through your tunnel.
+- **Mitigation:** covered in Section 1.4 above — block or ask-first location permissions.
+
+**Practical setup for sensitive mobile use:**
+- Use a device that stays on Wi-Fi only, with the SIM removed or the device kept permanently in airplane mode, for advocacy accounts.
+- Keep this device physically separate from your personal phone — don't power both on in the same location repeatedly, since co-location patterns can link the two identities even without either device being individually compromised.
+
+---
+
+## Section 3 — Payment & Identity Separation (network masking does nothing here)
+
+This is the layer most guides skip, and it's often the one that actually unmasks people.
+
+**The problem:** Card networks verify the *issuing bank's country*, not your IP. Address Verification Systems (AVS) check billing address against the card issuer's records. Neither of these cares what your VPN says.
+
+**Mitigations, roughly in order of strength:**
+1. **Never reuse a card, email, or phone number** between your real identity and your advocacy identity/accounts. This is the single most important rule — one shared data point can collapse the entire separation.
+2. **Payment methods that don't tie to your real billing address:**
+   - Privacy-focused prepaid cards purchased with cash, where available.
+   - Cryptocurrency, ideally with privacy-preserving practices (new address per transaction, not reused), for services that accept it — understanding that most crypto is traceable on-chain without additional precautions, so this is not automatically anonymous.
+3. **Separate email identity:** a dedicated email (via a privacy-respecting provider) used only for advocacy accounts, never linked to your personal email as a recovery address.
+4. **Separate phone number:** if any service requires SMS verification, use a number not tied to your personal identity/SIM — not your daily-use number.
+5. **Billing address:** if a service requires one, do not use your real home address. Consider what's realistically available to you locally, understanding no option here is perfect — the goal is breaking the direct link between "this account" and "this specific home."
+
+**A hard truth:** full financial anonymity against a well-resourced state adversary is very difficult. The realistic goal is to make the linkage cost the adversary significant effort and multiple independent confirmations, rather than a single database lookup.
+
+---
+
+## Section 4 — Account & Behavioral OPSEC
+
+Even with every technical layer perfect, these can still identify you:
+
+- **Writing style / stylometry:** distinctive phrasing, recurring typos, or sentence patterns can be matched across a "real" account and a pseudonymous one. Vary style consciously if this matters for your safety, or have trusted allies help draft/edit.
+- **Posting time patterns:** consistently posting during your real local waking hours, even under a masked IP with a different claimed timezone, is a detectable pattern over time.
+- **Cross-posting/reposting:** sharing the same content, near-simultaneously, across your real and pseudonymous accounts is one of the most common ways activists get correlated.
+- **Photos/media metadata:** strip EXIF data (location, device ID) before posting any image. Be aware backgrounds in photos (landmarks, license plates, storefronts) can geolocate you even with metadata stripped.
+- **Never log into a pseudonymous account from a device also logged into your real accounts**, even once — session/cookie correlation and shared device fingerprints can link them permanently.
+
+---
+
+## Putting It All Together — Quick Reference
+
+| Before any sensitive session, check: | |
+|---|---|
+| ☐ Router tunnel + kill switch active | Network layer |
+| ☐ IPv4/IPv6/DNS/WebRTC leak tests clean | Network + device layer |
+| ☐ Timezone/language matches masked location | Device layer |
+| ☐ Location permissions blocked in browser/OS | Device + mobile layer |
+| ☐ Phone on Wi-Fi only / GPS off, or using dedicated device | Mobile layer |
+| ☐ No shared card/email/phone with real identity | Identity layer |
+| ☐ Separate browser profile, never logged into personal accounts | Identity layer |
+| ☐ Photos stripped of metadata before posting | Behavioral layer |
+
+---
+
+## The Honest Limit of All of This
+
+Perfect operational security against a well-resourced state adversary is extremely difficult to sustain indefinitely — the goal is to raise the cost and reduce the number of easy, single-point failures, not to claim invulnerability. Pair this technical work with the human-side protections already in your security plan (trusted contacts, check-in protocol, legal support) — technical anonymity buys you safety margin, but it isn't a substitute for people who will notice and act if something goes wrong.
+
+*For technical help specific to your situation: Access Now Digital Security Helpline — help@accessnow.org (24/7, free). For broader protection support: Front Line Defenders — +353-1-212-3750 / info@frontlinedefenders.org.*
 
