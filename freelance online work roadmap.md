@@ -7,7 +7,7 @@ Two ways to figure out what to learn:
 - **Scan demand directly**: Browse platforms like Upwork, Fiverr, or Freelancer and note which skills appear most frequently in job postings. This tells you what clients are actually paying for right now — not just what's trendy.
 
 **2. Learn the skill**
-Search "[skill] + course" or "[skill] + tutorial" (e.g., Asana + course) or (Asana + learning) — you'll get more structured results (YouTube channels, Coursera, Udemy, freeCodeCamp, etc.) instead of scattered blog posts.
+Search "[skill] + course" or "[skill] + tutorial" e.g., **Asana + course** or **Asana + learning** — you'll get more structured results (YouTube channels, Coursera, Udemy, freeCodeCamp, etc.) instead of scattered blog posts.
 
 **3. Get certified**
 Once you've learned the basics, back it up with a free or low-cost certificate — Google, HubSpot Academy, Coursera (audit mode), and Meta Blueprint all offer solid free ones. This isn't just decoration; it signals credibility to clients who don't know you yet.
