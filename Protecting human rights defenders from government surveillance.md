@@ -368,6 +368,11 @@ Perfect operational security against a well-resourced state adversary is extreme
 
 *For technical help specific to your situation: Access Now Digital Security Helpline — help@accessnow.org (24/7, free). For broader protection support: Front Line Defenders — +353-1-212-3750 / info@frontlinedefenders.org.*
 
+---
+---
+---
+---
+---
 
 # Your Complete Protection Guide
 ### Plain-language, step-by-step — for staying safe while doing advocacy work under state surveillance risk
@@ -422,10 +427,135 @@ Each step tells you: **What** it is, **Why** it protects you, and **How** to act
 ---
 
 ### 3. Set Up Your Router (GL.iNet or MikroTik)
-Use the router-specific guide already built for you: kill switch, IPv6 disabled, encrypted DPI-resistant tunnel (Shadowsocks/V2Ray/WireGuard), DNS routed through the tunnel. This protects your home network location.
+# GL.iNet / OpenWrt Configuration Checklist
+*Follow top to bottom. Each block = one screen/action. Check boxes as you go.*
 
-**⚠️ Gap to flag:** The router only protects devices connected to *that* Wi-Fi. The moment your phone leaves the house and uses mobile data or another Wi-Fi network, the router does nothing. You need a **VPN app installed directly on your phone** for protection outside the house — same VPN/tunnel protocol, different point of setup.
+**Your threat tier — pick one before starting, it changes Block 3:**
+- 🟡 **Standard** (ISP/regional censor, passive DPI) → use Shadowsocks/VMess/Trojan via Passwall
+- 🔴 **High-risk** (nation-state, active probing — e.g. GFW-class censor) → use Tor + obfs4/meek/Snowflake as primary
 
+---
+
+## BLOCK 0 — Before You Power On (do this first, once)
+
+**Where:** away from the router, on a separate trusted computer
+
+| # | Action | Done |
+|---|--------|------|
+| 0.1 | If hardware traceability matters in your threat model: buy router/SIM with cash, in person, not shipped to a sensitive address | ☐ |
+| 0.2 | Download GL.iNet firmware from the **official GL.iNet site only** | ☐ |
+| 0.3 | Verify SHA256 checksum against the value published on GL.iNet's site | ☐ |
+| 0.4 | If a PGP signature is provided, verify it too | ☐ |
+| 0.5 | 🔴 High-risk: consider flashing stock OpenWrt instead of vendor firmware fork | ☐ |
+
+⚠️ **Do not proceed until firmware is verified.** Everything below is meaningless if the OS itself is compromised.
+
+---
+
+## BLOCK 1 — Router Admin Basics
+
+**Where:** Router admin dashboard → typically `192.168.8.1`
+
+| # | Menu path | Action | Done |
+|---|-----------|--------|------|
+| 1.1 | System → Admin Password | Change default admin password | ☐ |
+| 1.2 | Network → Remote Access | Disable remote/WAN-side admin access | ☐ |
+| 1.3 | Network → UPnP | Disable UPnP | ☐ |
+| 1.4 | Network → Wi-Fi → Security | Set WPA3 (or WPA2 if unsupported), strong passphrase | ☐ |
+| 1.5 | System → Upgrade | Confirm firmware is current version | ☐ |
+
+---
+
+## BLOCK 2 — Kill Switch & IPv6 (leak prevention)
+
+**Where:** Router admin dashboard
+
+| # | Menu path | Action | Done |
+|---|-----------|--------|------|
+| 2.1 | VPN → VPN Dashboard | Toggle on **Global Settings** | ☐ |
+| 2.2 | VPN → VPN Dashboard | Enable **Block Non-VPN Traffic** (kill switch) | ☐ |
+| 2.3 | Network → WAN | **Disable IPv6** | ☐ |
+| 2.4 | Network → Firewall | Add rule blocking IPv6 traffic explicitly | ☐ |
+
+⚠️ Skipping 2.3/2.4 is the single most common real-world leak. Don't skip it.
+
+---
+
+## BLOCK 3 — Tunnel Setup (choose your path)
+
+### 🟡 Path A — Standard tier: Passwall + Shadowsocks/VMess/Trojan
+
+**Where:** Router admin dashboard
+
+| # | Menu path | Action | Done |
+|---|-----------|--------|------|
+| 3A.1 | Applications → Plug-ins | Search and install **`luci-app-passwall`** | ☐ |
+| 3A.2 | Passwall → Node List | Import server config (share-link or JSON) | ☐ |
+| 3A.3 | — | Prefer **Trojan** config if any chance of active probing; Shadowsocks/VMess only if adversary is passive-DPI only | ☐ |
+| 3A.4 | Passwall → Global Settings | Set routing mode to **all traffic through tunnel** (no bypass/split-tunnel list) | ☐ |
+| 3A.5 | — | Confirm provider is outside your government's legal reach, has no-log policy | ☐ |
+
+### 🔴 Path B — High-risk tier: Tor + pluggable transport
+
+**Where:** Router admin dashboard (if GL.iNet model supports Tor add-on) or end-device (Tor Browser)
+
+| # | Menu path | Action | Done |
+|---|-----------|--------|------|
+| 3B.1 | Applications → Plug-ins | Check if a Tor plug-in is available for your model | ☐ |
+| 3B.2 | — | If not available on router: install **Tor Browser** on the end device instead, running through the hardened router connection | ☐ |
+| 3B.3 | Tor Browser → Settings → Connection | Select bridge type: **obfs4** (default choice) | ☐ |
+| 3B.4 | — | If obfs4 bridges are blocked, switch to **meek** | ☐ |
+| 3B.5 | — | If meek also fails, switch to **Snowflake** | ☐ |
+| 3B.6 | — | Do not layer a VPN on top unless you understand exactly what it does/doesn't hide — layering can reintroduce a single point of trust | ☐ |
+
+---
+
+## BLOCK 4 — DNS Leak Protection
+
+**Where:** Router admin dashboard
+
+| # | Menu path | Action | Done |
+|---|-----------|--------|------|
+| 4.1 | Network → DNS | Enable **DNS Rebinding Attack Protection** | ☐ |
+| 4.2 | Network → DNS | Enable **DNS over TLS**, point at 1.1.1.1 or 8.8.8.8 | ☐ |
+| 4.3 | Passwall/Tor settings | Confirm DNS queries route **through the tunnel**, not direct-but-encrypted | ☐ |
+
+---
+
+## BLOCK 5 — Browser Hardening
+
+**Where:** On each end device, not the router
+
+| # | Action | Done |
+|---|--------|------|
+| 5.1 | Firefox: `about:config` → set `media.peerconnection.enabled` = `false` (blocks WebRTC leak) | ☐ |
+| 5.2 | Firefox: enable `privacy.resistFingerprinting`, OR just use Tor Browser | ☐ |
+| 5.3 | Set device system timezone to match masked location | ☐ |
+| 5.4 | Set device system language to match masked location | ☐ |
+
+---
+
+## BLOCK 6 — Final Verification
+
+**Where:** Any device connected to the router's Wi-Fi
+
+| # | Test | Expected result | Done |
+|---|------|------------------|------|
+| 6.1 | browserleaks.com / ipleak.net — IPv4 | Shows only masked location | ☐ |
+| 6.2 | Same sites — IPv6 (check separately) | No IPv6 shown, or matches masked location | ☐ |
+| 6.3 | Same sites — WebRTC | Does not reveal real IP | ☐ |
+| 6.4 | Same sites — DNS servers | Shows only tunnel/DoT provider, never real ISP | ☐ |
+| 6.5 | amiunique.org | Fingerprint not highly unique | ☐ |
+| 6.6 | Device settings | Timezone/language match masked location | ☐ |
+| 6.7 | Self-check | Protocol matches threat tier (Trojan/obfs4 if active-probing risk) | ☐ |
+
+---
+
+## Always Remember (not configurable, just discipline)
+
+- ⚠️ **Timing correlation:** no setup above defeats a top-tier state actor correlating connection timing across both ends. This reduces risk; it isn't absolute.
+- ⚠️ **Identity ≠ network.** Masking your IP doesn't protect a pseudonymous account tied to your real name, phone, payment method, or writing style. Keep those fully separate.
+- 🔁 Re-verify firmware checksum after every update (back to Block 0.3).
 ---
 
 ### 4. Separate Your Identity Completely
