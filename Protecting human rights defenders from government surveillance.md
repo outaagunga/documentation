@@ -368,3 +368,143 @@ Perfect operational security against a well-resourced state adversary is extreme
 
 *For technical help specific to your situation: Access Now Digital Security Helpline — help@accessnow.org (24/7, free). For broader protection support: Front Line Defenders — +353-1-212-3750 / info@frontlinedefenders.org.*
 
+
+# Your Complete Protection Guide
+### Plain-language, step-by-step — for staying safe while doing advocacy work under state surveillance risk
+
+---
+
+## How to Use This Guide
+
+Security work has two speeds. Don't try to do everything at once — burnout leads to shortcuts, and shortcuts get people caught.
+
+- 🔴 **TIER 1 — Critical Setup (do this within the next 1–2 weeks, once):** the foundation. Nothing else matters much if these aren't in place.
+- 🟡 **TIER 2 — Daily/Weekly Habits (ongoing):** small actions that keep the foundation from leaking over time.
+- 🟢 **TIER 3 — Advanced/Situational (when needed):** for your highest-risk moments specifically.
+
+Each step tells you: **What** it is, **Why** it protects you, and **How** to actually do it.
+
+---
+
+## 🔴 TIER 1 — CRITICAL ONE-TIME SETUP
+
+### 1. Get Tails Running on a USB Drive
+**What:** A USB-bootable operating system that leaves no trace and routes everything through Tor.
+**Why:** Your normal Windows/Mac already has months of history, cached logins, and identifying files. Tails sidesteps all of that — nothing is saved unless you explicitly choose to.
+
+**How:**
+1. Buy a USB drive, 8GB minimum, with cash if possible.
+2. On your *current* computer, go to **tails.net** — type the address directly, don't search for it, to avoid a fake lookalike site.
+3. **⚠️ Missing from your draft — do not skip this:** After downloading, **verify the download** using the verification tool Tails provides on their download page. A tampered/fake Tails image is a realistic attack vector against exactly the kind of person reading this guide. The official site walks you through this in a few clicks — don't install it unverified.
+4. Download **BalenaEtcher** (balena.io/etcher) to write the image to your USB.
+5. Plug in the USB, open BalenaEtcher, select the Tails file, select your USB, click Flash.
+6. Restart your computer. As it powers on, repeatedly tap the boot menu key for your machine (usually `F12`, `F11`, `Esc`, or `Option` on Intel Macs) and select the USB drive.
+7. **Optional but recommended — Persistent Storage:** Tails lets you set up one *encrypted* section of the USB that survives reboots (for saving contacts, documents, Signal data). Without it, literally everything resets every time — which is safer but less practical for ongoing work. Set a strong, unique passphrase for this if you enable it.
+
+**Use Tails specifically for:** drafting sensitive statements, communicating with high-risk contacts, researching things you don't want linked to your identity.
+**Don't rely on Tails for:** everyday advocacy on social media where you need a persistent, recognizable pseudonymous account — a persistent browser profile (Section 4) is more practical for that.
+
+---
+
+### 2. Encrypt Your Everyday Devices
+**What:** Full-disk encryption so a seized or stolen device is unreadable without your password.
+**Why:** Your router/Tails setup protects your *connection*. If someone physically takes your laptop or phone, encryption is what protects everything stored on it.
+
+| Device | How |
+|---|---|
+| **Windows** | Settings → Privacy & Security → Device Encryption (or BitLocker on Pro editions) → turn on. |
+| **Mac** | System Settings → Privacy & Security → FileVault → Turn On. |
+| **iPhone** | Encryption is automatic once you set a passcode. Settings → Face ID/Touch ID & Passcode → set a passcode (not just 4 digits — use a longer alphanumeric one if possible). |
+| **Android** | Usually on by default with a screen lock set. Settings → Security → Encryption (wording varies by manufacturer) — confirm it's active, and set a strong PIN/password, not a swipe pattern. |
+
+**Also do:** Set your device to auto-lock after 30 seconds to 1 minute of inactivity.
+
+---
+
+### 3. Set Up Your Router (GL.iNet or MikroTik)
+Use the router-specific guide already built for you: kill switch, IPv6 disabled, encrypted DPI-resistant tunnel (Shadowsocks/V2Ray/WireGuard), DNS routed through the tunnel. This protects your home network location.
+
+**⚠️ Gap to flag:** The router only protects devices connected to *that* Wi-Fi. The moment your phone leaves the house and uses mobile data or another Wi-Fi network, the router does nothing. You need a **VPN app installed directly on your phone** for protection outside the house — same VPN/tunnel protocol, different point of setup.
+
+---
+
+### 4. Separate Your Identity Completely
+**What:** A parallel set of accounts/tools that never touch your real identity.
+**Why:** This is the layer most people skip, and it's the one that most often actually unmasks activists — not bad IP masking, but one shared email or card between "real you" and "advocacy you."
+
+**How — build this stack once, keep it separate forever:**
+- **Email:** one new address, privacy-respecting provider, never used for anything else, never listed as a recovery email anywhere personal.
+- **Phone number:** a number not tied to your personal ID/SIM, used only for advocacy account verification.
+- **Payment:** if you must pay for anything (VPN, domain), use a prepaid card bought with cash, or cryptocurrency — never a card issued in your name for anything advocacy-related.
+- **Browser profile:** a separate Firefox profile or dedicated browser used *only* for advocacy accounts — never logged into personal accounts in that same profile, ever.
+- **Photos:** never reuse a real photo of yourself, and strip metadata (see Tier 2) from anything you post.
+
+---
+
+## 🟡 TIER 2 — DAILY / WEEKLY HABITS
+
+### Messaging & Accounts
+- ✅ Use **Signal** for anything sensitive. Enable disappearing messages (Settings → Disappearing Messages, set to a short window like 1 day).
+- ✅ Turn off notification previews (Signal Settings → Notifications → uncheck "show name/message") so a glance at your lock screen doesn't reveal contents.
+- ✅ Verify Signal safety numbers with your most important contacts at least once (Signal will show you how) — this confirms no one is intercepting your messages in the middle.
+- ✅ Use an authenticator app (not SMS) for two-factor authentication on every account — SIM-swap attacks make SMS codes interceptable.
+
+### Browser Hygiene (every session)
+- ✅ Check that your system clock/timezone matches your VPN's exit location.
+- ✅ Location permission set to "Ask" or "Block" for all sites (Settings → Privacy → Location, in both browser and OS).
+- ✅ For your advocacy browser profile: WebRTC disabled (Firefox: `about:config` → `media.peerconnection.enabled` → `false`).
+
+### Photos & Media
+- ✅ Strip EXIF metadata before posting any photo. On iPhone: share via Files app and "remove location data" if prompted, or use a dedicated app like ExifCleaner (desktop) before uploading. On Android: many share sheets have a "remove location" toggle — check before sending.
+- ✅ Look at the actual photo content — landmarks, license plates, storefronts, school uniforms in the background can geolocate you even with metadata gone.
+
+### Location Services
+- ✅ Keep GPS/location services off system-wide except when you specifically need navigation (Settings → Privacy → Location Services, toggle per-app or entirely).
+- ✅ For sensitive meetings: power the phone **fully off** (not just airplane mode) or leave it at home — airplane mode doesn't guarantee every radio is actually off on every device.
+
+### Writing & Posting Patterns
+- ✅ Vary your posting times occasionally — a consistent schedule matching your real waking hours is a pattern, even under a masked IP.
+- ✅ Don't cross-post identical content near-simultaneously across your real and pseudonymous accounts.
+
+---
+
+## 🟢 TIER 3 — ADVANCED / SITUATIONAL
+
+### Before a High-Risk Meeting or Sensitive Action
+- Leave your personal phone at home, or put it in a **Faraday bag** (blocks all signal — GPS, cellular, Wi-Fi, Bluetooth) if you must carry it.
+- Use Tails on a laptop for any drafting or communication tied to the specific action.
+- Confirm your check-in protocol (from your personal security plan) is active with a trusted contact before you go.
+
+### If You Suspect Device Compromise
+- Don't try to self-diagnose spyware — this can tip off an attacker that you know.
+- Contact **Access Now's Digital Security Helpline** (help@accessnow.org, 24/7, free) — they can do this safely.
+- In the meantime, avoid logging into sensitive accounts from that device.
+
+### Dedicated "Advocacy-Only" Device
+If your risk level justifies it: a second phone, Wi-Fi only, SIM removed or never inserted, used exclusively for advocacy accounts, kept physically separate from your personal phone (don't power both on in the same room repeatedly — co-location patterns can link them).
+
+---
+
+## Full Gaps Identified & Fixed in This Version
+
+Your original draft was strong on network-level masking. These were missing or needed correction:
+
+1. **No verification step for the Tails download** — a compromised image is a realistic attack against high-risk users; now included.
+2. **No mention of full-disk encryption** on the actual host devices — network masking doesn't help if a seized laptop's hard drive is readable.
+3. **No mobile-specific VPN** — the router only covers home Wi-Fi; phones need their own VPN app for use outside the house.
+4. **No 2FA guidance** — SMS-based codes are vulnerable to SIM-swap attacks; authenticator apps are safer.
+5. **No screen-lock / notification-preview hardening** — a glance at a lock screen can expose sensitive Signal messages even with great encryption underneath.
+6. **No safety number verification for Signal** — encryption alone doesn't stop a middle-of-conversation interception without this manual check.
+7. **"Airplane mode" treated as equivalent to "off"** — it isn't a hardware guarantee. Full power-off or a Faraday bag is stronger for high-risk moments.
+8. **No photo/EXIF guidance** — a single unstripped image can undo everything else in this guide.
+9. **No Persistent Storage note for Tails** — without it, useful data doesn't survive reboots, which is safe but often impractical; now flagged as an explicit choice.
+
+---
+
+## One Honest Reminder
+
+No combination of tools makes you invisible to a well-resourced state adversary forever. The realistic goal is to make tracking you take significant, sustained effort rather than a single easy lookup — and to pair all of this with the human side of your safety: trusted contacts, a check-in protocol, and a lawyer who can act quickly if something goes wrong.
+
+*Free, 24/7 technical help: Access Now Digital Security Helpline — help@accessnow.org*
+*Broader protection support: Front Line Defenders — +353-1-212-3750 / info@frontlinedefenders.org*
+
