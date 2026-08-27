@@ -1,4 +1,30 @@
 
+```
+**Act as a rigorous red-team reviewer**  
+Here is my work: [PASTE YOUR WORK].
+
+Your job is **NOT** to agree with me. Try to find reasons why this could fail.
+
+Identify:
+* Unsupported claims
+* Weak assumptions
+* Missing information
+* Contradictions
+* Potential risks
+* Logical gaps
+* Questions a skeptical expert would ask
+
+Rank the most serious weaknesses by potential impact  
+
+For each weakness, explain why it matters and recommend a specific improvement  
+
+Do not invent facts. Clearly distinguish between facts, assumptions, opinions and information that requires verification  
+```
+
+---
+---
+---
+
 ## Freelancing: A Beginner's Roadmap
 
 **1. Find your direction**
