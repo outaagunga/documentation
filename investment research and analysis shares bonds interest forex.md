@@ -1,4 +1,30 @@
 
+**Understanding Investment: The Cow Analogy**
+
+Imagine you buy a cow for Ksh 20,000. That cow produces 5 litres of milk a day, which you sell.
+
+Take the net profit from your milk sales and work out how long it takes to earn back your Ksh 20,000. That timeframe is your **payback period** — and the shorter it is, the better the investment.
+
+* *How long will it take for my investment to recover the money I initially put into it?*
+
+**Why You Should Invest — Not Just Work a Job**
+
+Picture this: you work 8am–5pm every day and earn a monthly salary of Ksh 50,000. After expenses, you're only able to save Ksh 5,000 a month.
+
+Your dream house costs Ksh 3 million. Your dream car costs Ksh 6 million. That's Ksh 9 million total.
+
+At Ksh 5,000 a month (Ksh 60,000 a year), it would take you **150 years** to afford both. Impossible in one lifetime.
+
+That's the problem with relying on a salary alone — it funds your lifestyle, but it rarely builds real wealth. Business and smart investing are what actually get you there.
+
+**Make employment your side hustle. Make business your main hustle.**
+
+---
+---
+---
+---
+
+
 # INVESTMENT RESEARCH & ANALYSIS TEMPLATE
 
 ## 1. INVESTMENT RESEARCH LOG
