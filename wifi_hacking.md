@@ -1,3 +1,214 @@
+# Wireless (802.11) Penetration Testing — Beginner's Walkthrough
+
+> ⚠️ **LEGAL DISCLAIMER — READ FIRST**
+> It is illegal in most jurisdictions to run any of the steps below against a network you don't own or don't have **explicit, written authorization** to test. This includes your neighbor's Wi-Fi, a coffee shop's network, or your employer's network without a signed scope. Only run this on:
+> - Your own home lab network, **or**
+> - A network where you have a signed penetration testing agreement / rules of engagement (RoE) document.
+>
+> This guide is for education and authorized security testing only.
+
+---
+
+## Before You Start: What You'll Need
+
+| Requirement | Why |
+|---|---|
+| Linux machine (Kali Linux recommended) | Most tools here (aircrack-ng, reaver) come pre-installed on Kali |
+| A wireless adapter that supports **monitor mode** and **packet injection** | Most laptop built-in Wi-Fi cards do NOT support this — you'll likely need a USB adapter (common chipsets: Atheros AR9271, Ralink RT3070) |
+| Written authorization / test scope | Legally required — see disclaimer above |
+| A target network you're authorized to test | For practice, set up your own router at home |
+
+**Quick check:** run `iw list` and look for `monitor` under "Supported interface modes." If it's not listed, your adapter can't do this.
+
+---
+
+## Glossary (skim this before Phase 1)
+
+- **BSSID** — the MAC address of a specific access point (router radio).
+- **ESSID/SSID** — the human-readable network name (e.g., "HomeWiFi").
+- **Monitor mode** — a mode where your wireless card captures *all* nearby traffic instead of just traffic addressed to it.
+- **Deauthentication ("deauth") frame** — a management frame that forcibly disconnects a client from an AP. Used here to force a reconnection so we can capture data.
+- **4-way handshake** — the exchange that happens when a device connects to a WPA/WPA2 network. Capturing it lets you attempt to crack the password offline.
+- **WPS** — Wi-Fi Protected Setup, a legacy "push-button" pairing feature with known PIN vulnerabilities.
+
+---
+
+## Phase 1: Set Up Your Wireless Adapter
+
+**Goal:** switch your adapter from normal ("Managed") mode into "Monitor" mode so it can capture raw wireless traffic.
+
+### Step 1.1 — Find your adapter's name
+```bash
+iwconfig
+```
+Look for an entry like `wlan0` or `wlan1`. This is your interface name — you'll use it in every command below. (If you only see `lo` and `eth0`, your Wi-Fi adapter isn't detected — check it's plugged in and supported.)
+
+### Step 1.2 — Free up the adapter
+Your OS's network manager will keep trying to reconnect the card to Wi-Fi, which interferes with monitor mode. Stop it:
+```bash
+sudo airmon-ng check kill
+```
+*This is safe — it only pauses background network processes and won't uninstall anything. You'll restart networking normally in Phase 6.*
+
+### Step 1.3 — Turn on monitor mode
+```bash
+sudo airmon-ng start wlan0
+```
+✅ **Check it worked:** run `iwconfig` again. Your interface should now be renamed (often to `wlan0mon`) and show `Mode:Monitor`. **Use this new name in every command from here on.**
+
+**Common issue:** if the interface name doesn't change, try `sudo airmon-ng start wlan0` again, or check `dmesg | tail` for driver errors.
+
+---
+
+## Phase 2: Find Your Target Network
+
+**Goal:** see what networks and devices are nearby, then focus on your one authorized target.
+
+### Step 2.1 — Scan everything nearby
+```bash
+sudo airodump-ng wlan0mon
+```
+You'll see a live-updating table. Here's how to read it:
+
+| Column | Meaning |
+|---|---|
+| BSSID | The router's MAC address |
+| PWR | Signal strength — closer to 0 is *stronger* (e.g. -40 is a stronger signal than -80) |
+| CH | The Wi-Fi channel it's broadcasting on |
+| ESSID | The network name — shows `<length: 0>` if the network is hiding its name |
+
+Find your target in this list and note its **BSSID** and **channel**. Press `Ctrl+C` to stop.
+
+### Step 2.2 — Lock onto your target and start recording
+```bash
+sudo airodump-ng --bssid 00:11:22:33:44:55 --channel 6 -w target_capture wlan0mon
+```
+- Replace `00:11:22:33:44:55` with your target's BSSID and `6` with its channel.
+- `-w target_capture` saves everything to files starting with `target_capture` (e.g. `target_capture-01.cap`) in your current folder.
+- **Leave this running in its own terminal window** — you'll need it active for the next phases.
+
+---
+
+## Phase 3: Revealing Hidden Networks (Optional)
+
+Some networks hide their name from the normal broadcast. Here's how to unmask one — **only if it's in your authorized scope.**
+
+### Step 3.1 — Open a *second* terminal
+(Keep the Phase 2 `airodump-ng` window running in the background — don't close it.)
+
+### Step 3.2 — Force a connected device to reconnect
+```bash
+sudo aireplay-ng --deauth 5 -a 00:11:22:33:44:55 -c AA:BB:CC:DD:EE:FF wlan0mon
+```
+- `-a` = the AP's BSSID (from Phase 2)
+- `-c` = the MAC address of a client device you saw connected to it in the airodump-ng "STATION" list
+- `--deauth 5` sends 5 disconnect frames — start small; you can increase if the client doesn't reconnect
+
+**What happens:** the targeted device gets briefly disconnected and automatically reconnects. When it does, it broadcasts the real network name — watch your **first terminal** (the airodump-ng one) and the `<length: 0>` should be replaced with the real ESSID.
+
+> 💡 A broadcast deauth (leaving off `-c`) disconnects *every* client on the network, not just one. Avoid this — it's noisier, more disruptive, and rarely necessary or in-scope.
+
+### Step 3.3 — (Optional) Analyze probe requests
+Devices searching for networks they've connected to before "call out" the names of those networks. You can review these later in Wireshark:
+```bash
+wireshark target_capture-01.cap
+```
+Filter box: type `wlan.fc.type_subtype == 0x04` and press Enter to show only these probe requests.
+
+---
+
+## Phase 4: Attempting Access
+
+Choose **one** of the two paths below depending on what the network supports.
+
+### Path A — WPA/WPA2 Handshake Capture
+
+**Goal:** capture the "4-way handshake" that happens when a device connects, then try to crack the password from it *offline* (no more contact with the target network needed after this).
+
+1. Make sure your Phase 2 `airodump-ng` capture is still running on the target.
+2. Trigger a quick reconnect so the handshake happens while you're recording:
+   ```bash
+   sudo aireplay-ng --deauth 2 -a 00:11:22:33:44:55 wlan0mon
+   ```
+3. Watch the **top-right corner** of the airodump-ng window for the message:
+   `WPA handshake: 00:11:22:33:44:55`
+   This confirms you captured it. If you don't see it after a minute, repeat step 2.
+4. Attempt to crack the password offline using a wordlist (a text file of candidate passwords):
+   ```bash
+   sudo aircrack-ng -w /path/to/wordlist.txt target_capture-01.cap
+   ```
+   **Beginner note:** this only works if the real password is *in* your wordlist. A strong, random password will not be crackable this way in any reasonable time — that's the whole point of the test (to confirm the password is strong).
+
+### Path B — WPS PIN Attack (only if WPS is enabled)
+
+WPS is an older convenience feature with known weaknesses. Many modern routers disable it or rate-limit attempts.
+
+1. Check which nearby networks have WPS turned on:
+   ```bash
+   sudo wash -i wlan0mon
+   ```
+2. Attempt the PIN brute-force against your authorized target:
+   ```bash
+   sudo reaver -i wlan0mon -b 00:11:22:33:44:55 -vv
+   ```
+   **Heads up for beginners:** this can take hours, and most modern routers lock out after repeated failed attempts. If it stalls or errors immediately, WPS is likely already protected — that's a valid, reportable finding on its own.
+
+---
+
+## Phase 5: Checking for Default Admin Credentials
+
+Once connected to the network (using a password recovered above, or one provided in scope), check whether the router's admin panel still uses factory-default login details — a very common real-world weakness.
+
+1. Turn off monitor mode and restore normal networking:
+   ```bash
+   sudo airmon-ng stop wlan0mon
+   sudo systemctl start NetworkManager
+   ```
+2. Find the router's address:
+   ```bash
+   ip route show | grep default
+   ```
+   You'll see something like `default via 192.168.1.1 dev wlan0` — `192.168.1.1` is your router's admin page address.
+3. Open `http://192.168.1.1` in a browser and try common factory defaults:
+
+   | Username | Password |
+   |---|---|
+   | admin | admin |
+   | admin | password |
+   | root | admin |
+   | admin | *(blank)* |
+
+   **Note:** many newer routers ship with a unique random password printed on a sticker on the device, in which case these generic defaults won't apply — that's actually a good sign for the network's security.
+
+---
+
+## Phase 6: Cleanup (Always Do This Last)
+
+Whether the test succeeded or not, restore your machine to its normal state:
+```bash
+sudo airmon-ng stop wlan0mon
+sudo systemctl restart NetworkManager
+```
+This turns your adapter back to normal mode and lets your OS manage Wi-Fi connections again.
+
+**Before you finish, also:**
+- Securely store or delete your `.cap` files and any recovered credentials according to your engagement's data-handling rules.
+- Write up your findings (what was tested, what worked, what didn't, and remediation suggestions) for your report.
+
+---
+
+## Troubleshooting Quick Reference
+
+| Problem | Likely Fix |
+|---|---|
+| `airmon-ng start wlan0` doesn't rename the interface | Your card may already be in monitor mode — check with `iwconfig`; or the driver doesn't support it (try a different adapter) |
+| No handshake captured after several deauth attempts | Try a higher `--deauth` count, confirm you're on the correct channel, or move closer to the target |
+| `reaver` immediately fails or times out | WPS may be locked out or disabled — this is a normal/expected outcome, not a tool error |
+| Can't reach `192.168.1.1` after reconnecting | Confirm you're actually connected to the target network (`iwconfig` or `nmcli`) and double-check the gateway IP from Phase 5, step 2 |
+
+---
+---
+---
 
 While you missed the live action, the agenda covered core **802.11 wireless penetration testing fundamentals**—specifically moving beyond the outdated myth that modern Wi-Fi encryption has rendered wireless attacks obsolete.
 
