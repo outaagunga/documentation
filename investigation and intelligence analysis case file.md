@@ -1010,4 +1010,367 @@ Use this for major conclusions **and** for testing alibis from §9a.
 ### WHY?
 > ---
 
+---
+---
+---
+---
+**Mar adek**
+
+When there's no digital trail, no eyewitnesses, and no obvious financial footprint, investigators shift from "follow the trail" to "build the case from fragments." Here's how a cold, well-executed murder typically gets approached:
+
+**1. Exhaust forensic evidence at the scene**
+- Ballistics: shell casings, bullet trajectory, and rifling marks can match a weapon to other crimes even without a suspect.
+- Trace evidence: fibers, soil, paint transfer, tool marks — anything left behind unintentionally, since even careful people rarely control every micro-detail.
+- DNA and touch DNA on surfaces the perpetrator likely had to contact (door handles, getaway vehicle, discarded items).
+
+**2. Rebuild the victim's last 72 hours in extreme detail**
+- Full timeline reconstruction: who they spoke to, where they went, what routine they kept. Killers who plan carefully often still have to observe a victim's pattern beforehand — which means someone, somewhere, may have noticed unfamiliar surveillance.
+- Victimology deep dive: enemies, debts, inheritance, recent disputes, insurance policies, business dealings — motive often survives even when method leaves no trace.
+
+**3. Canvass beyond the immediate scene**
+- Widen CCTV canvassing to gas stations, ATMs, and traffic cameras along probable approach/escape routes, not just the crime scene itself.
+- Look for "negative space" evidence — cameras that were mysteriously offline, alarm systems disabled, or gaps in coverage that suggest advance reconnaissance.
+
+**4. Follow the money differently**
+- If there's no direct paper trail, investigators look for indirect financial motive: who benefits from the death (wills, insurance, business succession, debt relief) rather than who paid for the hit.
+
+**5. Use behavioral and geographic profiling**
+- Method and scene selection can reveal operational sophistication — organized vs. disorganized crime scene indicators, weapon choice, escape route planning — which narrows the pool of people capable of executing it.
+- Geographic profiling of related incidents (if any) can suggest a base of operations even without a suspect name.
+
+**6. Reinterview, don't just interview once**
+- People close to the victim or scene often withhold details in a first interview out of fear, distrust, or not realizing relevance. Cold cases are frequently cracked by returning to the same witnesses months or years later.
+
+**7. Watch for behavioral slips *after* the fact**
+- Sudden unexplained wealth, guilt-driven confessions to third parties, inconsistent alibis under pressure, or a change in someone's relationship to the victim's assets or position — these often surface long after the crime, even when the crime itself left nothing.
+
+**8. Keep the case active for forensic advances**
+- DNA and technology evolve. Evidence collected and preserved properly today can be re-run years later against expanded databases or improved forensic techniques.
+
+The core difference: when there's a paper trail, investigators follow it. When there isn't, they build the case backward from motive, opportunity, and behavior — which takes longer and relies more on patience, victimology, and re-examining evidence as tools improve.
+
+---
+---
+---
+---
+
+Here's a step-by-step template a beginner investigator (or someone studying criminology/true crime) can follow for a case with no obvious operational security mistakes. It's structured so you can literally work through it top to bottom.
+
+## COLD CASE / NO-TRAIL HOMICIDE INVESTIGATION TEMPLATE
+
+### PHASE 1: Scene & Immediate Evidence (Day 1)
+- [ ] Secure and document scene before anything is moved (photos, video, sketch with measurements)
+- [ ] Log every person who entered scene (first responders included — rules them out later)
+- [ ] Collect physical evidence: casings, projectiles, fibers, prints, tool marks
+- [ ] Note "negative evidence" — disabled cameras, missing items, signs of staging
+- [ ] Determine time of death window as precisely as possible
+- [ ] Identify point of entry/exit and likely approach/escape route
+
+### PHASE 2: Victimology (Days 1–7)
+- [ ] Build full 72-hour timeline before death (calls, movements, meetings)
+- [ ] List everyone with recent conflict, financial ties, or relationship changes with victim
+- [ ] Check: wills, insurance policies, recent large transactions, business disputes
+- [ ] Pull victim's phone/computer records (even without a "threat," patterns matter)
+- [ ] Identify anyone who benefits from the death (money, position, freedom from a dispute)
+
+### PHASE 3: Canvassing (Days 1–14)
+- [ ] Interview immediate witnesses first, then widen radius
+- [ ] Pull CCTV not just at the scene but along probable travel routes (fuel stations, ATMs, traffic cams)
+- [ ] Ask specifically: "Did you notice anyone unfamiliar in the days/weeks before?"
+- [ ] Re-canvass 1–2 weeks later — people remember more once shock fades
+
+### PHASE 4: Forensic Follow-Through (Weeks 2–8)
+- [ ] Submit all trace evidence to lab (DNA, ballistics, fiber/paint analysis)
+- [ ] Cross-check ballistics/DNA against national databases for prior unsolved crimes
+- [ ] Reconstruct crime scene physically or digitally to test suspect theories
+- [ ] Assess crime scene as "organized" vs "disorganized" — this narrows suspect profile
+
+### PHASE 5: Suspect Development (Ongoing)
+- [ ] Rank suspects by motive + opportunity + capability (not just motive alone)
+- [ ] Look for indirect footprints: sudden financial change, behavior change, alibi inconsistency
+- [ ] Reinterview key witnesses/suspects after time has passed — stories shift under pressure
+- [ ] Cross-reference known associates of top suspects for indirect links to the scene
+
+### PHASE 6: Long-Term Case Management
+- [ ] Keep evidence properly preserved for future forensic re-testing
+- [ ] Revisit case file periodically as new tech/databases become available
+- [ ] Document every dead end — a "no" today can become relevant with new information later
+- [ ] Maintain victim family communication (often surfaces new leads)
+
+---
+
+**How to use this**: Treat each phase as a gate — don't skip to suspect theories before victimology and forensics are exhausted, since jumping ahead is the most common beginner mistake (tunnel vision on one suspect too early). Document *everything*, even the negative results — "camera X showed nothing" is still useful information later.
+
+---
+---
+---
+---
+**Mar angwen**
+# MURDER INVESTIGATION ANALYSIS TEMPLATE — APPLIED TO REPORTED CASE
+
+> **Source note:** All content below is drawn *only* from a media transcript (LifeLens TV) reporting on an active, unresolved case. Nothing here is independently verified by me. Every claim about a named person is an **allegation** as reported by investigators/media, not a proven fact. Fields with no transcript support are marked "Not stated in source" rather than filled with invented detail. This document should not be treated as a legal or investigative record — it's an exercise in organizing reported information into the template structure.
+
+---
+
+# 0. LEGAL AUTHORIZATION CHECKLIST
+
+Not applicable to me — this is a media transcript, not records I have legal access to. A real investigator using this template would need to independently confirm authorization for each record type before proceeding.
+
+---
+
+# 1. CASE INFORMATION
+
+**Case name:** Death of Dr. Victoria Mutiso (as reported)
+**Date of incident:** July 29, 2026
+**Location:** Upper Hill, Nairobi County (en route from Tanga Apartments, Maziwa, to Meni Gardens)
+**Reporting source:** LifeLens TV transcript
+**Status:** Reported as an active/ongoing investigation; suspects named are *alleged*, not convicted
+
+---
+
+# 2. THE VICTIM
+
+**Name:** Dr. Victoria Mutiso
+**Occupation:** Reportedly affiliated with the Africa Institute of Mental and Brain Health, Meni Gardens
+**Last known residence:** Tanga Apartments, Maziwa sub-location
+
+## Victimology (per transcript)
+**Relationships:** Partner of Professor David Ndetei; they had two children but had not legally solemnized their relationship until 2026 plans began.
+**Known disputes:** Long-running matrimonial property dispute — not directly between her and Rose Mbithe Mulwa, but arising from Rose's earlier marriage to Professor Ndetei (divorced 2001) and the unresolved property fight since.
+**Threats received:** Per transcript, she allegedly filed a police report at Kilimani police station naming Chris Mulwa after an alleged July 7, 2026 confrontation; also received a message the same night allegedly traced to Rose Mbithe Mulwa's number.
+**Recent life changes:** Wedding to Professor Ndetei planned for August 3, 2026, following a July 3, 2026 High Court ruling that struck out Rose's injunction against the marriage.
+**Prior property loss:** Reportedly evicted from the Mulongo property using a title deed investigators allege was forged; three of her vehicles reportedly taken during the eviction and later traced to Angela Mulwa's and Nelson Migaa's home.
+
+---
+
+# 3. LAST KNOWN MOVEMENTS
+
+| Time | Location | Activity | Person(s) present | Source |
+|---|---|---|---|---|
+| 8:15 AM, 7/29 | Tanga Apartments, Maziwa | Preparing to leave for work | Dr. Mutiso | Transcript narrative |
+| ~9:23 AM, 7/29 | Upper Hill (en route to Meni Gardens via Uber) | Traveling to work | Dr. Mutiso, Uber driver | Transcript narrative |
+
+**Not stated in source:** Exact route details, other stops, who she spoke with that morning.
+
+---
+
+# 4. CRIME SCENE — BASIC RECORD
+
+**Location:** Upper Hill, Nairobi (traffic incident location)
+**Date/time:** July 29, 2026, approx. 9:23 AM
+**Initial observations (per transcript):** Two hired vehicles (Toyota Prados, reg. KDH 600A and KDA 400W) allegedly blocked the Uber; a motorcycle allegedly approached from behind; three shots fired, shattering the vehicle's glass.
+**Outcome:** Dr. Mutiso critically wounded, taken to Kenyatta National Hospital, pronounced dead on arrival.
+
+---
+
+# 4a. CHAIN OF CUSTODY LOG
+
+Not stated in source. The transcript does not describe how physical evidence (shell casings, vehicles, phones) was collected, sealed, or transferred. This would be a real gap for any investigator to fill.
+
+---
+
+# 5. MEDICAL / FORENSIC INFORMATION
+
+**Cause of death:** Gunshot wounds (three shots reported)
+**Time of death:** Pronounced dead on arrival at Kenyatta National Hospital, shortly after the ~9:23 AM shooting
+**Forensic findings:** Not detailed in source beyond cause/location of shooting
+
+---
+
+# 6. MASTER TIMELINE
+
+| Date | Time | Event | Person(s) | Evidence/source | Flag for §7? |
+|---|---|---|---|---|---|
+| 2001 | — | Divorce of Rose Mbithe Mulwa and Prof. David Ndetei | Rose, Ndetei | Transcript | No |
+| Early 2026 | — | Ndetei & Mutiso begin marriage plans | Ndetei, Mutiso | Transcript | No |
+| Early 2026 | — | Rose seeks injunction to block marriage | Rose | Transcript | No |
+| — | — | Alleged forged title deed used to evict Mutiso; 3 vehicles allegedly taken | Rose (alleged), Angela Mulwa, Nelson Migaa | Transcript | No |
+| 7/3/2026 | — | High Court strikes out Rose's injunction | Court | Transcript | No |
+| 7/7/2026 | ~6:30 PM | Alleged armed confrontation in traffic; Chris Mulwa allegedly displays gun, warns against wedding | Chris Mulwa, Mutiso | Transcript (Mutiso's police report) | Yes |
+| 7/7/2026 | Night | Threatening message allegedly traced to Rose's number | Rose (alleged) | Transcript | Yes |
+| 7/25/2026 | — | Chris Mulwa allegedly connects with intermediary, then with IP Kenneth Kipkemboi Sang | Chris Mulwa, unnamed intermediary, Sang | Transcript | Yes |
+| 7/26/2026 | — | Alleged bank transfer from Chris Mulwa to Sang | Chris Mulwa, Sang | Transcript | Yes |
+| 7/29/2026 | 9:23 AM | Shooting occurs | Multiple alleged parties (below) | Transcript | Yes |
+| 7/29–30/2026 | — | Vehicles allegedly moved to Angela Mulwa's home, then hired vehicles returned | Chris Mulwa, others | Transcript | Yes |
+
+---
+
+# 7. THE CRITICAL TIME WINDOW
+
+**Start:** July 7, 2026 (first alleged overt threat) **End:** July 30, 2026 (vehicles returned)
+
+### What happened (per flagged rows)
+Per transcript: an alleged escalation from a direct armed warning, to a traced threatening message, to alleged recruitment of a police contact and hired driver/logistics, to the shooting itself, to alleged post-incident vehicle handling.
+
+### Who was reportedly present/involved (alleged, per transcript)
+1. Chris Mulwa
+2. Rose Mbithe Mulwa
+3. Angela Mulwa
+4. Nelson Migaa
+5. Daniel Wanginog (logistics/vehicles)
+6. Kelvin Nyugi Kinuthia (alleged motorcycle rider)
+7. Elijah Kibellian Kimoi (alleged shooter)
+8. IP Kenneth Kipkemboi Sang (police officer, alleged link)
+9. PC Bett Kiplangat Collins (police officer)
+10. An unnamed intermediary the transcript declines to identify ("investigation is ongoing")
+
+### Who cannot yet be accounted for
+Not stated in source — the transcript does not address anyone's alibi claims.
+
+---
+
+# 8. WITNESS TABLE
+
+Not stated in source. The transcript references CCTV footage and police occurrence books but does not quote named eyewitnesses with direct statements (aside from an unattributed quote: *"We are the police. We are in power. We will do what we want."* — speaker and context not clearly identified in the transcript).
+
+---
+
+# 9. PERSONS OF INTEREST
+
+| Person | Relationship to victim | Alleged relevance (per transcript) | Evidence cited in source | Contradicting evidence |
+|---|---|---|---|---|
+| Rose Mbithe Mulwa | Ex-wife of victim's partner | Alleged motive: property dispute; alleged injunction attempts; message allegedly traced to her number; described as "principal suspect" | Traced threatening message; forged title deed allegation | Not stated |
+| Chris Mulwa | Rose's associate (relationship to her not fully specified in transcript) | Alleged armed confrontation; alleged payment to police officer | Mutiso's police report naming him; bank transfer allegation | Not stated |
+| Angela Mulwa | Rose's daughter (per transcript) | Vehicles allegedly traced to her home; practicing advocate who later represented Rose in legal proceedings | Vehicle location | Not stated |
+| Nelson Migaa | Associate | Vehicles allegedly traced to shared residence with Angela Mulwa | Vehicle location | Not stated |
+| Daniel Wanginog | Alleged logistics coordinator | Allegedly hired vehicles used to block the Uber | Communication trail (per investigators) | Not stated |
+| Kelvin Nyugi Kinuthia | Alleged motorcycle rider | Allegedly transported the shooter | Communication trail | Not stated |
+| Elijah Kibellian Kimoi | Alleged shooter | Identified by investigators as having fired the shots | Communication trail | Not stated |
+| IP Kenneth Kipkemboi Sang | Police officer | Alleged link between financiers and operational team; alleged recipient of funds | Bank transfer allegation, phone contact | Not stated |
+| PC Bett Kiplangat Collins | Police officer | Allegedly drove one of the blocking vehicles | Transcript narrative | Not stated |
+
+**Reminder:** none of this establishes guilt — it restates what the transcript says investigators allege.
+
+---
+
+# 9a. ALIBI VERIFICATION TABLE
+
+Not stated in source. The transcript does not report any alibi claims from named individuals.
+
+---
+
+# 10–11. MOTIVE & THREAT HISTORY
+
+**Alleged motive (per transcript):** Preventing legal solemnization of Mutiso's marriage to Prof. Ndetei, which under Kenyan law could have given her spousal rights over disputed matrimonial property.
+
+| Date | Threat/source | Method | Content (per transcript) | Reported? | Cited evidence |
+|---|---|---|---|---|---|
+| 7/7/2026 | Chris Mulwa (alleged) | In-person, armed | Warning to abandon the wedding | Yes — Kilimani police station | Mutiso's report naming him |
+| 7/7/2026 (night) | Rose Mbithe Mulwa (alleged, per traced number) | Text message | Marriage "would never happen" unless property dispute settled | Not stated whether separately reported | Number allegedly traced by detectives |
+| Earlier period | Chris Mulwa / Rose Mbithe Mulwa (alleged) | Not specified | General "threats, intimidation, and blackmail" referenced broadly | Some reports at Kilimani police station, per transcript | Not detailed |
+
+---
+
+# 12. COMMUNICATION ANALYSIS
+
+| Date | Person A | Person B | Type | What transcript establishes |
+|---|---|---|---|---|
+| 7/25/2026 | Chris Mulwa | Unnamed intermediary | Not specified | Intermediary allegedly provided Sang's number |
+| 7/25/2026 (after) | Chris Mulwa | IP Kenneth Kipkemboi Sang | Not specified | Direct communication allegedly began |
+| Undated | Sang | Daniel Wanginog | Not specified | Sang allegedly brought Wanginog into the operation |
+| Undated | (same trail) | Kelvin Nyugi Kinuthia | Not specified | Same communication trail allegedly brought him in |
+
+**Not stated in source:** content of any calls/messages beyond the one threatening text described in §11; call durations; whether records were obtained via warrant.
+
+---
+
+# 13. FINANCIAL ANALYSIS
+
+| Date | Sender | Recipient | Amount | Stated purpose | Source |
+|---|---|---|---|---|---|
+| 7/26/2026 | Chris Mulwa (personal account, per transcript) | IP Kenneth Kipkemboi Sang | Not stated | Alleged payment for involvement in operation | Transcript states investigators allege this transfer occurred |
+
+**Not stated in source:** amount, bank names, transaction records themselves.
+
+---
+
+# 14. CCTV / MOVEMENT ANALYSIS
+
+| Time | Location | Person/vehicle | Observation (per transcript) |
+|---|---|---|---|
+| Week following 7/7 incident | Unspecified | Vehicles allegedly used in the blocking maneuver | CCTV footage reportedly helped identify Wanginog, Kinuthia, Sang, Kimoi, and Collins |
+| 9:23 AM, 7/29 | Upper Hill | Two Toyota Prados (KDH 600A, KDA 400W), motorcycle | Allegedly blocked Uber, motorcycle approached from behind |
+
+---
+
+# 14a. DIGITAL EVIDENCE ANALYSIS
+
+| Source | Data type | What transcript says it shows | What it does NOT show | Reliability (as reported) |
+|---|---|---|---|---|
+| Phone number (Rose, alleged) | Text message | Traced to a number linked to Rose | Doesn't establish who physically sent it | Not independently assessable from transcript |
+| Bank account (Chris Mulwa, alleged) | Transfer record | Money reportedly moved to Sang | Doesn't establish the money's stated purpose beyond allegation | Not independently assessable |
+
+---
+
+# 15. VEHICLE / OBJECT ANALYSIS
+
+| Object/Vehicle | Registration | Alleged role | Source |
+|---|---|---|---|
+| Toyota Prado | KDH 600A | Allegedly hired by Daniel Wanginog; used to block Uber | Transcript |
+| Toyota Prado | KDA 400W | Allegedly driven by PC Bett Kiplangat Collins; used to block Uber | Transcript |
+| Motorcycle | Not specified | Allegedly carried Kinuthia (rider) and Kimoi (shooter) | Transcript |
+| Toyota Prado (Mutiso's own, allegedly seized in earlier eviction) | Not specified | Allegedly used by Chris Mulwa and Nelson Migaa on morning of shooting | Transcript |
+
+---
+
+# 16. EVIDENCE MATRIX
+
+| Evidence (per transcript) | What it establishes (as alleged) | What it does NOT establish |
+|---|---|---|
+| Mutiso's police report naming Chris Mulwa | An accusation was formally made before her death | Does not itself prove Chris Mulwa's guilt in the killing |
+| Traced text message | A number linked to Rose sent a threatening message | Does not establish who physically typed/sent it |
+| Bank transfer allegation | Money allegedly moved from Chris Mulwa to a police officer | Does not by itself establish the money funded the killing |
+| CCTV of vehicles | Vehicles allegedly used were identified and traced to individuals | Does not establish who was inside at the moment of the shooting |
+| Vehicles traced to Angela Mulwa/Migaa's home | Physical proximity of vehicles to these individuals after eviction/after the shooting | Does not establish their direct participation in the shooting itself |
+
+---
+
+# 17–20. LINK ANALYSIS, RECONSTRUCTION, HYPOTHESES, CONTRADICTIONS
+
+**Link analysis (as alleged in transcript):**
+Rose (property dispute/motive) → Chris Mulwa (alleged threats + payment) → unnamed intermediary → IP Sang (alleged police link) → Wanginog (logistics) & Kinuthia (rider) → Kimoi (alleged shooter) → the shooting → vehicles returned to Angela Mulwa's home.
+
+**Reconstruction:** Follows the timeline in §6–7 as reported; nothing to add beyond what's already there.
+
+**Competing hypotheses:** The transcript itself only advances one narrative (the "reckless orchestrated murder" thesis) and poses open questions (e.g., who the unnamed intermediary is, whether the accused believed they were protected) rather than laying out alternative explanations. It does not include, for example, an account from the defense side, so a genuinely balanced hypothesis section isn't possible from this source alone.
+
+**Contradictions:** Not stated in source — no competing account from suspects is included in the transcript.
+
+---
+
+# 21. INFORMATION GAPS
+
+- Identity of the intermediary who connected Chris Mulwa to IP Sang (transcript deliberately withholds this)
+- Whereabouts/status of the original Mulongo title deed
+- Content of any alibi claims from named suspects (none reported)
+- Any statement from the defense or suspects' legal counsel
+- Full financial transaction details (amounts, account numbers)
+- Forensic ballistics detail beyond "three shots"
+- Chain of custody for any physical evidence
+- Whether charges have been filed, and against whom specifically, versus who is merely named as a "suspect" in the report
+
+---
+
+# 22. ALTERNATIVE EXPLANATION TEST (example)
+
+**Observation:** A threatening text was allegedly traced to a number linked to Rose Mbithe Mulwa.
+**Transcript's interpretation:** This connects her to the threats preceding the murder.
+**Alternative explanation:** Without further detail, possibilities the transcript doesn't rule out include phone/SIM misuse by a third party, shared device access, or spoofing — standard alternative explanations investigators would need to eliminate.
+**What would distinguish them:** Device forensics, SIM registration records, and corroborating testimony — none of which are described in the transcript.
+
+---
+
+# 23–24. CONFIDENCE & FINAL ASSESSMENT
+
+Given this is a single media transcript reporting one side of an active investigation, with no defense statements, no independently verified records, and several details reported as "alleged" throughout, **overall confidence in any specific conclusion should be rated LOW to MEDIUM at best** — sufficient to explain the reported narrative, but not to independently corroborate guilt for anyone named. All individuals are entitled to a presumption of innocence unless and until a court finds otherwise.
+
+---
+
+# 25. GAPS CHECKLIST
+
+☐ Chain of custody — not addressed in source
+☐ Alibi verification — not addressed in source
+☐ Digital forensics detail — largely not addressed
+☐ Contradicting/defense evidence — absent from source
+☐ Independent confirmation of any allegation — outside scope of a single media transcript
 
