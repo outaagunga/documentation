@@ -30,6 +30,7 @@
 - **Deauthentication ("deauth") frame** — a management frame that forcibly disconnects a client from an AP. Used here to force a reconnection so we can capture data.
 - **4-way handshake** — the exchange that happens when a device connects to a WPA/WPA2 network. Capturing it lets you attempt to crack the password offline.
 - **WPS** — Wi-Fi Protected Setup, a legacy "push-button" pairing feature with known PIN vulnerabilities.
+- **Evil Twin / Rogue AP** — a fake access point broadcasting the same name as a real one, set up to trick devices or users into connecting to it instead of the legitimate network.
 
 ---
 
@@ -153,6 +154,52 @@ WPS is an older convenience feature with known weaknesses. Many modern routers d
    ```
    **Heads up for beginners:** this can take hours, and most modern routers lock out after repeated failed attempts. If it stalls or errors immediately, WPS is likely already protected — that's a valid, reportable finding on its own.
 
+### Path C — Evil Twin / Rogue AP Attack
+
+**Goal:** instead of attacking the router directly, set up a fake access point with the same name as the target network and trick a user into connecting to it. This tests whether *people*, not just the router's encryption, are a weak point — a very common real-world finding.
+
+**How it works:** you broadcast a clone of the target's SSID, usually paired with a stronger signal or a deauth attack that kicks users off the real AP. Devices that auto-reconnect to "known" network names may connect to your fake AP instead, letting you capture credentials or traffic.
+
+> ⚠️ This is one of the more disruptive and legally sensitive techniques in this guide. It directly affects real users' devices and can capture data belonging to people who never explicitly consented, even if the network owner did. Confirm this is explicitly named in your written scope/RoE before running it — "wireless testing authorized" does not automatically cover impersonating the network to its users.
+
+1. **Set up a second wireless interface (or a second adapter)** to host the fake AP while your first one keeps monitoring/deauthing. If you only have one adapter, you can still do this sequentially, but two makes it far smoother.
+
+2. **Create the rogue AP with the target's SSID:**
+   ```bash
+   sudo airbase-ng -e "TargetNetworkName" -c 6 wlan0mon
+   ```
+   - `-e` sets the broadcast network name — match it exactly to the real target.
+   - `-c` sets the channel.
+   - This creates a new virtual interface, usually `at0`, that acts like a router's Wi-Fi radio.
+
+3. **Give your fake AP a working network so victims don't notice anything wrong:**
+   ```bash
+   sudo ifconfig at0 up
+   sudo ifconfig at0 10.0.0.1 netmask 255.255.255.0
+   sudo route add -net 10.0.0.0 netmask 255.255.255.0 gw 10.0.0.1
+   ```
+   Then configure `dnsmasq` (or similar) to hand out IP addresses via DHCP, so connecting devices get real internet-like connectivity and don't immediately notice something's wrong.
+
+4. **Push existing clients off the real network so they look for a network to reconnect to:**
+   ```bash
+   sudo aireplay-ng --deauth 0 -a 00:11:22:33:44:55 wlan0mon
+   ```
+   `--deauth 0` sends continuous deauth frames rather than a fixed count — devices bumped off the real AP may auto-connect to your identically-named fake one instead.
+
+5. **Capture what you're testing for.** Depending on your authorized scope, this is typically one of:
+   - A **captive portal** login page cloned to look like the router's usual login, to see if users will type in the real Wi-Fi password when prompted (tools like `wifiphisher` automate this end-to-end).
+   - Passive traffic capture on `at0` with `airodump-ng` or Wireshark, to see what unencrypted traffic flows through your fake AP.
+
+   **Beginner note:** building a convincing captive portal, DNS spoofing, and SSL stripping are each deep topics on their own — start by just confirming devices *will* auto-connect to your rogue AP before building out the credential-capture piece.
+
+6. **Tear down the rogue AP when done:**
+   ```bash
+   sudo pkill airbase-ng
+   sudo ifconfig at0 down
+   ```
+
+**What to report:** whether devices auto-connected to the fake network, whether users entered credentials into a fake portal, and recommend user awareness training plus disabling auto-reconnect to open/known SSIDs where possible (this is a client-device and user-behavior weakness, not something the router itself can fully prevent).
+
 ---
 
 ## Phase 5: Checking for Default Admin Credentials
@@ -205,6 +252,7 @@ This turns your adapter back to normal mode and lets your OS manage Wi-Fi connec
 | No handshake captured after several deauth attempts | Try a higher `--deauth` count, confirm you're on the correct channel, or move closer to the target |
 | `reaver` immediately fails or times out | WPS may be locked out or disabled — this is a normal/expected outcome, not a tool error |
 | Can't reach `192.168.1.1` after reconnecting | Confirm you're actually connected to the target network (`iwconfig` or `nmcli`) and double-check the gateway IP from Phase 5, step 2 |
+| Devices won't connect to the rogue AP (`airbase-ng`) | Make sure the SSID matches exactly (case-sensitive), your fake AP's signal is comparable or stronger, and the continuous deauth (`--deauth 0`) is still running against the real AP |
 
 ---
 ---
