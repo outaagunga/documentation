@@ -2,6 +2,8 @@
 
 # Beginner Step-by-Step Dark Web Research Setup
 
+[https://www.youtube.com/watch?v=VHhclHkzS_c] 
+
 > **Purpose:** This guide is for lawful OSINT, cybersecurity research, academic study, journalism, and authorized threat-intelligence work. Do not use it to access, purchase from, communicate with, or participate in illegal services.
 
 ---
