@@ -1,3 +1,382 @@
+
+
+# Beginner Step-by-Step Dark Web Research Setup
+
+> **Purpose:** This guide is for lawful OSINT, cybersecurity research, academic study, journalism, and authorized threat-intelligence work. Do not use it to access, purchase from, communicate with, or participate in illegal services.
+
+---
+
+## Step 1 — Understand the Three Parts of the Web
+
+Before installing anything, understand these terms:
+
+### 1. Surface Web
+
+This is the ordinary internet that search engines can index.
+
+Examples:
+
+* YouTube
+* Instagram
+* Reddit
+* News websites
+
+### 2. Deep Web
+
+This is content that isn't normally indexed by search engines, often because it requires authentication.
+
+Examples:
+
+* Your email inbox
+* Cloud-storage accounts
+* Academic databases
+* Private organizational systems
+
+### 3. Dark Web
+
+This refers to intentionally hidden services that require specialized software or networks to access. The source describes these services as using `.onion` addresses rather than ordinary domains. 
+
+**Beginner checkpoint:**
+If you understand the difference between **surface web → deep web → dark web**, move to Step 2.
+
+---
+
+# Step 2 — Understand What Tor Does
+
+Tor is the network commonly used to access `.onion` services.
+
+Think of Tor as a **privacy-oriented routing system** that sends your connection through multiple relays rather than directly to the destination.
+
+The important point for a beginner:
+
+> **Tor provides privacy protections, but it does not make you magically anonymous or immune from mistakes.**
+
+The source itself warns that your operating system can still retain information such as metadata, cached files, browser history, and other activity traces. 
+
+---
+
+# Step 3 — Decide What Your Research Is For
+
+Before connecting to anything, write down your research objective.
+
+For example:
+
+**Research objective:**
+
+> "I want to study how publicly accessible onion services are discussed in cybersecurity research."
+
+Then define:
+
+* What information am I looking for?
+* What sources am I allowed to examine?
+* What information must I not collect?
+* What activities are prohibited?
+* How will I record my findings?
+
+This prevents you from simply wandering around without a purpose.
+
+---
+
+# Step 4 — Prepare a Separate Research Environment
+
+For basic research, you can use a dedicated computer or research environment rather than your everyday personal environment.
+
+For stronger isolation, the source introduces **Tails OS**, a live operating system designed to run from USB and route network traffic through Tor by default. 
+
+### Important correction for beginners
+
+Do **not** assume:
+
+> "Tails = completely anonymous."
+
+That's too strong.
+
+Tails can reduce certain types of local traces and provide a privacy-focused environment, but your own behavior can still identify you.
+
+---
+
+# Step 5 — Obtain Tails From Its Official Website
+
+The source directs users to the official Tails website for installation. 
+
+Use:
+
+[Official Tails website](https://tails.net/?utm_source=chatgpt.com)
+
+On the official website:
+
+1. Read the installation requirements.
+2. Select the appropriate installation instructions.
+3. Download the Tails image.
+4. Follow the official installation instructions.
+
+**Do not download Tails from an unknown third-party website.**
+
+---
+
+# Step 6 — Prepare a USB Drive
+
+You need a suitable USB drive for creating the Tails installation medium.
+
+### Before proceeding:
+
+**Back up anything important on the USB.**
+
+Creating the bootable Tails USB can erase existing data on the drive. The source explicitly warns that the USB contents will be wiped during this process. 
+
+---
+
+# Step 7 — Create the Tails USB
+
+The source demonstrates using an image-writing application such as Balena Etcher to write the Tails image to the USB. 
+
+The general process is:
+
+**Tails image → image-writing application → USB drive**
+
+Then:
+
+1. Open the image-writing application.
+2. Select the Tails image.
+3. Select the correct USB drive.
+4. Start the writing process.
+5. Wait until it finishes.
+6. Safely eject the USB.
+
+**Critical beginner warning:**
+Make absolutely certain you select the correct USB drive because the target drive may be erased.
+
+---
+
+# Step 8 — Boot the Computer From Tails
+
+Once the USB has been prepared:
+
+1. Shut down the computer.
+2. Insert the Tails USB.
+3. Start the computer.
+4. Open the computer's boot menu.
+5. Select the USB device.
+6. Allow Tails to start.
+7. Follow the on-screen instructions.
+
+The exact boot-menu key depends on the computer. The source gives examples such as **F12, F9, Escape, or Delete**. 
+
+**Beginner tip:**
+If those keys don't work, check the computer manufacturer's documentation rather than repeatedly changing BIOS settings.
+
+---
+
+# Step 9 — Connect to Tor
+
+After Tails starts, establish the Tor connection using the built-in options.
+
+The source describes Tails as routing its network traffic through Tor by default. 
+
+Wait for the connection to establish before beginning research.
+
+### Important
+
+Do not assume that seeing the Tor browser means everything is automatically safe.
+
+Your behavior still matters.
+
+---
+
+# Step 10 — Use the Tor Browser Carefully
+
+Once connected, use the Tor Browser supplied by the environment.
+
+The source explains that Tor Browser has different security levels:
+
+* Standard
+* Safer
+* Safest
+
+It recommends increasing the security level when visiting more sensitive pages, while noting that higher security can cause some websites to function incorrectly. 
+
+### Beginner approach
+
+For security-conscious research:
+
+**Start with "Safer"** when appropriate.
+
+If your research involves particularly risky or untrusted content:
+
+**Consider "Safest."**
+
+---
+
+# Step 11 — Establish Your Research Rules Before Browsing
+
+Create a simple **Do / Don't** list.
+
+### DO
+
+* Research publicly available information.
+* Record sources and timestamps.
+* Verify information through multiple sources.
+* Maintain a research log.
+* Stop when you encounter clearly illegal or dangerous material.
+* Follow your organization's legal and ethical requirements.
+
+### DON'T
+
+* Don't provide your real identity unnecessarily.
+* Don't use personal accounts.
+* Don't download suspicious files.
+* Don't open unknown attachments.
+* Don't interact with criminal services.
+* Don't purchase anything.
+* Don't attempt to bypass security controls.
+* Don't communicate with criminals unless you have specific authorization and an approved procedure.
+
+The source specifically warns against providing identifying information, downloading untrusted files, and logging into personal accounts. 
+
+---
+
+# Step 12 — Find Research Sources Carefully
+
+A major beginner mistake is assuming that you can simply Google `.onion` websites.
+
+Onion services aren't indexed in the same way as ordinary websites. 
+
+For legitimate research, start with **known, reputable sources**, such as:
+
+* Academic papers
+* Cybersecurity reports
+* Government publications
+* Reputable journalism
+* Security research organizations
+* Official organizations that operate legitimate onion services
+
+Avoid randomly clicking onion addresses posted by unknown users.
+
+---
+
+# Step 13 — Verify Every Onion Address
+
+Onion addresses can be difficult to read and easy to mistype.
+
+Before visiting a service:
+
+**Source → Verify address → Visit**
+
+Do not assume that an address is legitimate simply because someone posted it.
+
+The source specifically warns about lookalike and phishing clones and recommends verifying onion addresses. 
+
+---
+
+# Step 14 — Start With Passive Research
+
+For a beginner, don't immediately try to interact with people or services.
+
+Start with **passive observation**.
+
+For example:
+
+> Identify → Observe → Record → Verify → Analyze
+
+Your objective is to collect information without unnecessarily interacting with unknown actors.
+
+---
+
+# Step 15 — Keep a Research Log
+
+Create a simple table:
+
+| Date/Time  | Source   | Observation    | Evidence        | Confidence |
+| ---------- | -------- | -------------- | --------------- | ---------- |
+| 01/09/2026 | Source A | Claim observed | Screenshot/note | Medium     |
+| 01/09/2026 | Source B | Same claim     | Report          | High       |
+
+For every important finding, record:
+
+1. **What did I observe?**
+2. **Where did I observe it?**
+3. **When did I observe it?**
+4. **How reliable is the source?**
+5. **Can another source confirm it?**
+6. **What does the evidence actually prove?**
+
+This turns random browsing into **OSINT/CTI research**.
+
+---
+
+# Step 16 — Never Treat One Source as the Truth
+
+Suppose you encounter a claim:
+
+> "Organization X has suffered a data breach."
+
+Don't immediately report it as fact.
+
+Instead:
+
+**Claim → Source → Corroboration → Assessment**
+
+Look for confirmation from independent sources such as:
+
+* Official statements
+* Reputable news organizations
+* Security researchers
+* Public breach disclosures
+* Other reliable technical evidence
+
+Separate:
+
+**FACT**
+What you can directly establish.
+
+**CLAIM**
+What someone says happened.
+
+**ASSESSMENT**
+Your reasoned interpretation of the available evidence.
+
+---
+
+# Step 17 — Stop When You Encounter Dangerous or Illegal Material
+
+You do **not** need to explore everything you encounter.
+
+If you unexpectedly encounter:
+
+* Illegal marketplaces
+* Child sexual abuse material
+* Malware
+* Stolen credentials
+* Weapons sales
+* Drug sales
+* Other clearly illegal material
+
+**Stop. Do not download, purchase, save, redistribute, or interact with it.**
+
+If the material is relevant to an authorized professional investigation, follow your organization's established evidence-handling and escalation procedures rather than improvising.
+
+---
+
+# Step 18 — Shut Down the Research Environment
+
+When your research session is finished:
+
+1. Save only the research notes you are authorized to retain.
+2. Close applications.
+3. Shut down the environment properly.
+4. Remove the USB when appropriate.
+5. Store your research notes securely.
+
+Tails is designed as a live environment and the source emphasizes that activity in the session is not retained on the normal computer in the same way as a conventional operating system. 
+
+---
+
+---
+---
+---
+---
+
+
 # Beginner's Guide to Dark Web Exploration (OSINT/Threat Intelligence Research)
 
 **Scope reminder:** this guide is for lawful, authorized research (CTI program work, academic study, journalism with editorial oversight). It does not cover — and you should not seek elsewhere — how to browse, register on, or transact on illegal marketplaces or forums. If your work requires that level of interaction, it needs specific legal sign-off and a trained handler; that's outside what any guide should walk a beginner through solo.
