@@ -1,4 +1,32 @@
 # Writing  
+
+S
+I’m writing a blog post about [your topic]. What are 15 questions that someone might ask me about this topic? Make them spicy, and if helpful, cite statistics to make the questions more interesting.
+
+
+Take the concept of [your research question] – can you write an outline expanding on the promise and also skepticism around this idea? Create 6 sections, and put 3 sub-bullets under each. Use strong opinions and ask tough questions.
+
+
+
+Take the outline above and develop each section into detailed talking points for the blog post.
+For each section:
+•	Explain the main argument in plain, natural language.
+•	Give the strongest evidence, statistics, examples, or real-world cases that support it.
+•	Present the strongest counterargument or reason to be skeptical.
+•	Point out anything that sounds exaggerated, misleading, or unsupported.
+•	Ask at least one uncomfortable question that challenges the reader.
+•	Where useful, include a surprising fact, comparison, or statistic.
+Keep the writing conversational, sharp, and human. Avoid generic AI phrases, unnecessary jargon, repetitive explanations, and overly polished corporate language. The goal is to make the reader think, not simply agree.
+Do not write the full blog post yet. Give me the research and thinking I need to write it myself.
+
+Now turn these research notes into a compelling blog post with a strong opening hook, smooth transitions, and a memorable conclusion. Keep the tone natural, opinionated, and thought-provoking.
+
+
+---
+---
+---
+---
+
 **Some of the useful prompts**
 > 1.	Give bulleted outline with placeholders to help me do the task  
 > 2.	Using the outline, help me come up with the content. Do it in segments. Your output should be human friendly.  
