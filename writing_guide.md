@@ -31,7 +31,7 @@ Now bring all the drafted sections together into a single, cohesive article.
 * **Length**: Strictly [500 to 650] words total.
 * **Structure**: Short paragraphs (2–3 sentences max), bold subheadings, and zero fluff.
 * Write a strong opening hook: Start immediately with a bold, attention-grabbing hook about [your main topic]. Avoid slow-burn introductions.
-* Polish transitions: At the start of new sections, explicitly pick up the unresolved tension from the preceding paragraph. Ensure ideas flow like a single train of thought rather than discrete bullet points turned into paragraphs. Avoid generic filler words like "Furthermore," "In addition,"," "Moving on," "However or "It is important to note."
+* Polish transitions: At the start of new sections, explicitly pick up the unresolved tension from the preceding paragraph. Ensure ideas flow like a single train of thought rather than discrete bullet points turned into paragraphs. Avoid generic filler words like "Furthermore," "In addition," "Moving on," "However or "It is important to note, et.c."
 * Write a memorable conclusion: Close with a hard-hitting question or punchy final thought, not a formal summary.  
 
 Maintain a sharp, thought-provoking, and human tone throughout.  
