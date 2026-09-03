@@ -3,8 +3,8 @@
 > I’m writing a blog post about [your topic]. What are 15 questions that someone might ask me about this topic? Make them spicy, and if helpful, cite statistics to make the questions more interesting.  
 
 # Step: 2
-> Take the concept of [your research question] – can you write an outline expanding on the promise and also skepticism around this idea? Create 6 sections, and put 3 sub-bullets under each. Use strong opinions and ask tough questions.
-> At the end of each section, add a "Bridge Line": a single sentence explaining how this section logically leads to the next concept.
+> Take the concept of [your research question] – can you write an outline expanding on the promise and also skepticism around this idea? Create 6 sections, and put 3 sub-bullets under each. Use strong opinions and ask tough questions.  
+> At the end of each section, add a "Bridge Line": a single sentence explaining how this section logically leads to the next concept.  
 
 # Step: 3 
 Take the outline above and develop each section into detailed talking points for the blog post.  
@@ -15,7 +15,7 @@ For each section, provide:
  * Point out anything that sounds exaggerated, misleading, or unsupported.
  * Ask at least one uncomfortable question that challenges the reader.
  * Where useful, include a surprising fact, comparison, or statistic.
- * **Transition Thread**: Explain how the core tension in this section creates the direct need for the topic in the next section.
+ * **Transition Thread**: Explain how the core tension in this section creates the direct need for the topic in the next section.  
 Keep the writing conversational, sharp, and human. Avoid generic AI phrases, unnecessary jargon, repetitive explanations, and overly polished corporate language. The goal is to make the reader think, not simply agree.  
 Do not write the full blog post yet. Give me the research and thinking I need to write it myself.  
 
@@ -26,11 +26,11 @@ Do not write the full blog post yet. Give me the research and thinking I need to
 > Keep the writing conversational, opinionated, and human. Avoid generic AI corporate jargon and overly polished conclusions at the end of sections.    
 
 # Step: 5  
-> Now bring all the drafted sections together into a single, cohesive article.
-> Write a strong opening hook: Start in media res or with a counterintuitive assertion about [your main topic]. Avoid slow-burn introductions.
-> Polish transitions: Review every section boundary. Ensure ideas flow like a single train of thought rather than discrete bullet points turned into paragraphs.
-> Write a memorable conclusion: Leave the reader with an unresolved tension or a high-stakes question to ponder, rather than a generic "In summary" recap.
-> Maintain a sharp, thought-provoking, and human tone throughout.  
+Now bring all the drafted sections together into a single, cohesive article.  
+* Write a strong opening hook: Start in media res or with a counterintuitive assertion about [your main topic]. Avoid slow-burn introductions.
+* Polish transitions: Review every section boundary. Ensure ideas flow like a single train of thought rather than discrete bullet points turned into paragraphs.
+* Write a memorable conclusion: Leave the reader with an unresolved tension or a high-stakes question to ponder, rather than a generic "In summary" recap.
+Maintain a sharp, thought-provoking, and human tone throughout.  
 
 ---
 ---
