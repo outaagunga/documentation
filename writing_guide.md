@@ -15,7 +15,7 @@ For each section:
 * Ask at least one uncomfortable question that challenges the reader.
 * Where useful, include a surprising fact, comparison, or statistic.
 > Keep the writing conversational, sharp, and human. Avoid generic AI phrases, unnecessary jargon, repetitive explanations, and overly polished corporate language. The goal is to make the reader think, not simply agree. 
-> Do not write the full blog post yet. Give me the research and thinking I need to write it myself.
+Do not write the full blog post yet. Give me the research and thinking I need to write it myself.  
 #  
 > Now turn these research notes into a compelling blog post with a strong opening hook, smooth transitions, and a memorable conclusion. Keep the tone natural, opinionated, and thought-provoking.  
 
