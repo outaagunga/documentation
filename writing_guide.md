@@ -4,21 +4,33 @@
 
 #  
 > Take the concept of [your research question] – can you write an outline expanding on the promise and also skepticism around this idea? Create 6 sections, and put 3 sub-bullets under each. Use strong opinions and ask tough questions.
+> At the end of each section, add a "Bridge Line": a single sentence explaining how this section logically leads to the next concept.
 
 #  
 > Take the outline above and develop each section into detailed talking points for the blog post.
 For each section:
-* Explain the main argument in plain, natural language.
-* Give the strongest evidence, statistics, examples, or real-world cases that support it.
-* Present the strongest counterargument or reason to be skeptical.
-* Point out anything that sounds exaggerated, misleading, or unsupported.
-* Ask at least one uncomfortable question that challenges the reader.
-* Where useful, include a surprising fact, comparison, or statistic.
-> Keep the writing conversational, sharp, and human. Avoid generic AI phrases, unnecessary jargon, repetitive explanations, and overly polished corporate language. The goal is to make the reader think, not simply agree. 
-Do not write the full blog post yet. Give me the research and thinking I need to write it myself.  
-#  
-> Now turn these research notes into a compelling blog post with a strong opening hook, smooth transitions, and a memorable conclusion. Keep the tone natural, opinionated, and thought-provoking.  
+> * Explain the main argument in plain, natural language.
+> * Give the strongest evidence, statistics, examples, or real-world cases that support it.
+> * Present the strongest counterargument or reason to be skeptical.
+> * Point out anything that sounds exaggerated, misleading, or unsupported.
+> * Ask at least one uncomfortable question that challenges the reader.
+> * Where useful, include a surprising fact, comparison, or statistic.
+> * **Transition Thread**: Explain how the core tension in this section creates the direct need for the topic in the next section.
+> Keep the writing conversational, sharp, and human. Avoid generic AI phrases, unnecessary jargon, repetitive explanations, and overly polished corporate language. The goal is to make the reader think, not simply agree.
+> Do not write the full blog post yet. Give me the research and thinking I need to write it myself.  
 
+# 
+Run this prompt for Section 1 + Section 2 together, then repeat for subsequent sections in pairs (e.g. 1 & 2, 3 & 4, 5 & 6).  
+> Using our research notes, write Sections [X] and [Y] of the blog post.
+> **Transition Rule**: Do not use explicit summary transition phrases (e.g., "In addition," "Furthermore," "Moving on," "However, it is important to note"). Instead, carry the unresolved question or consequence from Section [X] directly into the opening hook of Section [Y].
+> Keep the writing conversational, opinionated, and human. Avoid generic AI corporate jargon and overly polished conclusions at the end of sections.    
+
+# 
+> Now bring all the drafted sections together into a single, cohesive article.
+> Write a strong opening hook: Start in media res or with a counterintuitive assertion about [your main topic]. Avoid slow-burn introductions.
+> Polish transitions: Review every section boundary. Ensure ideas flow like a single train of thought rather than discrete bullet points turned into paragraphs.
+> Write a memorable conclusion: Leave the reader with an unresolved tension or a high-stakes question to ponder, rather than a generic "In summary" recap.
+> Maintain a sharp, thought-provoking, and human tone throughout.  
 
 ---
 ---
