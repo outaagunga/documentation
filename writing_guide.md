@@ -29,13 +29,15 @@ Do not write the full blog post yet. Give me the research and thinking I need to
 # Step: 5  
 Now bring all the drafted sections together into a single, cohesive article.  
 * **Length**: Strictly [500 to 650] words total.
-* **Structure**: Keep paragraphs brief (2–3 sentences max), using bold subheadings to section key ideas.  
+* **Structure**: Use brief, scannable paragraphs (2–3 sentences max)
+* Use bold subheadings to visually break up key themes.  
 * Zero fluff, meta-language, or introductory setup.
 * Write a strong opening hook: Start immediately with a bold, attention-grabbing hook about [your main topic]. Avoid slow-burn introductions.
 * Polish transitions: At the start of new sections, explicitly pick up the unresolved tension from the preceding paragraph. Ensure ideas flow like a single train of thought rather than discrete bullet points turned into paragraphs. Avoid generic filler words like "Furthermore," "In addition," "Moving on," "However or "It is important to note, et.c."
-* Write a memorable conclusion: Close with a hard-hitting question or punchy final thought designed to provoke a response. Do not write a formal summary or concluding recap.  
+* Write a memorable conclusion: Close with a hard-hitting question or punchy statement that leaves a lasting impression and provokes reflection.    
 
-Maintain a sharp, thought-provoking, and human tone throughout.  
+Maintain a sharp, thought-provoking, and unmistakably human voice throughout.  
+Keep technical jargon minimal; frame complex ideas so non-expert readers can immediately grasp the real-world impact.      
 
 ---
 ---
