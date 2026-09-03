@@ -15,7 +15,8 @@ For each section, provide:
  * Point out anything that sounds exaggerated, misleading, or unsupported.
  * Ask at least one uncomfortable question that challenges the reader.
  * Where useful, include a surprising fact, comparison, or statistic.
- * **Transition Thread**: Explain how the core tension in this section creates the direct need for the topic in the next section.  
+ * **Transition Thread**: Explain how the core tension in this section creates the direct need for the topic in the next section.
+   
 Keep the writing conversational, sharp, and human. Avoid generic AI phrases, unnecessary jargon, repetitive explanations, and overly polished corporate language. The goal is to make the reader think, not simply agree.  
 Do not write the full blog post yet. Give me the research and thinking I need to write it myself.  
 
