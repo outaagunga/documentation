@@ -29,7 +29,8 @@ Do not write the full blog post yet. Give me the research and thinking I need to
 Now bring all the drafted sections together into a single, cohesive article.  
 * Write a strong opening hook: Start in media res or with a counterintuitive assertion about [your main topic]. Avoid slow-burn introductions.
 * Polish transitions: Review every section boundary. Ensure ideas flow like a single train of thought rather than discrete bullet points turned into paragraphs.
-* Write a memorable conclusion: Leave the reader with an unresolved tension or a high-stakes question to ponder, rather than a generic "In summary" recap.  
+* Write a memorable conclusion: Leave the reader with an unresolved tension or a high-stakes question to ponder, rather than a generic "In summary" recap.
+.  
 Maintain a sharp, thought-provoking, and human tone throughout.  
 
 ---
