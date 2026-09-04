@@ -1,4 +1,3 @@
-Absolutely. I’d organize it into a **simple betting decision framework** so you can move from **deposit → stake → taxes → break-even → value → market selection** without mixing the formulas.
 
 # SportPesa Tax-Adjusted Betting Framework
 
