@@ -97,3 +97,59 @@ Meaning:
 > At 1.80 odds, you need the bet to win **more than approximately 67.5% of the time** to have positive expected value under these assumptions.
 
 ---
+---
+---
+---
+---
+---
+---  
+
+> **"Which market gives me the largest gap between my estimated probability and its tax-adjusted break-even probability?"**  
+
+For example:
+
+### Bet A
+
+**Double Chance @ 1.40**
+
+Your estimated probability = **80%**
+
+Break-even = **75.7%**
+
+Therefore:
+
+**Value gap = 80% − 75.7% = +4.3 percentage points**
+
+Potentially good.
+
+### Bet B
+
+**Over 1.5 @ 1.20**
+
+Estimated probability = **90%**
+
+Break-even = **87.7%**
+
+Value gap:
+
+**90% − 87.7% = +2.3 percentage points**
+
+Despite Bet B having the **higher probability**, Bet A has the larger estimated edge.
+
+That's the distinction we need.
+
+---
+
+# Your practical SportPesa filter
+
+When looking at the available matches, I'd initially screen:
+
+**① Double Chance**
+
+**② Over 1.5 Goals**
+
+**③ Under 4.5 Goals**
+
+**④ BTTS Yes/No**
+
+**⑤ Draw No Bet**
