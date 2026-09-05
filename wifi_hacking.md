@@ -1,3 +1,8 @@
+phases an attacker must complete to achieve its mission.
+Payload can also be attached to a file or a pdf such that when a person opens the pdf, the payload executes itself
+Common Reconnaissance Commands
+why active reconnaissance crosses the legal line
+
 ```
 > ⚠️ **LEGAL DISCLAIMER — READ FIRST**
 > It is illegal in most jurisdictions to run any of the steps below against a network you don't own or don't have **explicit, written authorization** to test. This includes your neighbor's Wi-Fi, a coffee shop's network, or your employer's network without a signed scope. Only run this on:
