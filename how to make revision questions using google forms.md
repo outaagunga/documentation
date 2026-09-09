@@ -1,3 +1,29 @@
+```
+
+Based on the [name of the document with notes or questions] provided, generate [e.g 20] questions to help me master and retain the concept. structure it to include all this:
+
+| Question type    | Purpose                   |
+| ---------------- | ------------------------- |
+| Basic recall     | Remember the terminology  |
+| Understanding    | Explain the concept       |
+| Application      | Apply it to a situation   |
+| Scenario         | Recognize it in real life |
+| Comparison       | Distinguish similar ideas |
+| Reasoning        | Understand *why*          |
+| Difficult/tricky | Test genuine mastery      |
+.
+
+For example:
+
+| Question                                                                                  | Question Type   | Option 1     | Option 2      | Option 3        | Option 4         | Correct Answer                         | Points | Explanation                                                                                                               |
+| ----------------------------------------------------------------------------------------- | --------------- | ------------ | ------------- | --------------- | ---------------- | -------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Which principle requires a police officer to treat every person with dignity and respect? | Multiple Choice | Impartiality | Human dignity | Secrecy         | Discipline       | Human dignity                          | 1      | Respect for human dignity is a fundamental principle in professional policing and human rights.                           |
+| Which of the following are important principles when exercising police powers?            | Checkboxes      | Lawfulness   | Necessity     | Proportionality | Personal revenge | Lawfulness, Necessity, Proportionality | 2      | Police powers should be exercised lawfully and, where applicable, only when necessary and proportionate to the situation. |
+| Explain why accountability is important in police work.                                   | Paragraph       |              |               |                 |                  |                                        | 5      | Key concepts: responsibility, transparency, lawful conduct, supervision, and public trust.                                |
+
+
+
+```
 
 # Making large revision Questions banks and revising them using Google forms  
 
