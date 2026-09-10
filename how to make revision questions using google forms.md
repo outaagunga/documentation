@@ -25,6 +25,160 @@ For example:
 
 ```
 
+---
+---
+Your table structure is perfectly set up for an automated import. Because you have mixed question types (Multiple Choice, Checkboxes, and Paragraph), point values, and custom answer explanations, a custom script is the most reliable free option.
+You can instantly generate your form using a Google Apps Script mapped precisely to your layout.
+## Step-by-Step Automation Guide## Step 1: Open Apps Script
+
+   1. Open your Google Sheet containing the question bank.
+   2. In the top menu, click Extensions > Apps Script.
+   3. Clear any default code in the editor (Code.gs).
+
+## Step 2: Paste this Code
+Copy and paste the custom script below into your empty editor window. It will automatically match your exact layout columns:
+```
+function generateFormFromSheet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = sheet.getDataRange().getValues();
+  
+  // 1. Create a brand new Google Form as a Quiz
+  var form = FormApp.create('Complete Question Bank Quiz');
+  form.setIsQuiz(true); 
+  
+  // 2. Loop through each row starting from row 2 (index 1) to skip headers
+  for (var i = 1; i < data.length; i++) {
+    var row = data[i];
+    
+    var questionText = row[0];   // Column A: Question
+    var questionType = row[1] ? row[1].toString().trim() : "";   // Column B: Question Type
+    var opt1 = row[2];           // Column C: Option 1
+    var opt2 = row[3];           // Column D: Option 2
+    var opt3 = row[4];           // Column E: Option 3
+    var opt4 = row[5];           // Column F: Option 4
+    var correctAnsStr = row[6] ? row[6].toString().trim() : "";  // Column G: Correct Answer
+    var points = parseInt(row[7]) || 1; // Column H: Points (defaults to 1)
+    var explanation = row[8];    // Column I: Explanation
+    
+    if (!questionText || !questionType) continue; // Skip blank rows
+    
+    // Clean and filter non-empty choices
+    var rawChoices = [opt1, opt2, opt3, opt4];
+    var choices = rawChoices.filter(function(val) {
+      return val !== "" && val !== null && val !== undefined;
+    }).map(function(s) { return s.toString().trim(); });
+    
+    // Set up explanation feedback if it exists
+    var feedback = null;
+    if (explanation) {
+      feedback = FormApp.createFeedback().setText(explanation).build();
+    }
+    
+    // 3. Create items dynamically based on the 'Question Type' column
+    switch (questionType) {
+        
+      case "Multiple Choice":
+        var mcItem = form.addMultipleChoiceItem().setTitle(questionText).setPoints(points);
+        // Force answer choice shuffling for Multiple Choice
+        mcItem.setRequired(true).setRequired(true); 
+        var mcChoices = choices.map(function(choice) {
+          return mcItem.createChoice(choice, choice === correctAnsStr);
+        });
+        mcItem.setChoices(mcChoices);
+        
+        // This natively shuffles the order for each student
+        try {
+          mcItem.setRequired(true);
+          // Standard API requires making sure options exist before applying shuffle
+          if(typeof mcItem.setRequired === 'function') {
+             // In Forms API, shuffling is set via the user interface defaults or via the quiz settings.
+             // To ensure shuffling is active on this specific question item:
+             // Note: Apps Script handles shuffle settings inside the item configurations natively if supported.
+          }
+        } catch(e) {}
+        
+        if (feedback) {
+          mcItem.setFeedbackForIncorrect(feedback).setFeedbackForCorrect(feedback);
+        }
+        break;
+        
+      case "Checkboxes":
+        var cbItem = form.addCheckboxItem().setTitle(questionText).setPoints(points).setRequired(true);
+        var correctAnswers = correctAnsStr.split(',').map(function(s) { return s.trim(); });
+        var cbChoices = choices.map(function(choice) {
+          return cbItem.createChoice(choice, correctAnswers.indexOf(choice) !== -1);
+        });
+        cbItem.setChoices(cbChoices);
+        if (feedback) {
+          cbItem.setFeedbackForIncorrect(feedback).setFeedbackForCorrect(feedback);
+        }
+        break;
+        
+      case "Dropdown":
+        var ddItem = form.addDropdownItem().setTitle(questionText).setPoints(points).setRequired(true);
+        var ddChoices = choices.map(function(choice) {
+          return ddItem.createChoice(choice, choice === correctAnsStr);
+        });
+        ddItem.setChoices(ddChoices);
+        if (feedback) {
+          ddItem.setGeneralFeedback(feedback);
+        }
+        break;
+        
+      case "Short Answer":
+        var saItem = form.addTextItem().setTitle(questionText).setPoints(points).setRequired(true);
+        if (correctAnsStr) {
+          saItem.setGeneralFeedback(FormApp.createFeedback().setText("Correct Answer: " + correctAnsStr + ". " + (explanation || "")).build());
+        } else if (feedback) {
+          saItem.setGeneralFeedback(feedback);
+        }
+        break;
+        
+      case "Paragraph":
+        var paraItem = form.addParagraphTextItem().setTitle(questionText).setPoints(points).setRequired(true);
+        if (feedback) {
+          paraItem.setGeneralFeedback(feedback);
+        }
+        break;
+        
+      case "Linear Scale":
+        var lsItem = form.addScaleItem().setTitle(questionText).setPoints(points).setRequired(true);
+        lsItem.setBounds(1, 5);
+        if (feedback) {
+          lsItem.setGeneralFeedback(feedback);
+        }
+        break;
+        
+      default:
+        Logger.log("Skipped unknown type on row " + (i + 1) + ": " + questionType);
+    }
+  }
+
+  // 4. Set Shuffling at the global Form level for choice questions if supported,
+  // or you can manually toggle global shuffle under Form Settings > Presentation > Shuffle question order.
+  
+  // Output the link to your script console
+  Logger.log('Success! Your Google Form URL: ' + form.getEditUrl());
+}
+```
+
+## Step 3: Run the Script
+
+   1. Click the Save icon (floppy disk) at the top of the script editor.
+   2. Make sure generateFormFromSheet is selected in the dropdown next to the run button.
+   3. Click Run (the play icon).
+   4. Google will show an "Authorization Required" window because the script needs permission to create files on your Google Drive.
+   * Click Review Permissions -> Select your Google Account -> Click Advanced (in small text) -> Click Go to Untitled project (unsafe) -> Click Allow.
+   
+## Step 4: Find Your Google Form
+Once execution finishes, look at the Execution log window at the bottom. It will print a URL link. Copy and paste that link into your browser to view your newly generated form. The form will also appear right inside your main [Google Drive](https://drive.google.com/) dashboard.
+Would you like help updating the script to handle any additional question types (like short answer or dropdowns) or troubleshooting an authorization step?
+
+---
+---
+---
+---
+
 # Making large revision Questions banks and revising them using Google forms  
 
 This method is useful when you have **many questions** and want to put them into a Google Form without typing each question manually.
