@@ -179,7 +179,16 @@ function generateFormFromSheet() {
    
 ## Step 4: Find Your Google Form
 Once execution finishes, look at the Execution log window at the bottom. It will print a URL link. Copy and paste that link into your browser to view your newly generated form. The form will also appear right inside your main [Google Drive](https://drive.google.com/) dashboard.
-Would you like help updating the script to handle any additional question types (like short answer or dropdowns) or troubleshooting an authorization step?
+
+## How to "**View Score**" after clicking submit button:
+
+1. Open the generated Google Form in edit mode.
+2. Click on the **Settings** tab at the top middle of the screen.
+3. Under the **Make this a quiz** section, look for **Release grades**.
+4. Change the selection from "Later, after manual review" to **"Immediately after each submission"**.
+5. Just below that, under **Respondent settings**, ensure that the toggles for **Missed questions**, **Correct answers**, and **Point values** are all turned **ON**.
+
+Once you flip that single setting to "Immediately", anyone who submits the form will see a **"View Score"** button right next to the "Submit another response" link. Clicking it will show them their exact results, along with the custom explanations your code generated!
 
 ---
 ---
