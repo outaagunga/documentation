@@ -163,7 +163,6 @@ function generateFormFromSheet() {
 
   // Output the link to your script console
   Logger.log('Success! Your Google Form URL: ' + form.getEditUrl());
-}
 
   // Output the link to your script console
   Logger.log('Success! Your Google Form URL: ' + form.getEditUrl());
