@@ -156,7 +156,15 @@ function generateFormFromSheet() {
 
   // 4. Set Shuffling at the global Form level for choice questions if supported,
   // or you can manually toggle global shuffle under Form Settings > Presentation > Shuffle question order.
-  
+
+  // 5. Link the form to the active spreadsheet to record responses
+     var ss = SpreadsheetApp.getActiveSpreadsheet();
+     form.setDestination(FormApp.DestinationType.SPREADSHEET, ss.getId());
+
+  // Output the link to your script console
+  Logger.log('Success! Your Google Form URL: ' + form.getEditUrl());
+}
+
   // Output the link to your script console
   Logger.log('Success! Your Google Form URL: ' + form.getEditUrl());
 }
