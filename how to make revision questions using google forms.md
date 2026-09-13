@@ -121,7 +121,7 @@ function generateFormFromSheet() {
         break;
         
       case "Dropdown":
-        var ddItem = form.addDropdownItem().setTitle(questionText).setPoints(points).setRequired(true);
+        var ddItem = form.addListItem().setTitle(questionText).setPoints(points).setRequired(true);
         var ddChoices = choices.map(function(choice) {
           return ddItem.createChoice(choice, choice === correctAnsStr);
         });
