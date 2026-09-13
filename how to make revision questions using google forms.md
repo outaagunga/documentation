@@ -18,9 +18,9 @@ Vary the format of the questions using the following types:
 * **Dropdown:** The person selects an answer from a dropdown list.
 * **Short Answer:** The person types a short answer.
 * **Paragraph:** The person writes a longer answer.
-* **Linear Scale:** The person selects a number on a scale.
+* **Linear Scale:** If applicable- The person selects a number on a scale.
 
-**3. Example of output required**
+**3. Example of output required- Excel table format**
 
 | Question                                                                                  | Question Type   | Option 1     | Option 2      | Option 3        | Option 4         | Correct Answer                         | Points | Explanation                                                                                                               |
 | ----------------------------------------------------------------------------------------- | --------------- | ------------ | ------------- | --------------- | ---------------- | -------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- |
