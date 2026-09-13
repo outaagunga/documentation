@@ -127,7 +127,7 @@ function generateFormFromSheet() {
         });
         ddItem.setChoices(ddChoices);
         if (feedback) {
-          ddItem.setGeneralFeedback(feedback);
+          ddItem.setFeedbackForCorrect(feedback).setFeedbackForIncorrect(feedback);
         }
         break;
         
