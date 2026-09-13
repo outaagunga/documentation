@@ -1,26 +1,32 @@
 ```
+Act as an expert educational assessor and instructional designer. Based on the **[CONTENT]** provided, generate [20] assessment questions for each sub-topic present in the [provided document] to help me deeply master and retain the concepts.
 
-Based on the [name of the document with notes or questions] provided, generate [e.g 20] questions to help me master and retain the concept. structure it to include all this:
+**1. Cognitive Diversity (Difficulty Levels)**
+Ensure the questions per sub-topic span a mix of the following cognitive levels:
+* **Basic recall:** Remember the terminology
+* **Understanding:** Explain the concept
+* **Application:** Apply it to a situation
+* **Scenario:** Recognize it in real life
+* **Comparison:** Distinguish similar ideas
+* **Reasoning:** Understand *why*
+* **Difficult/tricky:** Test genuine mastery
 
-| Difficulty Level | Purpose                   |
-| ---------------- | ------------------------- |
-| Basic recall     | Remember the terminology  |
-| Understanding    | Explain the concept       |
-| Application      | Apply it to a situation   |
-| Scenario         | Recognize it in real life |
-| Comparison       | Distinguish similar ideas |
-| Reasoning        | Understand *why*          |
-| Difficult/tricky | Test genuine mastery      |
-.
+**2. Question Types & Scoring**
+Vary the format of the questions using the following types:
+* **Multiple Choice:** The person selects **one** answer from several choices.
+* **Checkboxes:** The person can select **more than one** answer.
+* **Dropdown:** The person selects an answer from a dropdown list.
+* **Short Answer:** The person types a short answer.
+* **Paragraph:** The person writes a longer answer.
+* **Linear Scale:** The person selects a number on a scale.
 
-Example of output required:
+**3. Example of output required**
 
 | Question                                                                                  | Question Type   | Option 1     | Option 2      | Option 3        | Option 4         | Correct Answer                         | Points | Explanation                                                                                                               |
 | ----------------------------------------------------------------------------------------- | --------------- | ------------ | ------------- | --------------- | ---------------- | -------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- |
 | Which principle requires a police officer to treat every person with dignity and respect? | Multiple Choice | Impartiality | Human dignity | Secrecy         | Discipline       | Human dignity                          | 1      | Respect for human dignity is a fundamental principle in professional policing and human rights.                           |
 | Which of the following are important principles when exercising police powers?            | Checkboxes      | Lawfulness   | Necessity     | Proportionality | Personal revenge | Lawfulness, Necessity, Proportionality | 2      | Police powers should be exercised lawfully and, where applicable, only when necessary and proportionate to the situation. |
 | Explain why accountability is important in police work.                                   | Paragraph       |              |               |                 |                  |                                        | 5      | Key concepts: responsibility, transparency, lawful conduct, supervision, and public trust.                                |
-
 
 
 ```
