@@ -2,7 +2,7 @@
 
 Based on the [name of the document with notes or questions] provided, generate [e.g 20] questions to help me master and retain the concept. structure it to include all this:
 
-| Question type    | Purpose                   |
+| Difficulty Level | Purpose                   |
 | ---------------- | ------------------------- |
 | Basic recall     | Remember the terminology  |
 | Understanding    | Explain the concept       |
@@ -13,7 +13,7 @@ Based on the [name of the document with notes or questions] provided, generate [
 | Difficult/tricky | Test genuine mastery      |
 .
 
-For example:
+Example of output required:
 
 | Question                                                                                  | Question Type   | Option 1     | Option 2      | Option 3        | Option 4         | Correct Answer                         | Points | Explanation                                                                                                               |
 | ----------------------------------------------------------------------------------------- | --------------- | ------------ | ------------- | --------------- | ---------------- | -------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- |
