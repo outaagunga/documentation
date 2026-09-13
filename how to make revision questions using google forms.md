@@ -68,11 +68,12 @@ function generateFormFromSheet() {
     
     if (!questionText || !questionType) continue; // Skip blank rows
     
-    // Clean and filter non-empty choices
-    var rawChoices = [opt1, opt2, opt3, opt4];
-    var choices = rawChoices.filter(function(val) {
-      return val !== "" && val !== null && val !== undefined;
-    }).map(function(s) { return s.toString().trim(); });
+    // Clean, filter non-empty, and remove duplicate choices
+   var rawChoices = [opt1, opt2, opt3, opt4];
+   var choices = rawChoices
+     .filter(function(val) { return val !== "" && val !== null && val !== undefined; })
+     .map(function(s) { return s.toString().trim(); })
+     .filter(function(val, index, self) { return val !== "" && self.indexOf(val) === index; });
     
     // Set up explanation feedback if it exists
     var feedback = null;
