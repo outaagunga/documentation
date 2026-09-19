@@ -1,4 +1,8 @@
 ```
+Act as an expert educator. Categorize all possible exam questions for the text below using Bloom’s Taxonomy (Remember, Understand, Apply, Analyze, Evaluate, Create). Ensure every core concept, definition, and implicit relationship is covered: [Insert text content]
+```
+.  
+```
 Act as an expert educational assessor and instructional designer. Based on the **[CONTENT]** provided, generate [20] assessment questions for each sub-topic present in the [provided document] to help me deeply master and retain the concepts.
 
 **1. Cognitive Diversity (Difficulty Levels)**
