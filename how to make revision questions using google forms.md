@@ -1,7 +1,20 @@
 ```
 Act as an expert educator. Categorize all possible exam questions for the text below using Bloom’s Taxonomy (Remember, Understand, Apply, Analyze, Evaluate, Create). Ensure every core concept, definition, and implicit relationship is covered: [Insert text content]
 ```
-.  
+### Using the Navigation Pane in Microsoft Word/Google Docs  
+
+To make it easier to navigate and organize your document:  
+
+1. Go to **View** and enable the **Navigation Pane**.  
+2. The **Navigation Pane** allows you to quickly navigate through your document and rearrange sections without having to scroll manually.  
+3. If the Navigation Pane is not displaying your topics:  
+
+   * Highlight the **main topic** and apply **Heading 1**.  
+   * For **subtopics**, highlight the text and apply **Heading 2**.  
+   * For further sub-sections, you can use **Heading 3**, and so on.  
+
+Once the appropriate heading styles are applied, your topics and subtopics will automatically appear in the Navigation Pane, making the document much easier to navigate and organize.  
+
 ```
 Act as an expert educational assessor and instructional designer. Based on the **[CONTENT]** provided, generate [20] assessment questions for each sub-topic present in the [provided document] to help me deeply master and retain the concepts.
 
