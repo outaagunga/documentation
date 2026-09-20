@@ -14,7 +14,8 @@ To make it easier to navigate and organize your document:
    * For further sub-sections, you can use **Heading 3**, and so on.  
 
 Once the appropriate heading styles are applied, your topics and subtopics will automatically appear in the Navigation Pane, making the document much easier to navigate and organize.  
-
+* Or select the text, right click and select add to outline  
+  
 ```
 Act as an expert educational assessor and instructional designer. Based on the **[CONTENT]** provided, generate [20] assessment questions for each sub-topic present in the [provided document] to help me deeply master and retain the concepts.
 
