@@ -1,3 +1,63 @@
+
+### 1. Positioning & Impact (Targeting & Alignment)
+
+*Use these with mentors, senior colleagues, or recruiters in your target field.*
+
+* **"Looking at this draft, which specific section or accomplishment comes across as my strongest asset, and why?"**
+* **"For the type of role I am targeting, is there any critical responsibility, competency, or skill missing that you would expect to see right away?"**
+* **"Are there any industry-specific keywords or technical terms missing that would make this profile stand out more to recruiters or ATS (Applicant Tracking Systems)?"**
+
+---
+
+### 2. Authenticity & Voice (Personal Brand Consistency)
+
+*Use these with close peers, trusted colleagues, or managers who know your day-to-day work.*
+
+* **"Does this narrative sound like an accurate, authentic reflection of how I actually work and contribute, or does any part feel exaggerated or off-brand?"**
+* **"Out of these headline/summary variations, which one captures my professional identity most accurately?"**
+* **"If you were to change one phrasing or section first to make it sound more natural and impactful, what would it be?"**
+
+---
+
+### 3. Professional Standards & Tone
+
+*Use these when tailoring your application for specific sectors, regions, or organizational cultures.*
+
+* **"Does the overall tone strike the right balance between authority and approachability for this field/market?"**
+* **"Are there any phrasing choices or formatting styles here that seem out of sync with current industry standards?"**
+
+---
+
+### 4. Endorsements & References
+
+*Use these when evaluating potential referees or LinkedIn recommendation requests.*
+
+* **"Does this person have enough direct visibility into my key achievements to provide a concrete, persuasive recommendation or referral?"**
+
+---
+
+### 5. LinkedIn Visibility & Privacy
+
+*Use these as a self-check or with a trusted reviewer before launching outreach.*
+
+* **"Before I expand my network or reach out to contacts, are my LinkedIn visibility settings (e.g., activity broadcasts, open-to-work flags, profile viewing options) properly configured to protect my privacy while maximizing reach?"**
+
+---
+---
+---
+
+* which part are you most confident with and why?
+* Does anything here not sound like me? What would you change first?
+* Is there anything missing for the type of role I am targeting? What would you add?
+* Do these changes still sound authentic to my experience?
+---
+* Is there anything about my privacy settings I should reconsider before I start connecting with people?
+* Which one sounds most like me, and why?
+* Are there any skills valued in my field that I'm missing?
+* Does this tone match what's expected in your field or country?
+* Do you think this person knows my work well enough to give a strong referral?
+
+
 ### AI Questions for Resumes & CVs
 
 | **Topic** | **Query** |
