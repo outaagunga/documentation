@@ -1,4 +1,134 @@
+### AI Questions for Resumes & CVs
 
+| **Topic** | **Query** |
+| -------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Using keywords | What are the keywords I should use in my resume/CV for a project manager job at an IT company in \<country>? |
+| Using keywords | What are the keywords I should use on my LinkedIn profile for a project manager job at an IT company in \<country>? |
+| Using keywords | Where should I include keywords on my LinkedIn profile? |
+| Resume/CV | When should I use a resume vs. a CV? |
+| Resume/CV | Highlight the three most important responsibilities in this job description. (paste job description) |
+| Resume/CV | Personalize my resume/CV for this job description. Here is the job description and my resume/CV. |
+| Resume/CV | Make a list of resume/CV bullet points for these accomplishments. |
+
+### AI Questions for Cover Letter
+
+| **Topic** | **Query** |
+| ------------ | --------------------------------------------------------------------------------- |
+| Cover letter | Write a cover letter for this job. Below is the job description and my resume/CV. |
+| Cover letter | How do I write a strong opening paragraph that grabs attention in a cover letter? |
+| Cover letter | How can I highlight my most relevant skills for this \<role>? |
+| Cover letter | Can you analyze this job posting and tell me what to emphasize? |
+| Cover letter | What keywords from this job description should appear in my cover letter? |
+| Cover letter | How do I explain a career gap or career change in a cover letter? |
+| Cover letter | What structure should I use for a cover letter in \<industry>? |
+| Cover letter | Can you rewrite my cover letter to sound more confident? |
+| Cover letter | Can you help me write a memorable closing paragraph? |
+
+### AI Questions for LinkedIn
+
+| **Topic** | **Query** |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Announcing your graduation on LinkedIn | Write a LinkedIn post announcing that I have graduated from the \<university> with a degree in accounting and are now looking for a job. |
+| Visibility | How can I get the most views from my LinkedIn post? |
+| Visibility | What is the best time to post on LinkedIn? |
+| Visibility | Write an "about" statement for my LinkedIn profile using the text below. |
+| Connecting | Other than LinkedIn, what networking apps are used in \<country>? |
+| Connecting | What professional associations in \<country> should I join for software engineers? |
+| Initial Connection | Write a LinkedIn message to a hiring manager for an accounting position at \<company> in \<city, country>. |
+| Follow-up email if no reply | Write a follow-up email to a hiring manager for an accounting position at \<company> in \<city, country> if they have not responded to my first email introduction. |
+| Asking for references | How can I get more people to recommend me on LinkedIn? |
+| Asking for references                   | Write an email requesting that someone write a LinkedIn endorsement for me. I worked with this person for three years at \<company> as a \<job title> and she was my manager. Below is the suggested text for them to use but improve this.
+
+*I have worked with *\<your name>* for over three years at *\<company>* in the Finance department and she has always been a very competent and dedicated employee. She has always demonstrated a willingness to help when needed and volunteers to help her coworkers.*
+
+|  |
+| Thank-you note after someone refers you | Write a thank-you note after someone writes a LinkedIn recommendation for me. |
+
+### AI Questions for Professional Skills
+
+| **Topic** | **Query** |
+| ------------------- | ------------------------------------------------------------------------------------------- |
+| Professional Skills | What soft skills are required to be a good business development manager in the \<industry>? |
+| Professional Skills | How can I demonstrate empathy in the workplace? |
+| Professional Skills | What certifications do I need to be a primary school teacher in \<country>? |
+| Professional Skills | Help me create a SMART goal for becoming a \<career> within three years. |
+| Professional Skills | Write a SMART goal for achieving a 20% increase in sales for my product within 18 months. |
+
+### AI Questions for Job Search
+
+| **Topic** | **Query** |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Informational Interviews | Write an email to Jim Smith, a Financial Analyst asking for an informational interview to learn more about the work he does at \<company>. |
+| Informational Interviews | What questions should I ask someone to learn more about what they do as a software engineer at \<company>? |
+| Informational Interviews | Write a thank-you note to Jim Smith who gave me an informational interview about being a software engineer at \<company>. Ask them if they could refer me for potential job opportunities. |
+| Where to Apply | What are the five biggest accounting companies in \<country>? |
+| Where to Apply | What are the career websites for the top five accounting companies in \<country>? |
+| Where to Apply | Where can I find open job positions for \<company>? |
+| Where to Apply | What are the best companies in \<country> to work for if I am an accountant? |
+| Job Boards | What job boards are best for \<company> in \<country>? |
+
+### AI Questions for Job Interview
+
+| **Topic** | **Query** |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Company Research | What type of job interview process does \<company> typically use? |
+| Company Research | What is \<company's> company mission? |
+| Company Research | What are the most common interview questions for project managers applying to \<company>? How should I answer these questions based on my resume/CV below? |
+| Company Research | What questions will I be asked in a job interview when applying for an accounting job in \<country>? |
+| Company Research | How are accounting regulations in \<country> different from the United States? |
+| Company Research | What is the most common technical tests during job interviews at \<company> for software engineer jobs? |
+| Interview Prep | How can I learn to relax and be more confident in a job interview? |
+| Interview Prep | How should I dress for a formal job interview in \<country>? |
+| Interview Prep | Should men wear a tie for a job interview in \<country>? |
+| Interview Prep | Is there an organization in \<country> that lends clothes for job interviews? |
+| Interview Techniques | What specific skills or experience should I highlight in an interview for this job? Below is the job description and my CV. |
+| Interview Techniques | How should I use the STAR interview technique for an accounting job at \<company>? |
+| Interview Techniques | In a job interview, how to I demonstrate that I will be a good fit for this job and company? |
+| Interview Techniques | How can I talk about SMART goals in a job interview? |
+| Difficult Interview Questions | How should I use the STAR interview technique to answer a question about the story below: I was at \<company> in a software engineer role in my first six months and I missed a deadline to complete code that caused the deployment date to slip by three days. However, during this time, I was able to identify other bugs from other team members that needed to be corrected and in the long run, we avoided a failed launch attempt because of my delay. I have learned much since that occurrence about time management and have not missed a deadline since that time. |
+| Difficult Interview Questions | During a job interview, how should I explain that I had to leave my last job so I could take care of my mother who was ill? |
+| Difficult Interview Questions | How should I respond during a job interview when someone says that my answer is incorrect? |
+| Thank-you Note | Write a thank-you note for an interview for this job description. Below is my resume/CV. |
+| Follow-up email after being rejected | Write a follow-up email to a hiring manager for an accounting position after they have rejected your job application asking for other opportunities? |
+| Email accepting the job offer | Write a follow-up email to a hiring manager for an accounting position after they have offered you the position saying that you accept. |
+
+### AI Questions for Salary
+
+| **Topic** | **Query** |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Salary questions | What is a typical starting salary for an entry-level accounting job in \<city, country>? |
+| Salary questions | When and how should I negotiate a salary for a new job? |
+| Salary questions | Should someone applying for an entry level job try to negotiate their salary? |
+| Company benefits | At what point in a job interview should I ask about company benefits? |
+| Company benefits | What are typical company benefits for an accounting job in \<city, country>? |
+| Negotiating for more compensation | Write an email to a hiring manager for an accounting position after they have offered you the job, but the salary is too low. They are offering you $X per hour but you are requesting$Y per hour. |
+
+### AI Questions for Distinguishing Yourself
+
+| **Topic** | **Query** |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| Distinguishing Yourself | How can I make the best first impression at a new job? |
+| Distinguishing Yourself | What are the characteristics of employees that distinguish themselves in the workplace? |
+| Distinguishing Yourself | How can I connect with my peers at a new job? |
+| Distinguishing Yourself | How can I give a great presentation at work? |
+| Distinguishing Yourself | How and when do I ask for a raise at work? |
+| Performance Reviews | How will I be evaluated by my manager in an accounting position? |
+| Performance Reviews | What should I do if I get a bad work performance review? |
+| Performance Reviews | How do I communicate that I will not make a work deadline? |
+
+### AI Questions for Global Business Skills
+
+| **Topic** | **Query** |
+| ---------------------- | ----------------------------------------------------------------------------------- |
+| Global Business Skills | How are business communications styles in \<country 1> different from \<country 2>? |
+| Global Business Skills | Provide tips on how I can be a good connector at work. |
+| Global Business Skills | How do I start a conversation at work with someone I don't know? |
+
+
+---
+---
+---
+--- 
 ## 🔑 QUICK CAREER REFRESH CHECKLIST
 
 ### 1. Story Framework (Use for CV, interviews, LinkedIn)
