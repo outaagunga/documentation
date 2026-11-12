@@ -71,7 +71,7 @@ We are going to do it on `thunderclient`
 1.	In Thunder Client, click `New Request`  
 2.	Choose method: `POST`  
 3.	In the URL field, e.g ours is:  
-`http://127.0.0.1:8000/analyze`
+`http://127.0.0.1:8000/analyze`  
 .  
 **Step 3:** Add the `JSON body`  
 1.	Click the `Body tab`  
