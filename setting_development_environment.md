@@ -244,12 +244,8 @@ Create an environment variable to securely store your API URL.
 
 The app will typically open at `http://localhost:5173` (Vite) or `http://localhost:3000` (CRA).
 
-# Git 
-
-
-Perfect 👍 Let’s go step by step so you don’t miss anything. I’ll assume you already have a **GitHub account** and a **repository** created there. Here’s the full process from scratch:
-
----
+.  
+# Git  
 
 ## **Step 1: Install Git (if not already installed)**
 
