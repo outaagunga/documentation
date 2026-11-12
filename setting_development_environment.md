@@ -1,87 +1,87 @@
 
-# Setting development environment:
-a)Download the latest version of `Python` from the official website 
-b)During installation (when using Windows)-  `Add Python to PATH`
-c)If you are using windows, also ensure you install `WSL`
-d)Install an IDE (e.g `VS Code`)
-e)Install VS Code extensions e.g (`prettier formatters, autocomplete and extensions`)
-f)Install a virtual environment manager e.g `venv`
-g)Install python extension on the vs code to be able to run python directly from the vs code. Then click ▶️ to run python
+# Setting development environment:  
+a)Download the latest version of `Python` from the official website   
+b)During installation (when using Windows)-  `Add Python to PATH`  
+c)If you are using windows, also ensure you install `WSL`  
+d)Install an IDE (e.g `VS Code`)   
+e)Install VS Code extensions e.g (`prettier formatters, autocomplete and extensions`)  
+f)Install a virtual environment manager e.g `venv`  
+g)Install python extension on the vs code to be able to run python directly from the vs code. Then click ▶️ to run python  
 
-## Set up a Virtual Environment:
-They isolate project dependencies, preventing conflicts between different projects and ensuring your code runs consistently.
-a)Create project folder and open the folder in your `terminal`
-b)Launch virtual environment using command: `pip install pipenv` (if you get an error use `sudo apt install pipenv`)
-c)	Then activate the virtual environment: `pipenv shell`
-d)	if you get error, uninstall the older version of `pipenv` using this command: `sudo apt remove pipenv`
-Then re- install new version using this command:
-* `pip install --user pipenv`
-* Then `sudo apt install pipenv` Then re-activate virtual environment: `pipenv shell`
+## Set up a Virtual Environment:  
+They isolate project dependencies, preventing conflicts between different projects and ensuring your code runs consistently.  
+a)Create project folder and open the folder in your `terminal`  
+b)Launch virtual environment using command: `pip install pipenv` (if you get an error use `sudo apt install pipenv`)  
+c)	Then activate the virtual environment: `pipenv shell`  
+d)	if you get error, uninstall the older version of `pipenv` using this command: `sudo apt remove pipenv`  
+Then re- install new version using this command:  
+* `pip install --user pipenv`  
+* Then `sudo apt install pipenv` Then re-activate virtual environment: `pipenv shell`  
 
-## Create requirements.txt file.
-a)Install `pipreqs` using this command: `pip install pipreqs`
-Pipreqs is a tool that automatically generates a `requirements.txt` file for your Python project by scanning your project folder for all the libraries your code is importing.
-b)Then run the `pipreqs` tool on the current directory using this command: `pipreqs .` 
-c)	Then install all the Python packages listed inside your `requirements.txt` file using this command: `pip install -r requirements.txt`
+## Create requirements.txt file.  
+a)Install `pipreqs` using this command: `pip install pipreqs`  
+Pipreqs is a tool that automatically generates a `requirements.txt` file for your Python project by scanning your project folder for all the libraries your code is importing.  
+b)Then run the `pipreqs` tool on the current directory using this command: `pipreqs .`   
+c)	Then install all the Python packages listed inside your `requirements.txt` file using this command: `pip install -r requirements.txt`  
 
-Nb:
-If you run into version compatibility issues while working on your project, simply install the available version first. Then, update the version in your requirements.txt file to the one compatible with your project, and reinstall the dependencies using the updated requirements.txt
+**Nb:**    
+If you run into version compatibility issues while working on your project, simply install the available version first. Then, update the version in your requirements.txt file to the one compatible with your project, and reinstall the dependencies using the updated requirements.txt  
 
-## Install Dependencies
-(Dependencies are frameworks that you will use for your project e,g `Faker, Pandas, Django, Rest, Flask` e.t.c). Use `pip` which is the recommended Python's package installer. Ensure you do this after activating your virtual environment.
-`pip install <dependency-name>`  
+## Install Dependencies  
+(Dependencies are frameworks that you will use for your project e,g `Faker, Pandas, Django, Rest, Flask` e.t.c). Use `pip` which is the recommended Python's package installer. Ensure you do this after activating your virtual environment.  
+`pip install <dependency-name>`    
 
-* To be able to run language-too-python on ubuntu, you need to also install Java version 8+
-`sudo apt install default-jre`
-* if you need specific version of Java, un-install the version installed using the command:
-`sudo apt remove default-jre`
-`sudo apt autoremove`
-then install the needed version by specifying the version using command e.g
-`sudo apt update`
-`sudo apt install openjdk-21-jre`
-Confirm if installation is successful using command `java -version`
+* To be able to run language-too-python on ubuntu, you need to also install Java version 8+  
+`sudo apt install default-jre`  
+* if you need specific version of Java, un-install the version installed using the command:  
+`sudo apt remove default-jre`  
+`sudo apt autoremove`  
+then install the needed version by specifying the version using command e.g  
+`sudo apt update`  
+`sudo apt install openjdk-21-jre`  
+Confirm if installation is successful using command `java -version`  
 
-## Running the project locally 
-To run you project locally: We can run it locally using Uvicorn e.g
-`uvicorn main:app --reload`  # if your main app is named `main.py`  
-or
-`uvicorn app:app --reload`  # if your main app is named `app.py`  
-Ensure you `cd` to the directory where the `main.py` or `app.py` is located before starting the uvicorn server
-•	`main`: refers to the name of your Python file (e.g., `main.py`).
-•	`app`: refers to the FastAPI instance you created within that file (e.g., `app = FastAPI())`.
-•	`--reload`: (optional) enables automatic reloading of the server when code changes are detected, which is useful during development.
+## Running the project locally   
+To run you project locally: We can run it locally using Uvicorn e.g  
+`uvicorn main:app --reload`  # if your main app is named `main.py`    
+or  
+`uvicorn app:app --reload`  # if your main app is named `app.py`    
+Ensure you `cd` to the directory where the `main.py` or `app.py` is located before starting the uvicorn server  
+•	`main`: refers to the name of your Python file (e.g., `main.py`).  
+•	`app`: refers to the FastAPI instance you created within that file (e.g., `app = FastAPI())`.  
+•	`--reload`: (optional) enables automatic reloading of the server when code changes are detected, which is useful during development.  
 
-Verify the fastapi Server is running. Once running, you can verify your server by checking the interactive fastapi documentation. i.e
-Open your browser and navigate to: `http://127.0.0.1:8000/docs`. This will confirm the API is up and ready to receive requests from your frontend
-Ensure `fastapi` and `uvicorn` are installed for the backend server to run.
-To install them, run `pip install fastapi uvicorn`
+Verify the fastapi Server is running. Once running, you can verify your server by checking the interactive fastapi documentation. i.e  
+Open your browser and navigate to: `http://127.0.0.1:8000/docs`. This will confirm the API is up and ready to receive requests from your frontend  
+Ensure `fastapi` and `uvicorn` are installed for the backend server to run.  
+To install them, run `pip install fastapi uvicorn`  
 
-## Testing your endpoints  
-You can test your endpoint are responding correctly before proceeding with frontend work. 
-You can do it on `Postman` or `Thunderclient`.
-We are going to do it on `thunderclient`
-Step 1: Install Thunder Client Thunder client is a vs code extension. To install it:
-•	Go to vscode- then extensions
-•	Search for thunder client and install it
-•	It should appear on the side of the vscode after installation, click on it to open it
+## Testing your endpoints    
+You can test your endpoint are responding correctly before proceeding with frontend work.   
+You can do it on `Postman` or `Thunderclient`.  
+We are going to do it on `thunderclient`  
+Step 1: Install Thunder Client Thunder client is a vs code extension. To install it:  
+•	Go to vscode- then extensions  
+•	Search for thunder client and install it  
+•	It should appear on the side of the vscode after installation, click on it to open it  
 
-Step 2: Create a New Request
-1.	In Thunder Client, click `New Request`
-2.	Choose method: `POST`
-3.	In the URL field, e.g ours is:
-`http://127.0.0.1:8000/analyze`
-Step 3: Add the `JSON body`
-1.	Click the `Body tab`
-2.	Select `JSON`
-3.	Paste your test text inside:
+**Step 2:** Create a New Request  
+1.	In Thunder Client, click `New Request`  
+2.	Choose method: `POST`  
+3.	In the URL field, e.g ours is:  
+`http://127.0.0.1:8000/analyze`  
+**Step 3:** Add the `JSON body`  
+1.	Click the `Body tab`  
+2.	Select `JSON`  
+3.	Paste your test text inside:  
 `{
   "text": "This is a sample text that may contains grammar issues and also we want to check engagement and tone."
-}`
-Step 4: Hit SEND
-Click the Send button.
-Your API will return something like this [  ]
+}`  
+**Step 4:** Hit SEND  
+Click the Send button.  
+Your API will return something like this `[  ]`  
 
-## 🖥️ 4. FRONTEND (React + Bootstrap)  
+## 🖥️ 4. FRONTEND (React + Bootstrap)    
 
 ### 1. Install Node.js and npm
 
