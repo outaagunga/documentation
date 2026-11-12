@@ -1,34 +1,35 @@
 
 # Setting development environment:  
-a)Download the latest version of `Python` from the official website   
-b)During installation (when using Windows)-  `Add Python to PATH`  
-c)If you are using windows, also ensure you install `WSL`  
-d)Install an IDE (e.g `VS Code`)   
-e)Install VS Code extensions e.g (`prettier formatters, autocomplete and extensions`)  
-f)Install a virtual environment manager e.g `venv`  
-g)Install python extension on the vs code to be able to run python directly from the vs code. Then click ▶️ to run python  
+a) Download the latest version of `Python` from the official website   
+b) During installation (when using Windows)-  `Add Python to PATH`  
+c) If you are using windows, also ensure you install `WSL`  
+d) Install an IDE (e.g `VS Code`)   
+e) Install VS Code extensions e.g (`prettier formatters, autocomplete and extensions`)  
+f) Install a virtual environment manager e.g `venv`  
+g) Install python extension on the vs code to be able to run python directly from the vs code. Then click ▶️ to run python  
 
 ## Set up a Virtual Environment:  
 They isolate project dependencies, preventing conflicts between different projects and ensuring your code runs consistently.  
-a)Create project folder and open the folder in your `terminal`  
-b)Launch virtual environment using command: `pip install pipenv` (if you get an error use `sudo apt install pipenv`)  
-c)	Then activate the virtual environment: `pipenv shell`  
-d)	if you get error, uninstall the older version of `pipenv` using this command: `sudo apt remove pipenv`  
+a) Create project folder and open the folder in your `terminal`  
+b) Launch virtual environment using command: `pip install pipenv` (if you get an error use `sudo apt install pipenv`)  
+c) Then activate the virtual environment: `pipenv shell`  
+d) if you get error, uninstall the older version of `pipenv` using this command: `sudo apt remove pipenv`  
 Then re- install new version using this command:  
 * `pip install --user pipenv`  
 * Then `sudo apt install pipenv` Then re-activate virtual environment: `pipenv shell`  
 
 ## Create requirements.txt file.  
-a)Install `pipreqs` using this command: `pip install pipreqs`  
+a) Install `pipreqs` using this command: `pip install pipreqs`  
 Pipreqs is a tool that automatically generates a `requirements.txt` file for your Python project by scanning your project folder for all the libraries your code is importing.  
-b)Then run the `pipreqs` tool on the current directory using this command: `pipreqs .`   
-c)	Then install all the Python packages listed inside your `requirements.txt` file using this command: `pip install -r requirements.txt`  
+b) Then run the `pipreqs` tool on the current directory using this command: `pipreqs .`   
+c) Then install all the Python packages listed inside your `requirements.txt` file using this command: `pip install -r requirements.txt`  
 
 **Nb:**    
 If you run into version compatibility issues while working on your project, simply install the available version first. Then, update the version in your requirements.txt file to the one compatible with your project, and reinstall the dependencies using the updated requirements.txt  
 
 ## Install Dependencies  
-(Dependencies are frameworks that you will use for your project e,g `Faker, Pandas, Django, Rest, Flask` e.t.c). Use `pip` which is the recommended Python's package installer. Ensure you do this after activating your virtual environment.  
+(Dependencies are frameworks that you will use for your project e,g `Faker, Pandas, Django, Rest, Flask` e.t.c).   
+Use `pip` which is the recommended Python's package installer. Ensure you do this after activating your virtual environment.  
 `pip install <dependency-name>`    
 
 * To be able to run language-too-python on ubuntu, you need to also install Java version 8+  
