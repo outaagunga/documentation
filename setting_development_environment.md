@@ -222,16 +222,30 @@ app: refers to the FastAPI instance you created within that file (e.g., app = Fa
 ### 1. Install Node.js and npm
 
   * **Check Installation:**
-    ```bash
+```bash
     node -v
     npm -v
-    ```
-  * If not installed, download and install the **LTS (Long Term Support) version** from the [Node.js official website](https://nodejs.org/).
-  * or use terminal commandline e.g
-```bash
+# If not installed, use this command to install i.e
     sudo apt install nodejs npm
-```
 
+# If you get version outdated errors, 
+# Step 1. Remove older versions using this command: 
+sudo apt remove --purge nodejs npm && sudo apt autoremove
+
+# Step 2: Install nvm using the complete URL with latest version e.g  v0.41.0 being the current latest version:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash
+
+# Step 3: Activate nvm in your terminal
+source ~/.bashrc
+
+# Step 4: Install the latest Long-Term Support (LTS) version of Node.js
+nvm install --lts
+
+# Step 5: Verify everything worked
+nvm --version
+node -v
+npm -v
+```
 -----
 
 ### 2. Create React App (Recommended: Use Vite)
@@ -600,5 +614,227 @@ Once you open `PROJECT_STRUCTURE.txt`, focus on:
 **Assets/Templates:** `static/`, `public/`, `assets/`, `templates/`
 ```
 
+---
+---
+---
+
+## **C. Environment variables and secrets management**
+```
+# Install dotenv
+pip install python-dotenv
+```
+
+Create a `.env` file in your backend project:
+
+```
+DATABASE_URL=your_database_url
+SECRET_KEY=your_secret_key
+API_KEY=your_api_key
+```
+
+Access these variables in Python:
+
+```
+import osfrom dotenv import load_dotenvload_dotenv()SECRET_KEY = os.getenv("SECRET_KEY")
+```
+
+Also explain:
+
+- Never upload `.env` files to GitHub.
+- Create `.env.example` containing placeholder values.
+- Keep backend secrets separate from frontend environment variables.
+- Vite variables prefixed with `VITE_` are exposed to frontend code and must never contain secrets.
+
+## **D. Connecting React to FastAPI properly**
+
+**1. Install CORS middleware in FastAPI**
+
+```
+from fastapi.middleware.cors import CORSMiddlewareapp.add_middleware(    CORSMiddleware,    allow_origins=["http://localhost:5173"],    allow_credentials=True,    allow_methods=["*"],    allow_headers=["*"],)
+```
+
+**2. Create a React function to call your API**
+
+```
+const response = await fetch(
+  "http://127.0.0.1:8000/analyze",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      text: "Sample text to analyze",
+    }),
+  }
+);
+
+const data = await response.json();
+
+console.log(data);
+```
+
+**3. Understand the request-response cycle**
+
+**React Frontend**
+
+User enters information and submits a request
+
+HTTP request / JSON response
+
+**FastAPI Backend**
+
+Receives, processes and validates information
+
+**Database / External API / AI Model**
+
+Processes or retrieves the required information
+
+**FastAPI returns JSON to React**
+
+React displays the results to the user
+
+## **E. Database installation and management**
+
+Your guide doesn't cover databases.
+
+For full-stack applications, you should understand:
+
+- What a database is.
+- SQL versus NoSQL databases.
+- Database creation and connection.
+- Database models and tables.
+- CRUD operations (Create, Read, Update, Delete).
+- Database migrations.
+
+## **F. API documentation and testing**
+- Understanding REST APIs.
+- HTTP methods: GET, POST, PUT, PATCH and DELETE.
+- HTTP status codes: 200, 201, 400, 401, 403, 404, 422 and 500.
+- Request headers.
+- Request bodies.
+- Query parameters.
+- Path parameters.
+- Authentication and authorization.
+- API error handling.
+
+## **G. Frontend development essentials**
+- React components.
+- JSX.
+- Props.
+- State and `useState`.
+- `useEffect`.
+- React Router for navigation.
+- Form handling.
+- API calls.
+- Conditional rendering.
+- Loading indicators and error messages.
+- Reusable components.
+- Frontend folder structure.
+
+## **H. Application security**
+- Password hashing (never store plain-text passwords).
+- Authentication and authorization.
+- JWT (JSON Web Tokens).
+- API key management.
+- Input validation.
+- SQL injection prevention.
+- Cross-Site Scripting (XSS).
+- Rate limiting.
+- HTTPS.
+- Secure handling of user-uploaded files.
+
+For FastAPI, :
+- Pydantic for data validation.
+- FastAPI security utilities.
+- OAuth2 and JWT authentication.
+
+## **I. Testing and debugging**
+
+| Tool                    | What it does                                  |
+| ----------------------- | --------------------------------------------- |
+| pytest                  | Tests Python code                             |
+| FastAPI TestClient      | Tests API endpoints                           |
+| Vitest                  | Tests React/frontend code                     |
+| React Testing Library   | Tests React components                        |
+| Browser Developer Tools | Inspects frontend errors and network requests |
+| VS Code Debugger        | Helps identify and troubleshoot code errors   |
+
+Also:
+- Read terminal error messages.
+- Read Python tracebacks.
+- Inspect browser console errors.
+- Inspect failed network requests.
+- Use breakpoints.
+- Read application logs.
+
+## **J. Deployment and hosting**
+- Production versus development environments.
+- Building a React application.
+- Deploying FastAPI.
+- Hosting databases.
+- Configuring production environment variables.
+- Domain names and DNS.
+- HTTPS and SSL certificates.
+- Application logging and monitoring.
+- CI/CD (Continuous Integration and Continuous Deployment).
+
+Some technologies worth knowing:
+| Technology     | Purpose                          |
+| -------------- | -------------------------------- |
+| Docker         | Containerizing applications      |
+| Render         | Hosting applications             |
+| Vercel         | Hosting frontend applications    |
+| Railway        | Application and database hosting |
+| GitHub Actions | Automating development workflows |
+| Nginx          | Web server and reverse proxy     |
+
+## **L. AI and automation development tools**
+
+| Technology  | Purpose                                             |
+| ----------- | --------------------------------------------------- |
+| OpenAI API  | Integrating AI models into applications             |
+| LangChain   | Building applications around language models        |
+| LangGraph   | Building stateful, multi-step AI workflows          |
+| Pydantic AI | Building structured AI-powered applications         |
+| Ollama      | Running supported AI models locally                 |
+| n8n         | Workflow automation                                 |
+| MCP         | Connecting AI models to external tools and services |
+
+## Also :
+- API keys and model authentication.
+- Prompt engineering.
+- Structured outputs.
+- Function/tool calling.
+- Embeddings.
+- Vector databases.
+- Retrieval-Augmented Generation (RAG).
+- AI agents and multi-step workflows.
+- Error handling and token/cost management.
+
+# **3. Other useful tools to add to your VS Code setup**
+
+| Extension/tool       | Purpose                                 |
+| -------------------- | --------------------------------------- |
+| GitHub Pull Requests | Manage GitHub pull requests             |
+| Docker               | Manage Docker containers and images     |
+| REST Client          | Test APIs directly in VS Code           |
+| Error Lens           | Highlight errors and warnings           |
+| Even Better TOML     | Work with TOML configuration files      |
+| SQLite Viewer        | View SQLite databases                   |
+| GitHub Copilot       | AI-assisted coding                      |
+| Prettier             | Format frontend code                    |
+| ESLint               | Identify JavaScript/React code problems |
 
 
+The biggest omissions are:
+
+1. Connecting React to FastAPI.
+2. Database installation and integration.
+3. Git branching and collaboration.
+4. Environment variables and security.
+5. Application testing and debugging.
+6. Docker and deployment.
+7. AI application development and automation.
+
+   
