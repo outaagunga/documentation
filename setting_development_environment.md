@@ -1,4 +1,81 @@
 
+## Suggested structure
+
+**Part 1: Set up your computer (Windows)**
+1. Install VS Code
+2. Install WSL and Ubuntu, with first-launch username and password
+3. Open Ubuntu (Start menu and VS Code terminal)
+4. Recommended VS Code extensions (core five first, nice-to-haves later)
+5. Move between Windows and Ubuntu files (`/mnt/c/...`, `\\wsl$\...`)
+
+**Part 2: Linux command basics**
+1. Navigation: `pwd`, `ls`, `cd`, `cd ..`, `code .`
+2. Files: `mkdir`, `touch`, `mv`, `cp`, `rm` and `rm -r` (with a warning)
+3. Zip and unzip
+4. `sudo` and `apt`: update, upgrade, install
+5. Mini-practice: create a folder, make a file, rename it, delete it
+
+**Part 3: Python environment**
+1. Python in Ubuntu (`python3 --version`, `python3-pip`, `python3-venv`)
+2. Virtual environments: **venv as the main method**
+3. Installing packages and saving them (`pip freeze > requirements.txt`, `pip install -r requirements.txt`)
+4. Environment variables and `.env`
+5. Optional: pipenv, pipreqs, Java for tools like language-tool-python
+
+**Part 4: Git and GitHub** (moved earlier, since everything after it should be committed)
+1. Install and configure Git (placeholders for name and email)
+2. Create a repo, clone it, check the remote
+3. The daily loop: `pull` → `add` → `commit` → `push`
+4. `.gitignore` (`.env`, `venv`, `node_modules`)
+5. SSH keys: set up and remove
+6. Branching and basic collaboration (a gap you noted)
+7. Generate a project structure file with `tree`
+
+**Part 5: Backend (FastAPI)**
+1. Project structure
+2. Install FastAPI and uvicorn
+3. Write a minimal `/` and `/analyze` endpoint (add this so readers have something to run)
+4. Run the server and read the `/docs` page
+5. Test with Thunder Client
+6. Add CORS for the frontend
+7. Troubleshooting: port busy, module not found, wrong directory
+
+**Part 6: Frontend (React + Vite)**
+1. Install Node via nvm (**one** main method) and check Vite's current Node requirement
+2. Create the Vite project and install dependencies
+3. Add Bootstrap and Axios
+4. Environment variables (`VITE_` prefix, never secrets)
+5. Call the API with `fetch` or Axios
+6. Run both servers side by side (two terminals)
+7. Troubleshooting: CORS errors, wrong port, `.env` not loading
+
+**Part 7: How it all fits together**
+- Request/response flow diagram: React → HTTP/JSON → FastAPI → database or AI model → JSON → React
+- HTTP methods and status codes (200, 201, 400, 401, 403, 404, 422, 500)
+
+**Part 8: Next-level skills** (short intro and links each, not full tutorials yet)
+- Databases (SQL vs NoSQL, CRUD, migrations)
+- Security (password hashing, JWT, input validation, XSS, rate limiting)
+- Testing and debugging (pytest, TestClient, Vitest, dev tools)
+- Deployment (Docker, Render, Vercel, Railway, GitHub Actions, Nginx)
+- AI development (API keys, prompts, structured outputs, RAG, agents, MCP)
+
+---
+---
+---
+---
+# Chakruok
+
+
+# Giko
+
+
+---
+---
+---
+---
+
+
 # Running Ubuntu Linux Commands on Windows
 
 ## 1. Install Python 3
