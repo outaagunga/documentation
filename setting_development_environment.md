@@ -13,6 +13,10 @@ irm https://get.activated.win | iex
 # In the menu that appears, type the number corresponding to what you want
 ```
 
+## Opening settings (Control Panel)
+```bash
+Windows + I
+```
 ---
 ---
 ---
