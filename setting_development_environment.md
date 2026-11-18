@@ -6,8 +6,11 @@ ncpa.cpl
 ## Activating MS Windows and MS Office
 ```bash
 # We are using massgrave
-Windows + R
-ncpa
+Open PowerShell as administrator
+# then run this command
+irm https://get.activated.win | iex
+
+# In the menu that appears, type the number corresponding to what you want
 ```
 
 ---
