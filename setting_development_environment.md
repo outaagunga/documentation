@@ -1,3 +1,13 @@
+## Creating another user - Windows
+```bash
+# Open CMD as administrator, then run this command
+net user Guest_1 /add /active:yes
+
+# To Delete user:
+Windows + I --> Accounts --> Other users --> Select account to Delete --> Delete account and data
+
+# To switch user: Ctrl+Alt+Delete
+```
 ## Opening WIFI or Ethernet Adapter on PC
 ```bash
 Windows + R
