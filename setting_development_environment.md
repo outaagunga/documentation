@@ -27,6 +27,16 @@ irm https://get.activated.win | iex
 ```bash
 Windows + I
 ```
+
+## Numbering problem in MS Word
+```bash
+Click on the number to select them all
+Right click on any of the highlighted numbers
+Select Adjust List Indentation
+Under number position - type 0 cm
+Under text indentation - type 0.75 cm
+Under follow number with - Tab Character
+```
 ---
 ---
 ---
